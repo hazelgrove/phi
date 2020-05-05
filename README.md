@@ -9,7 +9,7 @@
     Make sure you are not using the same number as somebody else.
 
   * The name should be a dash-separated sequence of lowercase letters.
-* Create a new branch named `#-name` where `#` is your PHI number and `name` is the name you chose.
+* We will be using the GitHub pull request system to review your proposal before it is accepted into master. Create a new branch named `#-name` where `#` is your PHI number and `name` is the name you chose.
 * Create a new directory named `#-name`.
 * Create a new file named `#-name.md` in that directory.
 * Push your new branch to GitHub immediately so that there are not number choice clashes.
