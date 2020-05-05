@@ -1,12 +1,15 @@
 # Introduction
 
 TODO: what are labeled products
+Labeled products are a value similar to products, but some/all elements have a label.  This label can be used then for projection, so elements within the product can be accessed either positionally or by the label.  
 TODO: why do we want them in Hazel
+Adding labeled products helps make the tuples become more robust, so more complex products can be easily used.  Accesing a longer tuple using only positional arguments adds unneccsary bulk to the code.  Having labels allows for easy projection.  The labeled products can also serve a similar use as records in other languages.
 TODO: what do we have now
-
+Currently only unlabeled tuples are supported in Hazel, and elements can only be accessed positionally using let statements or case statements.
 # Labeled Product Types
 
 TODO: add `.label` as a new type form
+\tau
 TODO: recognize operator sequences containing `.label1 ty1, .label ty2, ..., .labeln tyn` as labeled product types
 TODO: do we want to allow partially labeled product types?
   - allow non-labled prefix, but once you use a label as subsequent positions have to be labeled
