@@ -1,18 +1,43 @@
 # Introduction
 
-TODO: what are labeled products
+<!-- TODO: what are labeled products -->
 Labeled products are a value similar to products, but some/all elements have a label.  This label can be used then for projection, so elements within the product can be accessed either positionally or by the label.  
-TODO: why do we want them in Hazel
+<!-- TODO: why do we want them in Hazel -->
 Adding labeled products helps make the tuples become more robust, so more complex products can be easily used.  Accesing a longer tuple using only positional arguments adds unneccsary bulk to the code.  Having labels allows for easy projection.  The labeled products can also serve a similar use as records in other languages.
-TODO: what do we have now
+<!-- TODO: what do we have now -->
 Currently only unlabeled tuples are supported in Hazel, and elements can only be accessed positionally using let statements or case statements.
 # Labeled Product Types
 
-TODO: add `.label` as a new type form
-&tau;
-TODO: recognize operator sequences containing `.label1 ty1, .label ty2, ..., .labeln tyn` as labeled product types
-TODO: do we want to allow partially labeled product types?
-  - allow non-labled prefix, but once you use a label as subsequent positions have to be labeled
+TODO: add `.label` as a new type form <br/>
+
+&tau; ::= ... <br/>
+| .label <br/>
+| .label1 &tau;1, .label2 &tau;2 ...  , .labeln &tau;n <br/>
+
+<!-- TODO: do we want to allow partially labeled product types? -->
+Partially labeled product types are allowed, and labels and non-labeled positions can be interleaved.
+For example, the labeled product type `(.x Num, Num, .y Num)` is allowed.  
+
+Bcause a labeld product may still be used with a positional arguments with partially labeld types, the type equivalence considers the order of the labels with equlivalence.  For example, `(.x Num, .y Num, .z Num) != (.z Num, .y Num, .x Num)` because the order of the labels is different.
+
+Singleton label products are supported.  For example, `.x Num` is supported.
+
+## Type Syntax Errors
+
+A label must be followed by a valid type and comma operator, not another label.  For example, `.label1 .label2 ty` produces an error.<br/>
+(Question: Would this produce an error given that singleton products are supported?)
+
+A label cannot exist by itself, it is given meaning by having a type follow it.  For example, `.label1 ` by itself produces an error. <br/>
+Proposed Error Message: Error Curosr appears on `.label1`<br/>
+Expecting a type of Labeled Product / Got Inconsitent type of Label
+
+Elements in the tuples need to be separated by commas, if they are not then this produces an error.  For example, `.label1 ty .label2` produces an error. <br/>
+Proposed Error Message: Error cursor appears on `.label2`<br/>
+Expecting a type of Labeled Product / Got Inconsitent type of Label
+
+Duplicate labels within a tuple are not valid, so they produce an error.  The error will appear on the subsequent duplicate uses, not on the type as a whole.  FOr example, the type `.label1 Num, .label1 Num, .label2 Num, .label1 Bool` will have erros on the second use of  `.label1 Num` and  `.label1 Bool`
+
+  <!-- - allow non-labled prefix, but once you use a label as subsequent positions have to be labeled
     - alternatively, allow labeled and non-labeled positions to be interleaved
     TODO: how does this affect type equivalence? e.g. are `(.x Num, .y Num, .z Num) == (.z Num, .y Num, .x Num)`
     TODO: singleton labeled products -- should we support them (`.x Num` is a labeled product type?)
@@ -22,7 +47,7 @@ TODO: do we want to allow partially labeled product types?
        * `.label1 ty .label2`
         * we will need some way to mark erroneous uses of labels and indicate that in the cursor inspector
 	 * duplicate labels: `(.label1 Num, .label1 Num)` is not a valid type, so we also need duplicate label errors
-	   - does the error message go on the subsequent uses, or on the type as a whole?
+	   - does the error message go on the subsequent uses, or on the type as a whole? -->
 
 # Labeled Tuple Expressions
 TODO: add `.label` as a new expression form
