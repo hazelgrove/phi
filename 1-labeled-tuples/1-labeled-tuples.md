@@ -9,10 +9,14 @@ Currently only unlabeled tuples are supported in Hazel, and elements can only be
 # Labeled Product Types
 
 TODO: add `.label` as a new type form <br/>
-
-&tau; ::= ... <br/>
+TODO: List the files you expect ot edit for each thing, and a sentance about what you expect to do
+<!-- Just add space operator, check UHExp.re for this -->
+<!-- Look at Skeltype parser and see that there is something that determines prescedence,-->
+<!-- Stat that we are not requiring parenthesis-->
+```&tau; ::= ... <br/>
 | .label <br/>
-| .label1 &tau;1, .label2 &tau;2 ...  , .labeln &tau;n <br/>
+| .label1 &tau;1, .label2 &tau;2 ...  , .labeln &tau;n <br/>``` 
+<!-- For space, say if left or right associative and give presedence-->
 
 <!-- TODO: do we want to allow partially labeled product types? -->
 Partially labeled product types are allowed, and labels and non-labeled positions can be interleaved.
@@ -22,20 +26,22 @@ Bcause a labeld product may still be used with a positional arguments with parti
 
 Singleton label products are supported.  For example, `.x Num` is supported.
 
+
+# What about records? 
 ### Type Syntax Errors
 
 A label must be followed by a valid type and comma operator, not another label.  For example, `.label1 .label2 ty` produces an error.<br/>
-(Question: Would this produce an error given that singleton products are supported?)
 
 A label cannot exist by itself, it is given meaning by having a type follow it.  For example, `.label1 ` by itself produces an error. <br/>
 Proposed Error Message: Error Curosr appears on `.label1`<br/>
-Expecting a type of Labeled Product / Got Inconsitent type of Label
+Expecting Expecting a Type 
 
 Elements in the tuples need to be separated by commas, if they are not then this produces an error.  For example, `.label1 ty .label2` produces an error. <br/>
 Proposed Error Message: Error cursor appears on `.label2`<br/>
-Expecting a type of Labeled Product / Got Inconsitent type of Label
+Expecting a type Got a label
 
-Duplicate labels within a tuple are not valid, so they produce an error.  The error will appear on the subsequent duplicate uses, not on the type as a whole.  FOr example, the type `.label1 Num, .label1 Num, .label2 Num, .label1 Bool` will have erros on the second use of  `.label1 Num` and  `.label1 Bool`
+Duplicate labels within a tuple are not valid, so they produce an error.  The error will appear on the subsequent duplicate uses, not on the type as a whole.  FOr example, the type `.label1 Num, .label1 Num, .label2 Num, .label1 Bool` will have errors on the second use of  `.label1 Num` and  `.label1 Bool`
+Error Message
 
   <!-- - allow non-labled prefix, but once you use a label as subsequent positions have to be labeled
     - alternatively, allow labeled and non-labeled positions to be interleaved
