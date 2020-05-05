@@ -22,7 +22,7 @@ Bcause a labeld product may still be used with a positional arguments with parti
 
 Singleton label products are supported.  For example, `.x Num` is supported.
 
-## Type Syntax Errors
+### Type Syntax Errors
 
 A label must be followed by a valid type and comma operator, not another label.  For example, `.label1 .label2 ty` produces an error.<br/>
 (Question: Would this produce an error given that singleton products are supported?)
