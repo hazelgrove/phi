@@ -1,5 +1,8 @@
 # Motivation
-TODO: describe motivation
+
+**Type aliases** give users ability to define a shorthand for another type, which is either a user defined type or primitive type. As for benifits, type aliases can reduce the amount of typing as well as increasing the readability of code. 
+
+Moreover, most of pupolar programming languages provide this feature such as `typedef` in C/C++ and [type synonym](https://wiki.haskell.org/Type_synonym) feature in Haskell. 
 
 # Overview
 TODO: provide an overview
