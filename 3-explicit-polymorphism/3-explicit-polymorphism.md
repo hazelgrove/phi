@@ -4,7 +4,7 @@ Currently in Hazel every function has to be assigned a monomorphic type.
 This makes it impossible to write code that operates on more than one type
 of data. We currently have an example that implements `map : (Num -> Num)
 -> [Num] -> [Num]`. By adopting this proposal, Hazel's map function can
-have the type `forall a. (a -> a) -> [a] -> [a]`, and thereby be useful for
+have the type `forall a. forall b. (a -> b) -> [a] -> [b]`, and thereby be useful for
 a larger set of values.
 
 Specifically, we propose extending Hazel with two type constructs
@@ -15,13 +15,13 @@ a System F with holes than a Simply Typed Lambda Calculus with holes.
 
 We'd have to extend UHTyp.t with `TyVar` and `Forall` cases:
 
-```reason
-/* UHTyp.re */
-
-type operand =
-...
-| Forall(TPat.t, t);
-| TyVar(VarErrStatus.t, Var.t)
+  ```reason
+  /* UHTyp.re */
+  
+  type operand =
+  ...
+  | Forall(TPat.t, t);
+  | TyVar(VarErrStatus.t, Var.t)
   ```
 
   A type pattern is the part of the language between the `forall` and the `.`
@@ -31,7 +31,7 @@ type operand =
   /* TPat.t */
   type t =
   | Hole(MetaVar.t)
-| Var(Var.t)
+  | Var(Var.t)
   ```
 
   <!-- TODO: Talk about how TPat.t's might expand in the future -->
@@ -43,26 +43,26 @@ type operand =
   type operand =
   ...
   | TyLam(TPat.t, block)
-| TyVar(TPat.t)
+  | TyArg(UHTyp.t)
   ```
 
 # Construct actions
 
   We'll be adding the following to `Construct(shape)`:
 
-  ```
+  ```reason
   type shape =
   ...
   | SForall
-  | SType
+  | STyArg
   ```
 
   `Construct(SForall)` will be triggered when the user types "forall" followed by
   a space in a type hole. This will add a Forall type with the cursor at the type
   pattern hole and a hole as the body.
 
-  `Construct(SType)` will be triggered when the user types "type" followed by a
-  space in an expression hole. This will add a `TyVar.t` in the expression with a
+  `Construct(STyArg)` will be triggered when the user types "type" followed by a
+  space in an expression hole. This will add a `STyArg.t` in the expression with a
   type pattern hole.
 
 # Concrete Syntax / Representation
@@ -70,17 +70,18 @@ type operand =
   Forall's appear within types and look like: `forall a. ?`, where `a` is
   a TyVar.t.
 
-  There are Type Vars types and expressions. Type Vars in types appear as a
-  string of lowercase letter without any prefix or constructor. Type Vars in
-  expressions appear as `(type a)` where `a` is also a string of lowercase
-  letters.
+  Type vars in types appear as a string of lowercase letter without any prefix
+  or constructor.
+
+  Type Vars in expressions appear as `(type a)` where `a` is also a string of
+  lowercase letters.
 
   Type Lambdas are written like a lambda: you start with `\`. Then you write
   "type" followed by a space which will construct a type lambda. If however, you
   type `type<space>` into an existing lambda that has a non-empty type
   annotation, the pattern of the lambda will be put into an error state until
   either you delete the space following "type" or the type annotation. The final
-  representation is `λ(type a).{ }.
+  representation is `λ a:type.{ }`.
 
 # Backspace actions
 
@@ -123,21 +124,30 @@ type operand =
 
 ## Type Lambdas
 
-  * `λ.|(type a) { body }` or `λ(|type a) { body }` or `λ(type a)| { body }`
+  * `λ |a:type. { body }` or `λ ?|:type. { body }` or `λ a:type. { |body }` or `λ a:type. { body }|`
 
-  The lambda is removed, leaving just `|body`.
+  
+  The type lambda is removed, leaving just `|body`
 
-  * `λ(type| a) { body }`
+  * `λ a|:type. { body }`
 
-  The type lambda is reverted to a normal lambda with a type hole: `λ(? : ?)
+  One character is removed from the type variable "a". If it's only one char,
+  we're left with `λ ?|:type. { body }`
 
-  * `λ(type |a) { body }`
+  * `λ a:|type. { body }`
 
+  The cursor is moved back to `λ a|:type. { body }`.
 
-  The cursor is moved back to `λ(type| a) { body }`
+  * `λ a:type|. { body }`
 
-  * `λ(type a|) { body }`
-  * `λ(type a|) { body }`
+  The type lambda is converted to the normal lambda `λ a:typ|. { body }`.
+  Similarly, typing "d" at this cursor position should render a normal lambda
+  with the type annotation "typed".
+
+  * `λ a:type. { body| }`
+
+  Any backspaces here are forwarded the body unless the body is a hole, in
+  which case, backspace deletes the whole expression, leaving just a hole.
 
 # Movement actions
 
