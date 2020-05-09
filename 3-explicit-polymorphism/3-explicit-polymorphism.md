@@ -106,7 +106,7 @@ We'd have to extend UHTyp.t with `TyVar` and `Forall` cases:
   body, leaving the forall untouched. However, if the body is a type hole, this
   removes the whole type, leaving only a type hole.
 
-## Type Vars
+## Type Args
 
   * `(type| a)` or `(type a)|`
 
@@ -118,8 +118,8 @@ We'd have to extend UHTyp.t with `TyVar` and `Forall` cases:
 
   * `(type a|)`
 
-  If the type variable is a single character, replace the type variable with a TyPat.Hole,
-  otherwise remove the last character of the type variable.
+  Any backspace is treated as a backspace on the HTyp.t, represented by `a` here.
+  It's possible to get a TPat.Hole as a result of this backspace.
 
 ## Type Lambdas
 
