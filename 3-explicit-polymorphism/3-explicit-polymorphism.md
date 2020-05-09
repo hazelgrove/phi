@@ -17,7 +17,7 @@ We'd have to extend UHTyp.t with `TyVar` and `Forall` cases:
 
   ```reason
   /* UHTyp.re */
-  
+
   type operand =
   ...
   | Forall(TPat.t, t);
@@ -73,8 +73,7 @@ We'd have to extend UHTyp.t with `TyVar` and `Forall` cases:
   Type vars in types appear as a string of lowercase letter without any prefix
   or constructor.
 
-  Type Vars in expressions appear as `(type a)` where `a` is also a string of
-  lowercase letters.
+  Type Arg expressions appear as `(type TYPE)`, where TYPE is any type.
 
   Type Lambdas are written like a lambda: you start with `\`. Then you write
   "type" followed by a space which will construct a type lambda. If however, you
@@ -126,7 +125,7 @@ We'd have to extend UHTyp.t with `TyVar` and `Forall` cases:
 
   * `λ |a:type. { body }` or `λ ?|:type. { body }` or `λ a:type. { |body }` or `λ a:type. { body }|`
 
-  
+
   The type lambda is removed, leaving just `|body`
 
   * `λ a|:type. { body }`
