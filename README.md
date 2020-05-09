@@ -1,3 +1,11 @@
+# Motivation
+As the Hazel developer community grows, it is important that new features are vetted and documented. We will be using a proposal process for new Hazel features, following the pattern in other language communities, e.g.
+
+ * Python's PEP (https://www.python.org/dev/peps/pep-0001/)
+ * Scala's SIP (https://docs.scala-lang.org/sips/)
+ 
+At the moment, we are proceeding less formally than those processes. This will likely change as the system grows. Process suggestions are very welcome.
+
 # Creating a Proposal for Hazel Improvement (PHI)
 * Clone this repository.
 * Determine the number and name for your PHI:
@@ -13,7 +21,8 @@
 * Create a new directory named `#-name`.
 * Create a new file named `#-name.md` in that directory.
 * Push your new branch to GitHub immediately so that there are not number choice clashes.
-* We may provide an outline for PHIs in the future, but for now consult with cyrus- or others in FP Lab.
+* Create a pull request for your branch. Mark it as a draft. We will use GitHub's PR features to provide feedback on the proposal as it develops.
+* Make sure you are in the #hazel-phis channel on the Hazel Slack.
 
 # Pronunciation
 PHI is pronounced however you'd like to pronounce the greek letter "phi" (like "pie" or "fee").
