@@ -144,7 +144,7 @@ TODO: what are the type synthesis and type analysis rules?
 
 ### Expression Syntax Errors
 
-A label must be followed by a valid type and comma operator, not another label.  For example, `.label1 .label2 e` produces an error.<br/>
+A label must be followed by a valid expression and comma operator, not another label.  For example, `.label1 .label2 e` produces an error.<br/>
 
 A label cannot exist by itself, it is given meaning by having an expression follow it.  For example, `.label1 ` by itself produces an error. <br/>
 Proposed Error Message: Error Curosr appears on `.label1`<br/>
@@ -158,22 +158,70 @@ Duplicate labels within a tuple are not valid, so they produce an error.  The er
 Error Message
 
 # Labeled Tuple Patterns
-TODO: similar considerations to labeled tuple expressions
-TODO: we might want punning for labeled tuple patterns:
-```let f = fun(.x, .y) ...
-f(.x 1, .y 2)```
-instead of
-```let f = fun(.x x, .y y) ...
-f(.x 1, .y 2)```
-TODO: what are the pattern type synthesis and pattern type analysis rules? (ask Yongwei for paper draft if you want to formalize)
+Edited Files: UHPat.re
+To add labeled tuples, the operator type must be expanded to include the dot operator and operand type must be expanded to include labels.
+```
+type operator =
+  | Comma
+  | Space
+  | Dot;
+```
+The Dot operator will be left associative and have highest precedence.
+```
+and operand =
+  | EmptyHole(MetaVar.t)
+  | Wild(ErrStatus.t)
+  | Var(ErrStatus.t, VarErrStatus.t, Var.t)
+  | IntLit(ErrStatus.t, string)
+  | FloatLit(ErrStatus.t, string)
+  | BoolLit(ErrStatus.t, bool)
+  | ListNil(ErrStatus.t)
+  | Parenthesized(t)
+  | Inj(ErrStatus.t, InjSide.t, t);
+  | Label(ErrStatus.t, string)
+```
+<!-- TODO: similar considerations to labeled tuple expressions -->
+Partially labeled product patterns are allowed, and labels and non-labeled positions can be interleaved.
+For example, the labeled product type `(.x pat1, pat2, .y pat3)` is allowed.  
+
+Singleton label products are supported.  For example, `.x pat1` is supported.
+
+### Sythesis and Analysis
+<!-- TODO: can you omit labels by providing values in order: `(1, 2, 3) <= (.x Num, .y Num, .z Num)` -->
+An unlabeld product pattern can match to a labeled product expression, allowing you to ommit labels.  For example, `(.x 1, .y 2, .z 3)` can match on the pattern `(a, b, c)`.  This operation happens positionally.
+
+A labeled tuple pattern must match the label names and the order of a labeled tuple expression for a pattern match.  For example, `(.x a, .y b, .z c)` will match with `(.x 1, .y 2, .z 3)`  but will not match with `(.y 1, .z 2, .x 3)` because the order does not match.
+
+### Punning
+Punning may be useful for labeled tuple patterns, where the label can be used to access the element rather than adding an aditional variable.  For example, with punning this code snippit:
+```
+let f = fun(.x, .y)
+f(.x 1, .y 2)
+```
+would be equivalent to 
+```
+let f = fun(.x x, .y y)
+f(.x 1, .y 2)
+```
+
+This would be a great quality of life improvement to patterns with labeled tuples, and will be attempeted with the initial impelemntation of labeled tuples.  It will be considered lower priority, since it is not required for labeled tuples patterns.
+
+### Pattern Syntax Errors
+
+Multiple label must be followed by the comma operator, not another label.  For example, `.label1 .label2` produces an error.<br/>
+
+Elements in the tuples need to be separated by commas, if they are not then this produces an error.  For example, `.label1 p1 .label2 p2` produces an error. <br/>
+Proposed Error Message: Error cursor appears on `.label2`<br/>
+Expecting an pattern Got a label
+
+Duplicate labels within a tuple are not valid, so they produce an error.  The error will appear on the subsequent duplicate uses, not on the type as a whole.  For example, the expression `.label1 p1, .label1 p2, .label2 p3, .label1 p4` will have errors on  `.label1 p2` and  `.label1 p4`
+Error Message
 
 # What about records? 
+Records in other languages are very similar to the labeled tuples in this propoasal.  Records are typically a data structure that bundles data together with labels and values, and the values are accessed using projection with the labels.  The values are unordered in a record, while the values are ordered in a labeled tuple.  A labeled tuple is able to perform the same functions as a record, while adding additional functionality by ordering data.  If labeled tuples are sucessfully added to Hazel, then records will be redundant in Hazel.
 
 # Appendix: Other Ideas
-
-TODO: clean up
-
-# Overall Possibilities
+While creating this proposal, I considered many other ideas for Hazel labels.  These ideas are detailed below.
 
 Option 1: Use reason like ~label annotations
 Option 2: Use a space to separate between label and type/expression/pattern.  Period operator is added before label to specify that it is a label. Ties in well with linking the period to labeled products, as the period is also used for projection.  Possible problem: Issues with using a period as both binary operator (projection) and unary operator (label definition)
