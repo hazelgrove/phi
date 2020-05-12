@@ -7,6 +7,8 @@ Adding labeled products helps make the tuples become more robust, so more comple
 <!-- TODO: what do we have now -->
 Currently only unlabeled tuples are supported in Hazel, and elements can only be accessed positionally using let statements or case statements.
 # Labeled Product Types
+Syntax: `.label1 ty1, .label2 ty2, ..., .labeln tyn`
+
 Files to Edit: UHTyp.re
 <!-- TODO: add `.label` as a new type form <br/> -->
 <!-- TODO: List the files you expect ot edit for each thing, and a sentance about what you expect to do -->
@@ -49,37 +51,28 @@ Bcause a labeld product may still be used with a positional arguments with parti
 
 ### Type Syntax Errors
 
-A label must be followed by a valid type and comma operator, not another label. For example, `.label1 .label2 ty` produces an error.<br/>
-Proposed Error Message: Error Curosr appears on `.label1`<br/>
-Expecting a Type Got a Label
-
-A label cannot exist by itself, it is given meaning by having a type follow it. For example, `.label1 ` by itself produces an error. <br/>
-Proposed Error Message: Error Curosr appears on `.label1`<br/>
-Expecting a Type Got a Label
-
-Elements in the tuples need to be separated by commas, if they are not then this produces an error. For example, `.label1 ty .label2` produces an error. <br/>
-Proposed Error Message: Error cursor appears on `.label2`<br/>
-Expecting a type Got a label
-
-Duplicate labels within a tuple are not valid, so they produce an error. The error will appear on the subsequent duplicate uses, not on the type as a whole. FOr example, the type `.label1 Num, .label1 Num, .label2 Num, .label1 Bool` will have errors on the second use of `.label1 Num` and `.label1 Bool`
-Proposed Error Message: Error Curosr appears on second use of `.label1 Num` and `.label1 Bool`<br/>
-Expecting a Unique Label Got a Duplicate Label
+* A label must be followed by a valid type and comma operator, not another label. For example, `.label1 .label2 ty` produces an error.
+  * Error Cursor appears on `.label1`
+  * Expecting a Type Got a Label
 
 
- <!-- - allow non-labled prefix, but once you use a label as subsequent positions have to be labeled
-  - alternatively, allow labeled and non-labeled positions to be interleaved
-  TODO: how does this affect type equivalence? e.g. are `(.x Num, .y Num, .z Num) == (.z Num, .y Num, .x Num)`
-  TODO: singleton labeled products -- should we support them (`.x Num` is a labeled product type?)
-  TODO: syntax errors
-   * `.label1 .label2 ty`
-   * `.label1` by itself
-    * `.label1 ty .label2`
-    * we will need some way to mark erroneous uses of labels and indicate that in the cursor inspector
-	 * duplicate labels: `(.label1 Num, .label1 Num)` is not a valid type, so we also need duplicate label errors
-	  - does the error message go on the subsequent uses, or on the type as a whole? -->
+* A label cannot exist by itself, it is given meaning by having a type follow it. For example, `.label1 ` by itself produces an error. 
+  * Error Cursor appears on `.label1`
+  * Message: Expecting a Type Got a Label
+
+
+* Elements in the tuples need to be separated by commas, if they are not then this produces an error. For example, `.label1 ty .label2` produces an error. 
+  * Error cursor appears on `.label2`
+  * Message: Expecting a type Got a label
+
+* Duplicate labels within a tuple are not valid, so they produce an error. The error will appear on the subsequent duplicate uses, not on the type as a whole. FOr example, the type `.label1 Num, .label1 Num, .label2 Num, .label1 Bool` will have errors on the second use of `.label1 Num` and `.label1 Bool`
+  * Error Cursor appears on second use of `.label1 Num` and `.label1 Bool`<br/>
+  * Expecting a Unique Label Got a Duplicate Label
 
 # Labeled Tuple Expressions
 <!-- TODO: add `.label` as a new expression form -->
+Syntax: `.label1 e1, .label2 e2, ..., .labeln en`
+
 Files to Edit: UHExp.re
 
 To add labeled tuples, the operator type must be expanded to include the dot operator and operand type must be expanded to include labels.
@@ -145,28 +138,42 @@ You press space on `e|.label` and get to `e .label`
 
 ### Type Sythesis and Type Analysis Rules for Labeled Product Expressions
 #### Synthesis
-![alt text][Syn Labeled Tuple list.png]
+![Syntheis Rule for Labeled Product](syn_2.png)
+
+![Synthesis Rule for Projection](syn_1.png)
+
 #### Analysis
+![Analysis Rule Right](ana_1.png)
 
-
+![Analysis Rule Left](ana_2.png)
 
 ### Expression Syntax Errors
 
-A label must be followed by a valid expression and comma operator, not another label. For example, `.label1 .label2 e` produces an error.<br/>
++ A label must be followed by a valid expression and comma operator, not another label. For example, `.label1 .label2 e` produces an error.
+  + Proposed Error Message: Error Cursor appears on `.label1`
+  + Message: Expecting an Expression Got a Label
 
-A label cannot exist by itself, it is given meaning by having an expression follow it. For example, `.label1 ` by itself produces an error. <br/>
-Proposed Error Message: Error Curosr appears on `.label1`<br/>
-Expecting a Type Got a Label
++ A label cannot exist by itself, it is given meaning by having an expression follow it. For example, `.label1 ` by itself produces an error.
+  + Error Cursor appears on `.label1`<br/>
+  + Message: Expecting an Expression Got a Label
 
-Elements in the tuples need to be separated by commas, if they are not then this produces an error. For example, `.label1 e1 .label2` produces an error. <br/>
-Proposed Error Message: Error cursor appears on `.label2`<br/>
-Expecting an expression Got a label
++ Elements in the tuples need to be separated by commas, if they are not then this produces an error. For example, `.label1 e1 .label2` produces an error. 
+  + Error cursor appears on `.label2`<br/>
+  + Message: Expecting an Expression Got a Label
 
-Duplicate labels within a tuple are not valid, so they produce an error. The error will appear on the subsequent duplicate uses, not on the type as a whole. FOr example, the expression `.label1 1, .label1 3, .label2 4, .label1 True` will have errors on `.label1 3` and `.label1 True`
-Error Message
++ Duplicate labels within a tuple are not valid, so they produce an error. The error will appear on the subsequent duplicate uses, not on the type as a whole. FOr example, the expression `.label1 1, .label1 3, .label2 4, .label1 True` will have errors on `.label1 3` and `.label1 True`
+  + Error cursor appears on `.label1 3` and `.label1 True`<br/>
+  + Message: Expecting an Unique Label Got a Duplicate Label
+
++ Using the dot opearator as a binary operator on a type that is not a labeled tuple will produce an error.  This error will appear on the expression to the left of the dot operator that is not a labeled product.  For example, the expression `1.label1` will have an error on `1`.
+  + Error currsor appears on expression to the left of the dot operator
+  + Message: Expecting a labeled product Got a (type of expression in error cursor)
 
 # Labeled Tuple Patterns
-Edited Files: UHPat.re
+Syntax: `.label1 p1, .label2 p2, ..., .labeln pn`
+
+Files to Edit: UHPat.re
+
 To add labeled tuples, the operator type must be expanded to include the dot operator and operand type must be expanded to include labels.
 ```
 type operator =
@@ -196,34 +203,44 @@ Singleton label products are supported. For example, `.x pat1` is supported.
 
 ### Sythesis and Analysis
 <!-- TODO: can you omit labels by providing values in order: `(1, 2, 3) <= (.x Num, .y Num, .z Num)` -->
-An unlabeld product pattern can match to a labeled product expression, allowing you to ommit labels. For example, `(.x 1, .y 2, .z 3)` can match on the pattern `(a, b, c)`. This operation happens positionally.
+An unlabeled product pattern can match to a labeled product expression, allowing you to ommit labels. For example, `(.x 1, .y 2, .z 3)` can match on the pattern `(a, b, c)`. This operation happens positionally.
 
 A labeled tuple pattern must match the label names and the order of a labeled tuple expression for a pattern match. For example, `(.x a, .y b, .z c)` will match with `(.x 1, .y 2, .z 3)` but will not match with `(.y 1, .z 2, .x 3)` because the order does not match.
 
+A partially labled pattern can match with a fully labled expression as long as the labels that do exist match.  For example, `(.x 1, .y 2, .z 3)` will match on `(.x p1, p2, .z p3)`
+
 ### Punning
 Punning may be useful for labeled tuple patterns, where the label can be used to access the element rather than adding an aditional variable. For example, with punning this code snippit:
+
 ```
 let f = fun(.x, .y)
-f(.x 1, .y 2)
-```
-would be equivalent to 
-```
-let f = fun(.x x, .y y)
+...
 f(.x 1, .y 2)
 ```
 
-This would be a great quality of life improvement to patterns with labeled tuples, and will be attempeted with the initial impelemntation of labeled tuples. It will be considered lower priority, since it is not required for labeled tuples patterns.
+would be equivalent to 
+
+```
+let f = fun(.x x, .y y)
+...
+f(.x 1, .y 2)
+```
+
+This would be a great quality of life improvement to patterns with labeled tuples, and will be attempeted with the initial impelemntation of labeled tuples. It will be considered lower priority, since it is not required for labeled tuples patterns to function at a basic level.
 
 ### Pattern Syntax Errors
 
-Multiple label must be followed by the comma operator, not another label. For example, `.label1 .label2` produces an error.<br/>
++ Multiple label must be followed by the comma operator, not another label. For example, `.label1 .label2` produces an error.<br/>
+  + Error cursor appears on `.label 2`
+  + Message: Expecting a Pattern Got a Label
 
-Elements in the tuples need to be separated by commas, if they are not then this produces an error. For example, `.label1 p1 .label2 p2` produces an error. <br/>
-Proposed Error Message: Error cursor appears on `.label2`<br/>
-Expecting an pattern Got a label
++ Elements in the tuples need to be separated by commas, if they are not then this produces an error. For example, `.label1 p1 .label2 p2` produces an error. <br/>
+  + Error cursor appears on `.label2`<br/>
+  + Message: Expecting a Pattern Got a Label
 
-Duplicate labels within a tuple are not valid, so they produce an error. The error will appear on the subsequent duplicate uses, not on the type as a whole. For example, the expression `.label1 p1, .label1 p2, .label2 p3, .label1 p4` will have errors on `.label1 p2` and `.label1 p4`
-Error Message
++ Duplicate labels within a tuple are not valid, so they produce an error. The error will appear on the subsequent duplicate uses, not on the type as a whole. For example, the expression `.label1 p1, .label1 p2, .label2 p3, .label1 p4` will have errors on `.label1 p2` and `.label1 p4`
+  + Error cursor appears on `.label2`<br/>
+  + Message: Expecting a Unique Label Got a Duplicate Label
 
 # What about records? 
 Records in other languages are very similar to the labeled tuples in this propoasal. Records are typically a data structure that bundles data together with labels and values, and the values are accessed using projection with the labels. The values are unordered in a record, while the values are ordered in a labeled tuple. A labeled tuple is able to perform the same functions as a record, while adding additional functionality by ordering data. If labeled tuples are sucessfully added to Hazel, then records will be redundant in Hazel.
@@ -231,43 +248,38 @@ Records in other languages are very similar to the labeled tuples in this propoa
 # Appendix: Other Ideas
 While creating this proposal, I considered many other ideas for Hazel labels. These ideas are detailed below.
 
-Option 1: Use reason like ~label annotations
-Option 2: Use a space to separate between label and type/expression/pattern. Period operator is added before label to specify that it is a label. Ties in well with linking the period to labeled products, as the period is also used for projection. Possible problem: Issues with using a period as both binary operator (projection) and unary operator (label definition)
-Option 3: Use space operator between labels and type/expression/pattern. Problem: No way to tell distinction between undefined function variable application and labeled expression
-Option 4: Use colon operator between labels and type/expression/pattern. Problem: Confusion between type annotations and labeled pair type annotation
-Option 5: Use colons and braces to signify a labeled tuple. Problem: This syntax is more typical for a record, and may create confusion about labeled tuples as a value and records as a type definition, as well as create issues if there are any future plans for adding records to Hazel, makes development task larger to define braces syntax
+### Reason like ~label annotations
+Types: `~label1: ty1, ~label2: ty2,..., ~labeln: tyn`
 
-# Labeled Product Types
+Expressions: `~label1: ty1, ~label2: ty2, ..., ~labeln: tyn`
 
-Currently: `ty1, ty2, ..., tyn`
-With Labels: `~label1: ty1, ~label2: ty2,..., ~labeln: tyn`
-With labels: `.label1 ty1, .label2 ty2, ..., .labeln tyn`
-With labels: `label1 ty1, label2 ty2, ..., labeln tyn`
-With Labels: `label1: ty1, label2: ty2, ..., labeln: tyn`
-With labels: `{label1: ty1, label2:ty2, ..., labeln:tyn}'
+Patterns: `~label: ty1, ~label: ty2,..., ~labeln: tyn`
 
-# Labeled Product Expressions
+This was very similar to the final dot notation used.  However, the dot opearator was chosen over the tilda operator since the tilda key is harder to acces than the dot on a keyboard, and the dot operator was already associated with projection so it made sense to associate it with label annotations as well.
 
-Currently: `e1, e2, ..., en`
-With labels: `~label1=ty1, ~label2=ty2, ..., ~labeln=tyn`
-With Labels: `.label1 e1, .label2 e2, ..., .labeln en`
-With Labels: `label1 e1, label2: e2, ..., labeln: en`
-With Labels: `label1: e1, label2: e2, ..., labeln: en`
-With labels: `{label1: e1, label2:e2, ..., labeln:e2}'
+### Space Separator with No Label Annotations
+Types: `label1 ty1, label2 ty2, ..., labeln tyn`
 
-# Labeled Product Patterns
-Currently: `p1, p2, ..., pn`
-With Labels: `~label=ty1, ~label=ty2,..., ~labeln=tyn`
-With Labels: `.label1 p1, .label2 p2, ..., .labeln pn`
-With Labels: `label1 p1, label2 p2, ..., labeln pn`
-With Labels: `label1: p1, label2: p2, ..., labeln: pn`
-With labels: `{label1: p1, label2: p2, ..., labeln: pn}'
+Expressions: `label1 e1, label2: e2, ..., labeln: en`
 
-In pattern position, we would also want to support type annotations.
+Patterns: `label1 p1, label2 p2, ..., labeln pn`
 
-# Projection
+This suggestion reduces the amount of additional operators needed for labled products.  However, there is no way to tell distinction between undefined function variable application and labeled expression, so this syntax would not work.
 
-Currently: no projection
-With Labels: `e.label`
+### Colon Operator
+Types: `label1: ty1, label2: ty2, ..., labeln: tyn`
 
-(For many of these, we will need label holes.)
+Expressions: `label1: e1, label2: e2, ..., labeln: en`
+
+Patterns: `label1: p1, label2: p2, ..., labeln: pn`
+
+This syntax imitates many other languages, which use a colon operator to separate labels and values in record types.  However, this creates onfusion between labeled pair type annotation and type annotations as they both would use the colon operator.  For this reason, this option was not used.
+
+### Colons and Braces 
+Types: `{label1: ty1, label2:ty2, ..., labeln:tyn}`
+
+Expressions: `{label1: e1, label2:e2, ..., labeln:e2}`
+
+Patterns: `{label1: p1, label2: p2, ..., labeln: pn}`
+
+This syntax is more typical for a record, and may create confusion about labeled tuples as a value and records as a type definition.  In addition, adding logic for braces within Hazel would increase implementation complexity a great deal.

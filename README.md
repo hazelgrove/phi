@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-# Creating a Proposal for Hazel Improvement (PHI)
-* Create a new directory with a short name, e.g. `#-labeled-tuples`, where `#` is the next unused number starting at 1.
-* Create a `#-labeled-tuples.md` file in that directory with the proposal in it.
-* We may require a specific format in the future.
-=======
 # Motivation
 As the Hazel developer community grows, it is important that new features are vetted and documented. We will be using a proposal process for new Hazel features, following the pattern in other language communities, e.g.
 
@@ -32,4 +26,3 @@ At the moment, we are proceeding less formally than those processes. This will l
 
 # Pronunciation
 PHI is pronounced however you'd like to pronounce the greek letter "phi" (like "pie" or "fee").
->>>>>>> 896b759abd7703bb1aa55e26f8b07f18e59f86db
