@@ -20,7 +20,7 @@ Currently, there are 3 boolean operators, only supporting `Int` types.
 * `=`
 
 We propose the addition of the same operators, but for `Float` types.\
-In order to be consistent with `Float` Ops for plus, minus, and times, we will **Not** overload the operators*.\
+In order to be consistent with `Float` operators for plus, minus, and times, we will **Not** overload the operators*.\
 Instead, the operators will have a following **"."** after them.
 * `<.`
 * `>.`
@@ -33,6 +33,7 @@ There should be one operator `/` for Integer division and another for Float divi
 Also, casting will be avoided for now.
 
 Integer division `/` should take two arguments of `Int` types and return a `Int` type, the floor of the result.
+   
     ```
     Ex.
     2 / 2 -> 1
@@ -44,16 +45,18 @@ Float division `/.` should take two arguments of `Float` types and return a `Flo
     Ex.
     2. /. 2. -> 1.
     5. /. 2. -> 2.5
-    '''
+    ```
+
 `Float` division could lead to edge cases such as:
-    '''
+    ```
     1.0 /. 0.0
     -1.0 /. 0.0
     0.0 /. 0.0
-    '''
+    ```
 Due to this, we suggest introducing three new constants, following the IEEE 754 format like Ocaml:
 * `NaN`
 * `Inf`
+
 These constants can now be used to evaluate the previous expressions, respectively.
 
 ## type prediction
