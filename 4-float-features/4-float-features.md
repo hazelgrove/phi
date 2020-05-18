@@ -33,14 +33,13 @@ There should be one operator `/` for Integer division and another for Float divi
 Also, casting will be avoided for now.
 
 Integer division `/` should take two arguments of `Int` types and return a `Int` type, the floor of the result.
-   
     ```
     Ex.
     2 / 2 -> 1
     5 / 2 -> 2
     ``` 
-
 Float division `/.` should take two arguments of `Float` types and return a `Float` type, the result.
+
     ```
     Ex.
     2. /. 2. -> 1.
@@ -48,11 +47,13 @@ Float division `/.` should take two arguments of `Float` types and return a `Flo
     ```
 
 `Float` division could lead to edge cases such as:
+
     ```
     1.0 /. 0.0
     -1.0 /. 0.0
     0.0 /. 0.0
     ```
+    
 Due to this, we suggest introducing three new constants, following the IEEE 754 format like Ocaml:
 * `NaN`
 * `Inf`
