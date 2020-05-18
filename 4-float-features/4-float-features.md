@@ -3,9 +3,9 @@
 `Num` type has been separated into `Int` type and `Float` type.\
 The old `Num` type operators and features only support `Int` types, so there is a need to support `Float` types also.
 
-We propose the addition of basic operators to `Float` types to match those of `Int` types.\
-Also, we propose more support in recognizing `Int` and `Float` types, such as operator type prediction.\
-Finally, we suggest a braoder set of valid `Int` and `Float` inputs.
+We propose the addition of basic operators to `Float` types to match those of `Int` types along with operator type prediction.\
+Also, we propose support for explicit cast between `Int` and `Float`.\
+Finally, we suggest a broader set of valid `Int` and `Float` inputs.
 When adding these features, consistency will be the key.
 
 # Float Operators
@@ -30,7 +30,7 @@ Instead, the operators will have a following **"."** after them.
 
 There should be a division operator to complete the set of basic arithmetic operators.\
 There should be one operator `/` for Integer division and another for Float division `/.` to avoid overloading*.\
-Also, casting will be avoided for now.
+Also, implicit casting will be avoided.
 
 Integer division `/` should take two arguments of `Int` types and return a `Int` type, the floor of the result.
     ```
@@ -53,7 +53,7 @@ Float division `/.` should take two arguments of `Float` types and return a `Flo
     -1.0 /. 0.0
     0.0 /. 0.0
     ```
-    
+
 Due to this, we suggest introducing three new constants, following the IEEE 754 format like Ocaml:
 * `NaN`
 * `Inf`
@@ -91,6 +91,20 @@ let i:Int = 2. | 3. in ... -> let i:Int = 2. + 3. in ...
 true | true -> true + true
 ```
 
+# Type Casting
+There should be a built-in casting function similar to `int_of_float` and `float_of_int` in OCaml.\
+These functions will take in the type that follows "of", and output the type before the "of".\
+There will be no loss when going from `Int` type to `Float` type.\
+However, the reverse could cause issues since `Int` type uses 32 bits while `Float` type uses 64.\
+The float-point number will be truncated when casted.\
+The result will be unspecified if the argument is `NaN` or if it exceeds the range of representable integers, and throw an error.
+```
+Ex.
+float_of_int 4 -> 4.
+int_of_float 3.2 -> 3
+int_of_float NaN -> unspecified
+```
+
 # Valid Int and Float Inputs
 
 ## Thousands separator
@@ -101,3 +115,4 @@ Hazel is currently using `[int|float]_of_string_opt` function provided by Ocaml 
 
 Eventually, we should not accept underscores in number literals. Instead, we should automatically include `,` in number literals to separate the digits. For instance, `1234567` will now be represented as `1,234,567`. The location of the separator will be automatically be adjusted as the user edits the number literal and will be taken care of by the prettyfier logic.\
 The only loss in feature from this change will be that there will be no way to separate the decimal digits in float literals such as `1.233_534`. However, this loss does not appear to be very significant at this time. In the case that the user needs to know the significance of a digit, we could later introduce a feature that takes the position of the cursor in a number literal and return the significance of the digit.
+
