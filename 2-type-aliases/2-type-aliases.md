@@ -1,10 +1,5 @@
-TODO: 
-1. overview - done
-2. kind system
-3. type equivalence
-4. type variable
-5. cursor inspector
-6. pretty printer
+
+[TODO: type equivalence, type variable, cursor inspector and pretty printer]: # 
 
 # Motivation
 
@@ -18,6 +13,10 @@ To be able to define type aliases, first we need to introduce a **kind system** 
 Moreover, new error messages for cursor inspector is needed. For the pretty printer, we also need to support the new syntax.
 
 # Proposed Changes
+## Pattern Language
+Need to add support for type pattern, see [proposal 3](https://github.com/hazelgrove/phi/blob/3-explicit-polymorphism/3-explicit-polymorphism/3-explicit-polymorphism.md).
+
+
 ## Type-Level Language
 ### Type Variables
 
@@ -26,11 +25,18 @@ To support type alias, first we need to support type variable in our type level 
 Files to change :
    * `UHTyp.re` : add support for type variable
    * `HTyp.re` :  add support for type variable
-   * We need to support type variable context Delta
+   * We need to support type variable context Delta which is used to which variable is of which kind (v : k).
    * `Action.re` : be able to construct and use type variable 
 
-#### `HTyp.re` :
-TODO: propose the change to HTyp.t (see polymorphism branch, Charles Chamberlain)
+#### `HTyp.re` : 
+
+[TODO: propose the change to HTyp.t (see polymorphism branch, Charles Chamberlain)]: #
+
+We will use de Bruijn indices to represent a type variable, which is the same for current [polymorphism branch](https://github.com/hazelgrove/hazel/blob/polymorphism/src/semantics/HTyp.re).
+
+      type t ::= ...
+               | TVar(idx, Var.t) /* bounded type variable */
+               | TVarHole(Meta.t, Var.t) /* free type variable */
 
 #### `UHTyp.re` :
 TODO: propose the change to UHTyp.t (make sure you consider invalid type variables)
@@ -38,11 +44,12 @@ TODO: propose the change to UHTyp.t (make sure you consider invalid type variabl
     TODO: writing down the kinding rules for kind inconsistencies and invalid type variables
 
 
+#### `Action.re` :
 TODO: how will Action module change
 
-#### `Action.re` :
-
 ## Singleton Kind System
+*The reference of this part is [PFPL 2nd edition](https://www.cs.cmu.edu/~rwh/pfpl/2nded.pdf) chapter 18 and chapter 43.*
+
 File to change:
    * `HTyp.re`
 
@@ -51,6 +58,7 @@ Here we introduce a kind system for Hazel:
     type t ::= ...
     and
     kind k ::= Type
+             | Hole
              | Unit
              | Prod(k, k)
              | Arrow(k, k)
@@ -59,9 +67,22 @@ Here we introduce a kind system for Hazel:
 
 Here, we can see the kind and type systems are defined in a mutually recursive manner. 
 
-We use `Type` to classify Bool, Int, Float and Hole (?) and use `Unit` and `Prod` to classify the product type and unit type. Also, we use `Sum` to classify sum type. Finally, we use `Singleton` kind to express type alias for type constructor `t`.
-### Type Equivalence
-TODO: describe how type equivalence should work
+We use `Type` to classify Bool, Int, Float and use `Hole` to classify Hole. For algebraic type, we use `Unit` and `Prod` to classify the product type and unit type and use `Sum` to classify sum type. Finally, we use `Singleton` kind to express type alias for type constructor `t`.
+
+Note: ask if it's possible to use `Prod(list(k))` for implementation of kind by considering the current implementation of `HTyp.re`.
+
+### Kind formation
+
+
+Since the `Singleton` kind is a dependent kind, it is a valid kind when its argument is a valid type, thus the rule is given by 
+
+![kind formation](./kind_formation.jpg)
+
+### Kind Equivalence
+The rules for kind equivalence are given below:
+![kind equivalence](./kind_equivalence.jpg)
+
+
 
 ## Expression Language
    Files to change:
@@ -70,23 +91,22 @@ TODO: describe how type equivalence should work
 ### `UHExp.re` :
 To support type alias, we need to add a new line item to the language and the proposed syntax is 
 
-`DefLine(TVar.t, UHTyp.t)` for abstract syntax
+`DefLine(TPat.t, UHTyp.t)` for abstract syntax
 
 `define t is type in e`  for GUI syntax
 
 ### `ZExp.re` :
 By considering the cursor positions of `DefLine`, we need to add two more zline items which are
 
-`DefLineT(TVar.t, ZTyp.t)` (when cursor is on the type)
+`DefLineT(TPat.t, ZTyp.t)` (when cursor is on the type)
+
+`DefLineP(ZTPat.t, UHTyp.t)` (when cursor is on the type pattern)
 
 ### Semantics
 The static semantics of this expression is that type variable `t` will be classified as `S(type)` in the type variable context. The result is `t` will be definitionally equivalent to `type` in expression `e`.
 
-## Pattern Language
-The pattern language will not change.
-
 ## Dynamic Semantics
-TODO: does this need any changes?
+The dynamic semantics will not be changes, the type checking for the singleton kind is performed at static time.
 
 ## User Interface
 ### Key Bindings
