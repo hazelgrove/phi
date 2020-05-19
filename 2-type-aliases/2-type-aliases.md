@@ -51,21 +51,17 @@ TODO: how will Action module change
 *The reference of this part is [PFPL 2nd edition](https://www.cs.cmu.edu/~rwh/pfpl/2nded.pdf) chapter 18 and chapter 43.*
 
 File to change:
-   * `HTyp.re`
+   * `HKind.re`
 
 Here we introduce a kind system for Hazel:
 
-    type t ::= ...
-    and
-    kind k ::= Type
+    type t ::= Type
              | Hole
              | Unit
              | Prod(k, k)
              | Arrow(k, k)
              | Sum(k, k)
-             | Singleton(t)
-
-Here, we can see the kind and type systems are defined in a mutually recursive manner. 
+             | Singleton(HTyp.t)
 
 We use `Type` to classify Bool, Int, Float and use `Hole` to classify Hole. For algebraic type, we use `Unit` and `Prod` to classify the product type and unit type and use `Sum` to classify sum type. Finally, we use `Singleton` kind to express type alias for type constructor `t`.
 
