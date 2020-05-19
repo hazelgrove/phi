@@ -79,7 +79,7 @@ Since the `Singleton` kind is a dependent kind, it is a valid kind when its argu
 ![kind formation](./kind_formation.jpg)
 
 ### Kind Equivalence
-The rules for kind equivalence are given below:
+Kind equivalence will be reflective, symmetric, transitive and closed under kind formation. Also, two singleton kind are equivalent at kind level if their arguments types are consistent at type level. The rules for kind equivalence are given below:
 ![kind equivalence](./kind_equivalence.jpg)
 
 
