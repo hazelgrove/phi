@@ -8,12 +8,12 @@ TODO:
 
 # Motivation
 
-**Type aliases** give users ability to define a shorthand for another type, which is either a user defined type or primitive type. As for benifits, type aliases can reduce the amount of typing as well as increasing the readability of code. 
+**Type aliases** give users ability to define a shorthand for another type, which is either a user defined type or primitive type. As for benefits, type aliases can reduce the amount of typing as well as increasing the readability of code. 
 
-Moreover, most of pupolar programming languages provide this feature such as `typedef` in C/C++ and [type synonym](https://wiki.haskell.org/Type_synonym) feature in Haskell. 
+Moreover, most of popular programming languages provide this feature such as `typedef` in C/C++ and [type synonym](https://wiki.haskell.org/Type_synonym) feature in Haskell. 
 
 # Overview
-To be able to define type aliases, fisrt we need to introduce a **kind system** to classify type constructors including the singleton kind which is used to express the type aliases. Second, we need to be able to construct **type variables** to stand for some type.
+To be able to define type aliases, first we need to introduce a **kind system** to classify type constructors including the singleton kind which is used to express the type aliases. Second, we need to be able to construct **type variables** to stand for some type.
 
 Also, for a good user experience, new error messages for cursor inspector is needed. For the pretty printer, we also need to support the new syntax.
 
@@ -21,8 +21,20 @@ Also, for a good user experience, new error messages for cursor inspector is nee
 
 ## Singleton Kind System
 ### Kind Checking
-TODO: describe the kind system
+Here we introduce a kind system for Hazel:
 
+    type t ::= ...
+    and
+    kind k ::= Type
+             | Unit
+             | Prod(k, k)
+             | Arrow(k, k)
+             | Sum(k, k)
+             | Singleton(t)
+
+Here, we can see the kind and type systems are defined in a mutually recursive manner. 
+
+We use `Type` to classify Bool, Int, Float and Hole (?) and use `Unit` and `Prod` to classify the product type and unit type. Also, we use `Sum` to classify sum type. Finally, we use `Singleton` kind to express type alias for type constructor `t`.
 ### Type Equivalence
 TODO: describe how type equivalence should work
 
@@ -68,7 +80,7 @@ TODO: does this need any changes?
 * `ExpandingKeyword.re` : add a new keyword 
 * `Actionre.re` : add new shape
 
-For the keyboard interactions, we will handle the construt of the `DefLine` the same way as the `LetLine`. As a result, when cursor is at a place where expression is expected, if user type "define" and then hit space, we will expand the line to an `DefLine`.
+For the keyboard interactions, we will handle the construct of the `DefLine` the same way as the `LetLine`. As a result, when cursor is at a place where expression is expected, if user type "define" and then hit space, we will expand the line to an `DefLine`.
 
 #### `ExpandingKeyword.re` :
 1. For `ExpandingKeyword.t`, we need to add define keyword
