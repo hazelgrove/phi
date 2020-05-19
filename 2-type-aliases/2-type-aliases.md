@@ -15,12 +15,37 @@ Moreover, most of popular programming languages provide this feature such as `ty
 # Overview
 To be able to define type aliases, first we need to introduce a **kind system** to classify type constructors including the singleton kind which is used to express the type aliases. Second, we need to be able to construct **type variables** to stand for some type.
 
-Also, for a good user experience, new error messages for cursor inspector is needed. For the pretty printer, we also need to support the new syntax.
+Moreover, new error messages for cursor inspector is needed. For the pretty printer, we also need to support the new syntax.
 
 # Proposed Changes
+## Type-Level Language
+### Type Variables
+
+To support type alias, first we need to support type variable in our type level language.
+
+Files to change :
+   * `UHTyp.re` : add support for type variable
+   * `HTyp.re` :  add support for type variable
+   * We need to support type variable context Delta
+   * `Action.re` : be able to construct and use type variable 
+
+#### `HTyp.re` :
+TODO: propose the change to HTyp.t (see polymorphism branch, Charles Chamberlain)
+
+#### `UHTyp.re` :
+TODO: propose the change to UHTyp.t (make sure you consider invalid type variables)
+
+    TODO: writing down the kinding rules for kind inconsistencies and invalid type variables
+
+
+TODO: how will Action module change
+
+#### `Action.re` :
 
 ## Singleton Kind System
-### Kind Checking
+File to change:
+   * `HTyp.re`
+
 Here we introduce a kind system for Hazel:
 
     type t ::= ...
@@ -56,16 +81,6 @@ By considering the cursor positions of `DefLine`, we need to add two more zline 
 
 ### Semantics
 The static semantics of this expression is that type variable `t` will be classified as `S(type)` in the type variable context. The result is `t` will be definitionally equivalent to `type` in expression `e`.
-
-
-## Type-Level Language
-### Type Variables
-TODO: propose the change to UHTyp.t (make sure you consider invalid type variables)
-
-    TODO: writing down the kinding rules for kind inconsistencies and invalid type variables
-
-TODO: propose the change to HTyp.t (see polymorphism branch, Charles Chamberlain)
-TODO: how will Action module change
 
 ## Pattern Language
 The pattern language will not change.
