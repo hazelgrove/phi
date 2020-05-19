@@ -1,11 +1,11 @@
 # Introduction
 
 <!-- TODO: what are labeled products -->
-Labeled products are a value similar to products, but some/all elements have a label. This label can be used then for projection. This allows elements within the product can be accessed either positionally or by the label. 
+Labeled products are similar to products, but some or all elements have a label. This label can be used then for projection. This allows elements within the product to be accessed either positionally or by the label. 
 <!-- TODO: why do we want them in Hazel -->
-Adding labeled products helps make the tuples become more robust, so more complex products can be easily used. Accesing a longer tuple using only positional arguments adds unneccsary bulk to the code. Having labels allows for easy access of values in a product. The labeled products can also serve a similar use as records in other languages.
+Adding labeled products helps with readability of products, so more complex products can be easily used. Remembering the positions of values in along product may be difficult.  Having labels allows for easy access of values in a product. The labeled products serves a similar purpose as records in other languages.
 <!-- TODO: what do we have now -->
-Currently only unlabeled tuples are supported in Hazel, and elements can only be accessed positionally using let statements or case statements.
+Currently only unlabeled tuples are supported in Hazel, and elements can only be accessed positionally using pattern matching (via let or case)
 # Labeled Product Types
 Syntax: `.label1 ty1, .label2 ty2, ..., .labeln tyn`
 
@@ -19,23 +19,15 @@ Files to Edit: UHTyp.re
 To add labeled product types, the operator and opearnd types will need to be expanded like so:
 ```
 type operator =
- | Arrow
- | Prod 
- | Sum 
+...
  | Space; 
 ```
 <!-- For space, say if left or right associative and give presedence-->
 Space will be left associateive and have the highest precedence. 
 ```
 type operand =
- | Hole
- | Unit
- | Int
- | Float
- | Bool
- | Parenthesized(t)
- | List(t)
- | Label;
+...
+ | Label(Label.t);
 ```
 
 <!-- TODO: do we want to allow partially labeled product types? -->
@@ -52,7 +44,7 @@ Bcause a labeld product may still be used with a positional arguments with parti
 ### Type Syntax Errors
 
 * A label must be followed by a valid type and comma operator, not another label. For example, `.label1 .label2 ty` produces an error.
-  * Error Cursor appears on `.label1`
+  * Error Cursor appears on `.label2`
   * Expecting a Type Got a Label
 
 
@@ -62,11 +54,11 @@ Bcause a labeld product may still be used with a positional arguments with parti
 
 
 * Elements in the tuples need to be separated by commas, if they are not then this produces an error. For example, `.label1 ty .label2` produces an error. 
-  * Error cursor appears on `.label2`
-  * Message: Expecting a type Got a label
+  * Error cursor appears on space operator
+  * Message: Unexpected Label
 
 * Duplicate labels within a tuple are not valid, so they produce an error. The error will appear on the subsequent duplicate uses, not on the type as a whole. FOr example, the type `.label1 Num, .label1 Num, .label2 Num, .label1 Bool` will have errors on the second use of `.label1 Num` and `.label1 Bool`
-  * Error Cursor appears on second use of `.label1 Num` and `.label1 Bool`<br/>
+  * Error Cursor appears on second and third use of `.label1`<br/>
   * Expecting a Unique Label Got a Duplicate Label
 
 # Labeled Tuple Expressions
@@ -78,37 +70,15 @@ Files to Edit: UHExp.re
 To add labeled tuples, the operator type must be expanded to include the dot operator and operand type must be expanded to include labels.
 ```
 type operator =
- | Space
- | Plus
- | Minus
- | Times
- | FPlus
- | FMinus
- | FTimes
- | LessThan
- | GreaterThan
- | Equals
- | Comma
- | Cons
- | And
- | Or
+ ...
  | Dot;
 ```
 The Dot operator will be left associative and have highest precedence.
 ```
 operand =
- | EmptyHole(MetaVar.t)
- | Var(ErrStatus.t, VarErrStatus.t, Var.t)
- | IntLit(ErrStatus.t, string)
- | FloatLit(ErrStatus.t, string)
- | BoolLit(ErrStatus.t, bool)
- | ListNil(ErrStatus.t)
- | Lam(ErrStatus.t, UHPat.t, option(UHTyp.t), t)
- | Inj(ErrStatus.t, InjSide.t, t)
- | Case(ErrStatus.t, t, rules, option(UHTyp.t))
- | Parenthesized(t)
- | ApPalette(ErrStatus.t, PaletteName.t, SerializedModel.t, splice_info)
- | Label(t)
+ ...
+ | Label(Label.t)
+ | Prj(UHExp.t, Label.t)
  ```
 <!-- TODO: similar considerations as above -->
 
@@ -130,7 +100,7 @@ Some languages, such as Reason, have record punning. This is where a record's la
 ### Projection Expressions
 Labels can be used to access elements of a pair through projection expressions. 
 <!-- TODO: add `e.label` as a new expression form -->
-`e.label` will be the new expression form. It will use the dot operator, which was already added to the operator type above. `e.label` expects `e` to be a labeled tuple type and `label` to match one of the labels within `e`. `e.label` will retun the value that has the label `label`.
+`e.label` will be the new expression form. It will use the dot operator, which was already added to the operator type above. `e.label` expects `e` to synthesize to a labeled tuple type and `label` to match one of the labels within `e`. `e.label` will retun the value that has the label `label`.
 #### Backspace
 You press backspace on `e |.label` and get to `e.label`
 
@@ -143,14 +113,14 @@ You press space on `e|.label` and get to `e .label`
 ![Synthesis Rule for Projection](syn_1.png)
 
 #### Analysis
-![Analysis Rule Right](ana_1.png)
-
-![Analysis Rule Left](ana_2.png)
+![Analysis Rule Single](ana_1.png)
+![Analysis Rule Tuple](ana_2.png)
 
 ### Expression Syntax Errors
 
+Files to Edit: CursorInfo.re
 + A label must be followed by a valid expression and comma operator, not another label. For example, `.label1 .label2 e` produces an error.
-  + Proposed Error Message: Error Cursor appears on `.label1`
+  + Proposed Error Message: Error Cursor appears on `.label2`
   + Message: Expecting an Expression Got a Label
 
 + A label cannot exist by itself, it is given meaning by having an expression follow it. For example, `.label1 ` by itself produces an error.
@@ -158,11 +128,11 @@ You press space on `e|.label` and get to `e .label`
   + Message: Expecting an Expression Got a Label
 
 + Elements in the tuples need to be separated by commas, if they are not then this produces an error. For example, `.label1 e1 .label2` produces an error. 
-  + Error cursor appears on `.label2`<br/>
-  + Message: Expecting an Expression Got a Label
+  + Error cursor appears on space operator<br/>
+  + Message: Unexpected Label
 
 + Duplicate labels within a tuple are not valid, so they produce an error. The error will appear on the subsequent duplicate uses, not on the type as a whole. FOr example, the expression `.label1 1, .label1 3, .label2 4, .label1 True` will have errors on `.label1 3` and `.label1 True`
-  + Error cursor appears on `.label1 3` and `.label1 True`<br/>
+  + Error cursor appears on second and third use of `.label1`<br/>
   + Message: Expecting an Unique Label Got a Duplicate Label
 
 + Using the dot opearator as a binary operator on a type that is not a labeled tuple will produce an error.  This error will appear on the expression to the left of the dot operator that is not a labeled product.  For example, the expression `1.label1` will have an error on `1`.
@@ -177,23 +147,14 @@ Files to Edit: UHPat.re
 To add labeled tuples, the operator type must be expanded to include the dot operator and operand type must be expanded to include labels.
 ```
 type operator =
- | Comma
- | Space
+...
  | Dot;
 ```
 The Dot operator will be left associative and have highest precedence.
 ```
 and operand =
- | EmptyHole(MetaVar.t)
- | Wild(ErrStatus.t)
- | Var(ErrStatus.t, VarErrStatus.t, Var.t)
- | IntLit(ErrStatus.t, string)
- | FloatLit(ErrStatus.t, string)
- | BoolLit(ErrStatus.t, bool)
- | ListNil(ErrStatus.t)
- | Parenthesized(t)
- | Inj(ErrStatus.t, InjSide.t, t);
- | Label(ErrStatus.t, string)
+ ...
+ | Label(LabelErrStatus.t, string)
 ```
 <!-- TODO: similar considerations to labeled tuple expressions -->
 Partially labeled product patterns are allowed, and labels and non-labeled positions can be interleaved.
@@ -231,15 +192,15 @@ This would be a great quality of life improvement to patterns with labeled tuple
 ### Pattern Syntax Errors
 
 + Multiple label must be followed by the comma operator, not another label. For example, `.label1 .label2` produces an error.<br/>
-  + Error cursor appears on `.label 2`
+  + Error cursor appears on `.label2`
   + Message: Expecting a Pattern Got a Label
 
 + Elements in the tuples need to be separated by commas, if they are not then this produces an error. For example, `.label1 p1 .label2 p2` produces an error. <br/>
-  + Error cursor appears on `.label2`<br/>
-  + Message: Expecting a Pattern Got a Label
+  + Error cursor appears on space operator <br/>
+  + Message: Unexpected Label
 
-+ Duplicate labels within a tuple are not valid, so they produce an error. The error will appear on the subsequent duplicate uses, not on the type as a whole. For example, the expression `.label1 p1, .label1 p2, .label2 p3, .label1 p4` will have errors on `.label1 p2` and `.label1 p4`
-  + Error cursor appears on `.label2`<br/>
++ Duplicate labels within a tuple are not valid, so they produce an error. The error will appear on the subsequent duplicate uses, not on the type as a whole. For example, the expression `.label1 p1, .label1 p2, .label2 p3, .label1 p4` will have errors on the second and third use of `.label1` and `.label1`
+  + Error cursor appears on second and third use of `.label1`<br/>
   + Message: Expecting a Unique Label Got a Duplicate Label
 
 # What about records? 
