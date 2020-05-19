@@ -1,3 +1,11 @@
+TODO: 
+1. overview - done
+2. kind system
+3. type equivalence
+4. type variable
+5. cursor inspector
+6. pretty printer
+
 # Motivation
 
 **Type aliases** give users ability to define a shorthand for another type, which is either a user defined type or primitive type. As for benifits, type aliases can reduce the amount of typing as well as increasing the readability of code. 
@@ -5,7 +13,9 @@
 Moreover, most of pupolar programming languages provide this feature such as `typedef` in C/C++ and [type synonym](https://wiki.haskell.org/Type_synonym) feature in Haskell. 
 
 # Overview
-TODO: provide an overview
+To be able to define type aliases, fisrt we need to introduce a **kind system** to classify type constructors including the singleton kind which is used to express the type aliases. Second, we need to be able to construct **type variables** to stand for some type.
+
+Also, for a good user experience, new error messages for cursor inspector is needed. For the pretty printer, we also need to support the new syntax.
 
 # Proposed Changes
 
