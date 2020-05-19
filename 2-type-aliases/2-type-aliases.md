@@ -8,10 +8,6 @@ Moreover, most of pupolar programming languages provide this feature such as `ty
 TODO: provide an overview
 
 # Proposed Changes
-TODO: in all subsections, write which files you expect to change or add in the implementation. For example:
-
-   Files to be changed:
-   * `UHExp.re` -- short summary of the changes you plan to make
 
 ## Singleton Kind System
 ### Kind Checking
@@ -21,10 +17,24 @@ TODO: describe the kind system
 TODO: describe how type equivalence should work
 
 ## Expression Language
-TODO: we are adding a new line item for type aliases
+   Files to change:
+   * `UHExp.re` : add line item
+   * `ZExp.re` : add line item
+### `UHExp.re` :
+To support type alias, we need to add a new line item to the language and the proposed syntax is 
 
-    TODO: propose the syntax
-    TODO: what are the semantics
+`DefLine(TVar.t, UHTyp.t)` for abstract syntax
+
+`define t is type in e`  for GUI syntax
+
+### `ZExp.re` :
+By considering the cursor positions of `DefLine`, we need to add two more zline items which are
+
+`DefLineT(TVar.t, ZTyp.t)` (when cursor is on the type)
+
+### Semantics
+The static semantics of this expression is that type variable `t` will be classified as `S(type)` in the type variable context. The result is `t` will be definitionally equivalent to `type` in expression `e`.
+
 
 ## Type-Level Language
 ### Type Variables
@@ -43,7 +53,27 @@ TODO: does this need any changes?
 
 ## User Interface
 ### Key Bindings
-TODO: should be able to use existing mechanisms for the most part, but summarize approach
+
+#### Files to change:
+* `ExpandingKeyword.re` : add a new keyword 
+* `Actionre.re` : add new shape
+
+For the keyboard interactions, we will handle the construt of the `DefLine` the same way as the `LetLine`. As a result, when cursor is at a place where expression is expected, if user type "define" and then hit space, we will expand the line to an `DefLine`.
+
+#### `ExpandingKeyword.re` :
+1. For `ExpandingKeyword.t`, we need to add define keyword
+
+        type t = ...
+           | Define
+2. Update other functions accordingly
+
+#### `Action.re` :
+1. For `Action.shape`, we need to add new shape define
+
+        type shape = ...
+                   | SDefine
+
+2. Update other functions and utilities.
 
 ### Cursor Inspector
 TODO: adding new error messages for kind inconsistencies and invalid type variables
