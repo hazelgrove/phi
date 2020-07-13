@@ -50,20 +50,20 @@ A labeled product may still be used with positional arguments, so the type equiv
 Files to Edit: CursorInfo.re
 
 * A label must be followed by a valid type and comma operator, not another label. For example, `.label1 .label2 ty` produces an error.
- * Error Cursor appears on `.label2`
- * Expecting a Type Got a Label
+    * Error Cursor appears on `.label2`
+    * Expecting a Type Got a Label
 
 * A label cannot exist by itself; it is given meaning by having a type follow it. For example, `.label1 ` by itself produces an error. 
- * Error Cursor appears on `.label1`
- * Message: Expecting a Type Got a Label
+    * Error Cursor appears on `.label1`
+    * Message: Expecting a Type Got a Label
 
 * Elements in the tuples need to be separated by commas, if they are not then this produces an error. For example, `.label1 ty .label2` produces an error. 
- * Error cursor appears on space operator
- * Message: Expecting ? Got an Unexpected Label
+    * Error cursor appears on space operator
+    * Message: Expecting ? Got an Unexpected Label
 
 * Duplicate labels within a tuple are not valid, so they produce an error. The error will appear on the subsequent duplicate uses, not on the type as a whole. FOr example, the type `.label1 Num, .label1 Num, .label2 Num, .label1 Bool` will have errors on the second use of `.label1 Num` and `.label1 Bool`
- * Error Cursor appears on second and third use of `.label1`<br/>
- * Expecting a Unique Label Got a Duplicate Label
+    * Error Cursor appears on second and third use of `.label1`<br/>
+    * Message: Expecting a Unique Label Got a Duplicate Label
 
 # Expressions
 <!-- TODO: add `.label` as a new expression form -->
@@ -112,36 +112,31 @@ operand =
 
 ## Type Sythesis and Type Analysis Rules for Labeled Product Expressions
 ### Synthesis
-![Synthesis Rule for Labeled Product](syn_2.png)
+![Synthesis Rule for Labeled Product](rules.png)
 
-![Synthesis Rule for Projection](syn_1.png)
-
-### Analysis
-![Analysis Rule Single](ana_1.png)
-![Analysis Rule Tuple](ana_2.png)
 
 ## Expression Syntax Errors
 Files to Edit: CursorInfo.re
 
 + A label must be followed by a valid expression and comma operator, not another label. For example, `.label1 .label2 e` produces an error.
- + Proposed Error Message: Error Cursor appears on `.label2`
- + Message: Expecting an Expression Got a Label
+    + Proposed Error Message: Error Cursor appears on `.label2`
+    + Message: Expecting an Expression Got a Label
 
 + A label cannot exist by itself; it is given meaning by having an expression follow it. For example, `.label1 ` by itself produces an error.
- + Error Cursor appears on `.label1`<br/>
- + Message: Expecting an Expression Got a Label
+    + Error Cursor appears on `.label1`<br/>
+    + Message: Expecting an Expression Got a Label
 
 + Elements in the tuples need to be separated by commas, if they are not then this produces an error. For example, `.label1 e1 .label2` produces an error. 
- + Error cursor appears on space operator<br/>
- + Message: Expecting Comma or Other Type Operator Got an Unexpected Label
+    + Error cursor appears on space operator<br/>
+    + Message: Expecting Comma or Other Type Operator Got an Unexpected Label
 
 + Duplicate labels within a tuple are not valid, so they produce an error. The error will appear on the subsequent duplicate uses, not on the type as a whole. For example, `.label1 1, .label1 3, .label2 4, .label1 True` will produce an error.
- + Error cursor appears on second and third use of `.label1`<br/>
- + Message: Expecting a Unique Label Got a Duplicate Label
+    + Error cursor appears on second and third use of `.label1`<br/>
+    + Message: Expecting a Unique Label Got a Duplicate Label
 
 + Using the dot operator as a binary operator on a type that is not a labeled tuple will produce an error. This error will appear on the expression to the left of the dot operator that is not a labeled product. For example, the expression `1.label1` will produce an error
- + Error cursor appears on`1`
- + Message: Expecting a Labeled Product Got a Num
+    + Error cursor appears on`1`
+    + Message: Expecting a Labeled Product Got a Num
 
 # Labeled Tuple Patterns
 Syntax: `.label1 p1, .label2 p2, ..., .labeln pn`
@@ -192,16 +187,16 @@ This would be a great quality of life improvement to patterns with labeled tuple
 Files to Edit: CursorInfo.re
 
 + Multiple labels must be followed by the comma operator, not another label. For example, `.label1 .label2` produces an error.<br/>
- + Error cursor appears on `.label2`
- + Message: Expecting a Pattern Got a Label
+    + Error cursor appears on `.label2`
+    + Message: Expecting a Pattern Got a Label
 
 + Elements in the tuples need to be separated by commas, if they are not then this produces an error. For example, `.label1 p1 .label2 p2` produces an error. <br/>
- + Error cursor appears on space operator <br/>
- + Message: Expecting Comma or other Expression Operator Got an Unexpected Label
+    + Error cursor appears on space operator <br/>
+    + Message: Expecting Comma or other Expression Operator Got an Unexpected Label
 
 + Duplicate labels within a tuple are not valid, so they produce an error. The error will appear on the subsequent duplicate uses, not on the type as a whole. For example, `.label1 p1, .label1 p2, .label2 p3, .label1 p4` produces an error.
- + Error cursor appears on second and third use of `.label1`<br/>
- + Message: Expecting a Unique Label Got a Duplicate Label
+    + Error cursor appears on second and third use of `.label1`<br/>
+    + Message: Expecting a Unique Label Got a Duplicate Label
 
 # Action Semantics
 ## Create
