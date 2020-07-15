@@ -1,23 +1,23 @@
 # Introduction
 
-<!-- TODO: what are labeled products -->
-Labeled products are a type of value. They are similar to products, but some or all elements have a label. The label is used with projection. This allows elements within the product to be accessed either positionally or by the label. 
-<!-- TODO: why do we want them in Hazel -->
+<!-- what are labeled products -->
+Labeled products are a type of value. They are similar to products, but some or all elements have a label. The label is used with projection, which allows elements within the product to be accessed either positionally or by the label. 
+<!-- why do we want them in Hazel -->
 Adding labeled products helps with readability of products, so more complex products can be easily used within Hazel. Remembering the positions of values in along product may be difficult, so labels allow for easy access of values in a product. The labeled products serve a similar purpose as records in other languages.
-<!-- TODO: what do we have now -->
+<!-- what do we have now -->
 Currently only unlabeled tuples are supported in Hazel, and elements can only be accessed positionally using pattern matching (via let or case).
 
 # Label Syntax
-Say what the regex for labels are
-Say it's the same syntax for variable identifyers (ie no spaces)
-Say that the dot is used
+Label syntax must match the following regular expression:  ```\.[a-zA-Z]\w*```
+
+A label must start with the `.` character, followed by a letter, and then any number of alphanumeric charaters or underscores.
 
 # Labeled Product Types
 <!-- Syntax: `.label1 ty1, .label2 ty2, ..., .labeln tyn` -->
 
 Files to Edit: UHTyp.re
-<!-- TODO: add `.label` as a new type form <br/> -->
-<!-- TODO: List the files you expect ot edit for each thing, and a sentance about what you expect to do -->
+<!-- add `.label` as a new type form <br/> -->
+<!-- List the files you expect ot edit for each thing, and a sentance about what you expect to do -->
 <!-- Just add space operator, check UHExp.re for this -->
 <!-- Look at Skeltype parser and see that there is something that determines prescedence,-->
 <!-- Stat that we are not requiring parenthesis-->
@@ -36,7 +36,7 @@ type operand =
  | Label(Label.t);                  //.label
 ```
 
-<!-- TODO: do we want to allow partially labeled product types? -->
+<!-- do we want to allow partially labeled product types? -->
 Partially labeled product types are allowed, and labels and non-labeled positions can be interleaved.
 For example, the labeled product type `(.x Num, Num, .y Num)` is allowed. 
 
@@ -66,7 +66,7 @@ Files to Edit: CursorInfo.re
     * Message: Expecting a Unique Label Got a Duplicate Label
 
 # Expressions
-<!-- TODO: add `.label` as a new expression form -->
+<!-- add `.label` as a new expression form -->
 Both label tuple expressions and projection expressions must be added to Hazel to implement labeled tuples.
 ## Labeled Tuples
 
@@ -78,20 +78,20 @@ operand =
  ...
  | Label(Label.t)           //.label
  ```
-<!-- TODO: similar considerations as above -->
+<!-- similar considerations as above -->
 
 Partially labeled product expressions are allowed, and labels and non-labeled positions can be interleaved.
 For example, the labeled product expression `(.x 2, 3, .y True)` is allowed. 
 
 Singleton label product expressions are supported. For example, `.x 2` is supported.
 
-<!-- TODO: can you omit labels by providing values in order: `(1, 2, 3) <= (.x Num, .y Num, .z Num)` -->
+<!-- can you omit labels by providing values in order: `(1, 2, 3) <= (.x Num, .y Num, .z Num)` -->
 An unlabeled product expression can analyze to a labeled product expression, allowing you to omit labels. For example, `(1, 2, 3) <= (.x Num, .y Num, .z Num)` is valid and each value in `(1,2,3)`. This operation happens positionally, and does not assign labels based on variable name if variables are used. For example, `(y, x, z) <= (.x Num, .y Num, .z Num)` is valid. 
 
 <!-- 
-TODO: "Record punning" in Reason: `{x, y, z} => {x: x, y: y, z: z}` -- is there anything analogous that we can do? Does this interact with positional values? `(y, x, z) <= (.x Num, .y Num, .z Num)` does that operate positionally or via punning?
-TODO: partially labeled values, where some of the arguments are in order: `(1, 2, .z 3) <= (.x Num, .y Num, .z Num)`. what about interleaving vs. requiring all the explicit labels at the end ala Python?
-TODO: what are the type synthesis and type analysis rules for the labeled tuple expressions -->
+"Record punning" in Reason: `{x, y, z} => {x: x, y: y, z: z}` -- is there anything analogous that we can do? Does this interact with positional values? `(y, x, z) <= (.x Num, .y Num, .z Num)` does that operate positionally or via punning?
+partially labeled values, where some of the arguments are in order: `(1, 2, .z 3) <= (.x Num, .y Num, .z Num)`. what about interleaving vs. requiring all the explicit labels at the end ala Python?
+what are the type synthesis and type analysis rules for the labeled tuple expressions -->
 ### Punning
 Some languages, such as Reason, have record punning. This is where a record's labels can be implied when it is declared using variables. For example, `{x, y, z} => {x: x, y: y, z: z}` is true. Similar punning fuctionality could be implemented in Hazel. For example, if this punning was implemented `(x, y, z) => (x: x, y: y, z: z)` would hold true. However, this creates a question of if every tuple created with variables should be a labeled tuple. Given this additional complexity and added development costs, I believe that labeled tuple punning should be considered out of scope for labeled tuples. 
 
@@ -112,7 +112,7 @@ operand =
 
 ## Type Sythesis and Type Analysis Rules for Labeled Product Expressions
 ### Synthesis
-![Synthesis Rule for Labeled Product](rules.png)
+![Synthesis and Analysis Rules for Labeled Products](rules.png)
 
 
 ## Expression Syntax Errors
@@ -150,14 +150,14 @@ and operand =
  ...
  | Label(LabelErrStatus.t, string)          .label
 ```
-<!-- TODO: similar considerations to labeled tuple expressions -->
+<!-- similar considerations to labeled tuple expressions -->
 Partially labeled product patterns are allowed, and labels and non-labeled positions can be interleaved.
 For example, the labeled product type `(.x p1, p2, .y p3)` is allowed. 
 
 Singleton label products are supported. For example, `.x p1` is supported.
 
 ## Synthesis and Analysis
-<!-- TODO: can you omit labels by providing values in order: `(1, 2, 3) <= (.x Num, .y Num, .z Num)` -->
+<!-- can you omit labels by providing values in order: `(1, 2, 3) <= (.x Num, .y Num, .z Num)` -->
 An unlabeled product pattern can match to a labeled product expression, allowing you to ommit labels. For example, `(.x 1, .y 2, .z 3)` can match on the pattern `(a, b, c)`. This operation happens positionally.
 
 A labeled tuple pattern must match the label names and the order of a labeled tuple expression for a pattern match. For example, `(.x a, .y b, .z c)` will match with `(.x 1, .y 2, .z 3)` but will not match with `(.y 1, .z 2, .x 3)` because the order does not match.
