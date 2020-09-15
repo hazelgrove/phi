@@ -20,6 +20,7 @@ I am stealing this design choice from Ocaml ([explained in this blog](https://ha
 ## Edit Actions Semantics
 First we need to be able to type patterns containing operators into LetLine expressions.
 
+### Patterns
 `Action_Pat.re` - add cases to `ana_perform_operand` to allow creating operator symbols. For example,
 ```
 | (Construct(SOp(os)), CursorP(OnDelim(_, side), Wild(_)))
@@ -35,12 +36,22 @@ to add operators directly after a wild `_`.
 
 Will also need to add cases for injecting into patterns like '_<>_', '_<>*_', and '_*<>_'.
 
-## Operator Variables
-To begin support for user defined operators, we need to be able to use the `LetLine` constructor with operator symbols as the pattern. 
+### Expressions
+`Action_Exp.re` - update cases when cursor is on top of operator. 
 
-We might do this by updating `Var.re` as follows:
-- Change the `valid_regex` string to `"^([_a-zA-Z][_a-zA-Z0-9']*)$|^([%&*+-./:;<=>?@^|~]+)$"`, so variables can be either alphanumeric, or composed exclusively of operators.
-- Add function `is_operator` which checks against the second half of the above regex. 
+Specifically in this case
+```
+| (Construct(SOp(os)), ZOperand(zoperand, surround))
+```
+we want to stack symbols into a single operator, then try to resolve the operator. 
+
+For example, `_ *<insert * here> _` should result in `_ ** _` as opposed to `_ * _ * _`.
+
+## External Language Syntax
+`Var.re` - add an operator regex to accept variables of the form `/([%&*+-./:;<=>?@^|~])+/`.
+
+## Type Checking
+
 
 ## Expression Operators
 TODO: Design how to place user defined operators into `seq` data structure, and how to modify precedence/associativity lookup functions in `Operators_Exp.re`. 
