@@ -34,24 +34,33 @@ First we need to be able to type patterns containing operators into LetLine expr
 ```
 to add operators directly after a wild `_`.
 
-Will also need to add cases for injecting into patterns like '_<>_', '_<>*_', and '_*<>_'.
+Will also need to add cases for injecting into patterns like '\_<>\_', '\_<>*\_', and '\_*<>\_'.
 
 ### Expressions
 `Action_Exp.re` - update cases when cursor is on top of operator. 
 
-Specifically in this case
+Specifically in this case in `syn_perform_opseq`
 ```
-| (Construct(SOp(os)), ZOperand(zoperand, surround))
+| (Construct(_), ZOperator(zoperator, _)) =>
 ```
-we want to stack symbols into a single operator, then try to resolve the operator. 
+we no longer want to move the cursor, then construct a new operator. Instead, this case should change the current zoperator from one of the predefined operators into a `UserOp(string)`, to be described in the external language syntax discussion.
 
 For example, `_ *<insert * here> _` should result in `_ ** _` as opposed to `_ * _ * _`.
 
 ## External Language Syntax
 `Var.re` - add an operator regex to accept variables of the form `/([%&*+-./:;<=>?@^|~])+/`.
 
-## Type Checking
+
+`Operators_Exp.re`
+
+ - add a `UserOp(string)` variant to the `Operators_Exp` type. 
+ - to_string should just return the string held in the variant
+ - precedence/associativity functions will take first character of the string in the variant, then look up that precedence/associativity.
+
+## TODO
+
+- Need to figure out how/where to bind the 2-ary function in the `LetLine` to symbol, and extend the context.
+- Need to figure out if we can synthesize the type of the expression in a letline from the bound symbol/see how this works in general. We should get type errors when the body of a let line is not a 2-ary function, and the bound variable is an operator like `_<**>_`.
+- Need to figure out how/where OpSeqs get evaluated, then resolve user-defined binary operators like function calls.
 
 
-## Expression Operators
-TODO: Design how to place user defined operators into `seq` data structure, and how to modify precedence/associativity lookup functions in `Operators_Exp.re`. 
