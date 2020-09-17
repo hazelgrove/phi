@@ -17,8 +17,20 @@ The associativity and precedence of the operator will be determined by the first
 I am stealing this design choice from Ocaml ([explained in this blog](https://haifengl.wordpress.com/2014/07/02/ocaml-functions/)).
 
 # Proposed Changes
+## External Language Syntax
+First we will need a way to store and represent user defined operators in seqs. 
+
+`Var.re` - add an operator regex to accept variables of the form `/([%&*+-./:;<=>?@^|~])+/`.
+
+
+`Operators_Exp.re`
+
+ - add a `UserOp(string)` variant to the `Operators_Exp` type. 
+ - to_string should just return the string held in the variant
+ - precedence/associativity functions will take first character of the string in the variant, then look up that precedence/associativity.
+
 ## Edit Actions Semantics
-First we need to be able to type patterns containing operators into LetLine expressions.
+Next, we will need to be able to type patterns containing operators into LetLine expressions.
 
 ### Patterns
 `Action_Pat.re` - add cases to `ana_perform_operand` to allow creating operator symbols. For example,
@@ -47,16 +59,20 @@ we no longer want to move the cursor, then construct a new operator. Instead, th
 
 For example, `_ *<insert * here> _` should result in `_ ** _` as opposed to `_ * _ * _`.
 
-## External Language Syntax
-`Var.re` - add an operator regex to accept variables of the form `/([%&*+-./:;<=>?@^|~])+/`.
+### Cursor Info
+`CursorInfo_Exp.re` - add case to recurse towards the cursor in `syn_cursor_info_skel` by matching on the case
+```
+| BinOp(_, UserOp(op), skel1, skel2) =>
+```
+We will also need to synthesize the type of the lhs and rhs by resolving the `op` variable. 
 
+## Internal Language Syntax
+`DHExp.re` - add a new operator type `BinUserOp`, so we can have varying types on the left/right side of the operator.
 
-`Operators_Exp.re`
-
- - add a `UserOp(string)` variant to the `Operators_Exp` type. 
- - to_string should just return the string held in the variant
- - precedence/associativity functions will take first character of the string in the variant, then look up that precedence/associativity.
-
+## Type Checking 
+`Statics_Exp.re`  - Add a case to the function `syn` to match the `UserOp` type, synthesize the type of the left and right skels by resolving the operator, then `ana_skel`. 
+- Add a case to the function `syn_fix_holes_skel` to match the `UserOp` type, synthesize the type of the left and right skels by resolving the operator, then `ana_fix_holes_skel`. 
+ - Similarly, add a case to the function `syn_nth_type_mode`, synthesize types of lhs and rhs, then `ana_go` with correct types. 
 ## TODO
 
 - Need to figure out how/where to bind the 2-ary function in the `LetLine` to symbol, and extend the context.
