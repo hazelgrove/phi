@@ -73,6 +73,10 @@ We should resolve the type of the operator, and the lhs/rhs operands should anal
 `Statics_Exp.re`  - Add a case to the function `syn` to match the `UserOp` type, synthesize the type of the left and right skels by resolving the operator, then `ana_skel`. 
 - Add a case to the function `syn_fix_holes_skel` to match the `UserOp` type, synthesize the type of the left and right skels by resolving the operator, then `ana_fix_holes_skel`. 
  - Similarly, add a case to the function `syn_nth_type_mode`, synthesize types of lhs and rhs, then `ana_go` with correct types. 
+
+## Evaluation
+`Evaluator.re` - should behave like 2x function application
+
 ## TODO
 
 - Need to figure out how/where to bind the 2-ary function in the `LetLine` to symbol, and extend the context.
