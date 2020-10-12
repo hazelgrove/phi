@@ -64,7 +64,7 @@ For example, `_ *<insert * here> _` should result in `_ ** _` as opposed to `_ *
 ```
 | BinOp(_, UserOp(op), skel1, skel2) =>
 ```
-We will also need to synthesize the type of the lhs and rhs by resolving the `op` variable. 
+We should resolve the type of the operator, and the lhs/rhs operands should analyze against the input types of the operator's type. 
 
 ## Internal Language Syntax
 `DHExp.re` - add a new operator type `BinUserOp`, so we can have varying types on the left/right side of the operator.
