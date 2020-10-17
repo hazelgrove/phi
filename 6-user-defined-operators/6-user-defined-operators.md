@@ -75,12 +75,10 @@ We should resolve the type of the operator, and the lhs/rhs operands should anal
  - Similarly, add a case to the function `syn_nth_type_mode`, synthesize types of lhs and rhs, then `ana_go` with correct types. 
 
 ## Evaluation
-`Evaluator.re` - should behave like 2x function application
+`Evaluator.re` - Evaluation should be handled by substitution at the level of a let-expression. Free user-defined operator symbols result in an indeterminate form. 
 
-## TODO
+For user-defined operator *op*, 2-ary function *f*, and expressions e_1, e_2, define substition into a user-defined operator as follows:
 
-- Need to figure out how/where to bind the 2-ary function in the `LetLine` to symbol, and extend the context.
-- Need to figure out if we can synthesize the type of the expression in a letline from the bound symbol/see how this works in general. We should get type errors when the body of a let line is not a 2-ary function, and the bound variable is an operator like `_<**>_`.
-- Need to figure out how/where OpSeqs get evaluated, then resolve user-defined binary operators like function calls.
+![equation](https://latex.codecogs.com/gif.latex?%5Bf%20%5C%20/%20%5C%20op%5D%28e_1%20%5C%20op%20%5C%20e_2%29%5Cequiv%20%28f%20%5C%20%28%5Bf%20%5C%20/%20%5C%20op%5De_1%29%20%5C%20%28%5Bf%20%5C%20/%20%5C%20op%5De_2%29%29)
 
 
