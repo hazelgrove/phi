@@ -76,7 +76,7 @@ let matched_arrow_type = (t: option(typ)): option(typ) => t;
 let matched_product_type = (t: option(typ)): option(typ) => t;
 let consistent = (t1: typ, t2: typ): bool => t1 == t2;
 
-let rec new_syn = (ctx: typctx, e: exter_exp): option((inter_exp, typ)) =>
+let rec syn = (ctx: typctx, e: exter_exp): option((inter_exp, typ)) =>
   switch (e) {
   | Var(x) =>
     let+ t =
@@ -88,44 +88,51 @@ let rec new_syn = (ctx: typctx, e: exter_exp): option((inter_exp, typ)) =>
   | Fun(_) => None
 
   | Ap(e1, e2) =>
-    let* (e1, t1) = new_syn(ctx, e1);
+    let* (e1, t1) = syn(ctx, e1);
     switch (matched_arrow_type(Some(t1))) {
     | Some(Arrow(t2, t)) =>
-      switch (new_ana(ctx, e2, t2)) {
+      switch (ana(ctx, e2, t2)) {
       | Some(e2) => Some((Ap(e1, e2), t))
       | None =>
         // PARTIAL APPLICATION CODE BEGINS
+        // Check to see if `e2` is a tuple with deferrals
+        // If it is, this is an instance of partial application
         switch (e2, t2) {
         | (Tuple(es), Product(ts)) =>
           let* final_t = {
             let get_deferred_typ =
                 (e: exter_exp, t: typ): option(option(typ)) =>
-              switch (e, new_ana(ctx, e, t)) {
-              | (Deferral, _) => Some(Some(t))
-              | (_, Some(_)) => Some(None)
-              | (_, None) => None
+              switch (e, ana(ctx, e, t)) {
+              | (Deferral, _) => Some(Some(t)) // Item was deferred, include it in `deferred_inputs` below
+              | (_, Some(_)) => Some(None) // Item was not deferred, exclude it from `deferred_inputs` below
+              | (_, None) => None // Entire `Ap` expression cannot synthesize
               };
 
             let* deferred_inputs =
               try(Some(List.map2(get_deferred_typ, es, ts))) {
+              // Find the deferred inputs
               | Invalid_argument(_) => None
               };
-            let+$ deferred_inputs = deferred_inputs;
-            let deferred_inputs = filter(deferred_inputs);
+            let+$ deferred_inputs = deferred_inputs; // Make sure the entire expression can synthesize
+            let deferred_inputs = filter(deferred_inputs); // Remove the inputs that weren't deferred
 
             switch (deferred_inputs) {
-            | [_, _, ..._] => Arrow(Product(deferred_inputs), t)
-            | [hd] => Arrow(hd, t)
-            | [] => t2
+            | [_, _, ..._] => Arrow(Product(deferred_inputs), t) // Multiple inputs deferred
+            | [hd] => Arrow(hd, t) // Single input deferred (no `Product` necessary, since it's just one)
+            | [] => t2 // Nothing was deferred, so just apply the function as normal
             };
           };
 
           let+ final_e = {
             let deferral_var_name = "~";
 
+            // Replace the deferred inputs in the applied expression with the deferral variable
             let* es_deferred = {
               let+ (es_deferred_backwards, _) = {
+                // Generate the expression to replace the Deferrals by index
                 let deferral_replacement: int => inter_exp = {
+                  // True if multiple inputs are deferred, false otherwise
+                  // Used to determine whether the deferral variable should be a tuple
                   let multiple_deferrals =
                     es
                     |> List.filter((e: exter_exp) => (e == Deferral: bool))
@@ -133,15 +140,23 @@ let rec new_syn = (ctx: typctx, e: exter_exp): option((inter_exp, typ)) =>
 
                   if (multiple_deferrals) {
                     (
+                      // Deferral variable is a tuple, so it needs to be projected
                       (index: int) => (
                         Proj(Var(deferral_var_name), index): inter_exp
                       )
                     );
                   } else {
-                    ((_: int) => (Var(deferral_var_name): inter_exp));
+                    (
+                      // Deferral variable is not a tuple, so it can be used directly
+                      (_: int) => (
+                        Var(deferral_var_name): inter_exp
+                      )
+                    );
                   };
                 };
 
+                // The function used by List.fold_left2
+                // Iterates through the applied expression, replacing each Deferral
                 let f =
                     (
                       acc: option((list(inter_exp), int)),
@@ -156,19 +171,19 @@ let rec new_syn = (ctx: typctx, e: exter_exp): option((inter_exp, typ)) =>
                       Some((deferral_replacement(index), index + 1))
                     | _ =>
                       let _ = ts;
-                      let+ e = new_ana(ctx, e, t); // Maybe use ana here?
+                      let+ e = ana(ctx, e, t);
                       (e, index);
                     };
 
                   ([new_hd, ...acc_list], new_index);
                 };
 
-                // Replace with fold_left_map?
                 try(List.fold_left2(f, Some(([], 0)), es, ts)) {
                 | Invalid_argument(_) => None
                 };
               };
 
+              // List.fold_left reverses the order of the list, so reverse it again
               List.rev(es_deferred_backwards);
             };
 
@@ -193,21 +208,21 @@ let rec new_syn = (ctx: typctx, e: exter_exp): option((inter_exp, typ)) =>
 
   | Add(e1, e2) =>
     let num: typ = Num;
-    let* e1 = new_ana(ctx, e1, num);
-    let+ e2 = new_ana(ctx, e2, num);
+    let* e1 = ana(ctx, e1, num);
+    let+ e2 = ana(ctx, e2, num);
     (Add(e1, e2), num);
 
   | Ann(e1, t1) =>
-    let+ e1 = new_ana(ctx, e1, t1);
+    let+ e1 = ana(ctx, e1, t1);
     (Ann(e1, t1), t1);
 
   | Tuple(es) =>
-    let+$ es_ts = List.map(new_syn(ctx, _), es);
+    let+$ es_ts = List.map(syn(ctx), es);
     let (es, ts) = List.split(es_ts);
     (Tuple(es), Product(ts));
 
   | Proj(e1, i) =>
-    let* (e1, t1) = new_syn(ctx, e1);
+    let* (e1, t1) = syn(ctx, e1);
     switch (t1) {
     | Product(ts) =>
       let+ t =
@@ -221,12 +236,12 @@ let rec new_syn = (ctx: typctx, e: exter_exp): option((inter_exp, typ)) =>
   | Deferral => None
   }
 
-and new_ana = (ctx: typctx, e: exter_exp, t: typ): option(inter_exp) =>
+and ana = (ctx: typctx, e: exter_exp, t: typ): option(inter_exp) =>
   switch (e) {
   | Fun(x, e1) =>
     switch (matched_arrow_type(Some(t))) {
     | Some(Arrow(t1, t2)) =>
-      let+ e1 = new_ana(TypCtx.add(x, t1, ctx), e1, t2);
+      let+ e1 = ana(TypCtx.add(x, t1, ctx), e1, t2);
       Fun(x, e1);
     | _ => None
     }
@@ -235,7 +250,7 @@ and new_ana = (ctx: typctx, e: exter_exp, t: typ): option(inter_exp) =>
     switch (matched_product_type(Some(t))) {
     | Some(Product(ts)) =>
       let* es =
-        try(Some(List.map2(new_ana(ctx), es, ts))) {
+        try(Some(List.map2(ana(ctx), es, ts))) {
         | Invalid_argument(_) => None
         };
       let+$ es = es;
@@ -250,7 +265,7 @@ and new_ana = (ctx: typctx, e: exter_exp, t: typ): option(inter_exp) =>
   | Ann(_)
   | Proj(_)
   | Deferral =>
-    let* (e, t') = new_syn(ctx, e);
+    let* (e, t') = syn(ctx, e);
     if (consistent(t, t')) {
       Some(e);
     } else {
@@ -258,7 +273,7 @@ and new_ana = (ctx: typctx, e: exter_exp, t: typ): option(inter_exp) =>
     };
   };
 
-let rec syn = (ctx: typctx, e: exter_exp): option(typ) =>
+let rec old_syn = (ctx: typctx, e: exter_exp): option(typ) =>
   switch (e) {
   | Var(x) =>
     try(Some(TypCtx.find(x, ctx))) {
@@ -268,9 +283,9 @@ let rec syn = (ctx: typctx, e: exter_exp): option(typ) =>
   | Fun(_) => None
 
   | Ap(e1, e2) =>
-    switch (matched_arrow_type(syn(ctx, e1))) {
+    switch (matched_arrow_type(old_syn(ctx, e1))) {
     | Some(Arrow(t1, t2)) =>
-      if (ana(ctx, e2, t1)) {
+      if (old_ana(ctx, e2, t1)) {
         Some(t2);
       } else {
         // PARTIAL APPLICATION CODE BEGINS
@@ -279,7 +294,7 @@ let rec syn = (ctx: typctx, e: exter_exp): option(typ) =>
         switch (e2, t1) {
         | (Tuple(es), Product(ts)) =>
           let get_deferred_typ = (e: exter_exp, t: typ): option(option(typ)) =>
-            switch (e, ana(ctx, e, t)) {
+            switch (e, old_ana(ctx, e, t)) {
             | (Deferral, _) => Some(Some(t)) // Item was deferred, include it in `deferred_inputs` below
             | (_, true) => Some(None) // Item was not deferred, exclude it from `deferred_inputs` below
             | (_, false) => None // Entire `Ap` expression cannot synthesize
@@ -303,25 +318,25 @@ let rec syn = (ctx: typctx, e: exter_exp): option(typ) =>
   | Num(_) => Some(Num)
 
   | Add(e1, e2) =>
-    if (ana(ctx, e1, Num) && ana(ctx, e2, Num)) {
+    if (old_ana(ctx, e1, Num) && old_ana(ctx, e2, Num)) {
       Some(Num);
     } else {
       None;
     }
 
   | Ann(e1, t) =>
-    if (ana(ctx, e1, t)) {
+    if (old_ana(ctx, e1, t)) {
       Some(t);
     } else {
       None;
     }
 
   | Tuple(es) =>
-    let+$ ts = List.map(syn(ctx), es);
+    let+$ ts = List.map(old_syn(ctx), es);
     Product(ts);
 
   | Proj(e1, i) =>
-    switch (syn(ctx, e1)) {
+    switch (old_syn(ctx, e1)) {
     | Some(Product(ts)) =>
       try(List.nth_opt(ts, i)) {
       | Invalid_argument(_) => None
@@ -332,25 +347,25 @@ let rec syn = (ctx: typctx, e: exter_exp): option(typ) =>
   | Deferral => None
   }
 
-and ana = (ctx: typctx, e: exter_exp, t: typ): bool =>
+and old_ana = (ctx: typctx, e: exter_exp, t: typ): bool =>
   switch (e) {
   | Fun(x, e1) =>
     switch (matched_arrow_type(Some(t))) {
-    | Some(Arrow(t1, t2)) => ana(TypCtx.add(x, t1, ctx), e1, t2)
+    | Some(Arrow(t1, t2)) => old_ana(TypCtx.add(x, t1, ctx), e1, t2)
     | _ => false
     }
 
   | Tuple(es) =>
     switch (matched_product_type(Some(t))) {
     | Some(Product(ts)) =>
-      try(List.for_all2(ana(ctx), es, ts)) {
+      try(List.for_all2(old_ana(ctx), es, ts)) {
       | Invalid_argument(_) => false
       }
     | _ => false
     }
 
   | _ =>
-    switch (syn(ctx, e)) {
+    switch (old_syn(ctx, e)) {
     | Some(t1) => consistent(t1, t)
     | None => false
     }
@@ -424,7 +439,7 @@ let elaborate: exter_exp => option(inter_exp) = {
         };
 
         // We need to annotate the end result of this elaboration with its type since function literals can't synthesize
-        let+ t = syn(ctx, e);
+        let+ t = old_syn(ctx, e);
 
         Ann(Fun(deferral_var_name, Ap(e1, Tuple(es_deferred))), t);
         // PARTIAL APPLICATION CODE ENDS
