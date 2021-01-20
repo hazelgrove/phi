@@ -10,35 +10,33 @@
 
 This is a proposal to introduce algebraic data types.
 
-Here's what a real one we needed looks like (Peano).
-
-Peano numbers (Shmyth: let y = y - 1 in ...)
+Here is an algebraic data type for Peano-encoded naturals:
 
 ```
-datatype PeanoNum = Zero | Succ of PeanoNum
+datatype Nat = Z | S of Nat
+```
 
-let to_int : PeanoNum -> Int = λ x.{
-  case x of
-  | Zero => 0
-  | Succ x' => 1 + to_int x'
-  end
+This `datatype` definition creates a new type `Nat` with two constructors `Z`
+and `S`. We want to be able to write `datatype` definitions like this so that we
+can determine algorithmically whether `case` expressions on the new type are
+both complete and concise.
+
+Here is an inductive definition of the addition of two `Nat`s:
+
+```
+let nat_add =
+  λm:Int.{
+    λn:Int.{
+      case m
+      | Z => n
+      | S m' => S (nat_add m' n)
+      end
+  }
 }
 ```
 
-"We want to be able to write definitions like this and use them like this. This is why."
-
-Here are the other things we want to be able to do with them.
-
-- they are simple
-- they are familiar
-- they are useful
-  - in a practical sense
-    - for building interpreters and compilers
-    - for interop w/ Smyth
-  - in a theoretic sense
-    - closed types ==> exhaustiveness and redundancy checks
-    - type variables
-    - type polymorphism
+The `case` expression is both complete and concise in the sense that one, and
+only one, of its patterns will match any given constructor of type `Nat`.
 
 ## Illustrative Examples
 
