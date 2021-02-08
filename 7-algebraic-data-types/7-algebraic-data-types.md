@@ -8,35 +8,66 @@
 
 ## Introduction
 
-This is a proposal to introduce algebraic data types.
 
-Here is an algebraic data type for Peano-encoded naturals:
+This is a proposal to introduce algebraic data types. An algebraic data type is
+a union of tagged types. Algebraic data types provide a way to reason
+inductively about operations on typed data structures. 
 
-```
-datatype Nat = Z | S of Nat
-```
-
-This `datatype` definition creates a new type `Nat` with two constructors `Z`
-and `S`. We want to be able to write `datatype` definitions like this so that we
-can determine algorithmically whether `case` expressions on the new type are
-both complete and concise.
-
-Here is an inductive definition of the addition of two `Nat`s:
+Here is an example. The primary colors for additive color combinations are
+usually red, green, and blue:
 
 ```
-let nat_add =
-  λm:Int.{
-    λn:Int.{
+datatype PrimaryColor = Red | Green | Blue
+```
+
+The `datatype` definition above creates a new type, `PrimaryColor`, as the union
+of the constants `Red`, `Green`, and `Blue`. 
+
+Here is a more interesting example. A `Peano` number is defined as either a
+distingushed zero value or the succesor of some other `Peano` number:
+
+```
+datatype Peano = Zero | Succ of Peano
+```
+
+This `datatype` definition creates the type `Peano` as the constant `Zero` or a
+value produced by the constructor `Succ`, which is like a function that takes a
+`Peano` and adds one to it.
+
+We want to be able to write `datatype` definitions like these so that we can
+determine algorithmically whether `case` expressions on these types are
+exhaustive and not redundant.
+
+A `case` expression on an algebraic data type is *exhaustive* if each member of
+the type can be matched by at least one pattern, and *redundant* if any member
+can be matched by more than one pattern. Here is a `case` expression that
+dispatches a function call based on which `PrimaryColor` it operates on:
+
+```
+case color
+| Red => red()
+| Green => green()
+| Green => never_gets_here()
+```
+
+This `case` expression is not exhaustive because no pattern matches `Blue`, and
+it is redundant because `Green` can be matched twice.
+
+Here is an inductive definition of addition for two `Peano` numbers:
+
+```
+let add =
+  λm:Peano.{
+    λn:Peano.{
       case m
-      | Z => n
-      | S m' => S (nat_add m' n)
+      | Zero => n
+      | Succ m' => Succ (add m' n)
       end
   }
 }
 ```
 
-The `case` expression is both complete and concise in the sense that one, and
-only one, of its patterns will match any given constructor of type `Nat`.
+This `case` expression is exhaustive and not redundant.
 
 ## Illustrative Examples
 
