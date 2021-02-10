@@ -8,10 +8,12 @@
 
 ## Introduction
 
+TODO: replace "union" with "sum"
+TODO: replace "Peano" with "Tree" (e.g. tupled w/ recursion)
 
-This is a proposal to introduce algebraic data types. An algebraic data type is
-a union of tagged types. Algebraic data types provide a way to reason
-inductively about operations on typed data structures. 
+This is a proposal to introduce algebraic data types.
+Algebraic data types are labeled recursive sum types.
+Algebraic data types provide a way to reason inductively about operations on typed data structures.
 
 Here is an example. The primary colors for additive color combinations are
 usually red, green, and blue:
@@ -21,18 +23,21 @@ datatype PrimaryColor = Red | Green | Blue
 ```
 
 The `datatype` definition above creates a new type, `PrimaryColor`, as the union
-of the constants `Red`, `Green`, and `Blue`. 
+of the constant constructors `Red`, `Green`, and `Blue`. 
 
-Here is a more interesting example. A `Peano` number is defined as either a
-distingushed zero value or the succesor of some other `Peano` number:
+Here is another example that demonstrates recursion.
+A `Peano` number is defined as either a distingushed zero value or the succesor of some other `Peano` number:
 
 ```
-datatype Peano = Zero | Succ of Peano
+datatype Peano = Zero | Succ Peano
 ```
 
-This `datatype` definition creates the type `Peano` as the constant `Zero` or a
-value produced by the constructor `Succ`, which is like a function that takes a
-`Peano` and adds one to it.
+This `datatype` definition defines the type `Peano` with two constructors, the
+constant constructor `Zero` represents the natural number 0, The constructor
+`Succ` can be applied to a piano number to represent the successor of that
+number.
+
+TODO: example of applying `Succ` to define `three = Succ (Succ (Succ Zero))`
 
 We want to be able to write `datatype` definitions like these so that we can
 determine algorithmically whether `case` expressions on these types are
@@ -42,6 +47,8 @@ A `case` expression on an algebraic data type is *exhaustive* if each member of
 the type can be matched by at least one pattern, and *redundant* if any member
 can be matched by more than one pattern. Here is a `case` expression that
 dispatches a function call based on which `PrimaryColor` it operates on:
+
+TODO: add a normal function on `Peano`s before showing how things can go wrong. Maybe move `add` to first example.
 
 ```
 case color
@@ -68,6 +75,8 @@ let add =
 ```
 
 This `case` expression is exhaustive and not redundant.
+
+TODO: introduce holes and give some intuition for how they affect the design.
 
 ## Illustrative Examples
 
