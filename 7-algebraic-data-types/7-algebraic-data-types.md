@@ -8,73 +8,100 @@
 
 ## Introduction
 
-TODO: replace "union" with "sum"
-TODO: replace "Peano" with "Tree" (e.g. tupled w/ recursion)
+This is a proposal to introduce algebraic data types, or labeled recursive sum types,
+which provide a way to reason inductively about operations on typed recursive data structures.
 
-This is a proposal to introduce algebraic data types.
-Algebraic data types are labeled recursive sum types.
-Algebraic data types provide a way to reason inductively about operations on typed data structures.
+### Example: Binary Trees
 
-Here is an example. The primary colors for additive color combinations are
-usually red, green, and blue:
+A binary tree (of integers) can be one of three things:
+- an empty tree
+- a terminal value
+- an internal value with a pair of sub-trees
 
-```
-datatype PrimaryColor = Red | Green | Blue
-```
-
-The `datatype` definition above creates a new type, `PrimaryColor`, as the union
-of the constant constructors `Red`, `Green`, and `Blue`. 
-
-Here is another example that demonstrates recursion.
-A `Peano` number is defined as either a distingushed zero value or the succesor of some other `Peano` number:
+We want to be able to declare this type of structure as an algebraic data type in Hazel, like so:
 
 ```
-datatype Peano = Zero | Succ Peano
+datatype Tree = Empty | Leaf Int | Branch (Int, Tree, Tree)
 ```
 
-This `datatype` definition defines the type `Peano` with two constructors, the
-constant constructor `Zero` represents the natural number 0, The constructor
-`Succ` can be applied to a piano number to represent the successor of that
-number.
+This `datatype` defninition creates a new type, `Tree`, as the sum of constructors `Empty`, `Leaf`, and `Branch`.
+The `Empty` constructor is a unique constant that represents the empty tree.
+The `Leaf` constructor represents a terminal node when applied to an `Int`.
+The `Branch` constructor represents an internal node when applied to an `Int` and two values of type `Tree`.
 
-TODO: example of applying `Succ` to define `three = Succ (Succ (Succ Zero))`
-
-We want to be able to write `datatype` definitions like these so that we can
-determine algorithmically whether `case` expressions on these types are
-exhaustive and not redundant.
-
-A `case` expression on an algebraic data type is *exhaustive* if each member of
-the type can be matched by at least one pattern, and *redundant* if any member
-can be matched by more than one pattern. Here is a `case` expression that
-dispatches a function call based on which `PrimaryColor` it operates on:
-
-TODO: add a normal function on `Peano`s before showing how things can go wrong. Maybe move `add` to first example.
+Here is an example value of type `Tree`:
 
 ```
-case color
-| Red => red()
-| Green => green()
-| Green => never_gets_here()
+let a_tree : Tree = Branch (1, Leaf 2, Empty)
 ```
 
-This `case` expression is not exhaustive because no pattern matches `Blue`, and
-it is redundant because `Green` can be matched twice.
-
-Here is an inductive definition of addition for two `Peano` numbers:
+Depth first `Tree` traversal can be implemented like this:
 
 ```
-let add =
-  λm:Peano.{
-    λn:Peano.{
-      case m
-      | Zero => n
-      | Succ m' => Succ (add m' n)
-      end
+let dft : (Int → Int) → Tree → Tree =
+λf.{
+  λtree.{
+    case tree
+    | Empty => Empty
+    | Leaf i => Leaf (f i)
+    | Branch (i, left, right) =>
+      Branch (f i) (dft f left) (dft f right)
+    end
   }
 }
 ```
 
-This `case` expression is exhaustive and not redundant.
+so that evaluating `dft λi.{i + 1} a_tree` produces:
+
+```
+Branch (2, Leaf 3, Empty)
+```
+
+### Exhaustiveness and Redundancy Checks
+
+Algebraic data types allow us to determine statically whether a `case` expression goes wrong.
+Specifically, they allow us to check if a `case` expression is
+
+1. **exhaustive**, so that *at least* one pattern will match each member of the type, and
+2. **free of redundancy**, so that *at most* one pattern will match each member of the type.
+
+Together, these properties determine the totality of simple `case` expressions on zeroth-order algebraic data types.
+We say that a `case` expression that is both exhaustive and free of redundancy is *concise*.
+A `case` expression that is not concise can violate one or both of these properties.
+
+To see how `case` expressions on algebraic data types can go wrong, consider the following definition of the primary colors:
+
+```
+datatype PrimaryColor = Red | Green | Blue
+```
+Here is a `case` expression on a value of this type that is not exhaustive, because no pattern will match `Blue`, but free of redundancy:
+
+```
+case some_color
+| Red => handle_red ()
+| Green => handle_green ()
+```
+
+Here is one that is redundant, because two patterns will match `Blue`, but exhaustive:
+
+```
+case color
+| Red => handle_red ()
+| Green => handle_green ()
+| Blue => handle_blue ()
+| Blue => never_gets_here ()
+```
+
+Here is one that is
+not exhaustive, because no pattern will match `Green`,
+and redundant, because two patterns will match `Blue`:
+
+```
+case color
+| Red => handle_red ()
+| Blue => handle_blue ()
+| Blue => never_gets_here ()
+```
 
 TODO: introduce holes and give some intuition for how they affect the design.
 
