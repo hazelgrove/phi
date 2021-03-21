@@ -86,6 +86,9 @@ and `TyVarCtx.t |- UHtyp.t <= Kind.t_1 ~> HTyp.t : Kind.t_2` for consistent
 `Kind.t_1` and `Kind.t_2`. These judgements are shown in the attached
 [latex document](./latex/kind-judgements.pdf).
 
+`Delta.t`'s `hole_sort` will be expanded to include `TypeHole` so we can track
+type holes there too.
+
 # Action Semantics
 
 Adding support for type variables requires adding support for character-level 
