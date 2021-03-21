@@ -1,0 +1,154 @@
+\documentclass[12pt,letterpaper]{article}
+
+\usepackage{mathpartir}
+\usepackage{ latexsym }
+\usepackage{stmaryrd}
+
+%% Joshua Dunfield macros
+\def\OPTIONConf{1}%
+\usepackage{joshuadunfield}
+
+
+\newcommand{\elabAna}[6]{#1 \vdash #2 \Leftarrow #3 \leadsto #4 : #5 \dashv #6}
+\newcommand{\elabSyn}[5]{#1 \vdash #2 \Rightarrow #3 \leadsto #4 \dashv #5}
+\newcommand{\kconsistent}[2]{#1 \sim #2}
+
+\newcommand{\hPhi}{\Phi}
+\newcommand{\EmptyhPhi}{\emptyset} % From hand-written notes, Canonical forms lemma; page 14
+\newcommand{\EmptyDelta}{\cdot} % From hand-written notes, ES-Const rule, page 1
+
+\newcommand{\htau}{\hat{\tau}}
+\newcommand{\hkappa}{\kappa}
+\newcommand{\dtau}{\tau}
+
+\newcommand{\Ty}{\textt{Ty}}
+\newcommand{\KHole}{\textt{KHole}}
+\newcommand{\hlist}[1]{\textt{list(}#1\textt{)}}
+
+\newcommand{\llparenthesiscolor}{\textcolor{violet}{\llparenthesis}}
+\newcommand{\rrparenthesiscolor}{\textcolor{violet}{\rrparenthesis}}
+\newcommand{\hthole}[1]{\llparenthesiscolor\rrparenthesiscolor^{#1}}
+\newcommand{\hhole}[2]{\llparenthesiscolor#1\rrparenthesiscolor^{#2}}
+\newcommand{\kehole}{\llparenthesiscolor\rrparenthesiscolor}
+
+\newcommand{\idof}[1]{\mathsf{id}(#1)}
+\newcommand{\Dbinding}[3]{#1 :: #3[#2]}
+
+
+\begin{document}
+
+\begin{figure}[t]
+	$\arraycolsep=4pt\begin{array}{rllllll}
+			\mathsf{BinOp}          & \oplus & ::= &
+			\textt{Product} ~\vert~ \textt{Sum} ~\vert~ \textt{Arrow}                                          \\
+			\mathsf{Kind}           & \kappa & ::= &
+			\Ty ~\vert~ \KHole                                                                                 \\
+			\mathsf{Constant Types} & c      & ::= &
+			\textt{Int} ~\vert~ \textt{Float} ~\vert~ \textt{Bool}                                             \\
+			\mathsf{User HTyp}      & \htau  & ::= &
+			c ~\vert~ \htau_1 \oplus \htau_2 ~\vert~ \hlist{\htau} ~\vert~ \hthole{u} ~\vert~ \hhole{\htau}{u} \\
+			\mathsf{Internal HTyp}  & \dtau  & ::= &
+			c ~\vert~ \dtau_1 \oplus \dtau_2 ~\vert~ \hlist{\dtau} ~\vert~ \hthole{u} ~\vert~ \hhole{\dtau}{u} \\
+		\end{array}$
+\end{figure}
+
+
+\begin{minipage}{\linewidth}
+	\judgbox
+	{\kconsistent{\hkappa_1}{\hkappa_2}}
+	{$\hkappa_1$ is consistent with $\hkappa_2$}
+	\begin{mathpar}
+		\inferrule[KCHole]{ }{
+			\kconsistent{\KHole}{\Ty}
+		}
+		\and
+		\inferrule[KCSymm]{
+			\kconsistent{\hkappa_1}{\hkappa_2}
+		}{
+			\kconsistent{\hkappa_2}{\hkappa_1}
+		}
+		\and
+		\inferrule[KCRefl]{ }{
+			\kconsistent{\hkappa}{\hkappa}
+		}
+	\end{mathpar}
+\end{minipage}
+\\
+\\
+
+\begin{minipage}{\linewidth}
+	\judgbox
+	{\elabSyn{\hPhi}{\htau}{\hkappa}{\dtau}{\Delta}}
+	{$\htau$ synthesizes kind $\hkappa$ and elaborates to $\dtau$}
+	\begin{mathpar}
+		\inferrule[TElabSConst]{ }{
+			\elabSyn{\hPhi}{c}{\Ty}{c}{\EmptyDelta}
+		}
+		\and
+		\inferrule[TElabSBinOp]{
+			\elabAna{\hPhi}{\htau_1}{\Ty}{\dtau_1}{\Ty}{\Delta_1} \\
+			\elabAna{\hPhi}{\htau_2}{\Ty}{\dtau_2}{\Ty}{\Delta_2}
+		}{
+			\elabSyn{\hPhi}{\htau_1 \oplus \htau_2}{\Ty}{\dtau_1 \oplus \dtau_2}{\Delta_1 \cup \Delta_2}
+		}
+		\and
+		\inferrule[TElabSList]{
+			\elabAna{\hPhi}{\htau}{\Ty}{\dtau}{\Ty}{\Delta}
+		} {
+			\elabSyn{\hlist{\htau}}{\Ty}{\hlist{\dtau}}{\Delta}
+		}
+		\and
+		\inferrule[TElabSVar]{
+			t : \hkappa \in \hPhi
+		} {
+			\elabSyn{\hPhi}{t}{\hkappa}{t}{\EmptyDelta}
+		}
+		\and
+		\inferrule[TElabSUVar]{
+		t \not\in \hPhi
+		} {
+		\elabSyn{\hPhi}{t}{\KHole}{\hhole{t}{u}_{\idof{\hPhi}}}{\Dbinding{u}{\hPhi}{\kehole} }
+		}
+		\and
+		\inferrule[TElabSHole]{ } {
+		\elabSyn{\hPhi}{\hthole{u}}{\KHole}{\hthole{u}_{\idof{\hPhi}}}{\Dbinding{u}{\hPhi}{\kehole}}
+		}
+		\and
+		\inferrule[TElabSNEHole]{
+		\elabSyn{\hPhi}{\htau}{\hkappa}{\dtau}{\Delta}
+		} {
+		\elabSyn{\hPhi}{\hhole{\htau}{u}}{\KHole}{\hhole{\dtau}{u}_{\idof{\hPhi}}}{\Delta,\Dbinding{u}{\hPhi}{\kehole}}
+		}
+	\end{mathpar}
+\end{minipage}
+\\
+\\
+\begin{minipage}{\linewidth}
+	\judgbox
+	{\elabAna{\hPhi}{\htau}{\hkappa_1}{\dtau}{\hkappa_2}{\Delta}}
+	{$\htau$ analyzes against type $\hkappa_1$ and
+		elaborates to $\dtau$ of consistent type $\hkappa_2$}
+	\begin{mathpar}
+		\inferrule[TElabASubsume]{
+			\htau \neq \hthole{u} \\
+			\htau \neq \hhole{\htau'}{u} \\
+			\elabSyn{\hPhi}{\htau}{\hkappa'}{\dtau}{\Delta} \\
+			\kconsistent{\hkappa}{\hkappa'}
+		}{
+			\elabAna{\hPhi}{\htau}{\hkappa}{\dtau}{\hkappa'}{\Delta}
+		}
+		\and
+		\inferrule[TElabAEHole]{ } {
+		\elabAna{\hPhi}{\hthole{u}}{\hkappa}{\hthole{u}_{\idof{\hPhi}}}{\hkappa}{\Dbinding{u}{\hPhi}{\kappa}}
+		}
+		\and
+		\inferrule[TElabANEHole]{
+		\elabSyn{\hPhi}{\htau}{\hkappa'}{\dtau}{\Delta}
+		} {
+		\elabAna{\hPhi}{\hhole{\htau}{u}}{\hkappa}{\hhole{\dtau}{u}_{\idof{\hPhi}}}{\hkappa}{\Delta,\Dbinding{u}{\hPhi}{\kappa}}
+		}
+	\end{mathpar}
+\end{minipage}
+
+
+\end{document}
