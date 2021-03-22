@@ -87,7 +87,19 @@ and `TyVarCtx.t |- UHtyp.t <= Kind.t_1 ~> HTyp.t : Kind.t_2` for consistent
 [latex document](./latex/kind-judgements.pdf).
 
 `Delta.t`'s `hole_sort` will be expanded to include `TypeHole` so we can track
-type holes there too.
+type holes there too. Since Delta for TypeHoles needs `Kind.t` and `TyVarCtx.t` instead of `HTyp.t` and `VarCtx.t` but we still want to have the same keyspace (the `u`s are consistent and incrementing across all the holes), wrap the value for the `MetaVarMap.t` in `Delta.t` to pack this dependency with the associated `hole_sort`:
+
+```reasonml
+type hole_sort(_, _) =
+  | ExpressionHole: hole_sort(HTyp.t, VarCtx.t)
+  | TypeHole: hole_sort(Kind.t, TyVarCtx.t)
+  | PatternHole: hole_sort(HTyp.t, VarCtx.t);
+
+type value =
+  | V(hole_sort('s, 'ctx), 's, 'ctx): value;
+
+type t = MetaVarMap.t(value);
+```
 
 # Action Semantics
 
