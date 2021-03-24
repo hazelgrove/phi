@@ -12,6 +12,7 @@
 \newcommand{\elabAna}[6]{#1 \vdash #2 \Leftarrow #3 \leadsto #4 : #5 \dashv #6}
 \newcommand{\elabSyn}[5]{#1 \vdash #2 \Rightarrow #3 \leadsto #4 \dashv #5}
 \newcommand{\kconsistent}[2]{#1 \sim #2}
+\newcommand{\kindAssign}[3]{#1 \vdash #2 : #3}
 
 \newcommand{\hPhi}{\Phi}
 \newcommand{\EmptyhPhi}{\emptyset} % From hand-written notes, Canonical forms lemma; page 14
@@ -95,7 +96,7 @@
 		\inferrule[TElabSList]{
 			\elabAna{\hPhi}{\htau}{\Ty}{\dtau}{\Ty}{\Delta}
 		} {
-			\elabSyn{\hlist{\htau}}{\Ty}{\hlist{\dtau}}{\Delta}
+			\elabSyn{\hPhi}{\hlist{\htau}}{\Ty}{\hlist{\dtau}}{\Delta}
 		}
 		\and
 		\inferrule[TElabSVar]{
@@ -126,8 +127,8 @@
 \begin{minipage}{\linewidth}
 	\judgbox
 	{\elabAna{\hPhi}{\htau}{\hkappa_1}{\dtau}{\hkappa_2}{\Delta}}
-	{$\htau$ analyzes against type $\hkappa_1$ and
-		elaborates to $\dtau$ of consistent type $\hkappa_2$}
+	{$\htau$ analyzes against kind $\hkappa_1$ and
+		elaborates to $\dtau$ of consistent kind $\hkappa_2$}
 	\begin{mathpar}
 		\inferrule[TElabASubsume]{
 			\htau \neq \hthole{u} \\
@@ -149,6 +150,56 @@
 		}
 	\end{mathpar}
 \end{minipage}
+\\
+\\
+
+\begin{minipage}{\linewidth}
+	\judgbox
+	{\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa}}
+	{$\htau$ is assigned kind $\hkappa$}
+	\begin{mathpar}
+		\inferrule[KAConst]{ }{
+			\kindAssign{\Delta;\hPhi}{c}{\Ty}
+		}
+		\and
+		\inferrule[KAVar]{
+			t : \hkappa \in \hPhi
+		} {
+			\kindAssign{\Delta;\hPhi}{t}{\hkappa}
+		}
+		\and
+		\inferrule[KABinOp]{
+			\kindAssign{\Delta;\hPhi}{\dtau_1}{\Ty}
+			\kindAssign{\Delta;\hPhi}{\dtau_2}{\Ty}
+		} {
+			\kindAssign{\Delta;\hPhi}{\dtau_1 \oplus \dtau_2}{\Ty}
+		}
+		\and
+		\inferrule[KAList]{
+			\kindAssign{\Delta;\hPhi}{\dtau}{\Ty}
+		} {
+			\kindAssign{\Delta;\hPhi}{\hlist{\dtau}}{\Ty}
+		}
+		\and
+		\inferrule[KAEHole]{
+			\Dbinding{u}{\hPhi'}{\hkappa} \in \Delta \\
+			\kindAssign{\Delta;\hPhi}{\sigma}{\hPhi'}
+		} {
+			\kindAssign{\Delta;\hPhi}{\hthole{u}_{\sigma}}{\hkappa}
+		}
+		\and
+		\inferrule[KANEHole]{
+			\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa'} \\
+			\Dbinding{u}{\hPhi'}{\hkappa} \in \Delta \\
+			\kindAssign{\Delta;\hPhi}{\sigma}{\hPhi'}
+		} {
+			\kindAssign{\Delta;\hPhi}{\hhole{\dtau}{u}_{\sigma}}{\hkappa}
+		}
+
+
+	\end{mathpar}
+\end{minipage}
+
 
 
 \end{document}
