@@ -131,12 +131,19 @@
 		elaborates to $\dtau$ of consistent kind $\hkappa_2$}
 	\begin{mathpar}
 		\inferrule[TElabASubsume]{
+			\htau \neq t \text{ where } t \not\in \hPhi \\
 			\htau \neq \hthole{u} \\
 			\htau \neq \hhole{\htau'}{u} \\
 			\elabSyn{\hPhi}{\htau}{\hkappa'}{\dtau}{\Delta} \\
 			\kconsistent{\hkappa}{\hkappa'}
 		}{
 			\elabAna{\hPhi}{\htau}{\hkappa}{\dtau}{\hkappa'}{\Delta}
+		}
+		\and
+		\inferrule[TElabAUVar]{
+		t \not\in \hPhi
+		} {
+		\elabAna{\hPhi}{t}{\KHole}{\hhole{t}{u}_{\idof{\hPhi}}}{\KHole}{\Dbinding{u}{\hPhi}{\kehole} }
 		}
 		\and
 		\inferrule[TElabAEHole]{ } {
@@ -148,6 +155,7 @@
 		} {
 		\elabAna{\hPhi}{\hhole{\htau}{u}}{\hkappa}{\hhole{\dtau}{u}_{\idof{\hPhi}}}{\hkappa}{\Delta,\Dbinding{u}{\hPhi}{\kappa}}
 		}
+
 	\end{mathpar}
 \end{minipage}
 \\
