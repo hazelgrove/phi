@@ -78,6 +78,12 @@ Kind consistency is defined by a judgement of the form `Kind.t ~ Kind.t` with
 the rules presented in the attached
 [latex document](./latex/kind-judgements.pdf).
 
+## Kind Assignment
+
+Kind assignment is defined by a judgement
+`Delta.t ; TyVarCtx.t |- HTyp.t : Kind.t` with rules presented in the attached
+[latex document](./latex/kind-judgements.pdf).
+
 ## Type Elaboration
 
 Expansion from unexpanded types to expanded types is defined by
@@ -86,19 +92,19 @@ and `TyVarCtx.t |- UHtyp.t <= Kind.t_1 ~> HTyp.t : Kind.t_2` for consistent
 `Kind.t_1` and `Kind.t_2`. These judgements are shown in the attached
 [latex document](./latex/kind-judgements.pdf).
 
-`Delta.t`'s `hole_sort` will be expanded to include `TypeHole` so we can track
-type holes there too. Since Delta for TypeHoles needs `Kind.t` and `TyVarCtx.t` instead of `HTyp.t` and `VarCtx.t` but we still want to have the same keyspace (the `u`s are consistent and incrementing across all the holes), wrap the value for the `MetaVarMap.t` in `Delta.t` to pack this dependency with the associated `hole_sort`:
+`Delta.t`'s `hole_sort` will be changed to a `Hole.t` so we can track type
+holes there too. `Hole.t` is an ADT that captures type holes' different `Kind.t`
+and `TyVarCtx.t` instead of `HTyp.t` and `VarCtx.t` and we'll still have the
+same keyspace (the `u`s are consistent and incrementing across all the holes):
 
 ```reasonml
-type hole_sort(_, _) =
-  | ExpressionHole: hole_sort(HTyp.t, VarCtx.t)
-  | TypeHole: hole_sort(Kind.t, TyVarCtx.t)
-  | PatternHole: hole_sort(HTyp.t, VarCtx.t);
+module Hole = {
+type t =
+  | Expression(HTyp.t, VarCtx.t)
+  | Type(Kind.t, TyVarCtx.t)
+  | Pattern(HTyp.t, VarCtx.t);
 
-type value =
-  | V(hole_sort('s, 'ctx), 's, 'ctx): value;
-
-type t = MetaVarMap.t(value);
+type t = MetaVarMap.t(Hole.t);
 ```
 
 # Action Semantics
