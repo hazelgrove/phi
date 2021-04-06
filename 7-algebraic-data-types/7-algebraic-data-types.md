@@ -8,26 +8,86 @@
 
 ## Introduction
 
-This is a proposal to introduce algebraic data types, or labeled recursive sum types,
-which provide a way to reason inductively about operations on typed recursive data structures.
+This is a proposal to introduce variant types, also known as algebraic data types.
 
 ### Example: Binary Trees
 
-A binary tree (of integers) can be one of three things:
+A binary tree of integers can be one of two things:
 - an empty tree
-- a terminal value
-- an internal value with a pair of sub-trees
+- a node carrying an integer value and two sub-trees
 
 We want to be able to declare this type of structure as an algebraic data type in Hazel, like so:
 
 ```
-datatype Tree = Empty | Leaf Int | Branch (Int, Tree, Tree)
+datatype Tree0 = Empty | Node (Int, Tree0, Tree0) == Rec(Tree0.Empty(Unit) + Node(Int * Tree0 * Tree0))
+type Tree = Empty | Node (Int, Tree, Tree)   == Rec(Tree.Empty(Unit) + Node(Int * Tree * Tree))
+type Tree' = Empty | Node (Int, Tree, Tree)  == Empty(Unit) + Node(Int * Tree * Tree)
+
+module M1 : {
+  type Tree
+  val Empty : Tree
+  val Node : (Int, Tree, Tree) -> Tree
+  val TreeElim : Tree -> 'a -> ((Int, Tree, Tree) -> 'a) -> 'a
+} = {
+  type Tree = Empty | Node (Int, Tree, Tree)   == Rec(Tree.Empty(Unit) + Node(Int * Tree * Tree))
+  let Empty : Tree = roll(inj[Empty])
+  let Node : (Int, Tree, Tree) -> Tree = fun x -> roll(inj[Node](x))
+  let TreeElim = fun tree empty node -> 
+    case tree of 
+    | Empty -> empty
+    | Node x -> node x
+}
+
+module M2 : {
+  type Tree
+  val Empty : Tree
+  val Node : (Int, Tree, Tree) -> Tree
+} = {
+  type Tree = Empty | Node (Int, Tree, Tree)   == Rec(Tree.Empty(Unit) + Node(Int * Tree * Tree))
+  let Empty : Tree = roll(inj[Empty])
+  let Node : (Int, Tree, Tree) -> Tree = fun x -> roll(inj[Node](x))
+}
+
+letcon Empty : Tree = inj[Empty]
+
+variable Empty : Tree
+constructor Empty : Tree
+constructor Node : (Int, Tree, Tree) -> Tree
+
+Gamma, Chi |- e : tau
+where
+  Gamma maps variables to types
+  Chi maps constructor names to types
+
+Empty 
+
+
+match unroll(x) 
+| Empty -> 
+
+M1.Tree != M2.Tree
+
+
+type Tree' = Empty(Unit) + Node(Int * Rec(Tree.Empty(Unit) + Node(Int * Tree * Tree)) * Rec(Tree.Empty(Unit) + Node(Int * Tree * Tree)))
+ 
+
+
+Rec(Tree.Empty(Unit) + Node(Int * Tree * Tree))
+= Empty(Unit) + Node(Int * Rec(Tree.Empty(Unit) + Node(Int * Tree * Tree)) * Rec(Tree.Empty(Unit) + Node(Int * Tree * Tree)))
+
+{Empty, Node (i, t1, t2) : i ∈ N, t1, t2 ∈ Tree}
+let Empty : Tree = roll(inj[Empty])
+let Node : (Int, Tree, Tree) -> Tree = fun x -> roll(inj[Node](x))
+
+inj[Node, Tree](3, inj[Empty, Tree], inj[Empty, Tree])
+
+
+= Node (3, Empty, Empty)
 ```
 
-This `datatype` defninition creates a new type, `Tree`, as the sum of constructors `Empty`, `Leaf`, and `Branch`.
-The `Empty` constructor is a unique constant that represents the empty tree.
-The `Leaf` constructor represents a terminal node when applied to an `Int`.
-The `Branch` constructor represents an internal node when applied to an `Int` and two values of type `Tree`.
+This `datatype` definition creates a new type, `Tree`, and defines two constructors, `Empty` and `Node`.
+The `Empty` constructor is a constant of type `Tree` that represents the empty tree.
+The `Node` constructor represents a node when applied to an `Int` and two values of type `Tree`.
 
 Here is an example value of type `Tree`:
 
