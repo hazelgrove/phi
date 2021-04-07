@@ -4,6 +4,12 @@
 \usepackage{fullpage}
 \usepackage{amsmath, stmaryrd, amssymb, mathtools, mathpartir}
 
+% fixes spacing between math operators and large paired delimiters
+\let\originalleft\left
+\let\originalright\right
+\renewcommand{\left}{\mathopen{}\mathclose\bgroup\originalleft}
+\renewcommand{\right}{\aftergroup\egroup\originalright}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Syntax
 
@@ -16,21 +22,21 @@
 % Types
 
 \DeclareDocumentCommand{\rectype}{!O{\alpha} !O{\tau}}{\mu #1.#2}
-\DeclareDocumentCommand{\sumtype}{m m m}{+\!\left\{#1\!\left(#2\right)\right\}_{#3}}
+\DeclareDocumentCommand{\sumtype}{m m m}{+\left\{#1\left(#2\right)\right\}_{#3}}
 \DeclareDocumentCommand{\typevar}{}{\alpha}
 
 % Tags
 
 \DeclareDocumentCommand{\C}{}{\mathcal{C}}
 \DeclareDocumentCommand{\Tag}{}{\mathbf{C}}
-\DeclareDocumentCommand{\TagHole}{!O{u}}{\,?^{#1}}
+\DeclareDocumentCommand{\TagHole}{!O{u}}{\mathopen{}?^{#1}\mathclose{}}
 
 % Expressions
 
-\DeclareDocumentCommand{\roll}{O{\tau} m}{\normalfont\texttt{roll}^{#1}\!\left(#2\right)}
-\DeclareDocumentCommand{\unroll}{m m}{\normalfont\texttt{unroll}^{#1}\!\left(#2\right)}
-\DeclareDocumentCommand{\inj}{O{\ell} O{\tau} m}{\normalfont\texttt{inj}_{#1}\!\left(#3\right)}
-\DeclareDocumentCommand{\casexp}{m m m m m}{\normalfont\texttt{case} \left(#1\right) \left\{#2\!\left(#3\right)\mapsto #4\right\}_{#5}}
+\DeclareDocumentCommand{\roll}{O{\tau} m}{\normalfont\texttt{roll}^{#1}\left(#2\right)}
+\DeclareDocumentCommand{\unroll}{m m}{\normalfont\texttt{unroll}^{#1}\left(#2\right)}
+\DeclareDocumentCommand{\inj}{O{\ell} O{\tau} m}{\normalfont\texttt{inj}_{#1}\left(#3\right)}
+\DeclareDocumentCommand{\casexp}{m m m m m}{\normalfont\texttt{case} \left(#1\right) \left\{#2\left(#3\right)\mapsto #4\right\}_{#5}}
 \DeclareDocumentCommand{\hole}{!O{}}{\llparenthesis#1\rrparenthesis}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -64,6 +70,7 @@
 \DeclareDocumentCommand{\MatchedSumType}{m m}{#1 \blacktriangleright_{+} #2}
 \DeclareDocumentCommand{\smallstep}{}{\rightarrow}
 \DeclareDocumentCommand{\isConsistent}{m m}{#1 \sim #2}
+\DeclareDocumentCommand{\Join}{m m}{\join\left(#1,#2\right)}
 
 % Operations
 
@@ -74,6 +81,7 @@
 % Helpers
 
 \DeclareMathOperator{\expand}{\text{\normalfont expand}}
+\DeclareMathOperator{\join}{\text{\normalfont join}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Theorems and Proofs
@@ -105,9 +113,9 @@
 \[
   \arraycolsep=0pt
   \begin{array}{l@{~~}c@{~~}c@{~~}ll}
-    \HTyp &  \tau  & {}\Coloneqq{} & \ldots \mid (\rectype) \mid \typevar \mid \sumtype{C_i}{\tau_i}{C_i \in \C} \\
-    \HExp &    e   & {}\Coloneqq{} & \ldots \mid \roll{e} \mid \unroll{\tau}{e} \mid \inj{e} \mid \casexp{e}{C_i}{x_i}{e_i}{C_i \in \C} \\
-    \HTag &    C   & {}\Coloneqq{} & \Tag \mid \TagHole \\
+    \HTyp & \tau & {}\Coloneqq{} & \ldots \mid (\rectype) \mid \typevar \mid \sumtype{C_i}{\tau_i}{C_i \in \C}                        \\
+    \HExp & e    & {}\Coloneqq{} & \ldots \mid \roll{e} \mid \unroll{\tau}{e} \mid \inj{e} \mid \casexp{e}{C_i}{x_i}{e_i}{C_i \in \C} \\
+    \HTag & C    & {}\Coloneqq{} & \Tag \mid \TagHole                                                                                 \\
   \end{array}
 \]
 
@@ -209,6 +217,20 @@ $\boxed{\isConsistent{\tau}{\tau'}}$
   }
 \end{mathpar}
 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+\noindent
+$\boxed{\Join{\tau_1}{\tau_2} = \tau}$
+
+\begin{mathpar}
+  \Join{
+    \sumtype{C_i}{\tau_i }{C_i \in \C}
+  }{
+    \sumtype{C_i}{\tau_i'}{C_i \in \C}
+  }
+  = \sumtype{C_i}{\Join{\tau_i}{\tau_i'}}{C_i \in \C}
+\end{mathpar}
+
 
 
 
@@ -304,15 +326,15 @@ then if $\tau$ is a sum type, it has certain form, and if it's a recursive type,
   then all of the following are true:
   \begin{enumerate}
     \item
-       If $\tau = \left( \rectype[\alpha][\tau'] \right)$,
-     then $e = \roll{e'}$
-      and $\hastype{e'}{\expand(\tau)}$
-      and $\isval{e'}$.
+          If $\tau = \left( \rectype[\alpha][\tau'] \right)$,
+          then $e = \roll{e'}$
+          and $\hastype{e'}{\expand(\tau)}$
+          and $\isval{e'}$.
     \item
-       If $\tau = \left( \sumtype{C_i}{x_i}{C_i \in \C} \right)$,
-     then $e = \inj[\ell_k]{e'}$ for some $\ell_k \in \Lambda$
-      and $\hastype{e'}{\tau_k}$
-      and $\isval{e'}$.
+          If $\tau = \left( \sumtype{C_i}{x_i}{C_i \in \C} \right)$,
+          then $e = \inj[\ell_k]{e'}$ for some $\ell_k \in \Lambda$
+          and $\hastype{e'}{\tau_k}$
+          and $\isval{e'}$.
   \end{enumerate}
 \end{Lemma}
 
@@ -320,7 +342,7 @@ then if $\tau$ is a sum type, it has certain form, and if it's a recursive type,
   By rule induction on the static semantics:
   \begin{byCases}
     \case{\TRoll}
-      By assumption, $e = $
+    By assumption, $e = $
     %
     \case{\TUnroll}
   \end{byCases}
