@@ -27,9 +27,14 @@ It is represented as greek letter `rho` in the attached
 [latex document](./latex/kind-judgements.pdf).
 
 ```
+module VarPatErrStatus = {
+  type t =
+    | Keyword(ExpandingKeyword.t)
+}
+
 type TPat.t =
   | EmptyHole(MetaVar.t)
-  | TyVar(VarErrStatus.t, TyId.t)
+  | TyVar(option(VarPatErrStatus.t), TyId.t)
 ```
 
 ## Unexpanded Types

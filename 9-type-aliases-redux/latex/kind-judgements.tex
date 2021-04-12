@@ -123,6 +123,10 @@
 	{\kformation{\Delta;\hPhi}{\hkappa}}
 	{$\hkappa$ forms a kind} \;\\
 	\begin{mathpar}
+		\inferrule[KFTy] { }{ \kformation{\Delta;\hPhi}{\Ty} }
+		\and
+		\inferrule[KFHole] { }{ \kformation{\Delta;\hPhi}{\KHole} }
+		\and
 		\inferrule[KFSing]{
 			\kindAssign{\Delta;\hPhi}{\dtau}{\Ty}
 		} {
