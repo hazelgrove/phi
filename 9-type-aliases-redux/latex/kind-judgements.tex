@@ -24,7 +24,7 @@
 \newcommand{\tyvarNotValid}[1]{\lnot(#1 \textt{ }\textt{valid}) }
 \newcommand{\dexpTypeAssign}[3]{#1 \vdash #2 : #3}
 \newcommand{\tauSelfRecognized}[4]{#1 \vdash #2 : #3 \Rrightarrow \floor{#4}}
-\newcommand{\tauUnrecognize}[4]{#1 \vdash #2 : #3 \Rrightarrow \ceil{#4}}
+\newcommand{\tauUnrecognize}[3]{#1 \vdash #2 \Rrightarrow \ceil{#3}}
 
 \newcommand{\hPhi}{\Phi}
 \newcommand{\hGamma}{\Gamma}
@@ -182,7 +182,7 @@
 		\and
 		\inferrule[KAVar]{
 			t : \hkappa_1 \in \hPhi \\
-			\tauUnrecognize{\Delta;\hPhi}{\dtau}{\hkappa_1}{\hkappa_2}
+			\tauUnrecognize{\Delta;\hPhi}{\hkappa_1}{\hkappa_2}
 		} {
 			\kindAssign{\Delta;\hPhi}{t}{\hkappa_2}
 		}
@@ -243,20 +243,18 @@
 
 \begin{minipage}{\linewidth}
 	\judgbox
-	{\tauUnrecognize{\Delta;\hPhi}{\dtau}{\hkappa_1}{\hkappa_2}}
-	{$\dtau$ of kind $\hkappa_1$ is unrecognized to consistent superkind $\hkappa_2$}
+	{\tauUnrecognize{\Delta;\hPhi}{\hkappa_1}{\hkappa_2}}
+	{$\hkappa_1$ is unrecognized to consistent superkind $\hkappa_2$}
 	\begin{mathpar}
 		\inferrule[KUSing]{
 			\kindAssign{\Delta;\hPhi}{\dtau}{\Ty} \\
 			\tauSelfRecognized{\Delta;\hPhi}{\dtau}{\Ty}{\KSing{\dtau}}
 		}{
-			\tauUnrecognize{\Delta;\hPhi}{\dtau}{\KSing{\dtau}}{\Ty}
+			\tauUnrecognize{\Delta;\hPhi}{\KSing{\dtau}}{\Ty}
 		}
 		\and
-		\inferrule[KUHole]{
-			\kindAssign{\Delta;\hPhi}{\dtau}{\KHole}
-		}{
-			\tauUnrecognize{\Delta;\hPhi}{\dtau}{\KHole}{\KHole}
+		\inferrule[KUHole]{ }{
+			\tauUnrecognize{\Delta;\hPhi}{\KHole}{\KHole}
 		}
 	\end{mathpar}
 \end{minipage}
@@ -492,12 +490,12 @@ This is like the Elaboration Unicity theorem in the POPL19 paper.
 Kind Precision says that any kind $\hkappa$ that successfully analyzes against $\htau$ is a consistent superkind of the one that is synthesized from $\htau$. In other words, the kind that is synthesized is the most precise.
 
 
-\begin{thm}[Recognize Unrecognize Self-inverse]\ \\
-	$\tauSelfRecognized{\Delta;\hPhi}{\dtau}{\hkappa_2}{\hkappa_1}$ iff $\tauUnrecognize{\Delta;\hPhi}{\dtau}{\hkappa_1}{\hkappa_2}$
+\begin{thm}[Reognition Inversion]\ \\
+	If $\tauSelfRecognized{\Delta;\hPhi}{\dtau}{\hkappa_2}{\hkappa_1}$ then $\tauUnrecognize{\Delta;\hPhi}{\hkappa_1}{\hkappa_2}$
 \end{thm}
 
 \noindent
-Self recognition and unrecognizing are self-inverse with eachother
+Unrecognizing inverts self-recognition.
 
 
 
