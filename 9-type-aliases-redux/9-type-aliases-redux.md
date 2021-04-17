@@ -119,6 +119,9 @@ Singleton kinds to the language demand a subkinding relation and in the context 
 
 We extend bidirectional expression elaboration to support the new type alias form using these auxilliary judgements, and add a new type pattern analysis judgement that yields new bindings.
 
+There are several accompanying theorems presented in the attached 
+[latex document](./latex/kind-judgements.pdf).
+
 ## Type Variable Contexts
 
 Type variable contexts are values of type `TyVarCtx.t`, which is defined
@@ -158,7 +161,12 @@ kind constructor equivalence through to singleton kinds.
 
 Kind assignment is defined by a judgement
 `Delta.t ; TyVarCtx.t |- HTyp.t : Kind.t` with rules presented in the attached
-[latex document](./latex/kind-judgements.pdf).
+[latex document](./latex/kind-judgements.pdf). Kind assignment has an affinity for Ty over singletons.
+
+## Tau Self-recognition and unrecognizing
+
+Tau self-recognition is defined by a judgement
+`Delta.t ; TyVarCtx.t |- HTyp.t : Kind.t =>> Kind.t` and unrecognizing is defined by `Delta.t ; TyVarCtx.t |- HTyp.t : Kind.t <<= Kind.t`. These rules explicitly recognize and unrecognize the singleton within a Ty.
 
 ## Kind Constructor Equivalence
 
@@ -175,7 +183,7 @@ Expansion from unexpanded types to expanded types is defined by
 bidirectional judgements `TyVarCtx.t |- UHTyp.t => Kind.t ~> HTyp.t -| Delta`
 and `TyVarCtx.t |- UHtyp.t <= Kind.t_1 ~> HTyp.t : Kind.t_2` for consistent
 `Kind.t_1` and `Kind.t_2`. These judgements are shown in the attached
-[latex document](./latex/kind-judgements.pdf).
+[latex document](./latex/kind-judgements.pdf). Type elaboration synthesis has an affinity for singletons over Ty.
 
 `Delta.t`'s `hole_sort` will be changed to a `Hole.t` so we can track type
 holes there too. `Hole.t` is an ADT that captures type holes' different `Kind.t`
