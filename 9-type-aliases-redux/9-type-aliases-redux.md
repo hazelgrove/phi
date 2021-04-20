@@ -159,19 +159,9 @@ kind constructor equivalence through to singleton kinds.
 
 ## Kind Assignment
 
-Kind assignment is defined by a judgement
+Kind assignment is defined by a declarative judgement
 `Delta.t ; TyVarCtx.t |- HTyp.t : Kind.t` with rules presented in the attached
-[latex document](./latex/kind-judgements.pdf). Kind assignment has an affinity for Ty over singletons.
-
-## Kind AssignmentS
-
-Kind assignmentS is defined by a judgement
-`Delta.t ; TyVarCtx.t |- HTyp.t : Kind.t` with rules presented in the attached
-[latex document](./latex/kind-judgements.pdf). Kind assignmentS has an affinity for singletons over Ty.
-
-## Tau Unrecognizing
-
-Tau unrecognizing is defined by a judgement `Delta.t ; TyVarCtx.t |- Kind.t <<= Kind.t`. This judgment explicitly unrecognizes the singleton in exchange for a Ty.
+[latex document](./latex/kind-judgements.pdf). Kind assignment can derive both singleton and Ty kinds for valid types.
 
 ## Kind Constructor Equivalence
 
@@ -186,8 +176,7 @@ where the "type aliasing" using the singleton kind occurs. The judgement
 
 Expansion from unexpanded types to expanded types is defined by
 bidirectional judgements `TyVarCtx.t |- UHTyp.t => Kind.t ~> HTyp.t -| Delta`
-and `TyVarCtx.t |- UHtyp.t <= Kind.t_1 ~> HTyp.t : Kind.t_2` for consistent
-`Kind.t_1` and `Kind.t_2`. These judgements are shown in the attached
+and `TyVarCtx.t |- UHtyp.t <= Kind.t ~> HTyp.t -| Delta`. These judgements are shown in the attached
 [latex document](./latex/kind-judgements.pdf). Type elaboration synthesis has an affinity for singletons over Ty.
 
 `Delta.t`'s `hole_sort` will be changed to a `Hole.t` so we can track type
@@ -208,14 +197,12 @@ type t = MetaVarMap.t(Hole.t);
 ## Type Pattern Analysis
 
 Type patterns analyze with a type to create new tyvar bindings and hole bindings
-`Delta.t_1 ; TyVarCtx.t_1 |- TPat.t <- HTyp.t -| TyVarCtx.t_2 ; Delta.t_2`. This
+`Delta.t_1 ; TyVarCtx.t_1 |- TPat.t <- HTyp.t : Kind.t -| TyVarCtx.t_2 ; Delta.t_2`. This
 judgement is in the attached [latex document](./latex/kind-judgements.pdf).
 
 ## Expression Elaboration for Type Aliases
 
-The typical expansion from unexpanded expressions to expanded expressions
-handles the new type alias case relying on the Type Pattern Analysis judgement
-to generate the bindings for the remaining subexpression. See the attached [latex document](./latex/kind-judgements.pdf).
+The expanded type alias expression also contains an explicit ascription for the kind associated with the internal type. See the attached [latex document](./latex/kind-judgements.pdf).
 
 # Action Semantics
 

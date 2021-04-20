@@ -11,12 +11,11 @@
 \usepackage{joshuadunfield}
 
 
-\newcommand{\elabAna}[6]{#1 \vdash #2 \Leftarrow #3 \leadsto #4 : #5 \dashv #6}
+\newcommand{\elabAna}[5]{#1 \vdash #2 \Leftarrow #3 \leadsto #4 \dashv #5}
 \newcommand{\elabSyn}[5]{#1 \vdash #2 \Rightarrow #3 \leadsto #4 \dashv #5}
-\newcommand{\patMatch}[4]{#1 \vdash #2 \vartriangleright #3 \dashv #4}
+\newcommand{\patMatch}[5]{#1 \vdash #2 : #3 \vartriangleright #4 \dashv #5}
 \newcommand{\kconsubkind}[3]{#1 \vdash #2 \lesssim #3}
 \newcommand{\kindAssign}[3]{#1 \vdash #2 : #3}
-\newcommand{\kindAssignS}[3]{#1 \vdash #2 :_s #3}
 \newcommand{\kformation}[2]{#1 \vdash #2 \textt{ kind} }
 \newcommand{\kequiv}[3]{#1 \vdash #2 \equiv #3}
 \newcommand{\kcequiv}[4]{#1 \vdash #2 \equiv #3 : #4}
@@ -24,7 +23,7 @@
 \newcommand{\tyvarValid}[1]{#1 \textt{ valid} }
 \newcommand{\tyvarNotValid}[1]{\lnot(#1 \textt{ }\textt{valid}) }
 \newcommand{\dexpTypeAssign}[3]{#1 \vdash #2 : #3}
-\newcommand{\tauUnrecognize}[3]{#1 \vdash #2 \Rrightarrow \ceil{#3}}
+\newcommand{\kindLeqLattice}[3]{#1 \vdash #2 \leq #3}
 
 \newcommand{\hPhi}{\Phi}
 \newcommand{\hGamma}{\Gamma}
@@ -36,7 +35,7 @@
 \newcommand{\htau}{\hat{\tau}}
 \newcommand{\hkappa}{\kappa}
 \newcommand{\dtau}{\tau}
-\newcommand{\hrho}{\hat{\rho}}
+\newcommand{\hrho}{\rho}
 
 \newcommand{\Ty}{\textt{Ty}}
 \newcommand{\KHole}{\textt{KHole}}
@@ -53,7 +52,7 @@
 \newcommand{\Dbinding}[3]{#1 :: #3[#2]}
 
 \newcommand{\htdefine}[3]{\textt{type }#1 \textt{ = } #2\textt{ in }#3}
-\newcommand{\dtdefine}[3]{\textt{type }#1 \textt{ = } #2\textt{ in }#3}
+\newcommand{\dtdefine}[4]{\textt{type }#1 \textt{ = } #2 : #3\textt{ in }#4}
 
 \begin{document}
 
@@ -70,14 +69,50 @@
 			\mathsf{Internal HTyp}       & \dtau  & ::= &
 			c ~\vert~ \dtau_1 \oplus \dtau_2 ~\vert~ \hlist{\dtau} ~\vert~ \hthole{u} ~\vert~ \hhole{\dtau}{u} \\
 			\mathsf{Type Vars}           & t      &     &                                                      \\
-			\mathsf{User Type Pattern}   & \hrho  & ::= &
+			\mathsf{Type Pattern}        & \hrho  & ::= &
 			t ~\vert~ \hthole{u} ~\vert~ \hhole{t}{u}                                                          \\
 			\mathsf{User Expression}     & \hexp  & ::= &
 			\htdefine{\hrho}{\htau}{\hexp} ~\vert~ elided                                                      \\
 			\mathsf{Internal Expression} & \dtau  & ::= &
-			\dtdefine{\hrho}{\dtau}{\dexp} ~\vert~ elided                                                      \\
+			\dtdefine{\hrho}{\dtau}{\hkappa}{\dexp} ~\vert~ elided                                             \\
 		\end{array}$
 \end{figure}
+
+\begin{minipage}{\linewidth}
+	\judgbox
+	{\kindLeqLattice{\Delta;\hPhi}{\hkappa_1}{\hkappa_2}}
+	{$\hkappa_1$ is more precise than $\hkappa_2$}
+	\begin{mathpar}
+		\inferrule[KLTrans]{
+			\kindLeqLattice{\Delta;\hPhi}{\hkappa_1}{\hkappa_2} \\
+			\kindLeqLattice{\Delta;\hPhi}{\hkappa_2}{\hkappa_3}
+		} {
+			\kindLeqLattice{\Delta;\hPhi}{\hkappa_1}{\hkappa_3}
+		}
+		\and
+		\inferrule[KLTyHole]{ }
+		{
+			\kindLeqLattice{\Delta;\hPhi}{\Ty}{\KHole}
+		}
+		\and
+		\inferrule[KLSingletonTy]{
+			\kindAssign{\Delta;\hPhi}{\dtau}{\Ty}
+		} {
+			\kindLeqLattice{\Delta;\hPhi}{\KSing{\dtau}}{\Ty}
+		}
+		\and
+		\inferrule[KLRespectEquiv]{
+			\kequiv{\Delta;\hPhi}{\hkappa_1}{\hkappa_2} \\
+		} {
+			\kindLeqLattice{\Delta;\hPhi}{\hkappa_1}{\hkappa_2}
+		}
+
+
+	\end{mathpar}
+\end{minipage}
+\\
+\\
+
 
 
 \begin{minipage}{\linewidth}
@@ -174,15 +209,14 @@
 \begin{minipage}{\linewidth}
 	\judgbox
 	{\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa}}
-	{$\dtau$ is assigned non-singleton kind $\hkappa$}
+	{$\dtau$ is assigned kind $\hkappa$}
 	\begin{mathpar}
 		\inferrule[KAConst]{ }{
 			\kindAssign{\Delta;\hPhi}{c}{\Ty}
 		}
 		\and
 		\inferrule[KAVar]{
-			t : \hkappa_1 \in \hPhi \\
-			\tauUnrecognize{\Delta;\hPhi}{\hkappa_1}{\hkappa_2}
+			t : \hkappa_1 \in \hPhi
 		} {
 			\kindAssign{\Delta;\hPhi}{t}{\hkappa_2}
 		}
@@ -214,85 +248,26 @@
 		} {
 			\kindAssign{\Delta;\hPhi}{\hhole{\dtau}{u}_{\sigma}}{\hkappa}
 		}
-
-	\end{mathpar}
-\end{minipage}
-\\
-\\
-
-\begin{minipage}{\linewidth}
-	\judgbox
-	{\kindAssignS{\Delta;\hPhi}{\dtau}{\hkappa}}
-	{$\dtau$ is assigned kind (with singleton affinity) $\hkappa$}
-	\begin{mathpar}
-		\inferrule[KAConst]{ }{
-			\kindAssignS{\Delta;\hPhi}{c}{\KSing{c}}
-		}
 		\and
-		\inferrule[KAVar]{
-			t : \hkappa \in \hPhi
-		} {
-			\kindAssignS{\Delta;\hPhi}{t}{\hkappa}
-		}
-		\and
-		\inferrule[KABinOp]{
-			\kindAssignS{\Delta;\hPhi}{\dtau_1}{\KSing{\dtau_1'}} \\
-			\kindAssignS{\Delta;\hPhi}{\dtau_2}{\KSing{\dtau_2'}}
-		} {
-			\kindAssignS{\Delta;\hPhi}{\dtau_1 \oplus \dtau_2}{\KSing{\dtau_1' \oplus \dtau_2'}}
-		}
-		\and
-		\inferrule[KAList]{
-			\kindAssignS{\Delta;\hPhi}{\dtau}{\KSing{\dtau'}}
-		} {
-			\kindAssignS{\Delta;\hPhi}{\hlist{\dtau}}{\KSing{\hlist{\dtau'}}}
-		}
-		\and
-		\inferrule[KAEHole]{
-			\Dbinding{u}{\hPhi'}{\hkappa} \in \Delta \\
-			\kindAssignS{\Delta;\hPhi}{\sigma}{\hPhi'}
-		} {
-			\kindAssignS{\Delta;\hPhi}{\hthole{u}_{\sigma}}{\hkappa}
-		}
-		\and
-		\inferrule[KANEHole]{
-			\kindAssignS{\Delta;\hPhi}{\dtau}{\hkappa'} \\
-			\Dbinding{u}{\hPhi'}{\hkappa} \in \Delta \\
-			\kindAssignS{\Delta;\hPhi}{\sigma}{\hPhi'}
-		} {
-			\kindAssignS{\Delta;\hPhi}{\hhole{\dtau}{u}_{\sigma}}{\hkappa}
-		}
-
-	\end{mathpar}
-\end{minipage}
-\\
-\\
-
-\begin{minipage}{\linewidth}
-	\judgbox
-	{\tauUnrecognize{\Delta;\hPhi}{\hkappa_1}{\hkappa_2}}
-	{$\hkappa_1$ is unrecognized to consistent superkind $\hkappa_2$}
-	\begin{mathpar}
-		\inferrule[KUSing]{
-			\kindAssignS{\Delta;\hPhi}{\dtau}{\KSing{\dtau'}}
+		\inferrule[KASelfRecognition]{
+			\kindAssign{\Delta;\hPhi}{\dtau}{\Ty}
 		}{
-			\tauUnrecognize{\Delta;\hPhi}{\KSing{\dtau'}}{\Ty}
+			\kindAssign{\Delta;\hPhi}{\dtau}{\KSing{\dtau}}
 		}
 		\and
-		\inferrule[KUTy]{
-		}{
-			\tauUnrecognize{\Delta;\hPhi}{\Ty}{\Ty}
+		\inferrule[KASubkind]{
+			\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa_1} \\
+			\kconsubkind{\Delta;\hPhi}{\hkappa_1}{\hkappa_2}
+		} {
+			\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa_2}
 		}
-		\and
-		\inferrule[KUHole]{ }{
-			\tauUnrecognize{\Delta;\hPhi}{\KHole}{\KHole}
-		}
+
+
+
 	\end{mathpar}
 \end{minipage}
 \\
 \\
-
-
 
 \begin{minipage}{\linewidth}
 	\judgbox
@@ -319,7 +294,7 @@
 		}
 		\and
 		\inferrule[KCESingEquiv]{
-			\kindAssignS{\Delta;\hPhi}{\dtau_1}{\KSing{\dtau_2}}
+			\kindAssign{\Delta;\hPhi}{\dtau_1}{\KSing{\dtau_2}}
 		} {
 			\kcequiv{\Delta;\hPhi}{\dtau_1}{\dtau_2}{\Ty}
 		}
@@ -338,16 +313,16 @@
 		}
 		\and
 		\inferrule[TElabSBinOp]{
-			\elabAna{\hPhi}{\htau_1}{\Ty}{\dtau_1}{\KSing{\dtau_1'}}{\Delta_1} \\
-			\elabAna{\hPhi}{\htau_2}{\Ty}{\dtau_2}{\KSing{\dtau_2'}}{\Delta_2}
+			\elabAna{\hPhi}{\htau_1}{\Ty}{\dtau_1}{\Delta_1} \\
+			\elabAna{\hPhi}{\htau_2}{\Ty}{\dtau_2}{\Delta_2}
 		}{
-			\elabSyn{\hPhi}{\htau_1 \oplus \htau_2}{\KSing{\dtau_1' \oplus \dtau_2'}}{\dtau_1 \oplus \dtau_2}{\Delta_1 \cup \Delta_2}
+			\elabSyn{\hPhi}{\htau_1 \oplus \htau_2}{\KSing{\dtau_1 \oplus \dtau_2}}{\dtau_1 \oplus \dtau_2}{\Delta_1 \cup \Delta_2}
 		}
 		\and
 		\inferrule[TElabSList]{
-			\elabAna{\hPhi}{\htau}{\Ty}{\dtau}{\KSing{\dtau'}}{\Delta}
+			\elabAna{\hPhi}{\htau}{\Ty}{\dtau}{\Delta}
 		} {
-			\elabSyn{\hPhi}{\hlist{\htau}}{\KSing{\hlist{\dtau'}}}{\hlist{\dtau}}{\Delta}
+			\elabSyn{\hPhi}{\hlist{\htau}}{\KSing{\hlist{\dtau}}}{\hlist{\dtau}}{\Delta}
 		}
 		\and
 		\inferrule[TElabSVar]{
@@ -377,9 +352,8 @@
 \\
 \begin{minipage}{\linewidth}
 	\judgbox
-	{\elabAna{\hPhi}{\htau}{\hkappa_1}{\dtau}{\hkappa_2}{\Delta}}
-	{$\htau$ analyzes against kind $\hkappa_1$ and
-		elaborates to $\dtau$ of consistent subkind $\hkappa_2$}
+	{\elabAna{\hPhi}{\htau}{\hkappa}{\dtau}{\Delta}}
+	{$\htau$ analyzes against kind $\hkappa_1$ and elaborates to $\dtau$}
 	\begin{mathpar}
 		\inferrule[TElabASubsume]{
 			\htau \neq t \text{ where } t \not\in \hPhi \\
@@ -388,23 +362,23 @@
 			\elabSyn{\hPhi}{\htau}{\hkappa'}{\dtau}{\Delta} \\
 			\kconsubkind{\Delta;\hPhi}{\hkappa'}{\hkappa}
 		}{
-			\elabAna{\hPhi}{\htau}{\hkappa}{\dtau}{\hkappa'}{\Delta}
+			\elabAna{\hPhi}{\htau}{\hkappa}{\dtau}{\Delta}
 		}
 		\and
 		\inferrule[TElabAUVar]{
 		t \not\in \hPhi
 		} {
-		\elabAna{\hPhi}{t}{\KHole}{\hhole{t}{u}_{\idof{\hPhi}}}{\KHole}{\Dbinding{u}{\hPhi}{\kehole} }
+		\elabAna{\hPhi}{t}{\KHole}{\hhole{t}{u}_{\idof{\hPhi}}}{\Dbinding{u}{\hPhi}{\kehole} }
 		}
 		\and
 		\inferrule[TElabAEHole]{ } {
-		\elabAna{\hPhi}{\hthole{u}}{\hkappa}{\hthole{u}_{\idof{\hPhi}}}{\hkappa}{\Dbinding{u}{\hPhi}{\kappa}}
+		\elabAna{\hPhi}{\hthole{u}}{\hkappa}{\hthole{u}_{\idof{\hPhi}}}{\Dbinding{u}{\hPhi}{\kappa}}
 		}
 		\and
 		\inferrule[TElabANEHole]{
 		\elabSyn{\hPhi}{\htau}{\hkappa'}{\dtau}{\Delta}
 		} {
-		\elabAna{\hPhi}{\hhole{\htau}{u}}{\hkappa}{\hhole{\dtau}{u}_{\idof{\hPhi}}}{\hkappa}{\Delta,\Dbinding{u}{\hPhi}{\kappa}}
+		\elabAna{\hPhi}{\hhole{\htau}{u}}{\hkappa}{\hhole{\dtau}{u}_{\idof{\hPhi}}}{\Delta,\Dbinding{u}{\hPhi}{\kappa}}
 		}
 
 	\end{mathpar}
@@ -414,24 +388,23 @@
 
 \begin{minipage}{\linewidth}
 	\judgbox
-	{\patMatch{\Delta_1;\hPhi_1}{\dtau}{\hrho}{\hPhi_2;\Delta_2}}
-	{$\hrho$ analyzes against $\dtau$ yielding new tyvar and hole bindings}
+	{\patMatch{\Delta_1;\hPhi_1}{\dtau}{\hkappa}{\hrho}{\hPhi_2;\Delta_2}}
+	{$\hrho$ matches against $\dtau : \hkappa$ extending the relevant contexts}
 	\begin{mathpar}
 		\inferrule[RESVar]{
-			\tyvarValid{t} \\
-			\kindAssignS{\Delta;\hPhi}{\dtau}{\hkappa}
+			\tyvarValid{t}
 		}{
-			\patMatch{\Delta;\hPhi}{\dtau}{t}{t :: \hkappa;\EmptyDelta}
+			\patMatch{\Delta;\hPhi}{\dtau}{\hkappa}{t}{\hPhi,t :: \hkappa;\Delta}
 		}
 		\and
 		\inferrule[RESEHole]{ }{
-			\patMatch{\Delta;\hPhi}{\dtau}{\hthole{u}}{\EmptyhPhi;\Dbinding{u}{\hPhi}{\kehole}}
+			\patMatch{\Delta;\hPhi}{\dtau}{\hkappa}{\hthole{u}}{\hPhi;\Delta,\Dbinding{u}{\hPhi}{\kehole}}
 		}
 		\and
 		\inferrule[RESVarHole]{
 			\tyvarNotValid{t}
 		}{
-			\patMatch{\Delta;\hPhi}{\dtau}{\hhole{t}{u}}{\EmptyhPhi;\Dbinding{u}{\hPhi}{\kehole}}
+			\patMatch{\Delta;\hPhi}{\dtau}{\hkappa}{\hhole{t}{u}}{\hPhi;\Delta,\Dbinding{u}{\hPhi}{\kehole}}
 		}
 	\end{mathpar}
 \end{minipage}
@@ -445,15 +418,17 @@
 	\begin{mathpar}
 		\inferrule[ESDefine]{
 			\elabSyn{\hPhi_1}{\htau}{\hkappa}{\dtau}{\Delta_1} \\
-			\patMatch{\Delta_1;\hPhi_1}{\dtau}{\hrho}{\hPhi_2;\Delta_2} \\
-			\elabSyn{\hGamma;\hPhi_1 \cup \hPhi_2}{\hexp}{\dtau_1}{\dexp}{\Delta_3}
+			\patMatch{\Delta_1;\hPhi_1}{\dtau}{\hkappa}{\hrho}{\hPhi_2;\Delta_2} \\
+			\elabSyn{\hGamma;\hPhi_2}{\hexp}{\dtau_1}{\dexp}{\Delta_3}
 		}{
-			\elabSyn{\hGamma;\hPhi_1}{\htdefine{\hrho}{\htau}{\hexp}}{\dtau_1}{\dtdefine{\hrho}{\dtau}{\dexp}}{\Delta_1 \cup \Delta_2 \cup \Delta_3}
+			\elabSyn{\hGamma;\hPhi_1}{\htdefine{\hrho}{\htau}{\hexp}}{\dtau_1}{\dtdefine{\hrho}{\dtau}{\hkappa}{\dexp}}{\Delta_2 \cup \Delta_3}
 		}
 
 
 	\end{mathpar}
 \end{minipage}
+\\
+\\
 
 \begin{minipage}{\linewidth}
 	\judgbox
@@ -461,10 +436,10 @@
 	{$\dexp$ is assigned type $\dtau$}
 	\begin{mathpar}
 		\inferrule[DEDefine]{
-			\patMatch{\Delta;\hPhi_1}{\dtau}{\hrho}{\hPhi_2;\Delta} \\
-			\dexpTypeAssign{\Delta;\hGamma;\hPhi_1 \cup \hPhi_2}{\dexp}{\dtau}
+			\patMatch{\Delta_1;\hPhi_1}{\dtau_1}{\hkappa}{\hrho}{\hPhi_2;\Delta_2} \\
+			\dexpTypeAssign{\Delta_2;\hGamma;\hPhi_2}{\dexp}{\dtau_2}
 		}{
-			\dexpTypeAssign{\Delta;\hGamma;\hPhi_1}{\dtdefine{\hrho}{\dtau}{\dexp}}{\dtau}
+			\dexpTypeAssign{\Delta;\hGamma;\hPhi_1}{\dtdefine{\hrho}{\dtau_1}{\hkappa}{\dexp}}{\dtau_2}
 		}
 
 
@@ -475,54 +450,28 @@
 
 \newtheorem{thm}{Theorem}
 \begin{thm}[Well-Kinded Elaboration]\ \\
-	(1) If $\elabSyn{\hPhi}{\htau}{\hkappa}{\dtau}{\Delta}$ and $\kindAssignS{\Delta;\hPhi}{\dtau}{\hkappa}$ \\
-	(2) If $\elabAna{\hPhi}{\htau}{\hkappa_1}{\dtau}{\hkappa_2}{\Delta}$ then $\kconsubkind{\Delta;\hPhi}{\hkappa_2}{\hkappa_1}$ and $\kindAssignS{\Delta;\hPhi}{\dtau}{\hkappa_2}$
+	(1) If $\elabSyn{\hPhi}{\htau}{\hkappa}{\dtau}{\Delta}$ then $\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa}$ \\
+	(2) If $\elabAna{\hPhi}{\htau}{\hkappa}{\dtau}{\Delta}$ then $\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa}$
 \end{thm}
 \noindent
-This is like the Typed Elaboration theorem in the POPL19 paper. Note that analysis produces the most precise kind (preferring singletons) even when analyzing against unprecise $\Ty$. This is because the relevant rules are handled by synthesis.
-
-\begin{thm}[Type Elaboration Singleton Affinity]\ \\
-	(1) If $\elabSyn{\hPhi}{\htau}{\hkappa}{\dtau}{\Delta}$ then $\hkappa = \KSing{\dtau'}$ or $\hkappa = \KHole$. \\
-	(2) If $\elabAna{\hPhi}{\htau}{\hkappa_1}{\dtau}{\hkappa_2}{\Delta}$ then $\hkappa_2 = \KSing{\dtau'}$ or $\hkappa_2 = \KHole$.
-\end{thm}
-\noindent
-Type Elaboration always elaborates to the most precise kind -- it never elaborates to $\Ty$ directly even when analyzed against $\Ty$.
-
-\begin{thm}[Kind Assignment Unicity]\ \\
-	(1) If $\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa}$ and $\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa'}$ then $\hkappa = \hkappa'$ \\
-	(2) If $\kindAssignS{\Delta;\hPhi}{\dtau}{\hkappa}$ and $\kindAssignS{\Delta;\hPhi}{\dtau}{\hkappa'}$ then $\hkappa = \hkappa'$
-\end{thm}
-\noindent
-This is like the Type Unicity theorem in the POPL19 paper.
-
-\begin{thm}[Kind Assignment Ty Affinity]\ \\
-	If $\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa}$ then $\tauUnrecognize{\Delta;\hPhi}{\hkappa}{\hkappa}$
-\end{thm}
-\noindent
-Kind assignment assigns $\Ty$ rather than a singleton. When the kind needs to be a singleton rather than $\Ty$, instead use: $\kindAssignS{\Delta;\hPhi}{\dtau}{\hkappa}$.
-
-\begin{thm}[Kind AssignmentS Singleton Affinity]\ \\
-	If $\kindAssignS{\Delta;\hPhi}{\dtau}{\hkappa}$ then $\hkappa = \KSing{\dtau'}$ or $\hkappa = \KHole$.
-\end{thm}
-\noindent
-Kind assignment assigns a singleton rather than $\Ty$. When the kind needs to be a $\Ty$, instead use: $\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa}$.
-
+This is like the Typed Elaboration theorem in the POPL19 paper.
 
 \begin{thm}[Type Elaboration Unicity]\ \\
 	(1) If $\elabSyn{\hPhi}{\htau}{\hkappa_1}{\dtau_1}{\Delta_1}$ and $\elabSyn{\hPhi}{\htau}{\hkappa_2}{\dtau_2}{\Delta_2}$ then $\hkappa_1 = \hkappa_2$, $\dtau_1 = \dtau_2$, $\Delta_1 = \Delta_2$ \\
-	(2) If $\elabAna{\hPhi}{\htau}{\hkappa}{\dtau_1}{\hkappa_1}{\Delta_1}$ and $\elabAna{\hPhi}{\htau}{\hkappa}{\dtau_2}{\hkappa_2}{\Delta_2}$ then $\dtau_1 = \dtau_2$, $\hkappa_1 = \hkappa_2$, $\Delta_1 = \Delta_2$
+	(2) If $\elabAna{\hPhi}{\htau}{\hkappa}{\dtau_1}{\Delta_1}$ and $\elabAna{\hPhi}{\htau}{\hkappa}{\dtau_2}{\Delta_2}$ then $\dtau_1 = \dtau_2$, $\Delta_1 = \Delta_2$
 \end{thm}
 \noindent
 This is like the Elaboration Unicity theorem in the POPL19 paper.
 
 
-
-\begin{thm}[Kind Assignment Consistency]\ \\
-	If $\kindAssignS{\Delta;\hPhi}{\dtau}{\hkappa_1}$ and $\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa_2}$ then $\kconsubkind{\Delta;\hPhi}{\hkappa_1}{\hkappa_2}$ and $\hkappa_1,\hkappa_2$ are either both $\KHole$ or neither is.
+\begin{thm}[Kind Synthesis Precision]\ \\
+	If $\elabSyn{\hPhi}{\htau}{\hkappa_1}{\dtau}{\Delta_1}$ and $\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa_2}$ then $\kindLeqLattice{\Delta;\hPhi}{\hkappa_1}{\hkappa_2}$
 \end{thm}
 
 \noindent
-Kind Assignment Consistency says that both the singleton form and non-singleton form of kind assignment differ only in that the singleton form is more precise. But both must agree on holes.
+Kind Synthesis Precision says that elaboration synthesizes the most precise kappa possible for a given input type. The proof goes by induction on the elaboration rules and then for each tau, induction on all valid kind assignments for that tau ensuring that each one assignment is greater in the lattice than the kappa synthesized by elaboration.
+
+
 
 
 \end{document}
