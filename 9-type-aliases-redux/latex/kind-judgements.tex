@@ -16,6 +16,7 @@
 \newcommand{\patMatch}[4]{#1 \vdash #2 \vartriangleright #3 \dashv #4}
 \newcommand{\kconsubkind}[3]{#1 \vdash #2 \lesssim #3}
 \newcommand{\kindAssign}[3]{#1 \vdash #2 : #3}
+\newcommand{\kindAssignS}[3]{#1 \vdash #2 :_s #3}
 \newcommand{\kformation}[2]{#1 \vdash #2 \textt{ kind} }
 \newcommand{\kequiv}[3]{#1 \vdash #2 \equiv #3}
 \newcommand{\kcequiv}[4]{#1 \vdash #2 \equiv #3 : #4}
@@ -23,7 +24,6 @@
 \newcommand{\tyvarValid}[1]{#1 \textt{ valid} }
 \newcommand{\tyvarNotValid}[1]{\lnot(#1 \textt{ }\textt{valid}) }
 \newcommand{\dexpTypeAssign}[3]{#1 \vdash #2 : #3}
-\newcommand{\tauSelfRecognized}[4]{#1 \vdash #2 : #3 \Rrightarrow \floor{#4}}
 \newcommand{\tauUnrecognize}[3]{#1 \vdash #2 \Rrightarrow \ceil{#3}}
 
 \newcommand{\hPhi}{\Phi}
@@ -222,20 +222,47 @@
 
 \begin{minipage}{\linewidth}
 	\judgbox
-	{\tauSelfRecognized{\Delta;\hPhi}{\dtau}{\hkappa_1}{\hkappa_2}}
-	{$\dtau$ of kind $\hkappa_1$ is self-recognized to consistent subkind $\hkappa_2$}
+	{\kindAssignS{\Delta;\hPhi}{\dtau}{\hkappa}}
+	{$\dtau$ is assigned kind (with singleton affinity) $\hkappa$}
 	\begin{mathpar}
-		\inferrule[KSRTy]{
-			\kindAssign{\Delta;\hPhi}{\dtau}{\Ty}
-		}{
-			\tauSelfRecognized{\Delta;\hPhi}{\dtau}{\Ty}{\KSing{\dtau}}
+		\inferrule[KAConst]{ }{
+			\kindAssignS{\Delta;\hPhi}{c}{\KSing{c}}
 		}
 		\and
-		\inferrule[KSRHole]{
-			\kindAssign{\Delta;\hPhi}{\dtau}{\KHole}
-		}{
-			\tauSelfRecognized{\Delta;\hPhi}{\dtau}{\KHole}{\KHole}
+		\inferrule[KAVar]{
+			t : \hkappa \in \hPhi
+		} {
+			\kindAssignS{\Delta;\hPhi}{t}{\hkappa}
 		}
+		\and
+		\inferrule[KABinOp]{
+			\kindAssignS{\Delta;\hPhi}{\dtau_1}{\KSing{\dtau_1'}} \\
+			\kindAssignS{\Delta;\hPhi}{\dtau_2}{\KSing{\dtau_2'}}
+		} {
+			\kindAssignS{\Delta;\hPhi}{\dtau_1 \oplus \dtau_2}{\KSing{\dtau_1' \oplus \dtau_2'}}
+		}
+		\and
+		\inferrule[KAList]{
+			\kindAssignS{\Delta;\hPhi}{\dtau}{\KSing{\dtau'}}
+		} {
+			\kindAssignS{\Delta;\hPhi}{\hlist{\dtau}}{\KSing{\hlist{\dtau'}}}
+		}
+		\and
+		\inferrule[KAEHole]{
+			\Dbinding{u}{\hPhi'}{\hkappa} \in \Delta \\
+			\kindAssignS{\Delta;\hPhi}{\sigma}{\hPhi'}
+		} {
+			\kindAssignS{\Delta;\hPhi}{\hthole{u}_{\sigma}}{\hkappa}
+		}
+		\and
+		\inferrule[KANEHole]{
+			\kindAssignS{\Delta;\hPhi}{\dtau}{\hkappa'} \\
+			\Dbinding{u}{\hPhi'}{\hkappa} \in \Delta \\
+			\kindAssignS{\Delta;\hPhi}{\sigma}{\hPhi'}
+		} {
+			\kindAssignS{\Delta;\hPhi}{\hhole{\dtau}{u}_{\sigma}}{\hkappa}
+		}
+
 	\end{mathpar}
 \end{minipage}
 \\
@@ -247,10 +274,14 @@
 	{$\hkappa_1$ is unrecognized to consistent superkind $\hkappa_2$}
 	\begin{mathpar}
 		\inferrule[KUSing]{
-			\kindAssign{\Delta;\hPhi}{\dtau}{\Ty} \\
-			\tauSelfRecognized{\Delta;\hPhi}{\dtau}{\Ty}{\KSing{\dtau}}
+			\kindAssignS{\Delta;\hPhi}{\dtau}{\KSing{\dtau'}}
 		}{
-			\tauUnrecognize{\Delta;\hPhi}{\KSing{\dtau}}{\Ty}
+			\tauUnrecognize{\Delta;\hPhi}{\KSing{\dtau'}}{\Ty}
+		}
+		\and
+		\inferrule[KUTy]{
+		}{
+			\tauUnrecognize{\Delta;\hPhi}{\Ty}{\Ty}
 		}
 		\and
 		\inferrule[KUHole]{ }{
@@ -288,7 +319,7 @@
 		}
 		\and
 		\inferrule[KCESingEquiv]{
-			\kindAssign{\Delta;\hPhi}{\dtau_1}{\KSing{\dtau_2}}
+			\kindAssignS{\Delta;\hPhi}{\dtau_1}{\KSing{\dtau_2}}
 		} {
 			\kcequiv{\Delta;\hPhi}{\dtau_1}{\dtau_2}{\Ty}
 		}
@@ -307,19 +338,16 @@
 		}
 		\and
 		\inferrule[TElabSBinOp]{
-			\elabAna{\hPhi}{\htau_1}{\Ty}{\dtau_1}{\Ty}{\Delta_1} \\
-			\tauSelfRecognized{\Delta_1;\hPhi}{\dtau_1}{\Ty}{\KSing{\dtau_1}} \\
-			\elabAna{\hPhi}{\htau_2}{\Ty}{\dtau_2}{\Ty}{\Delta_2} \\
-			\tauSelfRecognized{\Delta_2;\hPhi}{\dtau_2}{\Ty}{\KSing{\dtau_2}}
+			\elabAna{\hPhi}{\htau_1}{\Ty}{\dtau_1}{\KSing{\dtau_1'}}{\Delta_1} \\
+			\elabAna{\hPhi}{\htau_2}{\Ty}{\dtau_2}{\KSing{\dtau_2'}}{\Delta_2}
 		}{
-			\elabSyn{\hPhi}{\htau_1 \oplus \htau_2}{\KSing{\dtau_1 \oplus \dtau_2}}{\dtau_1 \oplus \dtau_2}{\Delta_1 \cup \Delta_2}
+			\elabSyn{\hPhi}{\htau_1 \oplus \htau_2}{\KSing{\dtau_1' \oplus \dtau_2'}}{\dtau_1 \oplus \dtau_2}{\Delta_1 \cup \Delta_2}
 		}
 		\and
 		\inferrule[TElabSList]{
-			\elabAna{\hPhi}{\htau}{\Ty}{\dtau}{\Ty}{\Delta} \\
-			\tauSelfRecognized{\Delta;\hPhi}{\dtau}{\Ty}{\KSing{\dtau}}
+			\elabAna{\hPhi}{\htau}{\Ty}{\dtau}{\KSing{\dtau'}}{\Delta}
 		} {
-			\elabSyn{\hPhi}{\hlist{\htau}}{\KSing{\hlist{\dtau}}}{\hlist{\dtau}}{\Delta}
+			\elabSyn{\hPhi}{\hlist{\htau}}{\KSing{\hlist{\dtau'}}}{\hlist{\dtau}}{\Delta}
 		}
 		\and
 		\inferrule[TElabSVar]{
@@ -391,10 +419,9 @@
 	\begin{mathpar}
 		\inferrule[RESVar]{
 			\tyvarValid{t} \\
-			\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa_1} \\
-			\tauSelfRecognized{\Delta;\hPhi}{\dtau}{\hkappa_1}{\hkappa_2}
+			\kindAssignS{\Delta;\hPhi}{\dtau}{\hkappa}
 		}{
-			\patMatch{\Delta;\hPhi}{\dtau}{t}{t :: \hkappa_2;\EmptyDelta}
+			\patMatch{\Delta;\hPhi}{\dtau}{t}{t :: \hkappa;\EmptyDelta}
 		}
 		\and
 		\inferrule[RESEHole]{ }{
@@ -448,29 +475,37 @@
 
 \newtheorem{thm}{Theorem}
 \begin{thm}[Well-Kinded Elaboration]\ \\
-	(1) If $\elabSyn{\hPhi}{\htau}{\hkappa}{\dtau}{\Delta}$ and $\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa'}$ then $\tauSelfRecognized{\Delta;\hPhi}{\dtau}{\hkappa'}{\hkappa}$ \\
-	(2) If $\elabAna{\hPhi}{\htau}{\hkappa_1}{\dtau}{\hkappa_2}{\Delta}$ then $\kconsubkind{\Delta;\hPhi}{\hkappa_1}{\hkappa_2}$ and $\exists \hkappa_3$ such that $\kconsubkind{\Delta;\hPhi}{\hkappa_3}{\hkappa_2}$ and $\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa_3}$
+	(1) If $\elabSyn{\hPhi}{\htau}{\hkappa}{\dtau}{\Delta}$ and $\kindAssignS{\Delta;\hPhi}{\dtau}{\hkappa}$ \\
+	(2) If $\elabAna{\hPhi}{\htau}{\hkappa_1}{\dtau}{\hkappa_2}{\Delta}$ then $\kconsubkind{\Delta;\hPhi}{\hkappa_2}{\hkappa_1}$ and $\kindAssignS{\Delta;\hPhi}{\dtau}{\hkappa_2}$
 \end{thm}
 \noindent
-This is like the Typed Elaboration theorem in the POPL19 paper except that (1) synthesis produces the most refined kind while assignment prefers Ty (see \textit{Kind Assignment Ty Affinity} theorem) and (2) analysis doesn't necessarily produce the most consistent subkind for $\tau$.
+This is like the Typed Elaboration theorem in the POPL19 paper. Note that analysis produces the most precise kind (preferring singletons) even when analyzing against unprecise $\Ty$. This is because the relevant rules are handled by synthesis.
 
-\begin{thm}[Type Elaboration Synthesis Singleton Affinity]\ \\
-	If $\elabSyn{\hPhi}{\htau}{\hkappa}{\dtau}{\Delta}$ then $\tauSelfRecognized{\Delta;\hPhi}{\dtau}{\hkappa}{\hkappa}$
+\begin{thm}[Type Elaboration Singleton Affinity]\ \\
+	(1) If $\elabSyn{\hPhi}{\htau}{\hkappa}{\dtau}{\Delta}$ then $\hkappa = \KSing{\dtau'}$ or $\hkappa = \KHole$. \\
+	(2) If $\elabAna{\hPhi}{\htau}{\hkappa_1}{\dtau}{\hkappa_2}{\Delta}$ then $\hkappa_2 = \KSing{\dtau'}$ or $\hkappa_2 = \KHole$.
 \end{thm}
 \noindent
-Type Elaboration synthesis always synthesizes the most self-recognized kind.
+Type Elaboration always elaborates to the most precise kind -- it never elaborates to $\Ty$ directly even when analyzed against $\Ty$.
 
 \begin{thm}[Kind Assignment Unicity]\ \\
-	If $\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa}$ and $\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa'}$ then $\hkappa = \hkappa'$
+	(1) If $\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa}$ and $\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa'}$ then $\hkappa = \hkappa'$ \\
+	(2) If $\kindAssignS{\Delta;\hPhi}{\dtau}{\hkappa}$ and $\kindAssignS{\Delta;\hPhi}{\dtau}{\hkappa'}$ then $\hkappa = \hkappa'$
 \end{thm}
 \noindent
 This is like the Type Unicity theorem in the POPL19 paper.
 
 \begin{thm}[Kind Assignment Ty Affinity]\ \\
-	If $\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa}$ then $\tauUnrecognize{\Delta;\hPhi}{\dtau}{\hkappa}{\hkappa}$
+	If $\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa}$ then $\tauUnrecognize{\Delta;\hPhi}{\hkappa}{\hkappa}$
 \end{thm}
 \noindent
-Kind assignment assigns $\Ty$ rather than $\KSing{\dtau}$. The kind is explicitly refined where needed in other places using the recognition judgment: $\tauSelfRecognized{\Delta;\hPhi}{\dtau}{\hkappa_1}{\hkappa_2}$.
+Kind assignment assigns $\Ty$ rather than a singleton. When the kind needs to be a singleton rather than $\Ty$, instead use: $\kindAssignS{\Delta;\hPhi}{\dtau}{\hkappa}$.
+
+\begin{thm}[Kind AssignmentS Singleton Affinity]\ \\
+	If $\kindAssignS{\Delta;\hPhi}{\dtau}{\hkappa}$ then $\hkappa = \KSing{\dtau'}$ or $\hkappa = \KHole$.
+\end{thm}
+\noindent
+Kind assignment assigns a singleton rather than $\Ty$. When the kind needs to be a $\Ty$, instead use: $\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa}$.
 
 
 \begin{thm}[Type Elaboration Unicity]\ \\
@@ -482,21 +517,12 @@ This is like the Elaboration Unicity theorem in the POPL19 paper.
 
 
 
-\begin{thm}[Kind Precision]\ \\
-	If $\elabSyn{\hPhi}{\htau}{\hkappa}{\dtau}{\Delta}$ and $\elabAna{\hPhi}{\htau}{\hkappa'}{\dtau}{\hkappa''}{\Delta}$ then $\kconsubkind{\Delta;\hPhi}{\hkappa}{\hkappa'}$
+\begin{thm}[Kind Assignment Consistency]\ \\
+	If $\kindAssignS{\Delta;\hPhi}{\dtau}{\hkappa_1}$ and $\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa_2}$ then $\kconsubkind{\Delta;\hPhi}{\hkappa_1}{\hkappa_2}$ and $\hkappa_1,\hkappa_2$ are either both $\KHole$ or neither is.
 \end{thm}
 
 \noindent
-Kind Precision says that any kind $\hkappa$ that successfully analyzes against $\htau$ is a consistent superkind of the one that is synthesized from $\htau$. In other words, the kind that is synthesized is the most precise.
-
-
-\begin{thm}[Reognition Inversion]\ \\
-	If $\tauSelfRecognized{\Delta;\hPhi}{\dtau}{\hkappa_2}{\hkappa_1}$ then $\tauUnrecognize{\Delta;\hPhi}{\hkappa_1}{\hkappa_2}$
-\end{thm}
-
-\noindent
-Unrecognizing inverts self-recognition.
-
+Kind Assignment Consistency says that both the singleton form and non-singleton form of kind assignment differ only in that the singleton form is more precise. But both must agree on holes.
 
 
 \end{document}

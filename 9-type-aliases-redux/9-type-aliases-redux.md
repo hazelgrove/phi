@@ -163,10 +163,15 @@ Kind assignment is defined by a judgement
 `Delta.t ; TyVarCtx.t |- HTyp.t : Kind.t` with rules presented in the attached
 [latex document](./latex/kind-judgements.pdf). Kind assignment has an affinity for Ty over singletons.
 
-## Tau Self-recognition and unrecognizing
+## Kind AssignmentS
 
-Tau self-recognition is defined by a judgement
-`Delta.t ; TyVarCtx.t |- HTyp.t : Kind.t =>> Kind.t` and unrecognizing is defined by `Delta.t ; TyVarCtx.t |- HTyp.t : Kind.t <<= Kind.t`. These rules explicitly recognize and unrecognize the singleton within a Ty.
+Kind assignmentS is defined by a judgement
+`Delta.t ; TyVarCtx.t |- HTyp.t : Kind.t` with rules presented in the attached
+[latex document](./latex/kind-judgements.pdf). Kind assignmentS has an affinity for singletons over Ty.
+
+## Tau Unrecognizing
+
+Tau unrecognizing is defined by a judgement `Delta.t ; TyVarCtx.t |- Kind.t <<= Kind.t`. This judgment explicitly unrecognizes the singleton in exchange for a Ty.
 
 ## Kind Constructor Equivalence
 
