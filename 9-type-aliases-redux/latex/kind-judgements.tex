@@ -44,17 +44,25 @@
 
 \newcommand{\llparenthesiscolor}{\textcolor{violet}{\llparenthesis}}
 \newcommand{\rrparenthesiscolor}{\textcolor{violet}{\rrparenthesis}}
+\newcommand{\llparenthesiscolorc}{\textcolor{cyan}{\llparenthesis}}
+\newcommand{\rrparenthesiscolorc}{\textcolor{cyan}{\rrparenthesis}}
 \newcommand{\hthole}[1]{\llparenthesiscolor\rrparenthesiscolor^{#1}}
 \newcommand{\hhole}[2]{\llparenthesiscolor#1\rrparenthesiscolor^{#2}}
+\newcommand{\patehole}{\llparenthesiscolorc\rrparenthesiscolorc}
+\newcommand{\pathole}[1]{\llparenthesiscolorc#1\rrparenthesiscolorc}
 \newcommand{\kehole}{\llparenthesiscolor\rrparenthesiscolor}
 
 \newcommand{\idof}[1]{\mathsf{id}(#1)}
 \newcommand{\Dbinding}[3]{#1 :: #3[#2]}
+\newcommand{\domOf}[1]{\mathsf{dom}(#1)}
 
 \newcommand{\htdefine}[3]{\textt{type }#1 \textt{ = } #2\textt{ in }#3}
 \newcommand{\dtdefine}[4]{\textt{type }#1 \textt{ = } #2 : #3\textt{ in }#4}
 
 \begin{document}
+
+TODO:
+1. think about decidability of analysis, and equivalence
 
 \begin{figure}[t]
 	$\arraycolsep=4pt\begin{array}{rllllll}
@@ -70,50 +78,13 @@
 			c ~\vert~ \dtau_1 \oplus \dtau_2 ~\vert~ \hlist{\dtau} ~\vert~ \hthole{u} ~\vert~ \hhole{\dtau}{u} \\
 			\mathsf{Type Vars}           & t      &     &                                                      \\
 			\mathsf{Type Pattern}        & \hrho  & ::= &
-			t ~\vert~ \hthole{u} ~\vert~ \hhole{t}{u}                                                          \\
+			t ~\vert~ \patehole ~\vert~ \pathole{t}                                                            \\
 			\mathsf{User Expression}     & \hexp  & ::= &
 			\htdefine{\hrho}{\htau}{\hexp} ~\vert~ elided                                                      \\
 			\mathsf{Internal Expression} & \dtau  & ::= &
 			\dtdefine{\hrho}{\dtau}{\hkappa}{\dexp} ~\vert~ elided                                             \\
 		\end{array}$
 \end{figure}
-
-\begin{minipage}{\linewidth}
-	\judgbox
-	{\kindLeqLattice{\Delta;\hPhi}{\hkappa_1}{\hkappa_2}}
-	{$\hkappa_1$ is more precise than $\hkappa_2$}
-	\begin{mathpar}
-		\inferrule[KLTrans]{
-			\kindLeqLattice{\Delta;\hPhi}{\hkappa_1}{\hkappa_2} \\
-			\kindLeqLattice{\Delta;\hPhi}{\hkappa_2}{\hkappa_3}
-		} {
-			\kindLeqLattice{\Delta;\hPhi}{\hkappa_1}{\hkappa_3}
-		}
-		\and
-		\inferrule[KLTyHole]{ }
-		{
-			\kindLeqLattice{\Delta;\hPhi}{\Ty}{\KHole}
-		}
-		\and
-		\inferrule[KLSingletonTy]{
-			\kindAssign{\Delta;\hPhi}{\dtau}{\Ty}
-		} {
-			\kindLeqLattice{\Delta;\hPhi}{\KSing{\dtau}}{\Ty}
-		}
-		\and
-		\inferrule[KLRespectEquiv]{
-			\kequiv{\Delta;\hPhi}{\hkappa_1}{\hkappa_2} \\
-		} {
-			\kindLeqLattice{\Delta;\hPhi}{\hkappa_1}{\hkappa_2}
-		}
-
-
-	\end{mathpar}
-\end{minipage}
-\\
-\\
-
-
 
 \begin{minipage}{\linewidth}
 	\judgbox
@@ -216,9 +187,9 @@
 		}
 		\and
 		\inferrule[KAVar]{
-			t : \hkappa_1 \in \hPhi
+			t : \hkappa \in \hPhi
 		} {
-			\kindAssign{\Delta;\hPhi}{t}{\hkappa_2}
+			\kindAssign{\Delta;\hPhi}{t}{\hkappa}
 		}
 		\and
 		\inferrule[KABinOp]{
@@ -255,7 +226,7 @@
 			\kindAssign{\Delta;\hPhi}{\dtau}{\KSing{\dtau}}
 		}
 		\and
-		\inferrule[KASubkind]{
+		\inferrule[KASubsumption]{
 			\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa_1} \\
 			\kconsubkind{\Delta;\hPhi}{\hkappa_1}{\hkappa_2}
 		} {
@@ -274,12 +245,6 @@
 	{\kcequiv{\Delta;\hPhi}{\dtau_1}{\dtau_2}{\hkappa}}
 	{$\dtau_1$ is equivalent to $\dtau_2$ and has kind $\hkappa_2$} \;\\
 	\begin{mathpar}
-		\inferrule[KCERefl]{
-			\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa}
-		} {
-			\kcequiv{\Delta;\hPhi}{\dtau}{\dtau}{\hkappa}
-		}
-		\and
 		\inferrule[KCESymm]{
 			\kcequiv{\Delta;\hPhi}{\dtau_1}{\dtau_2}{\hkappa}
 		} {
@@ -297,6 +262,51 @@
 			\kindAssign{\Delta;\hPhi}{\dtau_1}{\KSing{\dtau_2}}
 		} {
 			\kcequiv{\Delta;\hPhi}{\dtau_1}{\dtau_2}{\Ty}
+		}
+		\and
+		\inferrule[KCEConst]{ }{
+			\kcequiv{\Delta;\hPhi}{c}{c}{\Ty}
+		}
+		\and
+		\inferrule[KCEVar]{
+			t : \hkappa \in \hPhi
+		} {
+			\kcequiv{\Delta;\hPhi}{t}{t}{\hkappa}
+		}
+		\and
+		\inferrule[KCEBinOp]{
+			\kcequiv{\Delta;\hPhi}{\dtau_1}{\dtau_2}{\Ty} \\
+			\kcequiv{\Delta;\hPhi}{\dtau_3}{\dtau_4}{\Ty}
+		} {
+			\kcequiv{\Delta;\hPhi}{\dtau_1 \oplus \dtau_3}{\dtau_2 \oplus \dtau_4}{\Ty}
+		}
+		\and
+		\inferrule[KAList]{
+			\kcequiv{\Delta;\hPhi}{\dtau_1}{\dtau_2}{\Ty}
+		} {
+			\kcequiv{\Delta;\hPhi}{\hlist{\dtau_1}}{\hlist{\dtau_2}}{\Ty}
+		}
+		\and
+		\inferrule[KAEHole]{
+			\Dbinding{u_1}{\hPhi'_1}{\hkappa_1} \in \Delta \\
+			\kindAssign{\Delta;\hPhi}{\sigma_2}{\hPhi'_1} \\
+			\Dbinding{u_2}{\hPhi'_2}{\hkappa_2} \in \Delta \\
+			\kindAssign{\Delta;\hPhi}{\sigma_2}{\hPhi'_2} \\
+			\kequiv{\Delta;\hPhi}{\hkappa_1}{\hkappa_2}
+		} {
+			\kcequiv{\Delta;\hPhi}{\hthole{u_1}_{\sigma_1}}{\hthole{u_2}_{\sigma_2}}{\hkappa}
+		}
+		\and
+		\inferrule[KANEHole]{
+			\kindAssign{\Delta;\hPhi}{\dtau_1}{\hkappa'_1} \\
+			\kindAssign{\Delta;\hPhi}{\dtau_2}{\hkappa'_2} \\
+			\Dbinding{u_1}{\hPhi'_1}{\hkappa_1} \in \Delta \\
+			\kindAssign{\Delta;\hPhi}{\sigma_2}{\hPhi'_1} \\
+			\Dbinding{u_2}{\hPhi'_2}{\hkappa_2} \in \Delta \\
+			\kindAssign{\Delta;\hPhi}{\sigma_2}{\hPhi'_2} \\
+			\kequiv{\Delta;\hPhi}{\hkappa_1}{\hkappa_2}
+		} {
+			\kcequiv{\Delta;\hPhi}{\hhole{\dtau_1}{u_1}_{\sigma_1}}{\hhole{\dtau_2}{u_2}_{\sigma_2}}{\hkappa}
 		}
 	\end{mathpar}
 \end{minipage}
@@ -332,7 +342,7 @@
 		}
 		\and
 		\inferrule[TElabSUVar]{
-		t \not\in \hPhi
+		t \not\in \domOf{\hPhi}
 		} {
 		\elabSyn{\hPhi}{t}{\KHole}{\hhole{t}{u}_{\idof{\hPhi}}}{\Dbinding{u}{\hPhi}{\kehole} }
 		}
@@ -350,13 +360,14 @@
 \end{minipage}
 \\
 \\
+
 \begin{minipage}{\linewidth}
 	\judgbox
 	{\elabAna{\hPhi}{\htau}{\hkappa}{\dtau}{\Delta}}
 	{$\htau$ analyzes against kind $\hkappa_1$ and elaborates to $\dtau$}
 	\begin{mathpar}
 		\inferrule[TElabASubsume]{
-			\htau \neq t \text{ where } t \not\in \hPhi \\
+			\htau \neq t \text{ where } t \not\in \domOf{\hPhi} \\
 			\htau \neq \hthole{u} \\
 			\htau \neq \hhole{\htau'}{u} \\
 			\elabSyn{\hPhi}{\htau}{\hkappa'}{\dtau}{\Delta} \\
@@ -366,7 +377,7 @@
 		}
 		\and
 		\inferrule[TElabAUVar]{
-		t \not\in \hPhi
+		t \not\in \domOf{\hPhi}
 		} {
 		\elabAna{\hPhi}{t}{\KHole}{\hhole{t}{u}_{\idof{\hPhi}}}{\Dbinding{u}{\hPhi}{\kehole} }
 		}
@@ -388,23 +399,23 @@
 
 \begin{minipage}{\linewidth}
 	\judgbox
-	{\patMatch{\Delta_1;\hPhi_1}{\dtau}{\hkappa}{\hrho}{\hPhi_2;\Delta_2}}
-	{$\hrho$ matches against $\dtau : \hkappa$ extending the relevant contexts}
+	{\patMatch{\hPhi_1}{\dtau}{\hkappa}{\hrho}{\hPhi_2}}
+	{$\hrho$ matches against $\dtau : \hkappa$ extending $\hPhi$ if necessary}
 	\begin{mathpar}
 		\inferrule[RESVar]{
 			\tyvarValid{t}
 		}{
-			\patMatch{\Delta;\hPhi}{\dtau}{\hkappa}{t}{\hPhi,t :: \hkappa;\Delta}
+			\patMatch{\hPhi}{\dtau}{\hkappa}{t}{\hPhi,t :: \hkappa}
 		}
 		\and
 		\inferrule[RESEHole]{ }{
-			\patMatch{\Delta;\hPhi}{\dtau}{\hkappa}{\hthole{u}}{\hPhi;\Delta,\Dbinding{u}{\hPhi}{\kehole}}
+			\patMatch{\hPhi}{\dtau}{\hkappa}{\patehole}{\hPhi}
 		}
 		\and
 		\inferrule[RESVarHole]{
 			\tyvarNotValid{t}
 		}{
-			\patMatch{\Delta;\hPhi}{\dtau}{\hkappa}{\hhole{t}{u}}{\hPhi;\Delta,\Dbinding{u}{\hPhi}{\kehole}}
+			\patMatch{\hPhi}{\dtau}{\hkappa}{\pathole{t}}{\hPhi}
 		}
 	\end{mathpar}
 \end{minipage}
@@ -418,10 +429,10 @@
 	\begin{mathpar}
 		\inferrule[ESDefine]{
 			\elabSyn{\hPhi_1}{\htau}{\hkappa}{\dtau}{\Delta_1} \\
-			\patMatch{\Delta_1;\hPhi_1}{\dtau}{\hkappa}{\hrho}{\hPhi_2;\Delta_2} \\
-			\elabSyn{\hGamma;\hPhi_2}{\hexp}{\dtau_1}{\dexp}{\Delta_3}
+			\patMatch{\hPhi_1}{\dtau}{\hkappa}{\hrho}{\hPhi_2} \\
+			\elabSyn{\hGamma;\hPhi_2}{\hexp}{\dtau_1}{\dexp}{\Delta_2}
 		}{
-			\elabSyn{\hGamma;\hPhi_1}{\htdefine{\hrho}{\htau}{\hexp}}{\dtau_1}{\dtdefine{\hrho}{\dtau}{\hkappa}{\dexp}}{\Delta_2 \cup \Delta_3}
+			\elabSyn{\hGamma;\hPhi_1}{\htdefine{\hrho}{\htau}{\hexp}}{\dtau_1}{\dtdefine{\hrho}{\dtau}{\hkappa}{\dexp}}{\Delta_1 \cup \Delta_2}
 		}
 
 
@@ -436,8 +447,8 @@
 	{$\dexp$ is assigned type $\dtau$}
 	\begin{mathpar}
 		\inferrule[DEDefine]{
-			\patMatch{\Delta_1;\hPhi_1}{\dtau_1}{\hkappa}{\hrho}{\hPhi_2;\Delta_2} \\
-			\dexpTypeAssign{\Delta_2;\hGamma;\hPhi_2}{\dexp}{\dtau_2}
+			\patMatch{\hPhi_1}{\dtau_1}{\hkappa}{\hrho}{\hPhi_2} \\
+			\dexpTypeAssign{\Delta;\hGamma;\hPhi_2}{\dexp}{\dtau_2}
 		}{
 			\dexpTypeAssign{\Delta;\hGamma;\hPhi_1}{\dtdefine{\hrho}{\dtau_1}{\hkappa}{\dexp}}{\dtau_2}
 		}
@@ -465,11 +476,11 @@ This is like the Elaboration Unicity theorem in the POPL19 paper.
 
 
 \begin{thm}[Kind Synthesis Precision]\ \\
-	If $\elabSyn{\hPhi}{\htau}{\hkappa_1}{\dtau}{\Delta_1}$ and $\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa_2}$ then $\kindLeqLattice{\Delta;\hPhi}{\hkappa_1}{\hkappa_2}$
+	If $\elabSyn{\hPhi}{\htau}{\hkappa_1}{\dtau}{\Delta_1}$ and $\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa_2}$ for $t : \Ty \not\in \hPhi$ then $\kconsubkind{\Delta;\hPhi}{\hkappa_1}{\hkappa_2}$
 \end{thm}
 
 \noindent
-Kind Synthesis Precision says that elaboration synthesizes the most precise kappa possible for a given input type. The proof goes by induction on the elaboration rules and then for each tau, induction on all valid kind assignments for that tau ensuring that each one assignment is greater in the lattice than the kappa synthesized by elaboration.
+Kind Synthesis Precision says that elaboration synthesizes the most precise kappa possible for a given input type. The proof goes by induction on the elaboration rules and then for each tau, induction on all valid kind assignments for that tau ensuring that each one assignment is a consistent supertype of the kappa synthesized by elaboration. The interesting rules in the kind assignments are: \texttt{KASubsumption} and \texttt{KASelfRecognition}. \texttt{KASubsumption} holds because this rule only makes the kind a consistent supertype of what it was. \texttt{KASelfRecognition} holds because elaboration always synthesizes the singleton-version of the kind for every type when possible. We need the side-condition to protect agaisnt $\Ty$ deriving from elaboration and $\KSing{t}$ from \texttt{KASelfRecognition}.
 
 
 
