@@ -157,11 +157,10 @@ kind constructor equivalence through to singleton kinds.
 `Delta.t; TyVarCtx.t |- Kind.t_1 === Kind.t_2`  It is presented in the attached
 [latex document](./latex/kind-judgements.pdf).
 
-## Kind Assignment
+## Kind Synthesis/Analysis
 
-Kind assignment is defined by a declarative judgement
-`Delta.t ; TyVarCtx.t |- HTyp.t : Kind.t` with rules presented in the attached
-[latex document](./latex/kind-judgements.pdf). Kind assignment can derive both singleton and Ty kinds for valid types.
+Kind synthesis and analysis is defined by bidirectional judgements
+`Delta.t ; TyVarCtx.t |- HTyp.t => Kind.t` and `Delta.t ; TyVarCtx.t |- HTyp.t <= Kind.t` with rules presented in the attached [latex document](./latex/kind-judgements.pdf). Kind synthesis derives the more precise singletons over Ty wherever possible.
 
 ## Kind Constructor Equivalence
 

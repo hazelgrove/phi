@@ -16,6 +16,8 @@
 \newcommand{\patMatch}[5]{#1 \vdash #2 : #3 \vartriangleright #4 \dashv #5}
 \newcommand{\kconsubkind}[3]{#1 \vdash #2 \lesssim #3}
 \newcommand{\kindAssign}[3]{#1 \vdash #2 : #3}
+\newcommand{\kindSyn}[3]{#1 \vdash #2 \Rightarrow #3}
+\newcommand{\kindAna}[3]{#1 \vdash #2 \Leftarrow #3}
 \newcommand{\kformation}[2]{#1 \vdash #2 \textt{ kind} }
 \newcommand{\kequiv}[3]{#1 \vdash #2 \equiv #3}
 \newcommand{\kcequiv}[4]{#1 \vdash #2 \equiv #3 : #4}
@@ -50,19 +52,14 @@
 \newcommand{\hhole}[2]{\llparenthesiscolor#1\rrparenthesiscolor^{#2}}
 \newcommand{\patehole}{\llparenthesiscolorc\rrparenthesiscolorc}
 \newcommand{\pathole}[1]{\llparenthesiscolorc#1\rrparenthesiscolorc}
-\newcommand{\kehole}{\llparenthesiscolor\rrparenthesiscolor}
 
-\newcommand{\idof}[1]{\mathsf{id}(#1)}
-\newcommand{\Dbinding}[3]{#1 :: #3[#2]}
+\newcommand{\Dbinding}[2]{#1 :: #2}
 \newcommand{\domOf}[1]{\mathsf{dom}(#1)}
 
 \newcommand{\htdefine}[3]{\textt{type }#1 \textt{ = } #2\textt{ in }#3}
 \newcommand{\dtdefine}[4]{\textt{type }#1 \textt{ = } #2 : #3\textt{ in }#4}
 
 \begin{document}
-
-TODO:
-1. think about decidability of analysis, and equivalence
 
 \begin{figure}[t]
 	$\arraycolsep=4pt\begin{array}{rllllll}
@@ -106,7 +103,7 @@ TODO:
 		}
 		\and
 		\inferrule[KCSubsumption]{
-			\kindAssign{\Delta;\hPhi}{\dtau}{\Ty}
+			\kindAna{\Delta;\hPhi}{\dtau}{\Ty}
 		} {
 			\kconsubkind{\Delta;\hPhi}{\KSing{\dtau}}{\Ty}
 		}
@@ -136,7 +133,7 @@ TODO:
 		\inferrule[KFHole] { }{ \kformation{\Delta;\hPhi}{\KHole} }
 		\and
 		\inferrule[KFSing]{
-			\kindAssign{\Delta;\hPhi}{\dtau}{\Ty}
+			\kindAna{\Delta;\hPhi}{\dtau}{\Ty}
 		} {
 			\kformation{\Delta;\hPhi}{\KSing{\dtau}}
 		}
@@ -179,66 +176,78 @@ TODO:
 
 \begin{minipage}{\linewidth}
 	\judgbox
-	{\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa}}
-	{$\dtau$ is assigned kind $\hkappa$}
+	{\kindSyn{\Delta;\hPhi}{\dtau}{\hkappa}}
+	{$\dtau$ synthesizes kind $\hkappa$}
 	\begin{mathpar}
-		\inferrule[KAConst]{ }{
-			\kindAssign{\Delta;\hPhi}{c}{\Ty}
+		\inferrule[KSConst]{ }{
+			\kindSyn{\Delta;\hPhi}{c}{\KSing{c}}
 		}
 		\and
-		\inferrule[KAVar]{
+		\inferrule[KSVar]{
 			t : \hkappa \in \hPhi
 		} {
-			\kindAssign{\Delta;\hPhi}{t}{\hkappa}
+			\kindSyn{\Delta;\hPhi}{t}{\hkappa}
 		}
 		\and
-		\inferrule[KABinOp]{
-			\kindAssign{\Delta;\hPhi}{\dtau_1}{\Ty} \\
-			\kindAssign{\Delta;\hPhi}{\dtau_2}{\Ty}
+		\inferrule[KSUVar]{
+			t \not \in \domOf{\hPhi}
 		} {
-			\kindAssign{\Delta;\hPhi}{\dtau_1 \oplus \dtau_2}{\Ty}
+			\kindSyn{\Delta;\hPhi}{t}{\KHole}
 		}
 		\and
-		\inferrule[KAList]{
-			\kindAssign{\Delta;\hPhi}{\dtau}{\Ty}
+		\inferrule[KSBinOp]{
+			\kindAna{\Delta;\hPhi}{\dtau_1}{\KSing{\dtau_1}} \\
+			\kindAna{\Delta;\hPhi}{\dtau_2}{\KSing{\dtau_2}}
 		} {
-			\kindAssign{\Delta;\hPhi}{\hlist{\dtau}}{\Ty}
+			\kindSyn{\Delta;\hPhi}{\dtau_1 \oplus \dtau_2}{\KSing{\dtau_1 \oplus \dtau_2}}
 		}
 		\and
-		\inferrule[KAEHole]{
-			\Dbinding{u}{\hPhi'}{\hkappa} \in \Delta \\
-			\kindAssign{\Delta;\hPhi}{\sigma}{\hPhi'}
+		\inferrule[KSList]{
+			\kindAna{\Delta;\hPhi}{\dtau}{\KSing{\dtau}}
 		} {
-			\kindAssign{\Delta;\hPhi}{\hthole{u}_{\sigma}}{\hkappa}
+			\kindSyn{\Delta;\hPhi}{\hlist{\dtau}}{\KSing{\hlist{\dtau}}}
 		}
 		\and
-		\inferrule[KANEHole]{
-			\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa'} \\
-			\Dbinding{u}{\hPhi'}{\hkappa} \in \Delta \\
-			\kindAssign{\Delta;\hPhi}{\sigma}{\hPhi'}
+		\inferrule[KSEHole]{
+			\Dbinding{u}{\hkappa} \in \Delta
 		} {
-			\kindAssign{\Delta;\hPhi}{\hhole{\dtau}{u}_{\sigma}}{\hkappa}
+			\kindSyn{\Delta;\hPhi}{\hthole{u}}{\hkappa}
 		}
 		\and
-		\inferrule[KASelfRecognition]{
-			\kindAssign{\Delta;\hPhi}{\dtau}{\Ty}
-		}{
-			\kindAssign{\Delta;\hPhi}{\dtau}{\KSing{\dtau}}
-		}
-		\and
-		\inferrule[KASubsumption]{
-			\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa_1} \\
-			\kconsubkind{\Delta;\hPhi}{\hkappa_1}{\hkappa_2}
+		\inferrule[KSNEHole]{
+			\Dbinding{u}{\hkappa} \in \Delta \\
+			\kindSyn{\Delta;\hPhi}{\dtau}{\hkappa'}
 		} {
-			\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa_2}
+			\kindSyn{\Delta;\hPhi}{\hhole{\dtau}{u}}{\hkappa}
 		}
-
 
 
 	\end{mathpar}
 \end{minipage}
 \\
 \\
+
+
+
+\begin{minipage}{\linewidth}
+	\judgbox
+	{\kindAna{\Delta;\hPhi}{\dtau}{\hkappa}}
+	{$\dtau$ analyzes against kind $\hkappa$}
+	\begin{mathpar}
+		\inferrule[KAASubsume]{
+			\kindSyn{\hPhi}{\dtau}{\hkappa'} \\
+			\kconsubkind{\Delta;\hPhi}{\hkappa'}{\hkappa}
+		}{
+			\kindAna{\Delta;\hPhi}{\dtau}{\hkappa}
+		}
+
+
+	\end{mathpar}
+\end{minipage}
+\\
+\\
+
+
 
 \begin{minipage}{\linewidth}
 	\judgbox
@@ -259,7 +268,7 @@ TODO:
 		}
 		\and
 		\inferrule[KCESingEquiv]{
-			\kindAssign{\Delta;\hPhi}{\dtau_1}{\KSing{\dtau_2}}
+			\kindAna{\Delta;\hPhi}{\dtau_1}{\KSing{\dtau_2}}
 		} {
 			\kcequiv{\Delta;\hPhi}{\dtau_1}{\dtau_2}{\Ty}
 		}
@@ -281,32 +290,23 @@ TODO:
 			\kcequiv{\Delta;\hPhi}{\dtau_1 \oplus \dtau_3}{\dtau_2 \oplus \dtau_4}{\Ty}
 		}
 		\and
-		\inferrule[KAList]{
+		\inferrule[KCEList]{
 			\kcequiv{\Delta;\hPhi}{\dtau_1}{\dtau_2}{\Ty}
 		} {
 			\kcequiv{\Delta;\hPhi}{\hlist{\dtau_1}}{\hlist{\dtau_2}}{\Ty}
 		}
 		\and
-		\inferrule[KAEHole]{
-			\Dbinding{u_1}{\hPhi'_1}{\hkappa_1} \in \Delta \\
-			\kindAssign{\Delta;\hPhi}{\sigma_2}{\hPhi'_1} \\
-			\Dbinding{u_2}{\hPhi'_2}{\hkappa_2} \in \Delta \\
-			\kindAssign{\Delta;\hPhi}{\sigma_2}{\hPhi'_2} \\
-			\kequiv{\Delta;\hPhi}{\hkappa_1}{\hkappa_2}
+		\inferrule[KCEEHole]{
+			\Dbinding{u}{\hkappa} \in \Delta
 		} {
-			\kcequiv{\Delta;\hPhi}{\hthole{u_1}_{\sigma_1}}{\hthole{u_2}_{\sigma_2}}{\hkappa}
+			\kcequiv{\Delta;\hPhi}{\hthole{u}}{\hthole{u}}{\hkappa}
 		}
 		\and
-		\inferrule[KANEHole]{
-			\kindAssign{\Delta;\hPhi}{\dtau_1}{\hkappa'_1} \\
-			\kindAssign{\Delta;\hPhi}{\dtau_2}{\hkappa'_2} \\
-			\Dbinding{u_1}{\hPhi'_1}{\hkappa_1} \in \Delta \\
-			\kindAssign{\Delta;\hPhi}{\sigma_2}{\hPhi'_1} \\
-			\Dbinding{u_2}{\hPhi'_2}{\hkappa_2} \in \Delta \\
-			\kindAssign{\Delta;\hPhi}{\sigma_2}{\hPhi'_2} \\
-			\kequiv{\Delta;\hPhi}{\hkappa_1}{\hkappa_2}
+		\inferrule[KCENEHole]{
+			\Dbinding{u}{\hkappa} \in \Delta \\
+			\kindAna{\Delta;\hPhi}{\dtau}{\hkappa'}
 		} {
-			\kcequiv{\Delta;\hPhi}{\hhole{\dtau_1}{u_1}_{\sigma_1}}{\hhole{\dtau_2}{u_2}_{\sigma_2}}{\hkappa}
+			\kcequiv{\Delta;\hPhi}{\hhole{\dtau}{u}}{\hhole{\dtau}{u}}{\hkappa}
 		}
 	\end{mathpar}
 \end{minipage}
@@ -342,19 +342,19 @@ TODO:
 		}
 		\and
 		\inferrule[TElabSUVar]{
-		t \not\in \domOf{\hPhi}
+			t \not\in \domOf{\hPhi}
 		} {
-		\elabSyn{\hPhi}{t}{\KHole}{\hhole{t}{u}_{\idof{\hPhi}}}{\Dbinding{u}{\hPhi}{\kehole} }
+			\elabSyn{\hPhi}{t}{\KHole}{\hhole{t}{u}}{\Dbinding{u}{\KHole} }
 		}
 		\and
 		\inferrule[TElabSHole]{ } {
-		\elabSyn{\hPhi}{\hthole{u}}{\KHole}{\hthole{u}_{\idof{\hPhi}}}{\Dbinding{u}{\hPhi}{\kehole}}
+			\elabSyn{\hPhi}{\hthole{u}}{\KHole}{\hthole{u}}{\Dbinding{u}{\KHole}}
 		}
 		\and
 		\inferrule[TElabSNEHole]{
-		\elabSyn{\hPhi}{\htau}{\hkappa}{\dtau}{\Delta}
+			\elabSyn{\hPhi}{\htau}{\hkappa}{\dtau}{\Delta}
 		} {
-		\elabSyn{\hPhi}{\hhole{\htau}{u}}{\KHole}{\hhole{\dtau}{u}_{\idof{\hPhi}}}{\Delta,\Dbinding{u}{\hPhi}{\kehole}}
+			\elabSyn{\hPhi}{\hhole{\htau}{u}}{\KHole}{\hhole{\dtau}{u}}{\Delta,\Dbinding{u}{\KHole}}
 		}
 	\end{mathpar}
 \end{minipage}
@@ -367,7 +367,6 @@ TODO:
 	{$\htau$ analyzes against kind $\hkappa_1$ and elaborates to $\dtau$}
 	\begin{mathpar}
 		\inferrule[TElabASubsume]{
-			\htau \neq t \text{ where } t \not\in \domOf{\hPhi} \\
 			\htau \neq \hthole{u} \\
 			\htau \neq \hhole{\htau'}{u} \\
 			\elabSyn{\hPhi}{\htau}{\hkappa'}{\dtau}{\Delta} \\
@@ -376,20 +375,14 @@ TODO:
 			\elabAna{\hPhi}{\htau}{\hkappa}{\dtau}{\Delta}
 		}
 		\and
-		\inferrule[TElabAUVar]{
-		t \not\in \domOf{\hPhi}
-		} {
-		\elabAna{\hPhi}{t}{\KHole}{\hhole{t}{u}_{\idof{\hPhi}}}{\Dbinding{u}{\hPhi}{\kehole} }
-		}
-		\and
 		\inferrule[TElabAEHole]{ } {
-		\elabAna{\hPhi}{\hthole{u}}{\hkappa}{\hthole{u}_{\idof{\hPhi}}}{\Dbinding{u}{\hPhi}{\kappa}}
+			\elabAna{\hPhi}{\hthole{u}}{\hkappa}{\hthole{u}}{\Dbinding{u}{\kappa}}
 		}
 		\and
 		\inferrule[TElabANEHole]{
-		\elabSyn{\hPhi}{\htau}{\hkappa'}{\dtau}{\Delta}
+			\elabSyn{\hPhi}{\htau}{\hkappa'}{\dtau}{\Delta}
 		} {
-		\elabAna{\hPhi}{\hhole{\htau}{u}}{\hkappa}{\hhole{\dtau}{u}_{\idof{\hPhi}}}{\Delta,\Dbinding{u}{\hPhi}{\kappa}}
+			\elabAna{\hPhi}{\hhole{\htau}{u}}{\hkappa}{\hhole{\dtau}{u}}{\Delta,\Dbinding{u}{\kappa}}
 		}
 
 	\end{mathpar}
@@ -461,11 +454,18 @@ TODO:
 
 \newtheorem{thm}{Theorem}
 \begin{thm}[Well-Kinded Elaboration]\ \\
-	(1) If $\elabSyn{\hPhi}{\htau}{\hkappa}{\dtau}{\Delta}$ then $\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa}$ \\
-	(2) If $\elabAna{\hPhi}{\htau}{\hkappa}{\dtau}{\Delta}$ then $\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa}$
+	(1) If $\elabSyn{\hPhi}{\htau}{\hkappa}{\dtau}{\Delta}$ then $\kindSyn{\Delta;\hPhi}{\dtau}{\hkappa}$ \\
+	(2) If $\elabAna{\hPhi}{\htau}{\hkappa}{\dtau}{\Delta}$ then $\kindAna{\Delta;\hPhi}{\dtau}{\hkappa}$
 \end{thm}
 \noindent
 This is like the Typed Elaboration theorem in the POPL19 paper.
+
+\begin{thm}[Elaborability]\ \\
+	(1) $\exists \Delta$ s.t. if $\kindSyn{\Delta;\hPhi}{\dtau}{\hkappa}$ then $\exists \htau$ such that $\elabSyn{\hPhi}{\htau}{\hkappa}{\dtau}{\Delta}$ \\
+	(2) $\exists \Delta$ s.t. if $\kindAna{\Delta;\hPhi}{\dtau}{\hkappa}$ then $\exists \htau$ such that $\elabAna{\hPhi}{\htau}{\hkappa}{\dtau}{\Delta}$
+\end{thm}
+\noindent
+This is similar but a little different from Elaborability theorem in the POPL19 paper. Choose the $\Delta$ that is emitted from elaboration and then there's an $\htau$ that elaborates to any of the $\dtau$ forms. Elaborability and Well-Kinded Elaboration implies we can just rely on the elaboration forms for the premises of any rules that demand kind synthesis/analysis.
 
 \begin{thm}[Type Elaboration Unicity]\ \\
 	(1) If $\elabSyn{\hPhi}{\htau}{\hkappa_1}{\dtau_1}{\Delta_1}$ and $\elabSyn{\hPhi}{\htau}{\hkappa_2}{\dtau_2}{\Delta_2}$ then $\hkappa_1 = \hkappa_2$, $\dtau_1 = \dtau_2$, $\Delta_1 = \Delta_2$ \\
@@ -476,11 +476,11 @@ This is like the Elaboration Unicity theorem in the POPL19 paper.
 
 
 \begin{thm}[Kind Synthesis Precision]\ \\
-	If $\elabSyn{\hPhi}{\htau}{\hkappa_1}{\dtau}{\Delta_1}$ and $\kindAssign{\Delta;\hPhi}{\dtau}{\hkappa_2}$ for $t : \Ty \not\in \hPhi$ then $\kconsubkind{\Delta;\hPhi}{\hkappa_1}{\hkappa_2}$
+	If $\kindSyn{\Delta;\hPhi}{\dtau}{\hkappa_1}$ and $\kindAna{\Delta;\hPhi}{\dtau}{\hkappa_2}$ then $\kconsubkind{\Delta;\hPhi}{\hkappa_1}{\hkappa_2}$
 \end{thm}
 
 \noindent
-Kind Synthesis Precision says that elaboration synthesizes the most precise kappa possible for a given input type. The proof goes by induction on the elaboration rules and then for each tau, induction on all valid kind assignments for that tau ensuring that each one assignment is a consistent supertype of the kappa synthesized by elaboration. The interesting rules in the kind assignments are: \texttt{KASubsumption} and \texttt{KASelfRecognition}. \texttt{KASubsumption} holds because this rule only makes the kind a consistent supertype of what it was. \texttt{KASelfRecognition} holds because elaboration always synthesizes the singleton-version of the kind for every type when possible. We need the side-condition to protect agaisnt $\Ty$ deriving from elaboration and $\KSing{t}$ from \texttt{KASelfRecognition}.
+Kind Synthesis Precision says that synthesis finds the most precise kappa possible for a given input type. This is somewhat trivial, but interesting to note because it means we can expect singletons wherever possible.
 
 
 
