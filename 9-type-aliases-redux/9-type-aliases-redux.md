@@ -33,7 +33,7 @@ module VarPatErrStatus = {
 }
 
 type TPat.t =
-  | EmptyHole(MetaVar.t)
+  | EmptyHole
   | TyVar(option(VarPatErrStatus.t), TyId.t)
 ```
 
@@ -83,7 +83,7 @@ type Kind.t = KHole
 
 To support type aliases, we need to add a new line item to the language and the proposed syntax is
 
-`TyAliasLine(TPat.t, UHTyp.t)` for abstract syntax
+`TyAliasLine(TPat.t, UHTyp.t, UHExp.t)` for abstract syntax
 
 `type t = <type> in e`  for GUI syntax
 
@@ -91,19 +91,18 @@ To support type aliases, we need to add a new line item to the language and the 
 
 By considering the cursor positions of `TyAlias`, we need to add two more zline items which are
 
-`TyAliasLineT(TPat.t, ZTyp.t)` (when cursor is on the type)
+`TyAliasLineP(ZTPat.t, UHTyp.t, UHExp.t)` (when cursor is on the type pattern)
 
-`TyAliasLineP(ZTPat.t, UHTyp.t)` (when cursor is on the type pattern)
+`TyAliasLineT(TPat.t, ZTyp.t, UHExp.t)` (when cursor is on the type)
+
+`TyAliasLineE(TPat.t, UHTyp.t, ZExp.t)` (when cursor is on the body)
 
 
 ## Expanded Expressions
 
 So that we can still assign a type properly to the resulting `DExp.t` we add the following new syntax:
 
-`TyBindings(TyVarCtx.t, DHExp.t)` for abstract syntax
-
-(TODO: is it ever necessary to display this to the user? If so -- maybe something
-like `type bindings [type t = \tau, type x] in e`)
+`TyAlias(TPat.t, HTyp.t, Kind.t, DHExp.t)` for abstract syntax
 
 # Static Semantics
 
