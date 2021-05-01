@@ -83,7 +83,7 @@ type Kind.t = KHole
 
 To support type aliases, we need to add a new line item to the language and the proposed syntax is
 
-`TyAliasLine(TPat.t, UHTyp.t, UHExp.t)` for abstract syntax
+`TyAliasLine(TPat.t, UHTyp.t)` for abstract syntax
 
 `type t = <type> in e`  for GUI syntax
 
@@ -91,12 +91,9 @@ To support type aliases, we need to add a new line item to the language and the 
 
 By considering the cursor positions of `TyAlias`, we need to add two more zline items which are
 
-`TyAliasLineP(ZTPat.t, UHTyp.t, UHExp.t)` (when cursor is on the type pattern)
+`TyAliasLineP(ZTPat.t, UHTyp.t)` (when cursor is on the type pattern)
 
-`TyAliasLineT(TPat.t, ZTyp.t, UHExp.t)` (when cursor is on the type)
-
-`TyAliasLineE(TPat.t, UHTyp.t, ZExp.t)` (when cursor is on the body)
-
+`TyAliasLineT(TPat.t, ZTyp.t)` (when cursor is on the type)
 
 ## Expanded Expressions
 
