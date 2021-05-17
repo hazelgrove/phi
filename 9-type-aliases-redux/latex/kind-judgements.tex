@@ -20,7 +20,7 @@
 \newcommand{\kindAna}[3]{#1 \vdash #2 \Leftarrow #3}
 \newcommand{\kformation}[2]{#1 \vdash #2 \textt{ kind} }
 \newcommand{\kequiv}[3]{#1 \vdash #2 \equiv #3}
-\newcommand{\kcequiv}[4]{#1 \vdash #2 \equiv #3 : #4}
+\newcommand{\kcequiv}[3]{#1 \vdash #2 \equiv #3}
 \newcommand{\ksubkind}[3]{#1 \vdash #2 <:: #3}
 \newcommand{\tyvarValid}[1]{#1 \textt{ valid} }
 \newcommand{\tyvarNotValid}[1]{\lnot(#1 \textt{ }\textt{valid}) }
@@ -165,7 +165,7 @@
 		}
 		\and
 		\inferrule[KESingEquiv]{
-			\kcequiv{\Delta;\hPhi}{\dtau_1}{\dtau_2}{\Ty}
+			\kcequiv{\Delta;\hPhi}{\dtau_1}{\dtau_2}
 		} {
 			\kequiv{\Delta;\hPhi}{\KSing{\dtau_1}}{\KSing{\dtau_2}}
 		}
@@ -251,62 +251,62 @@
 
 \begin{minipage}{\linewidth}
 	\judgbox
-	{\kcequiv{\Delta;\hPhi}{\dtau_1}{\dtau_2}{\hkappa}}
-	{$\dtau_1$ is equivalent to $\dtau_2$ and has kind $\hkappa_2$} \;\\
+	{\kcequiv{\Delta;\hPhi}{\dtau_1}{\dtau_2}}
+	{$\dtau_1$ is equivalent to $\dtau_2$} \;\\
 	\begin{mathpar}
 		\inferrule[KCESymm]{
-			\kcequiv{\Delta;\hPhi}{\dtau_1}{\dtau_2}{\hkappa}
+			\kcequiv{\Delta;\hPhi}{\dtau_1}{\dtau_2}
 		} {
-			\kcequiv{\Delta;\hPhi}{\dtau_2}{\dtau_1}{\hkappa}
+			\kcequiv{\Delta;\hPhi}{\dtau_2}{\dtau_1}
 		}
 		\and
 		\inferrule[KCETrans]{
-			\kcequiv{\Delta;\hPhi}{\dtau_1}{\dtau_2}{\hkappa} \\
-			\kcequiv{\Delta;\hPhi}{\dtau_2}{\dtau_3}{\hkappa}
+			\kcequiv{\Delta;\hPhi}{\dtau_1}{\dtau_2} \\
+			\kcequiv{\Delta;\hPhi}{\dtau_2}{\dtau_3}
 		} {
-			\kcequiv{\Delta;\hPhi}{\dtau_1}{\dtau_3}{\hkappa}
+			\kcequiv{\Delta;\hPhi}{\dtau_1}{\dtau_3}
 		}
 		\and
 		\inferrule[KCESingEquiv]{
 			\kindAna{\Delta;\hPhi}{\dtau_1}{\KSing{\dtau_2}}
 		} {
-			\kcequiv{\Delta;\hPhi}{\dtau_1}{\dtau_2}{\Ty}
+			\kcequiv{\Delta;\hPhi}{\dtau_1}{\dtau_2}
 		}
 		\and
 		\inferrule[KCEConst]{ }{
-			\kcequiv{\Delta;\hPhi}{c}{c}{\Ty}
+			\kcequiv{\Delta;\hPhi}{c}{c}
 		}
 		\and
 		\inferrule[KCEVar]{
 			t : \hkappa \in \hPhi
 		} {
-			\kcequiv{\Delta;\hPhi}{t}{t}{\hkappa}
+			\kcequiv{\Delta;\hPhi}{t}{t}
 		}
 		\and
 		\inferrule[KCEBinOp]{
-			\kcequiv{\Delta;\hPhi}{\dtau_1}{\dtau_2}{\Ty} \\
-			\kcequiv{\Delta;\hPhi}{\dtau_3}{\dtau_4}{\Ty}
+			\kcequiv{\Delta;\hPhi}{\dtau_1}{\dtau_2} \\
+			\kcequiv{\Delta;\hPhi}{\dtau_3}{\dtau_4}
 		} {
-			\kcequiv{\Delta;\hPhi}{\dtau_1 \oplus \dtau_3}{\dtau_2 \oplus \dtau_4}{\Ty}
+			\kcequiv{\Delta;\hPhi}{\dtau_1 \oplus \dtau_3}{\dtau_2 \oplus \dtau_4}
 		}
 		\and
 		\inferrule[KCEList]{
-			\kcequiv{\Delta;\hPhi}{\dtau_1}{\dtau_2}{\Ty}
+			\kcequiv{\Delta;\hPhi}{\dtau_1}{\dtau_2}
 		} {
-			\kcequiv{\Delta;\hPhi}{\hlist{\dtau_1}}{\hlist{\dtau_2}}{\Ty}
+			\kcequiv{\Delta;\hPhi}{\hlist{\dtau_1}}{\hlist{\dtau_2}}
 		}
 		\and
 		\inferrule[KCEEHole]{
 			\Dbinding{u}{\hkappa} \in \Delta
 		} {
-			\kcequiv{\Delta;\hPhi}{\hthole{u}}{\hthole{u}}{\hkappa}
+			\kcequiv{\Delta;\hPhi}{\hthole{u}}{\hthole{u}}
 		}
 		\and
 		\inferrule[KCENEHole]{
 			\Dbinding{u}{\hkappa} \in \Delta \\
 			\kindAna{\Delta;\hPhi}{\dtau}{\hkappa'}
 		} {
-			\kcequiv{\Delta;\hPhi}{\hhole{\dtau}{u}}{\hhole{\dtau}{u}}{\hkappa}
+			\kcequiv{\Delta;\hPhi}{\hhole{\dtau}{u}}{\hhole{\dtau}{u}}
 		}
 	\end{mathpar}
 \end{minipage}
