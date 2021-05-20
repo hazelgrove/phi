@@ -186,7 +186,7 @@
 		\inferrule[KSVar]{
 			t : \hkappa \in \hPhi
 		} {
-			\kindSyn{\Delta;\hPhi}{t}{\hkappa}
+			\kindSyn{\Delta;\hPhi}{t}{\KSing{t}}
 		}
 		\and
 		\inferrule[KSUVar]{
@@ -338,7 +338,7 @@
 		\inferrule[TElabSVar]{
 			t : \hkappa \in \hPhi
 		} {
-			\elabSyn{\hPhi}{t}{\hkappa}{t}{\EmptyDelta}
+			\elabSyn{\hPhi}{t}{\KSing{t}}{t}{\EmptyDelta}
 		}
 		\and
 		\inferrule[TElabSUVar]{
