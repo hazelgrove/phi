@@ -166,7 +166,7 @@ where $\expand(\rectype) \defeq \subst{\rectype}{\alpha}{\tau}$
 $\boxed{\syntype[\Gamma]{e}{\tau}}$
 
 \begin{mathpar}
-  \inferrule[Injection in Synthetic Position]{
+  \inferrule[Injection in Synthetic Position or Analyzed Against Non-Sum]{
     \anatype[\Gamma]{e}{\hole}
   }{
     \syntype[\Gamma]{\hole[\inj[C]{e}]}{\hole}
@@ -187,16 +187,18 @@ $\boxed{\anatype[\Gamma]{e}{\tau}}$
     \anatype[\Gamma]{\inj[C_j]{e}}{\sumtype{C_i}{\tau_i}{C_i \in \C}}
   }
 
+  \inferrule[Bad Tag]{
+    C \notin \C
+    \\
+    \anatype[\Gamma]{e}{\hole}
+  }{
+    \anatype[\Gamma]{\hole[\inj[C]{e}]}{\sumtype{C_i}{\tau_i}{C_i \in \C}}
+  }
+
   \inferrule[Expected Type is Hole]{
     \anatype[\Gamma]{e}{\hole}
   }{
     \anatype[\Gamma]{\inj[C]{e}}{\hole}
-  }
-
-  \inferrule[Bad Tag]{
-    C \notin \C
-  }{
-    \anatype[\Gamma]{\hole[\inj[C]{e}]}{\sumtype{C_i}{\tau_i}{C_i \in \C}}
   }
 \end{mathpar}
 
