@@ -1,76 +1,41 @@
 \documentclass{article}
 
-\usepackage{xparse}
 \usepackage{fullpage}
 \usepackage{amsmath, stmaryrd, amssymb, mathtools, mathpartir}
 
-% fixes spacing between math operators and large paired delimiters
-\let\originalleft\left
-\let\originalright\right
-\renewcommand{\left}{\mathopen{}\mathclose\bgroup\originalleft}
-\renewcommand{\right}{\aftergroup\egroup\originalright}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Syntax
-
 % Sorts
 
-\DeclareDocumentCommand{\HTyp}{}{\mathsf{HTyp}}
-\DeclareDocumentCommand{\HExp}{}{\mathsf{HExp}}
-\DeclareDocumentCommand{\HTag}{}{\mathsf{Tag}}
+\newcommand{\HExp}{\mathsf{HExp}}
+\newcommand{\HTyp}{\mathsf{HTyp}}
+\newcommand{\HTag}{\mathsf{HTag}}
+\newcommand{\HTagExp}{\mathsf{HTagExp}}
+\newcommand{\HTagTyp}{\mathsf{HTagTyp}}
+\newcommand{\HTagVar}{\mathsf{HTagVar}}
 
 % Types
 
-\DeclareDocumentCommand{\rectype}{!O{\alpha} !O{\tau}}{\mu #1.#2}
-\DeclareDocumentCommand{\sumtype}{m m m}{+\left\{#1\left(#2\right)\right\}_{#3}}
-\DeclareDocumentCommand{\typevar}{}{\alpha}
+\newcommand{\rectype}[2]{\mu #1.#2}
+\newcommand{\sumtype}[1]{+\mathopen{}\left\{#1\right\}}
 
 % Tags
 
-\DeclareDocumentCommand{\C}{}{\mathcal{C}}
-\DeclareDocumentCommand{\Tag}{}{\mathbf{C}}
-\DeclareDocumentCommand{\TagHole}{!O{u}}{\mathopen{}?^{#1}\mathclose{}}
+\newcommand{\C}{\mathcal{C}}
+\newcommand{\Tag}{\mathbf{C}}
+\newcommand{\TagHole}[1][u]{{?^{#1}}}
 
 % Expressions
 
-\DeclareDocumentCommand{\roll}{O{\tau} m}{\normalfont\texttt{roll}^{#1}\left(#2\right)}
-\DeclareDocumentCommand{\unroll}{m m}{\normalfont\texttt{unroll}^{#1}\left(#2\right)}
-\DeclareDocumentCommand{\inj}{O{\ell} O{\tau} m}{\normalfont\texttt{inj}_{#1}\left(#3\right)}
-\DeclareDocumentCommand{\casexp}{m m m m m}{\normalfont\texttt{case} \left(#1\right) \left\{#2\left(#3\right)\mapsto #4\right\}_{#5}}
-\DeclareDocumentCommand{\hole}{!O{}}{\llparenthesis#1\rrparenthesis}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Semantics
-
-% Rules
-
-% static
-\DeclareDocumentCommand{\TRoll}{}{\textsc{TRoll}}
-\DeclareDocumentCommand{\TUnroll}{}{\textsc{TUnroll}}
-\DeclareDocumentCommand{\TInj}{}{\textsc{TInj}}
-\DeclareDocumentCommand{\TCase}{}{\textsc{TCase}}
-\DeclareDocumentCommand{\TSInj}{}{\textsc{TSInj}}
-\DeclareDocumentCommand{\TAInj}{}{\textsc{TAInj}}
-
-% dynamic
-\DeclareDocumentCommand{\VRoll}{}{\textsc{VRoll}}
-\DeclareDocumentCommand{\VInj}{}{\textsc{VInj}}
-\DeclareDocumentCommand{\SSRollC}{}{\textsc{SSRollC}}
-\DeclareDocumentCommand{\SSUnrollC}{}{\textsc{SSUnrollC}}
-\DeclareDocumentCommand{\SSUnrollR}{}{\textsc{SSUnrollR}}
-\DeclareDocumentCommand{\SSInjC}{}{\textsc{SSInjC}}
-\DeclareDocumentCommand{\SSCaseC}{}{\textsc{SSCaseC}}
-\DeclareDocumentCommand{\SSCaseR}{}{\textsc{SSCaseR}}
+\newcommand{\roll}[2]{\mathtt{roll}^{#1}\mathopen{}\left(#2\right)\mathclose{}}
+\newcommand{\unroll}[2]{\mathtt{unroll}^{#1}\mathopen{}\left(#2\right)\mathclose{}}
+\newcommand{\inj}[2]{\mathtt{inj}_{#1}\mathopen{}\left(#2\right)\mathclose{}}
+\newcommand{\case}[2]{\mathtt{case} \left(#1\right) \left\{#2\right\}}
+\newcommand{\hole}[1][]{\llparenthesis#1\rrparenthesis}
 
 % Judgments
 
-\DeclareDocumentCommand{\hastype}{O{} m m}{#1 \vdash #2 : #3}
-\DeclareDocumentCommand{\syntype}{O{} m m}{#1 \vdash #2 \Rightarrow #3}
-\DeclareDocumentCommand{\anatype}{O{} m m}{#1 \vdash #2 \Leftarrow #3}
-\DeclareDocumentCommand{\MatchedSumType}{m m}{#1 \blacktriangleright_{+} #2}
-\DeclareDocumentCommand{\smallstep}{}{\rightarrow}
-\DeclareDocumentCommand{\isConsistent}{m m}{#1 \sim #2}
-\DeclareDocumentCommand{\Join}{m m}{\join\left(#1,#2\right)}
+\newcommand{\syn}[3]{#1 \vdash #2 \Leftarrow #3}
+\newcommand{\ana}[3]{#1 \vdash #2 \Rightarrow #3}
+\newcommand{\hastype}[3]{#1 \vdash #2 : #3}
 
 % Operations
 
@@ -84,17 +49,6 @@
 \DeclareMathOperator{\join}{\text{\normalfont join}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Theorems and Proofs
-
-\usepackage{amsthm}
-\newtheorem{Theorem}{Theorem}
-\newtheorem{Lemma}[Theorem]{Lemma}
-
-\usepackage{pfsteps}
-\renewcommand\byCasesEveryCase{}
-\setlength{\proofrightwidth}{0.4\linewidth}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \title{Algebraic Data Types for Hazel}
 \author{Eric Griffis \\ egriffis@umich.edu}
@@ -106,465 +60,139 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Formalism}
-
-\subsection{Syntax}
+\section{Syntax}
 
 \[
-  \arraycolsep=0pt
-  \begin{array}{l@{~~}c@{~~}c@{~~}ll}
-    \HTyp & \tau & {}\Coloneqq{} & \ldots \mid (\rectype) \mid \typevar \mid \sumtype{C_i}{\tau_i}{C_i \in \C}                        \\
-    \HExp & e    & {}\Coloneqq{} & \ldots \mid \roll{e} \mid \unroll{\tau}{e} \mid \inj{e} \mid \casexp{e}{C_i}{x_i}{e_i}{C_i \in \C} \\
-    \HTag & C    & {}\Coloneqq{} & \Tag \mid \TagHole                                                                                 \\
+  \arraycolsep=0pt  \arraycolsep=0pt
+  \begin{array}{l@{~~}c@{~~}c@{~~}l}
+    \HExp & e & {}\Coloneqq{} & \ldots
+      \mid \roll{\tau}{e}
+      \mid \unroll{\tau}{e}
+      \mid \inj{C}{E}
+      \mid \case{e}{C_i(X_i){=}e_i}_{C_i \in \C}
+    \\
+    \HTyp & \tau & {}\Coloneqq{} & \ldots
+      \mid (\rectype{\alpha}{\tau})
+      \mid \alpha
+      \mid \sumtype{C_i(T_i)}_{C_i \in \C}
+    \\
+    \HTag & C & {}\Coloneqq{} &
+      \Tag
+      \mid \TagHole
+    \\
+    \HTagExp & E & {}\Coloneqq{} & e \mid \varnothing \\
+    \HTagTyp & T & {}\Coloneqq{} & \tau \mid \varnothing \\
+    \HTagVar & X & {}\Coloneqq{} & x \mid \varnothing \\
   \end{array}
 \]
 
-\subsection{Static Semantics}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-$\boxed{\hastype[\Gamma]{e}{\tau}}$
+\section{Semantics}
 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+\noindent
+$\boxed{\hastype{\Gamma}{e}{\tau}}$
+%
 \begin{mathpar}
   \inferrule[TRoll]{
-    \hastype[\Gamma]{e}{\expand(\tau)}
+    \hastype{\Gamma}{e}{\expand(\tau)}
   }{
-    \hastype[\Gamma]{\roll{e}}{\tau}
+    \hastype{\Gamma}{\roll{\tau}{e}}{\tau}
   }
 
   \inferrule[TUnroll]{
-    \hastype[\Gamma]{e}{\tau}
+    \hastype{\Gamma}{e}{\tau}
   }{
-    \hastype[\Gamma]{\unroll{\tau}{e}}{\expand(\tau)}
+    \hastype{\Gamma}{\unroll{\tau}{e}}{\expand(\tau)}
+  }
+
+  \inferrule[TNull]{}{
+    \hastype{\Gamma}{\varnothing}{\varnothing}
   }
 
   \inferrule[TInj]{
-    \hastype[\Gamma]{e}{\tau_i}
+    \hastype{\Gamma}{E}{T_i}
   }{
-    \hastype[\Gamma]{\inj[C_i]{e}}{\sumtype{C_i}{\tau_i}{C_i \in \C}}
+    \hastype{\Gamma}{\inj{C_i}{E}}{\sumtype{C_i(T_i)}_{C_i \in \C}}
   }
 
   \inferrule[TCase]{
-    \hastype[\Gamma]{e}{\sumtype{C_i}{x_i}{C_i \in \C}} \\
-    \hastype[\Gamma, x_i : \tau_i]{e_i}{\tau} \\
+    \hastype{\Gamma}{e}{\sumtype{C_i(T_i)}_{C_i \in \C}} \\
+    \hastype{\Gamma, X_i : T_i}{e_i}{\tau} \\
     i = 1, \ldots, N
   }{
-    \hastype[\Gamma]{\casexp{e}{C_i}{x_i}{e_i}{C_i \in \C}}{\tau}
+    \hastype{\Gamma}{
+      \case{e}{C_i(X_i){=}e_i}_{C_i \in \C}
+    }{\tau}
   }
 
   \inferrule[TCaseU]{
-    \hastype[\Gamma]{e}{\hole} \\
-    \hastype[\Gamma, x_i : \hole]{e_i}{\tau} \\
+    \hastype{\Gamma}{e}{\hole} \\
+    \hastype{\Gamma, X_i : \hole}{e_i}{\tau} \\
     i = 1, \ldots, N
   }{
-    \hastype[\Gamma]{\casexp{e}{C_i}{x_i}{e_i}{C_i \in \C}}{\tau}
+    \hastype{\Gamma}{\case{e}{C_i(X_i){=}{e_i}}_{C_i \in \C}}{\tau}
   }
 \end{mathpar}
-where $\expand(\rectype) \defeq \subst{\rectype}{\alpha}{\tau}$
+
+$\expand(\rectype{\alpha}{\tau}) \defeq \subst{\rectype{\alpha}{\tau}}{\alpha}{\tau}$
+
+\vspace*{\baselineskip}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 \noindent
-$\boxed{\syntype[\Gamma]{e}{\tau}}$
-
+$\boxed{\syn{\Gamma}{e}{\tau}}$
+%
 \begin{mathpar}
-  \inferrule[Injection in Synthetic Position or Analyzed Against Non-Sum]{
-    \anatype[\Gamma]{e}{\hole}
+  \inferrule[TSyn]{
+    \ana{\Gamma}{e}{\hole}
   }{
-    \syntype[\Gamma]{\hole[\inj[C]{e}]}{\hole}
+    \syn{\Gamma}{\hole[\inj{C}{e}]}{\hole}
   }
 \end{mathpar}
+
+\textsc{TSyn} = Injection in Synthetic Position or Analyzed Against Non-Sum
+
+\vspace*{\baselineskip}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 \noindent
-$\boxed{\anatype[\Gamma]{e}{\tau}}$
-
+$\boxed{\ana{\Gamma}{e}{\tau}}$
+%
 \begin{mathpar}
-  \inferrule[\TAInj]{
+  \inferrule[TAInj]{
     C_j \in \C
     \\
-    \anatype[\Gamma]{e}{\tau_j}
+    \ana{\Gamma}{e}{\tau_j}
   }{
-    \anatype[\Gamma]{\inj[C_j]{e}}{\sumtype{C_i}{\tau_i}{C_i \in \C}}
+    \ana{\Gamma}{\inj{C_j}{e}}{\sumtype{C_i}{\tau_i}{C_i \in \C}}
   }
 
-  \inferrule[Bad Tag]{
+  \inferrule[TATag]{
     C \notin \C
     \\
-    \anatype[\Gamma]{e}{\hole}
+    \ana{\Gamma}{e}{\hole}
   }{
-    \anatype[\Gamma]{\hole[\inj[C]{e}]}{\sumtype{C_i}{\tau_i}{C_i \in \C}}
+    \ana{\Gamma}{\hole[\inj{C}{e}]}{\sumtype{C_i}{\tau_i}{C_i \in \C}}
   }
 
-  \inferrule[Expected Type is Hole]{
-    \anatype[\Gamma]{e}{\hole}
+  \inferrule[TAHole]{
+    \ana{\Gamma}{e}{\hole}
   }{
-    \anatype[\Gamma]{\inj[C]{e}}{\hole}
-  }
-\end{mathpar}
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-
-\noindent
-$\boxed{\isConsistent{\tau}{\tau'}}$
-
-\begin{mathpar}
-  \inferrule{
-    \isConsistent{\tau_i}{\tau_i'}
-  }{
-    \isConsistent{
-      \sumtype{C_i}{\tau_i}{C_i \in \C}
-    }{
-      \sumtype{C_i}{\tau_i'}{C_i \in \C}
-    }
+    \ana{\Gamma}{\inj{C}{e}}{\hole}
   }
 \end{mathpar}
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+\textsc{TATag} = Bad Tag
 
-\noindent
-$\boxed{\Join{\tau_1}{\tau_2} = \tau}$
+\textsc{TAHole} = Expected Type is Hole
 
-\begin{mathpar}
-  \Join{
-    \sumtype{C_i}{\tau_i }{C_i \in \C}
-  }{
-    \sumtype{C_i}{\tau_i'}{C_i \in \C}
-  }
-  = \sumtype{C_i}{\Join{\tau_i}{\tau_i'}}{C_i \in \C}
-\end{mathpar}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\newpage
+\vspace*{\baselineskip}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\subsection{Dynamic Semantics}
-
-$\boxed{\isval{e}}$
-
-\begin{mathpar}
-  \inferrule[VRoll]{
-    \isval{e}
-  }{
-    \isval{\roll{e}}
-  }
-
-  \inferrule[VInj]{
-    \isval{e}
-  }{
-    \isval{\inj[\ell_i]{e}}
-  }
-\end{mathpar}
-
-\newpage
-
-\noindent
-$\boxed{e \smallstep e'}$
-
-\begin{mathpar}
-  \inferrule[SSRollC]{
-    e \smallstep e'
-  }{
-    \roll{e} \smallstep \roll{e'}
-  }
-
-  \inferrule[SSUnrollC]{
-    e \smallstep e'
-  }{
-    \unroll{\tau}{e} \smallstep \unroll{\tau}{e'}
-  }
-
-  \inferrule[SSUnrollR]{
-    \isval{e}
-  }{
-    \unroll{\tau}{\roll{e}} \smallstep e
-  }
-
-  \inferrule[SSInjC]{
-    e \smallstep e'
-  }{
-    \inj{e} \smallstep \inj{e'}
-  }
-
-  \inferrule[SSCaseC]{
-    e \smallstep e'
-  }{
-    % \casexp{e}{C_i}{x_i}{e_i} \smallstep \casexp{e'}{C_i}{x_i}{e_i}
-  }
-
-  \inferrule[SSCaseR]{
-    \isval{e}
-  }{
-    % \casexp{\inj[\ell_k]{e}}{C_i}{x_i}{e_i} \smallstep \subst{e}{x_k}{e_k}
-  }
-\end{mathpar}
-
-Canonical forms theorem: if we have a closed, well-typed expression and it's a value,
-then if $\tau$ is a sum type, it has certain form, and if it's a recursive type, it has a certain form.
-
-\resetpfcounter
-\begin{Lemma}[Canonical Forms]
-  \label{thm:canonical forms}
-  If $\hastype{e}{\tau}$
-  and $\isval{e}$
-  then all of the following are true:
-  \begin{enumerate}
-    \item
-          If $\tau = \left( \rectype[\alpha][\tau'] \right)$,
-          then $e = \roll{e'}$
-          and $\hastype{e'}{\expand(\tau)}$
-          and $\isval{e'}$.
-    \item
-          If $\tau = \left( \sumtype{C_i}{x_i}{C_i \in \C} \right)$,
-          then $e = \inj[\ell_k]{e'}$ for some $\ell_k \in \Lambda$
-          and $\hastype{e'}{\tau_k}$
-          and $\isval{e'}$.
-  \end{enumerate}
-\end{Lemma}
-
-\begin{proof}
-  By rule induction on the static semantics:
-  \begin{byCases}
-    \case{\TRoll}
-    By assumption, $e = $
-    %
-    \case{\TUnroll}
-  \end{byCases}
-  % By rule induction on the static semantics:
-  % \begin{byCases}
-  %   \case{\TRoll}
-  %     \begin{pfsteps}
-  %       \item A
-  %       \item B
-  %     \end{pfsteps}
-  %   \case{\TUnroll}
-  %     \begin{pfsteps}
-  %       \item A
-  %       \item B
-  %     \end{pfsteps}
-  %   \end{byCases}
-\end{proof}
-
-
-
-% If $\itgoes{e : \tau}$ and $\isval{e}$, then all of the following are true:
-% \begin{enumerate}
-%   \item If $\tau = (\mu \alpha.\tau')$, then $e = \roll{e'}$ and $\vdash e' : \expand(\tau)$ and $\isval{e'}$.
-%   \item If $\tau = (\sum_{\ell_i \in \Lambda} \ell_i \mapsto \tau_i)$, then $e = \inj[\ell_k]{e'}$ for some $\ell_k \in \Lambda$ and $\vdash e' : \tau_k$ and $\isval{e'}$.
-% \end{enumerate}
-% (use rule induction to prove these)
-
-% \subsection{Progress \& Preservation}
-
-\noindent
-progress = a well-typed expression is either a value or on its way to becoming one
-
-\resetpfcounter
-\begin{Theorem}[Progress]
-  % \label{thm:progress}
-  If \usepfcounter[e types]~$\hastype{e}{\tau}$
-  then either $e \smallstep e'$
-  or $\isval{e'}$.
-\end{Theorem}
-
-\begin{proof}
-  By rule induction on \pfref{e types}:
-  \begin{byCases}
-    \item[TUnroll]
-  \end{byCases}
-\end{proof}
-
-\noindent
-preservation = stepping preserves typing
-
-\noindent
-progress + preservation = well-typed expressions don't go wrong
-
-% If $\vdash e : \tau$ then either $\isval{e}$ or not.
-% % If so, then by canonical forms, $e$ is a value.
-% % Otherwise:
-% % \begin{itemize}
-% %   \item If $e = \unroll^\tau(e)$, then by induction hypothesis, $e'$ is either a value or on its way to becoming a value. (need dynamic semantics to continue)
-% %   \item $e = \casexp(e') \! \left\{ \sum_{\ell_i \in \Lambda} \ell_i(x_i) \mapsto e_i \right\}$
-% % \end{itemize}
-
-% \vspace*{\baselineskip}
-
-\newpage
-
-\resetpfcounter
-\begin{Theorem}[Preservation]
-  % \label{thm:preservation}
-  If \usepfcounter[e types]~$\hastype{e}{\tau}$
-  and \usepfcounter[e steps] $e \smallstep e'$
-  then \usepfcounter[e' types] $\hastype{e'}{\tau}$.
-\end{Theorem}
-
-% TODO: change itgoes to hastype{Gamma}{e}{tau}
-% TODO: fix "by assumptions"
-% TODO: use syntactic equality instead of explicit substitution
-% TODO: add inversion lemma (for intro forms) and use it in TUnroll > SSUnrollR (on 12)
-% TODO: use more descriptive subscripts
-
-inversion lemma: |- e : tau and e has an e' then e' : tau
-
-% \begin{proof}
-%   By rule induction on \pfref{e types}:
-%   \begin{byCases}
-%     \item[\TRoll]
-%       \begin{pfsteps}
-%         \item @{roll:e roll} e = \roll{e_1}
-%         \item @{roll:e1 types} \hastype{e_1}{\expand(\tau)}
-%       \end{pfsteps}
-%       By rule induction on \pfref{e steps}.
-%       The only possible case is \SSRollC:
-%       \begin{pfsteps}
-%         \item @{roll:e1 steps} e_1 \smallstep e_1'
-%         \item @{roll:e roll steps} e' = \roll{e_1'}
-%         \item @{roll:e1' types} \hastype{e_1'}{\expand(\tau)} \BY{IH on \pfref{roll:e1 types, roll:e1 steps}}
-%         \item \hastype{\roll{e_1'}}{\tau} \BY{\TRoll{} on \pfref{roll:e1' types}}
-%       \end{pfsteps}
-%     \item[\TUnroll]
-%       \begin{pfsteps}
-%         \item @{unroll:e unroll} e = \unroll{\tau'}{e_1}
-%         \item @{unroll:t unroll} \hastype{e}{\expand(\tau')}
-%         \item @{unroll:e1 types} \hastype{e_1}{\tau'}
-%       \end{pfsteps}
-%       By rule induction on \pfref{e steps}.
-%       The only possible cases are \SSUnrollC{} and \SSUnrollR:
-%       \begin{byCases}
-%         \item[\SSUnrollC]
-%           \begin{pfsteps}
-%             \item @{unrollC:e1 steps} e_1 \smallstep e_1' \BY{\SSUnrollC{} on \pfref{e steps, unroll:e unroll}}
-%             \item @{unrollC:e unroll steps} \unroll{\tau'}{e_1} \smallstep \unroll{\tau'}{e_1'} \BY{\SSUnrollC{} on \pfref{unroll:e unroll, unrollC:e1 steps}}
-%             \item @{unrollC:e1' types} \hastype{e_1'}{\tau'} \BY{IH on \pfref{unroll:e1 types} and \pfref{unrollC:e1 steps}}
-%             \item \hastype{\unroll{\tau'}{e_1'} : \expand(\tau')} \BY{\TUnroll{} on \pfref{unrollC:e1' types}}
-%           \end{pfsteps}
-%         \item[\SSUnrollR]
-%           \begin{pfsteps}
-%             \item @{unrollR:e1 roll} e_1 = \roll[\tau']{e'} \BY{\SSUnrollR{} on \pfref{e steps, unroll:e unroll}}
-%             % \item @{unrollR:e1 val} \isval{e'} \BY{\SSUnrollR{} on \pfref{e steps, unrollR:e1 roll}}
-%             % \item @{unrollR:e unroll steps} \unroll[\tau']{\roll[\tau']{e_{11}}} \smallstep e_{11} \BY{\SSUnrollR{} on \pfref{unrollR:e1 val}}
-%             \item @{unrollR:e11 types} \hastype{e'}{\expand(\tau')} \BY{\TRoll{} on \pfref{unrollR:e1 roll, unroll:e1 types}}
-%           \end{pfsteps}
-%       \end{byCases}
-%     \item[\TInj]
-%       \begin{pfsteps}
-%         \item @{inj:e inj} e = \inj[\ell_i]{e_1} \BY{\TUnroll{} on \pfref{e types}}
-%         \item @{inj:t sum} \tau = \sumtype{C_i}{x_i}{C_i \in \C} \BY{\TUnroll{} on \pfref{e types}}
-%         \item @{inj:e1 types} \hastype{e_1}{\tau_i} \BY{\TUnroll{} on \pfref{e types}}
-%       \end{pfsteps}
-%       By rule induction on \pfref{e steps}.
-%       The only possible case is \SSInjC:
-%       \begin{pfsteps}
-%         \item @{inj:e steps} \inj[\ell_i]{e_1} \smallstep \inj[\ell_i]{e_1'} \BY{\SSInjC{} on \pfref{e steps, inj:e inj}}
-%         \item @{inj:e1 steps} e_1 \smallstep e_1' \BY{\SSInjC{} on \pfref{inj:e inj, inj:e steps}}
-%         \item @{inj:e1' types} \hastype{e_1'}{\tau_i} \BY{IH on \pfref{inj:e1 types, inj:e1 steps}}
-%         \item @{inj:e' types} \hastype{\inj[\ell_i]{e_1'}}{\tau} \BY{\TInj{} on \pfref{inj:t sum, inj:e1' types}}
-%       \end{pfsteps}
-%     \item[\TCase]
-%       \begin{pfsteps}
-%         \item @{case:e case} e = \casexp{e_1}{C_i}{x_i}{e_{1i}} \BY{\TCase{} on \pfref{e types}}
-%         \item @{case:e1 types} \hastype{e_1 : \sumtype{C_i}{x_i}{C_i \in \C}} \BY{\TCase{} on \pfref{e types}}
-%         \item @{case:e1i types} \left\{ \hastype[x_i : \tau_i]{e_{1i} : \tau} \right\}_{i = 1}^N \BY{\TCase{} on \pfref{e types}}
-%       \end{pfsteps}
-%       By rule induction on \pfref{e steps}.
-%       The only possible cases are \SSCaseC{} and \SSCaseR:
-%       \begin{byCases}
-%         \item[\SSCaseC]
-%           \begin{pfsteps}
-%             \item @{caseC:e1 steps} e_\text{scrut} \smallstep e_\text{scrut}'
-%             \item @{caseC:e steps} e' = \casexp{e_\text{scrut}'}{C_i}{x_i}{e_{1i}}
-%             \item @{caseC:e1' types} \hastype{e_\text{scrut}'}{\sumtype{C_i}{x_i}{C_i \in \C}} \BY{IH on \pfref{caseC:e1 steps, case:e1 types}}
-%             \item @{caseC:e' types} \hastype{\casexp{e_\text{scrut}'}{C_i}{x_i}{e_{10}i} : \tau} \BY{\TCase{} on \pfref{caseC:e1' types, case:e1i types}}
-%           \end{pfsteps}
-%         \item[\SSCaseR]
-%           \begin{pfsteps}
-%             \item @{caseR:e1 inj} e_1 = \inj[\ell_k]{e_2} \BY{\SSCaseR{} on \pfref{e steps, case:e case}}
-%             % \item @{caseR:e2 val} \isval{e_2} \BY{\SSCaseR{} on \pfref{case:e case, caseR:e1 inj}}
-%             \item @{caseR:e steps} \casexp{\inj[\ell_k]{e_2}}{C_i}{x_i}{e_{1i}} \smallstep \subst{e_2}{x_k}{e_{1k}} \BY{\SSCaseR{} on \pfref{caseR:e2 val}}
-%             \item @{caseR:e' types} \hastype{\subst{e_2}{x_k}{e_{1k}}}{\tau} \BY{SL on \pfref{case:e1i types, caseR:e2 val, }}
-%           \end{pfsteps}
-%       \end{byCases}
-%   \end{byCases}
-% \end{proof}
-
-TODO: define (closed) substitution
-
-(Need $e'$ to be closed to avoid unintended variable capture)
-
-\DeclareDocumentCommand{\condSubst}{m m m m}{\left[ #1 / #2 \neq #3 \right] #4}
-
-% $\begin{array}{ll}
-%   \subst{e'}{x}{\roll{e}} & = \roll{\subst{e'}{x}{e}} \\
-%   \subst{e'}{x}{\casexp{e}{C_i}{x_i}{e_i}} & = \casexp{\subst{e'}{x}{e}}{C_i}{x_i}{\condSubst{e'}{x}{x_i}{e_i}}
-% \end{array}$
-
-% TODO:
-% \condSubst{[e'/x \neq x']e = [e'/x]e    when x \neq x'
-% [e'/x \neq x']e = e          when x = x'
-
-\resetpfcounter
-\begin{Lemma}[Substitution]
-  \label{thm:preservation}
-  If \usepfcounter[x types e] $\hastype[x : \tau']{e}{\tau}$
-  % and \usepfcounter[ei isval] $\isval{e_i}$
-  and \usepfcounter[e' types] $\hastype{e'}{\tau'}$
-  then \usepfcounter[e+e' types] $\hastype{\subst{e'}{x}{e} : \tau}$.
-\end{Lemma}
-
-\begin{proof}
-  By induction on \pfref{x types e}.
-  % (Then, by induction on the small step semantics)
-\end{proof}
-
-
-% Preservation: (typing is preserved by stepping)
-
-% If (a) $\vdash e : \tau$ and (b) $e \smallstep e'$, then $\vdash e' : \tau$.
-
-% \begin{itemize}
-%   \item \TRoll:
-%     $e = \roll{e_1}$
-%     then (c) $\itgoes[]{e_1 : \expand(\tau)}$
-%     \begin{itemize}
-%       \item \SSRollC:
-%         then (d) $e_1 \smallstep e_1'$
-%         and (e) $e \smallstep \roll{e_1'}$
-%         and by inductive hypothesis on (c) and (d):
-%           (f) $\itgoes[]{e_1' : \expand(\tau)}$
-%         so $\itgoes[]{\roll{e_1'} : \tau}$
-%         by \TRoll on (f).
-%       \item No other rules apply by syntactic contradiction
-%     \end{itemize}
-%   \item \TUnroll ...
-%   \item \TInj ...
-%   \item \TCase involves a lemma that says something about substitution (look up the substitution theorem if I get stuck)
-% \end{itemize}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% \newpage
-
-% \bibliographystyle{amsplain}
-% \bibliography{citations}
 
 \end{document}
