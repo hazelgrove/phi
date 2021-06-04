@@ -1,0 +1,132 @@
+\documentclass[12pt,fleqn]{article}
+\usepackage[margin=2cm]{geometry}
+\usepackage{titlesec} % see below
+\usepackage{xcolor} % \color \textcolor
+\usepackage{hyperref} % \href
+\usepackage[normalem]{ulem} % normalem retains \emph as italic
+% \uline \uuline \uwave \sout
+\usepackage{enumitem}
+% \begin{enumerate}[label=\Alpha*.]
+% \begin{enumerate}[label=\(\bullet\)]
+\usepackage{graphicx}
+% \includegraphicswidth=0.5\textwidth,trim=[0cm 0cm 0cm 0cm,clip]{file.png}
+\usepackage{pdfpages} % \includepdf[pages=1]{file.pdf}
+% for prose
+%\usepackage[doublespacing]{setspace}
+\usepackage{csquotes} % \blockquote
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\renewcommand{\rmdefault}{cmr}
+\renewcommand{\sfdefault}{cmss}
+\renewcommand{\ttdefault}{cmtt}
+\renewcommand{\familydefault}{\rmdefault}
+\setlength{\titlewidth}{\textwidth}
+
+\titlespacing{\section}{0pt}{0pt}{0pt}
+\titlespacing{\subsection}{0pt}{0pt}{0pt}
+\titlespacing{\subsubsection}{0pt}{0pt}{0pt}
+\titlespacing{\paragraph}{0pt}{0pt}{0pt}
+% https://www.overleaf.com/learn/latex/How_to_write_a_LaTeX_class_file_and_design_your_own_CV_(Part_1)
+% \titleformat{command}[shape]{format}{label}{sep}{before-code}[after-code]
+\titleformat{\section}         % Customise the \section command 
+    [hang]
+    {\Large\ttfamily\raggedright} % Make the \section headers large (\Large),
+                               % small capitals (\scshape) and left aligned (\raggedright)
+    {}{0em}                      % Can be used to give a prefix to all sections, like 'Section ...'
+    {}                           % Can be used to insert code before the heading
+    [\titlerule]                 % Inserts a horizontal line after the heading
+\titleformat{\subsection}
+    [hang]
+    {\large\ttfamily\raggedright}
+    {}{0em}
+    {}
+    []
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{mathpartir}
+\usepackage{latexsym}
+\usepackage{stmaryrd}
+\usepackage{amssymb}
+\usepackage{thmtools}
+
+%% Joshua Dunfield macros
+\def\OPTIONConf{1}%
+\usepackage{joshuadunfield}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\definecolor{red}{HTML}{800000}
+\definecolor{green}{HTML}{008000}
+\definecolor{blue}{HTML}{000080}
+\definecolor{purple}{HTML}{800080}
+\definecolor{teal}{HTML}{008080}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\green}[1]{\textcolor{green}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\purple}[1]{\textcolor{purple}{#1}}
+\newcommand{\teal}[1]{\textcolor{teal}{#1}}
+\newcommand{\redtt}[1]{\red{\mathtt{#1}}}
+\newcommand{\greentt}[1]{\green{\mathtt{#1}}}
+\newcommand{\bluett}[1]{\blue{\mathtt{#1}}}
+\newcommand{\purplett}[1]{\purple{\mathtt{#1}}}
+\newcommand{\tealtt}[1]{\teal{\mathtt{#1}}}
+\newcommand{\redit}[1]{\red{\mathit{#1}}}
+\newcommand{\greenit}[1]{\green{\mathit{#1}}}
+\newcommand{\blueit}[1]{\blue{\mathit{#1}}}
+\newcommand{\purpleit}[1]{\purple{\mathit{#1}}}
+\newcommand{\tealit}[1]{\teal{\mathit{#1}}}
+
+\newcommand{\knd}[1][]{\redit{knd#1}}
+\newcommand{\typ}[1][]{\greenit{\tau#1}}
+\newcommand{\typvar}[1][]{\greenit{\alpha#1}}
+\newcommand{\modle}[1][]{\tealit{mod#1}}
+\newcommand{\modlevar}[1][]{\tealit{\mu#1}}
+\newcommand{\sig}[1][]{\purpleit{sig#1}}
+\newcommand{\lab}[1][]{\mathit{lab#1}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\pagenumbering{gobble}
+\nonfrenchspacing
+%\frenchspacing % when monospaced
+\begin{document}
+\title{Hazel PHI: 10-modules}
+\author{}
+\date{}
+\maketitle
+\section{how to read}
+\subsection*{}
+\begin{tabular}{rlrl}
+    \red{800000} & \red{kinds} & \purple{800080} & \purple{signatures} \\
+    \green{008000} & \green{types (constructors)} & \teal{008080} & \teal{modules} \\
+    \blue{000080} & \blue{terms} && \\
+\end{tabular}
+\section{syntax}
+\[\begin{array}{rcrl}
+    \mathrm{kind} & \knd & ::=
+                  & \redtt{Type} \\
+                  && \vert & \redtt{S(\typ)} \\
+                  && \vert & \redtt{KHole} \\
+                  && \vert & \redtt{\Pi_{\typvar::\knd[_1]}.\knd[_2]} \\
+                  && \vert & \redtt{\Sigma_{\typvar::\knd[_1]}.\knd[_2]} \\
+    \mathrm{base~type} & \greenit{bse} & ::=
+                       & \greentt{Int} \\
+                       && \vert & \greentt{Float} \\
+                       && \vert & \greentt{Bool} \\
+    \mathrm{HTyp~BinOp} & \greenit{\oplus} & ::=
+                   & \greentt{\times} \\
+                   && \vert & \greentt{+} \\
+                   && \vert & \greentt{\rightarrow}\\
+    \mathrm{internal~HTyp} & \typ & ::=
+                           & \greenit{bse} \\
+                           && \vert & \greentt{\lambda\typvar::\knd.\typ} \\
+                           && \vert & \greentt{\typ[_1]~\typ[_2]} \\
+                           && \vert & \greentt{\typ[_1] \oplus \typ[_2]} \\
+                           && \vert & \greentt{\langle\typ[_1], \typ[_2]\rangle} \\
+                           && \vert & \greentt{\pi_1~\typ} \\
+                           && \vert & \greentt{\pi_2~\typ} \\
+                           && \vert & \greentt{\{\lab[_1] \hookrightarrow \typ[_1], ...~\lab[_n] \hookrightarrow \typ[_n]\}} \\
+                           && \vert & \greentt{\modle.\lab} \\
+    \mathrm{module} & \modle & ::=
+                    & [sbnd] \\
+                    && \vert & \tealtt{\lambda\modlevar::\sig.\modle} \\
+                    && \vert & \tealtt{\modle[_1]~\modle[_2]} \\
+    \mathrm{signature} & \sig & ::=
+                       & \\
+                       && \vert & \purplett{\Pi_{\modlevar::\sig[_1]}.\sig[_2]} \\
+\end{array}\]
+\end{document}
