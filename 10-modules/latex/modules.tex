@@ -56,29 +56,74 @@
 \definecolor{blue}{HTML}{000080}
 \definecolor{purple}{HTML}{800080}
 \definecolor{teal}{HTML}{008080}
+\definecolor{black}{HTML}{000000}
 \newcommand{\red}[1]{\textcolor{red}{#1}}
 \newcommand{\green}[1]{\textcolor{green}{#1}}
 \newcommand{\blue}[1]{\textcolor{blue}{#1}}
 \newcommand{\purple}[1]{\textcolor{purple}{#1}}
 \newcommand{\teal}[1]{\textcolor{teal}{#1}}
+\newcommand{\black}[1]{\textcolor{black}{#1}}
 \newcommand{\redtt}[1]{\red{\mathtt{#1}}}
 \newcommand{\greentt}[1]{\green{\mathtt{#1}}}
 \newcommand{\bluett}[1]{\blue{\mathtt{#1}}}
 \newcommand{\purplett}[1]{\purple{\mathtt{#1}}}
 \newcommand{\tealtt}[1]{\teal{\mathtt{#1}}}
+\newcommand{\blacktt}[1]{\black{\mathtt{#1}}}
 \newcommand{\redit}[1]{\red{\mathit{#1}}}
 \newcommand{\greenit}[1]{\green{\mathit{#1}}}
 \newcommand{\blueit}[1]{\blue{\mathit{#1}}}
 \newcommand{\purpleit}[1]{\purple{\mathit{#1}}}
 \newcommand{\tealit}[1]{\teal{\mathit{#1}}}
+\newcommand{\blackit}[1]{\black{\mathit{#1}}}
+% traditional hazel hole color
+\newcommand{\violettt}[1]{\textcolor{violet}{\mathtt{#1}}}
+\newcommand{\violetit}[1]{\textcolor{violet}{\mathit{#1}}}
 
-\newcommand{\knd}[1][]{\redit{knd#1}}
+\newcommand{\knd}[1][]{\redit{\kappa#1}}
 \newcommand{\typ}[1][]{\greenit{\tau#1}}
-\newcommand{\typvar}[1][]{\greenit{\alpha#1}}
-\newcommand{\modle}[1][]{\tealit{mod#1}}
-\newcommand{\modlevar}[1][]{\tealit{\mu#1}}
+\newcommand{\typvar}[1][]{\greenit{t#1}}
+\renewcommand{\exp}[1][]{\blueit{\delta#1}}
+\newcommand{\expvar}[1][]{\blueit{x#1}}
 \newcommand{\sig}[1][]{\purpleit{sig#1}}
+\newcommand{\sigvar}[1][]{\purpleit{s#1}}
+\renewcommand{\mod}[1][]{\tealit{mod#1}}
+\newcommand{\modvar}[1][]{\tealit{m#1}}
 \newcommand{\lab}[1][]{\mathit{lab#1}}
+
+\newcommand{\sbnd}{\blackit{sbnd}}
+\newcommand{\sbnds}{\blackit{sbnds}}
+\newcommand{\sdec}{\blackit{sdec}}
+\newcommand{\sdecs}{\blackit{sdecs}}
+
+\newcommand{\Type}{\redtt{Type}}
+\newcommand{\SKind}[1]{\redtt{S(#1)}}
+\newcommand{\KHole}{\redtt{KHole}}
+\newcommand{\DepFunKind}[2]{\redtt{\Pi_{#1}.{#2}}}
+\newcommand{\DepProdKind}[2]{\redtt{\Sigma_{#1}.{#2}}}
+
+\newcommand{\TypCFun}[2]{\greentt{\lambda #1.#2}}
+\newcommand{\TypCAp}[2]{\greentt{#1~#2}}
+\newcommand{\TypCPair}[2]{\greentt{\langle #1, #2\rangle}}
+\newcommand{\TypCPairPrjL}[1]{\greentt{\pi_1~#1}}
+\newcommand{\TypCPairPrjR}[1]{\greentt{\pi_2~#1}}
+% use violet instead of green?
+% optional arg doesn't work for some odd reason
+\newcommand{\TypCHole}[1]{\greentt{\llparenthesis #1 \rrparenthesis}}
+
+\newcommand{\Int}{\greentt{Int}}
+\newcommand{\Float}{\greentt{Float}}
+\newcommand{\Bool}{\greentt{Bool}}
+
+\newcommand{\Struct}[1]{\tealtt{\{#1\}}}
+\newcommand{\Functor}[2]{\tealtt{\lambda #1.#2}}
+\newcommand{\FunctorAp}[2]{\tealtt{#1~#2}}
+\newcommand{\SubModulePrj}[2]{\tealtt{#1.#2}}
+\newcommand{\ModTermPrj}[2]{\bluett{#1.#2}}
+\newcommand{\LetMod}[2]{\tealtt{module~#1=#2}\bluett{~in~\exp}}
+
+\newcommand{\Sig}[1]{\purplett{\{#1\}}}
+\newcommand{\FunctorSig}[2]{\purplett{\Pi_{#1}.{#2}}}
+\newcommand{\LetSig}[2]{\purplett{signature~#1=#2}\bluett{~in~\exp}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \pagenumbering{gobble}
 \nonfrenchspacing
@@ -96,37 +141,56 @@
     \blue{000080} & \blue{terms} && \\
 \end{tabular}
 \section{syntax}
-\[\begin{array}{rcrl}
-    \mathrm{kind} & \knd & ::=
-                  & \redtt{Type} \\
-                  && \vert & \redtt{S(\typ)} \\
-                  && \vert & \redtt{KHole} \\
-                  && \vert & \redtt{\Pi_{\typvar::\knd[_1]}.\knd[_2]} \\
-                  && \vert & \redtt{\Sigma_{\typvar::\knd[_1]}.\knd[_2]} \\
-    \mathrm{base~type} & \greenit{bse} & ::=
-                       & \greentt{Int} \\
-                       && \vert & \greentt{Float} \\
-                       && \vert & \greentt{Bool} \\
-    \mathrm{HTyp~BinOp} & \greenit{\oplus} & ::=
+\[\begin{array}{rcrlr}
+    \textrm{kind} & \knd & ::=
+                  & \Type & \textrm{kind of types} \\
+                  && \vert & \SKind{\typ} & \textrm{singleton kind} \\
+                  && \vert & \KHole & \textrm{kind hole} \\
+                  && \vert & \DepFunKind{\typvar::\knd[_1]}{\knd[_2]} & \textrm{dependent function kind} \\
+                  && \vert & \DepProdKind{\typvar::\knd[_1]}{\knd[_2]} & \textrm{dependent product kind} \\
+    \textrm{internal HTyp} & \typ & ::=
+                           & \typvar & \textrm{type variable} \\
+                           && \vert & \greenit{bse} \\
+                           && \vert & \TypCFun{\typvar::\knd}{\typ} \\
+                           && \vert & \TypCAp{\typ[_1]}{\typ[_2]} \\
+                           && \vert & \greentt{\typ[_1] \oplus \typ[_2]} \\
+                           && \vert & \TypCPair{\typ[_1]}{\typ[_2]} \\
+                           && \vert & \TypCPairPrjL{\typ} \\
+                           && \vert & \TypCPairPrjR{\typ} \\
+                           && \vert & \greentt{\{\lab[_1] \hookrightarrow \typ[_1], ...~\lab[_n] \hookrightarrow \typ[_n]\}} \\
+    \textrm{base type} & \greenit{bse} & ::=
+                       & \Int \\
+                       && \vert & \Float \\
+                       && \vert & \Bool \\
+    \textrm{HTyp BinOp} & \greenit{\oplus} & ::=
                    & \greentt{\times} \\
                    && \vert & \greentt{+} \\
                    && \vert & \greentt{\rightarrow}\\
-    \mathrm{internal~HTyp} & \typ & ::=
-                           & \greenit{bse} \\
-                           && \vert & \greentt{\lambda\typvar::\knd.\typ} \\
-                           && \vert & \greentt{\typ[_1]~\typ[_2]} \\
-                           && \vert & \greentt{\typ[_1] \oplus \typ[_2]} \\
-                           && \vert & \greentt{\langle\typ[_1], \typ[_2]\rangle} \\
-                           && \vert & \greentt{\pi_1~\typ} \\
-                           && \vert & \greentt{\pi_2~\typ} \\
-                           && \vert & \greentt{\{\lab[_1] \hookrightarrow \typ[_1], ...~\lab[_n] \hookrightarrow \typ[_n]\}} \\
-                           && \vert & \greentt{\modle.\lab} \\
-    \mathrm{module} & \modle & ::=
-                    & [sbnd] \\
-                    && \vert & \tealtt{\lambda\modlevar::\sig.\modle} \\
-                    && \vert & \tealtt{\modle[_1]~\modle[_2]} \\
-    \mathrm{signature} & \sig & ::=
-                       & \\
-                       && \vert & \purplett{\Pi_{\modlevar::\sig[_1]}.\sig[_2]} \\
+                           && \vert & \greentt{\mod.\lab} \\
+                           && \vert & \TypCHole{} \\
+                           && \vert & \TypCHole{\typ} \\
+    \textrm{internal expression} & \exp & ::=
+                                 & \expvar \\
+                                 && \vert & \LetMod{\modvar}{\mod} \\
+                                 && \vert & \LetMod{\modvar :: \sig}{\mod} \\
+                                 && \vert & \LetSig{\sigvar}{\sig} \\
+                                 && \vert & \ModTermPrj{\mod}{\lab} & \textrm{module term projection} \\
+                                 && \vert & \textit{elided} \\
+    \textrm{signature} & \sig & ::=
+                       & \sigvar & \textrm{signature variable} \\
+                       && \vert & \Sig{\sdecs} & \textrm{structure signature} \\
+                       && \vert & \FunctorSig{\modvar::\sig[_1]}{\sig[_2]} & \textrm{functor signature} \\
+    \textrm{module} & \mod & ::=
+                    & \modvar & \textrm{module variable} \\
+                    && \vert & \Struct{\sbnds} & \textrm{structure} \\
+                    && \vert & \Functor{\modvar::\sig}{\mod} & \textrm{functor} \\
+                    && \vert & \FunctorAp{\mod[_1]}{\mod[_2]} & \textrm{functor application} \\
+                    && \vert & \SubModulePrj{\mod}{\lab} & \textrm{submodule projection} \\
+    \textrm{structure bindings} & \sbnds & ::=
+                                & \epsilon \\
+                                && \vert & \sbnd,\sbnds \\
+    \textrm{signature declarations} & \sdecs & ::=
+                                & \epsilon \\
+                                && \vert & \sdec,\sdecs\\
 \end{array}\]
 \end{document}
