@@ -46,6 +46,9 @@
 \usepackage{stmaryrd}
 \usepackage{amssymb}
 \usepackage{thmtools}
+\usepackage{tikz}
+% https://tex.stackexchange.com/questions/12678/squiggly-arrows-in-tikz
+\usetikzlibrary{decorations.pathmorphing}
 
 %% Joshua Dunfield macros
 \def\OPTIONConf{1}%
@@ -57,43 +60,52 @@
 \definecolor{purple}{HTML}{800080}
 \definecolor{teal}{HTML}{008080}
 \definecolor{black}{HTML}{000000}
+\definecolor{grey}{HTML}{808080}
 \newcommand{\red}[1]{\textcolor{red}{#1}}
 \newcommand{\green}[1]{\textcolor{green}{#1}}
 \newcommand{\blue}[1]{\textcolor{blue}{#1}}
 \newcommand{\purple}[1]{\textcolor{purple}{#1}}
 \newcommand{\teal}[1]{\textcolor{teal}{#1}}
 \newcommand{\black}[1]{\textcolor{black}{#1}}
+\newcommand{\grey}[1]{\textcolor{grey}{#1}}
 \newcommand{\redtt}[1]{\red{\mathtt{#1}}}
 \newcommand{\greentt}[1]{\green{\mathtt{#1}}}
 \newcommand{\bluett}[1]{\blue{\mathtt{#1}}}
 \newcommand{\purplett}[1]{\purple{\mathtt{#1}}}
 \newcommand{\tealtt}[1]{\teal{\mathtt{#1}}}
 \newcommand{\blacktt}[1]{\black{\mathtt{#1}}}
+\newcommand{\greytt}[1]{\grey{\mathtt{#1}}}
 \newcommand{\redit}[1]{\red{\mathit{#1}}}
 \newcommand{\greenit}[1]{\green{\mathit{#1}}}
 \newcommand{\blueit}[1]{\blue{\mathit{#1}}}
 \newcommand{\purpleit}[1]{\purple{\mathit{#1}}}
 \newcommand{\tealit}[1]{\teal{\mathit{#1}}}
 \newcommand{\blackit}[1]{\black{\mathit{#1}}}
+\newcommand{\greyit}[1]{\grey{\mathit{#1}}}
 % traditional hazel hole color
 \newcommand{\violettt}[1]{\textcolor{violet}{\mathtt{#1}}}
 \newcommand{\violetit}[1]{\textcolor{violet}{\mathit{#1}}}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% syntax
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\knd}[1][]{\redit{\kappa#1}}
+\newcommand{\utyp}[1][]{\greenit{\hat{\tau#1}}}
 \newcommand{\typ}[1][]{\greenit{\tau#1}}
+\newcommand{\utypvar}[1][]{\greenit{t#1}}
 \newcommand{\typvar}[1][]{\greenit{t#1}}
+\newcommand{\uexp}[1][]{\blueit{\hat{\delta#1}}}
+\newcommand{\uexpvar}[1][]{\blueit{x#1}}
 \renewcommand{\exp}[1][]{\blueit{\delta#1}}
 \newcommand{\expvar}[1][]{\blueit{x#1}}
+\newcommand{\usig}[1][]{\purpleit{\hat{sig#1}}}
 \newcommand{\sig}[1][]{\purpleit{sig#1}}
+\newcommand{\usigvar}[1][]{\purpleit{\hat{s#1}}}
 \newcommand{\sigvar}[1][]{\purpleit{s#1}}
+\newcommand{\umod}[1][]{\tealit{\hat{mod#1}}}
 \renewcommand{\mod}[1][]{\tealit{mod#1}}
+\newcommand{\umodvar}[1][]{\tealit{m#1}}
 \newcommand{\modvar}[1][]{\tealit{m#1}}
 \newcommand{\lab}[1][]{\mathit{lab#1}}
-
-\newcommand{\sbnd}{\blackit{sbnd}}
-\newcommand{\sbnds}{\blackit{sbnds}}
-\newcommand{\sdec}{\blackit{sdec}}
-\newcommand{\sdecs}{\blackit{sdecs}}
 
 \newcommand{\Type}{\redtt{Type}}
 \newcommand{\SKind}[1]{\redtt{S(#1)}}
@@ -106,24 +118,36 @@
 \newcommand{\TypCPair}[2]{\greentt{\langle #1, #2\rangle}}
 \newcommand{\TypCPairPrjL}[1]{\greentt{\pi_1~#1}}
 \newcommand{\TypCPairPrjR}[1]{\greentt{\pi_2~#1}}
+\newcommand{\ListTyp}[1]{\greentt{[#1]}}
 % use violet instead of green?
-% optional arg doesn't work for some odd reason
-\newcommand{\TypCHole}[1]{\greentt{\llparenthesis #1 \rrparenthesis}}
+\newcommand{\TypCHole}[1][]{\greentt{\llparenthesis #1 \rrparenthesis}}
 
 \newcommand{\Int}{\greentt{Int}}
 \newcommand{\Float}{\greentt{Float}}
 \newcommand{\Bool}{\greentt{Bool}}
+
+\newcommand{\Sig}[1]{\purplett{\{#1\}}}
+\newcommand{\FunctorSig}[2]{\purplett{\Pi_{#1}.{#2}}}
+\newcommand{\LetSig}[2]{\purplett{signature~#1=#2}\bluett{~in~\exp}}
+\newcommand{\uLetSig}[2]{\purplett{signature~#1=#2}\bluett{~in~\uexp}}
 
 \newcommand{\Struct}[1]{\tealtt{\{#1\}}}
 \newcommand{\Functor}[2]{\tealtt{\lambda #1.#2}}
 \newcommand{\FunctorAp}[2]{\tealtt{#1~#2}}
 \newcommand{\SubModulePrj}[2]{\tealtt{#1.#2}}
 \newcommand{\ModTermPrj}[2]{\bluett{#1.#2}}
+\newcommand{\uModTermPrj}[2]{\bluett{#1.#2}}
 \newcommand{\LetMod}[2]{\tealtt{module~#1=#2}\bluett{~in~\exp}}
+\newcommand{\uLetMod}[2]{\tealtt{module~#1=#2}\bluett{~in~\uexp}}
 
-\newcommand{\Sig}[1]{\purplett{\{#1\}}}
-\newcommand{\FunctorSig}[2]{\purplett{\Pi_{#1}.{#2}}}
-\newcommand{\LetSig}[2]{\purplett{signature~#1=#2}\bluett{~in~\exp}}
+\newcommand{\sbnd}{\greyit{sbnd}}
+\newcommand{\sbnds}{\greyit{sbnds}}
+\newcommand{\sdec}{\greyit{sdec}}
+\newcommand{\sdecs}{\greyit{sdecs}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% judgements
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\ConsistentSubkind}[3]{\mathrm{#1 \vdash #2 \lesssim #3}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \pagenumbering{gobble}
 \nonfrenchspacing
@@ -140,6 +164,34 @@
     \green{008000} & \green{types (constructors)} & \teal{008080} & \teal{modules} \\
     \blue{000080} & \blue{terms} && \\
 \end{tabular}
+\section{notes}
+\subsection*{}
+\begin{tikzpicture}[
+    kind/.style={circle, draw=red!100, fill=red!10, thick},
+    type/.style={circle, draw=green!100, fill=green!10, thick},
+    term/.style={circle, draw=blue!100, fill=blue!10, thick},
+    signature/.style={rectangle, draw=purple!100, fill=purple!10, thick},
+    module/.style={rectangle, draw=teal!100, fill=teal!10, thick},
+    ->/.style={line join=round, decorate, decoration={zigzag, segment length=4, amplitude=.9, post=lineto, post length=10pt}}
+    ]
+    \node[kind](knd) at (0, 2){$\knd$};
+    \node[type](utyp) at (-1, 1){$\utyp$};
+    \node[type](typ) at (1, 1){$\typ$};
+    \node[term](uexp) at (-1, 0){$\uexp$};
+    \node[term](exp) at (1, 0){$\exp$};
+    \node[signature](usig) at (3, 2){$\usig$};
+    \node[signature](sig) at (5, 2){$\sig$};
+    \node[module](umod) at (3, 1){$\umod$};
+    \node[module](mod)at (5, 1){$\mod$};
+    \draw[->](utyp.east)--(typ.west);
+    \draw[->](uexp.east)--(exp.west);
+    \draw[->](usig.east)--(sig.west);
+    \draw[->](umod.east)--(mod.west);
+    \node[draw=none, shift={(-0.1, 0)}] at (typ.west){$>$};
+    \node[draw=none, shift={(-0.1, 0)}] at (exp.west){$>$};
+    \node[draw=none, shift={(-0.1, 0)}] at (sig.west){$>$};
+    \node[draw=none, shift={(-0.1, 0)}] at (mod.west){$>$};
+\end{tikzpicture}
 \section{syntax}
 \[\begin{array}{rcrlr}
     \textrm{kind} & \knd & ::=
@@ -148,49 +200,112 @@
                   && \vert & \KHole & \textrm{kind hole} \\
                   && \vert & \DepFunKind{\typvar::\knd[_1]}{\knd[_2]} & \textrm{dependent function kind} \\
                   && \vert & \DepProdKind{\typvar::\knd[_1]}{\knd[_2]} & \textrm{dependent product kind} \\
+\end{array}\]
+\[\begin{array}{rcrlr}
+    \textrm{external HTyp} & \utyp & ::=
+                           & \utypvar & \textrm{type variable} \\
+                           && \vert & \greenit{bse} & \textrm{base type} \\
+                           && \vert & \greentt{\utyp[_1] \oplus \utyp[_2]} & \textrm{type binop} \\
+                           && \vert & \ListTyp{\utyp} & \textrm{list type} \\
+                           && \vert & \TypCFun{\typvar::\knd}{\utyp} & \textrm{type function} \\
+                           && \vert & \TypCAp{\utyp[_1]}{\utyp[_2]} & \textrm{type application} \\
+                           && \vert & \TypCPair{\utyp[_1]}{\utyp[_2]} & \textrm{type pair} \\
+                           && \vert & \TypCPairPrjL{\utyp} & \textrm{type projection} \\
+                           && \vert & \TypCPairPrjR{\utyp} & \textrm{type projection} \\
+                           && \vert & \greentt{\{\lab[_1] \hookrightarrow \utyp[_1], ...~\lab[_n] \hookrightarrow \utyp[_n]\}} & \textrm{labelled product type (record)} \\
+                           && \vert & \greentt{\mod.\lab} & \textrm{module type projection} \\
+                           && \vert & \TypCHole & \textrm{empty type hole} \\
+                           && \vert & \TypCHole[\utyp] & \textrm{nonempty type hole} \\
+\end{array}\]
+\[\begin{array}{rcrlr}
     \textrm{internal HTyp} & \typ & ::=
                            & \typvar & \textrm{type variable} \\
-                           && \vert & \greenit{bse} \\
-                           && \vert & \TypCFun{\typvar::\knd}{\typ} \\
-                           && \vert & \TypCAp{\typ[_1]}{\typ[_2]} \\
-                           && \vert & \greentt{\typ[_1] \oplus \typ[_2]} \\
-                           && \vert & \TypCPair{\typ[_1]}{\typ[_2]} \\
-                           && \vert & \TypCPairPrjL{\typ} \\
-                           && \vert & \TypCPairPrjR{\typ} \\
-                           && \vert & \greentt{\{\lab[_1] \hookrightarrow \typ[_1], ...~\lab[_n] \hookrightarrow \typ[_n]\}} \\
+                           && \vert & \greenit{bse} & \textrm{base type} \\
+                           && \vert & \greentt{\typ[_1] \oplus \typ[_2]} & \textrm{type binop} \\
+                           && \vert & \ListTyp{\typ} & \textrm{list type} \\
+                           && \vert & \TypCFun{\typvar::\knd}{\typ} & \textrm{type function} \\
+                           && \vert & \TypCAp{\typ[_1]}{\typ[_2]} & \textrm{type application} \\
+                           && \vert & \TypCPair{\typ[_1]}{\typ[_2]} & \textrm{type pair} \\
+                           && \vert & \TypCPairPrjL{\typ} & \textrm{type projection} \\
+                           && \vert & \TypCPairPrjR{\typ} & \textrm{type projection} \\
+                           && \vert & \greentt{\{\lab[_1] \hookrightarrow \typ[_1], ...~\lab[_n] \hookrightarrow \typ[_n]\}} & \textrm{labelled product type (record)} \\
+                           && \vert & \greentt{\mod.\lab} & \textrm{module type projection} \\
+                           && \vert & \TypCHole & \textrm{empty type hole} \\
+                           && \vert & \TypCHole[\typ] & \textrm{nonempty type hole} \\
+\end{array}\]
+\[\begin{array}{rcrlr}
     \textrm{base type} & \greenit{bse} & ::=
                        & \Int \\
                        && \vert & \Float \\
                        && \vert & \Bool \\
+\end{array}\]
+\[\begin{array}{rcrlr}
     \textrm{HTyp BinOp} & \greenit{\oplus} & ::=
                    & \greentt{\times} \\
                    && \vert & \greentt{+} \\
                    && \vert & \greentt{\rightarrow}\\
-                           && \vert & \greentt{\mod.\lab} \\
-                           && \vert & \TypCHole{} \\
-                           && \vert & \TypCHole{\typ} \\
+\end{array}\]
+\[\begin{array}{rcrlr}
+    \textrm{external expression} & \uexp & ::=
+                                 & \uexpvar \\
+                                 && \vert & \uLetSig{\sigvar}{\sig} \\
+                                 && \vert & \uLetMod{\modvar}{\mod} \\
+                                 && \vert & \uLetMod{\modvar :: \sigvar}{\mod} \\
+                                 && \vert & \uModTermPrj{\mod}{\lab} & \textrm{module term projection} \\
+                                 && \vert & \textit{elided} \\
+\end{array}\]
+\[\begin{array}{rcrlr}
     \textrm{internal expression} & \exp & ::=
                                  & \expvar \\
-                                 && \vert & \LetMod{\modvar}{\mod} \\
-                                 && \vert & \LetMod{\modvar :: \sig}{\mod} \\
                                  && \vert & \LetSig{\sigvar}{\sig} \\
+                                 && \vert & \LetMod{\modvar :: \sigvar}{\mod} \\
                                  && \vert & \ModTermPrj{\mod}{\lab} & \textrm{module term projection} \\
                                  && \vert & \textit{elided} \\
-    \textrm{signature} & \sig & ::=
+\end{array}\]
+\[\begin{array}{rcrlr}
+    \textrm{external signature} & \usig & ::=
+                       & \usigvar & \textrm{signature variable} \\
+                       && \vert & \Sig{\sdecs} & \textrm{structure signature} \\
+                       && \vert & \FunctorSig{\modvar::\usig[_1]}{\usig[_2]} & \textrm{functor signature} \\
+    \textrm{internal signature} & \sig & ::=
                        & \sigvar & \textrm{signature variable} \\
                        && \vert & \Sig{\sdecs} & \textrm{structure signature} \\
                        && \vert & \FunctorSig{\modvar::\sig[_1]}{\sig[_2]} & \textrm{functor signature} \\
-    \textrm{module} & \mod & ::=
+    \textrm{external module} & \umod & ::=
+                    & \umodvar & \textrm{module variable} \\
+                    && \vert & \Struct{\sbnds} & \textrm{structure} \\
+                    && \vert & \Functor{\umodvar::\sig}{\umod} & \textrm{functor} \\
+                    && \vert & \FunctorAp{\umod[_1]}{\umod[_2]} & \textrm{functor application} \\
+                    && \vert & \SubModulePrj{\umod}{\lab} & \textrm{submodule projection} \\
+    \textrm{internal module} & \mod & ::=
                     & \modvar & \textrm{module variable} \\
                     && \vert & \Struct{\sbnds} & \textrm{structure} \\
                     && \vert & \Functor{\modvar::\sig}{\mod} & \textrm{functor} \\
                     && \vert & \FunctorAp{\mod[_1]}{\mod[_2]} & \textrm{functor application} \\
                     && \vert & \SubModulePrj{\mod}{\lab} & \textrm{submodule projection} \\
-    \textrm{structure bindings} & \sbnds & ::=
-                                & \epsilon \\
-                                && \vert & \sbnd,\sbnds \\
     \textrm{signature declarations} & \sdecs & ::=
                                 & \epsilon \\
                                 && \vert & \sdec,\sdecs\\
+    \textrm{signature declaration} & \sdec & ::=
+                                   & \greentt{type~\lab} \\
+                                   && \vert & \greentt{type~\lab = \typ} \\
+                                   && \vert & \bluett{val~\lab : \typ} \\
+                                   && \vert & \tealtt{module~\lab :: \sig} \\
+    \textrm{structure bindings} & \sbnds & ::=
+                                & \epsilon \\
+                                && \vert & \sbnd,\sbnds \\
+    \textrm{structure binding} & \sbnd & ::=
+                               & \greentt{type~\typvar = \typ} \\
+                               && \vert & \bluett{let~\expvar : \typ = \exp} \\
+                               && \vert & \tealtt{module~\modvar = \mod} \\
+                               && \vert & \tealtt{module~\modvar :: \sigvar = \mod} \\
 \end{array}\]
+\section{statics}
+\subsection*{}
+\begin{minipage}{\textwidth}
+    \judgbox{\ConsistentSubkind{\Delta;\Phi}{\knd[_1]}{\knd[_2]}}{$\knd[_1]$ is a consistent subkind of $\knd[_2]$}
+    \begin{mathpar}
+        \inferrule[KCSubsumption]{test}{test}
+    \end{mathpar}
+\end{minipage}
 \end{document}
