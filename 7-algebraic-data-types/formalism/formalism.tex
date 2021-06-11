@@ -5,6 +5,8 @@
 
 % Sorts
 
+\newcommand{\IHExp}{\mathsf{IHExp}}
+\newcommand{\IHTagExp}{\mathsf{IHTagExp}}
 \newcommand{\HExp}{\mathsf{HExp}}
 \newcommand{\HTyp}{\mathsf{HTyp}}
 \newcommand{\HTag}{\mathsf{HTag}}
@@ -22,26 +24,32 @@
 \newcommand{\C}{\mathcal{C}}
 \newcommand{\Tag}{\mathbf{C}}
 \newcommand{\TagHole}[1][u]{{?^{#1}}}
+\newcommand{\Nothing}{\varnothing}
 
 % Expressions
 
 \newcommand{\roll}[2]{\mathtt{roll}^{#1}\mathopen{}\left(#2\right)\mathclose{}}
 \newcommand{\unroll}[2]{\mathtt{unroll}^{#1}\mathopen{}\left(#2\right)\mathclose{}}
-\newcommand{\inj}[2]{\mathtt{inj}_{#1}\mathopen{}\left(#2\right)\mathclose{}}
+\newcommand{\inj}[3][]{\mathtt{inj}_{#2}^{#1}\mathopen{}\left(#3\right)\mathclose{}}
 \newcommand{\case}[2]{\mathtt{case} \left(#1\right) \left\{#2\right\}}
 \newcommand{\hole}[1][]{\llparenthesis#1\rrparenthesis}
 
 % Judgments
 
-\newcommand{\syn}[3]{#1 \vdash #2 \Leftarrow #3}
-\newcommand{\ana}[3]{#1 \vdash #2 \Rightarrow #3}
-\newcommand{\hastype}[3]{#1 \vdash #2 : #3}
+\newcommand{\syn}[3]{#1 \vdash #2 \Rightarrow #3}
+\newcommand{\ana}[3]{#1 \vdash #2 \Leftarrow #3}
+\newcommand{\synelab}[5]{#1 \vdash #2 \Rightarrow #3 \leadsto #4 \dashv #5}
+\newcommand{\anaelab}[6]{#1 \vdash #2 \Leftarrow #3 \leadsto #4 : #5 \dashv #6}
+\newcommand{\anaE}[3]{#1 \vdash_E #2 \Leftarrow #3}
+\newcommand{\assign}[3]{#1 \vdash #2 : #3}
+\newcommand{\valid}[2]{#1 \vdash #2~\text{valid}}
 
 % Operations
 
-\DeclareDocumentCommand{\subst}{m m m}{[#1 / #2]#3}
-\DeclareDocumentCommand{\defeq}{}{\stackrel{\text{def}}{=}}
-\DeclareDocumentCommand{\isval}{m}{#1~\mathsf{\normalfont val}}
+\newcommand{\subst}[3]{[#1 / #2]#3}
+\newcommand{\defeq}{\stackrel{\text{def}}{=}}
+\newcommand{\isval}[1]{#1~\mathsf{\normalfont val}}
+\newcommand{\cast}[3]{#1\langle#2\,{\Rightarrow}\,#3\rangle}
 
 % Helpers
 
@@ -65,13 +73,22 @@
 \[
   \arraycolsep=0pt  \arraycolsep=0pt
   \begin{array}{l@{~~}c@{~~}c@{~~}l}
-    \HExp & e & {}\Coloneqq{} & \ldots
+    \IHExp & d & {}\Coloneqq{} &
+      \ldots
+      \mid \roll{\tau}{d}
+      \mid \unroll{\tau}{d}
+      \mid \inj[\tau]{C}{D}
+      \mid \case{d}{C_i(X_i){=}d_i}_{C_i \in \C}
+    \\
+    \HExp & e & {}\Coloneqq{} &
+      \ldots
       \mid \roll{\tau}{e}
       \mid \unroll{\tau}{e}
       \mid \inj{C}{E}
       \mid \case{e}{C_i(X_i){=}e_i}_{C_i \in \C}
     \\
-    \HTyp & \tau & {}\Coloneqq{} & \ldots
+    \HTyp & \tau & {}\Coloneqq{} &
+      \ldots
       \mid (\rectype{\alpha}{\tau})
       \mid \alpha
       \mid \sumtype{C_i(T_i)}_{C_i \in \C}
@@ -80,9 +97,10 @@
       \Tag
       \mid \TagHole
     \\
-    \HTagExp & E & {}\Coloneqq{} & e \mid \varnothing \\
-    \HTagTyp & T & {}\Coloneqq{} & \tau \mid \varnothing \\
-    \HTagVar & X & {}\Coloneqq{} & x \mid \varnothing \\
+    \IHTagExp & D & {}\Coloneqq{} & d \mid \Nothing \\
+    \HTagExp & E & {}\Coloneqq{} & e \mid \Nothing \\
+    \HTagTyp & T & {}\Coloneqq{} & \tau \mid \Nothing \\
+    \HTagVar & X & {}\Coloneqq{} & x \mid \Nothing \\
   \end{array}
 \]
 
@@ -91,49 +109,205 @@
 \section{Semantics}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+%  Gamma |- e => tau
 
 \noindent
-$\boxed{\hastype{\Gamma}{e}{\tau}}$
+$\boxed{\syn{\Gamma}{e}{\tau}}$
+\quad $e$ synthesizes type $\tau$
+%
+\begin{mathpar}
+  \inferrule[SInj]{
+    \valid{\Gamma}{E}
+  }{
+    \syn{\Gamma}{\hole[\inj{C}{E}]}{\hole}
+  }
+\end{mathpar}
+
+\textsc{SInj} = Injection in Synthetic Position or Analyzed Against Non-Sum
+
+\vspace*{\baselineskip}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+%  Gamma |- E valid
+
+\noindent
+$\boxed{\valid{\Gamma}{E}}$
+\quad $E$ is a valid expression
+%
+\begin{mathpar}
+  \inferrule[]{
+    \ana{\Gamma}{e}{\hole}
+  }{
+    \valid{\Gamma}{e}
+  }
+
+  \inferrule[]{
+  }{
+    \valid{\Gamma}{\Nothing}
+  }
+\end{mathpar}
+
+\vspace*{\baselineskip}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% Gamma |- E <= T
+
+\noindent
+$\boxed{\anaE{\Gamma}{E}{T}}$
+\quad $E$ analyzes against optional type $T$
+%
+\begin{mathpar}
+  \inferrule[]{
+    \ana{\Gamma}{e}{\tau}
+  }{
+    \anaE{\Gamma}{e}{\tau}
+  }
+
+  \inferrule[]{
+  }{
+    \anaE{\Gamma}{\Nothing}{\Nothing}
+  }
+\end{mathpar}
+
+\vspace*{\baselineskip}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+%  Gamma |- e <= tau
+
+\noindent
+$\boxed{\ana{\Gamma}{e}{\tau}}$
+\quad $e$ analyzes against type $\tau$
+%
+\begin{mathpar}
+  \inferrule[AInjHole]{
+    \valid{\Gamma}{E}
+  }{
+    \ana{\Gamma}{\inj{C}{E}}{\hole}
+  }
+
+  \inferrule[AInj]{
+    C_j \in \C \\
+    \anaE{\Gamma}{E}{T_j}
+  }{
+    \ana{\Gamma}{\inj{C_j}{E}}{\sumtype{C_i(T_i)}_{C_i \in \C}}
+  }
+
+  \inferrule[AInjUnexpectedBody]{
+    C_j \in \C \\
+    T_j = \Nothing
+  }{
+    \ana{\Gamma}{\hole[\inj{C_j}{e}]}{\sumtype{C_i(T_i)}_{C_i \in \C}}
+  }
+
+  \inferrule[AInjExpectedBody]{
+    C_j \in \C \\
+    T_j = \tau
+  }{
+    \ana{\Gamma}{\hole[\inj{C_j}{\Nothing}]}{\sumtype{C_i(T_i)}_{C_i \in \C}}
+  }
+
+  \inferrule[AInjBadTag]{
+    C \notin \C \\
+    \valid{\Gamma}{E}
+  }{
+    \ana{\Gamma}{\hole[\inj{C}{E}]}{\sumtype{C_i(T_i)}_{C_i \in \C}}
+  }
+\end{mathpar}
+
+\vspace*{\baselineskip}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% Gamma |- e => tau ~> d -| Delta
+
+\noindent
+$\boxed{\synelab{\Gamma}{e}{\tau}{d}{\Delta}}$
+\quad $e$ synthesizes type $\tau$ and elaborates to $d$
+%
+\begin{mathpar}
+  \inferrule{
+    \anaelab{\Gamma}{e}{\hole}{d}{\tau}{\Delta}
+  }{
+    \synelab{\Gamma}{
+      \hole[\inj{C}{e}]
+    }{\hole}{
+      \hole[\inj{C}{\cast{d}{\tau}{\hole}}]
+    }{\Delta}
+  }
+
+  \inferrule{
+  }{
+    \synelab{\Gamma}{
+      \hole[\inj{C}{\Nothing}]
+    }{\hole}{
+      \hole[{\inj[\Nothing]{C}{\Nothing}}]
+    }{\emptyset}
+  }
+\end{mathpar}
+
+\vspace*{\baselineskip}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% Gamma |- e <= tau_1 ~> d : tau_2 -| Delta
+
+\noindent
+$\boxed{\anaelab{\Gamma}{e}{\tau_1}{d}{\tau_2}{\Delta}}$
+\quad $e$ analyzes against type $\tau_1$ and elaborates to $d$ of consistent type $\tau_2$
+%
+\begin{mathpar}
+  \inferrule{
+  }{
+    \anaelab{\Gamma}{
+      e
+    }{\tau_1}{
+      d
+    }{\tau_2}{\Delta}
+  }
+\end{mathpar}
+
+\vspace*{\baselineskip}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% Gamma |- e : tau
+
+\noindent
+$\boxed{\assign{\Gamma}{e}{\tau}}$
+\quad $e$ is assigned type $\tau$
 %
 \begin{mathpar}
   \inferrule[TRoll]{
-    \hastype{\Gamma}{e}{\expand(\tau)}
+    \assign{\Gamma}{e}{\expand(\tau)}
   }{
-    \hastype{\Gamma}{\roll{\tau}{e}}{\tau}
+    \assign{\Gamma}{\roll{\tau}{e}}{\tau}
   }
 
   \inferrule[TUnroll]{
-    \hastype{\Gamma}{e}{\tau}
+    \assign{\Gamma}{e}{\tau}
   }{
-    \hastype{\Gamma}{\unroll{\tau}{e}}{\expand(\tau)}
-  }
-
-  \inferrule[TNull]{}{
-    \hastype{\Gamma}{\varnothing}{\varnothing}
+    \assign{\Gamma}{\unroll{\tau}{e}}{\expand(\tau)}
   }
 
   \inferrule[TInj]{
-    \hastype{\Gamma}{E}{T_i}
+    \assign{\Gamma}{E}{T_i}
   }{
-    \hastype{\Gamma}{\inj{C_i}{E}}{\sumtype{C_i(T_i)}_{C_i \in \C}}
+    \assign{\Gamma}{\inj{C_i}{E}}{\sumtype{C_i(T_i)}_{C_i \in \C}}
   }
 
   \inferrule[TCase]{
-    \hastype{\Gamma}{e}{\sumtype{C_i(T_i)}_{C_i \in \C}} \\
-    \hastype{\Gamma, X_i : T_i}{e_i}{\tau} \\
+    \assign{\Gamma}{e}{\sumtype{C_i(T_i)}_{C_i \in \C}} \\
+    \assign{\Gamma, X_i : T_i}{e_i}{\tau} \\
     i = 1, \ldots, N
   }{
-    \hastype{\Gamma}{
+    \assign{\Gamma}{
       \case{e}{C_i(X_i){=}e_i}_{C_i \in \C}
     }{\tau}
   }
 
   \inferrule[TCaseU]{
-    \hastype{\Gamma}{e}{\hole} \\
-    \hastype{\Gamma, X_i : \hole}{e_i}{\tau} \\
+    \assign{\Gamma}{e}{\hole} \\
+    \assign{\Gamma, X_i : \hole}{e_i}{\tau} \\
     i = 1, \ldots, N
   }{
-    \hastype{\Gamma}{\case{e}{C_i(X_i){=}{e_i}}_{C_i \in \C}}{\tau}
+    \assign{\Gamma}{\case{e}{C_i(X_i){=}{e_i}}_{C_i \in \C}}{\tau}
   }
 \end{mathpar}
 
@@ -141,57 +315,11 @@ $\expand(\rectype{\alpha}{\tau}) \defeq \subst{\rectype{\alpha}{\tau}}{\alpha}{\
 
 \vspace*{\baselineskip}
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
-\noindent
-$\boxed{\syn{\Gamma}{e}{\tau}}$
-%
-\begin{mathpar}
-  \inferrule[TSyn]{
-    \ana{\Gamma}{e}{\hole}
-  }{
-    \syn{\Gamma}{\hole[\inj{C}{e}]}{\hole}
-  }
-\end{mathpar}
 
-\textsc{TSyn} = Injection in Synthetic Position or Analyzed Against Non-Sum
-
-\vspace*{\baselineskip}
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-
-\noindent
-$\boxed{\ana{\Gamma}{e}{\tau}}$
-%
-\begin{mathpar}
-  \inferrule[TAInj]{
-    C_j \in \C
-    \\
-    \ana{\Gamma}{e}{\tau_j}
-  }{
-    \ana{\Gamma}{\inj{C_j}{e}}{\sumtype{C_i}{\tau_i}{C_i \in \C}}
-  }
-
-  \inferrule[TATag]{
-    C \notin \C
-    \\
-    \ana{\Gamma}{e}{\hole}
-  }{
-    \ana{\Gamma}{\hole[\inj{C}{e}]}{\sumtype{C_i}{\tau_i}{C_i \in \C}}
-  }
-
-  \inferrule[TAHole]{
-    \ana{\Gamma}{e}{\hole}
-  }{
-    \ana{\Gamma}{\inj{C}{e}}{\hole}
-  }
-\end{mathpar}
-
-\textsc{TATag} = Bad Tag
-
-\textsc{TAHole} = Expected Type is Hole
-
-\vspace*{\baselineskip}
+% TODO: switch type assingment from e to d
+% TODO: define elaboration judgments and write down the rules for them
+% TODO: connect DHExp to paper theorems (sec 3)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
