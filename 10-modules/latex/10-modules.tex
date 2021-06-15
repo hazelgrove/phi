@@ -1,0 +1,382 @@
+\documentclass[12pt,fleqn]{article}
+\usepackage[margin=2cm]{geometry}
+\usepackage{titlesec} % see below
+\usepackage{xcolor} % \color \textcolor
+\usepackage{hyperref} % \href
+\usepackage[normalem]{ulem} % normalem retains \emph as italic
+% \uline \uuline \uwave \sout
+\usepackage{enumitem}
+% \begin{enumerate}[label=\Alpha*.]
+% \begin{enumerate}[label=\(\bullet\)]
+\usepackage{graphicx}
+% \includegraphicswidth=0.5\textwidth,trim=[0cm 0cm 0cm 0cm,clip]{file.png}
+\usepackage{pdfpages} % \includepdf[pages=1]{file.pdf}
+% for prose
+%\usepackage[doublespacing]{setspace}
+\usepackage{csquotes} % \blockquote
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\renewcommand{\rmdefault}{cmr}
+\renewcommand{\sfdefault}{cmss}
+\renewcommand{\ttdefault}{cmtt}
+\renewcommand{\familydefault}{\rmdefault}
+\setlength{\titlewidth}{\textwidth}
+
+\titlespacing{\section}{0pt}{0pt}{0pt}
+\titlespacing{\subsection}{0pt}{0pt}{0pt}
+\titlespacing{\subsubsection}{0pt}{0pt}{0pt}
+\titlespacing{\paragraph}{0pt}{0pt}{0pt}
+% https://www.overleaf.com/learn/latex/How_to_write_a_LaTeX_class_file_and_design_your_own_CV_(Part_1)
+% \titleformat{command}[shape]{format}{label}{sep}{before-code}[after-code]
+\titleformat{\section}         % Customise the \section command 
+    [hang]
+    {\Large\ttfamily\raggedright} % Make the \section headers large (\Large),
+                               % small capitals (\scshape) and left aligned (\raggedright)
+    {}{0em}                      % Can be used to give a prefix to all sections, like 'Section ...'
+    {}                           % Can be used to insert code before the heading
+    [\titlerule]                 % Inserts a horizontal line after the heading
+\titleformat{\subsection}
+    [hang]
+    {\large\ttfamily\raggedright}
+    {}{0em}
+    {}
+    []
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{mathpartir}
+\usepackage{latexsym}
+\usepackage{stmaryrd}
+\usepackage{amssymb}
+\usepackage{thmtools}
+\usepackage{tikz}
+% https://tex.stackexchange.com/questions/12678/squiggly-arrows-in-tikz
+\usetikzlibrary{decorations.pathmorphing}
+\usetikzlibrary{arrows.meta}
+
+%% Joshua Dunfield macros
+\def\OPTIONConf{1}%
+\usepackage{joshuadunfield}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% color defs
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\definecolor{red}{HTML}{800000}
+\definecolor{green}{HTML}{008000}
+\definecolor{blue}{HTML}{000080}
+\definecolor{purple}{HTML}{800080}
+\definecolor{teal}{HTML}{008080}
+\definecolor{black}{HTML}{000000}
+\definecolor{grey}{HTML}{808080}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\green}[1]{\textcolor{green}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\purple}[1]{\textcolor{purple}{#1}}
+\newcommand{\teal}[1]{\textcolor{teal}{#1}}
+\newcommand{\black}[1]{\textcolor{black}{#1}}
+\newcommand{\grey}[1]{\textcolor{grey}{#1}}
+\newcommand{\redtt}[1]{\red{\mathtt{#1}}}
+\newcommand{\greentt}[1]{\green{\mathtt{#1}}}
+\newcommand{\bluett}[1]{\blue{\mathtt{#1}}}
+\newcommand{\purplett}[1]{\purple{\mathtt{#1}}}
+\newcommand{\tealtt}[1]{\teal{\mathtt{#1}}}
+\newcommand{\blacktt}[1]{\black{\mathtt{#1}}}
+\newcommand{\greytt}[1]{\grey{\mathtt{#1}}}
+\newcommand{\redit}[1]{\red{\mathit{#1}}}
+\newcommand{\greenit}[1]{\green{\mathit{#1}}}
+\newcommand{\blueit}[1]{\blue{\mathit{#1}}}
+\newcommand{\purpleit}[1]{\purple{\mathit{#1}}}
+\newcommand{\tealit}[1]{\teal{\mathit{#1}}}
+\newcommand{\blackit}[1]{\black{\mathit{#1}}}
+\newcommand{\greyit}[1]{\grey{\mathit{#1}}}
+% traditional hazel hole color
+\newcommand{\violettt}[1]{\textcolor{violet}{\mathtt{#1}}}
+\newcommand{\violetit}[1]{\textcolor{violet}{\mathit{#1}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% syntax
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\knd}[1][]{\redit{\kappa#1}}
+\newcommand{\utyp}[1][]{\greenit{\tau#1}}
+\newcommand{\typ}[1][]{\greenit{\hat{\tau#1}}}
+\newcommand{\utypvar}[1][]{\greenit{t#1}}
+\newcommand{\typvar}[1][]{\greenit{t#1}}
+\newcommand{\uexp}[1][]{\blueit{\delta#1}}
+\renewcommand{\exp}[1][]{\blueit{\hat{\delta#1}}}
+\newcommand{\uexpvar}[1][]{\blueit{x#1}}
+\newcommand{\expvar}[1][]{\blueit{x#1}}
+\newcommand{\usig}[1][]{\purpleit{\sigma#1}}
+\newcommand{\sig}[1][]{\purpleit{\hat{\sigma#1}}}
+\newcommand{\usigvar}[1][]{\purpleit{s#1}}
+\newcommand{\sigvar}[1][]{\purpleit{s#1}}
+\newcommand{\umod}[1][]{\tealit{\mu#1}}
+\renewcommand{\mod}[1][]{\tealit{\hat{\mu#1}}}
+\newcommand{\umodvar}[1][]{\tealit{m#1}}
+\newcommand{\modvar}[1][]{\tealit{m#1}}
+\newcommand{\lab}[1][]{\mathit{lab#1}}
+
+\newcommand{\Type}{\redtt{Type}}
+\newcommand{\SKind}[1]{\redtt{S(#1)}}
+\newcommand{\KHole}{\redtt{KHole}}
+\newcommand{\DepFunKind}[2]{\redtt{\Pi_{#1}.{#2}}}
+\newcommand{\DepProdKind}[2]{\redtt{\Sigma_{#1}.{#2}}}
+
+\newcommand{\TypCFun}[2]{\greentt{\lambda #1.#2}}
+\newcommand{\TypCAp}[2]{\greentt{#1~#2}}
+\newcommand{\TypCPair}[2]{\greentt{\langle #1, #2\rangle}}
+\newcommand{\TypCPairPrjL}[1]{\greentt{\pi_1~#1}}
+\newcommand{\TypCPairPrjR}[1]{\greentt{\pi_2~#1}}
+\newcommand{\ListTyp}[1]{\greentt{[#1]}}
+% use violet instead of green?
+\newcommand{\TypCHole}[1][]{\greentt{\llparenthesis #1 \rrparenthesis}}
+
+\newcommand{\Int}{\greentt{Int}}
+\newcommand{\Float}{\greentt{Float}}
+\newcommand{\Bool}{\greentt{Bool}}
+
+\newcommand{\uLetSig}[2]{\purplett{signature~#1=#2}\bluett{~in~\uexp}}
+\newcommand{\LetSig}[2]{\purplett{signature~#1=#2}\bluett{~in~\exp}}
+\newcommand{\uLetMod}[2]{\tealtt{module~#1=#2}\bluett{~in~\uexp}}
+\newcommand{\LetMod}[2]{\tealtt{module~#1=#2}\bluett{~in~\exp}}
+\newcommand{\uLetFunctor}[2]{\tealtt{functor~#1=#2}\bluett{~in~\uexp}}
+\newcommand{\LetFunctor}[2]{\tealtt{functor~#1=#2}\bluett{~in~\exp}}
+\newcommand{\uModTermPrj}[2]{\bluett{#1.#2}}
+\newcommand{\ModTermPrj}[2]{\bluett{#1.#2}}
+
+\newcommand{\Sig}[1]{\purplett{\{#1\}}}
+\newcommand{\FunctorSig}[2]{\purplett{\Pi_{#1}.{#2}}}
+\newcommand{\SigHole}[1][]{\purplett{\llparenthesis#1\rrparenthesis}}
+
+\newcommand{\Struct}[1]{\tealtt{\{#1\}}}
+\newcommand{\Functor}[2]{\tealtt{\lambda #1.#2}}
+\newcommand{\FunctorAp}[2]{\tealtt{#1~#2}}
+\newcommand{\SubModulePrj}[2]{\tealtt{#1.#2}}
+\newcommand{\ModHole}[1][]{\tealtt{\llparenthesis#1\rrparenthesis}}
+
+
+\newcommand{\sbnd}{\greyit{sbnd}}
+\newcommand{\sbnds}{\greyit{sbnds}}
+\newcommand{\sdec}{\greyit{sdec}}
+\newcommand{\sdecs}{\greyit{sdecs}}
+
+% misc
+\newcommand{\dom}[1]{\mathsf{dom(}#1\mathsf{)}}
+\newcommand{\val}[1]{\mathsf{val(}#1\mathsf{)}}
+\newcommand{\type}[1]{\mathsf{type(}#1\mathsf{)}}
+\newcommand{\submodule}[1]{\mathsf{submodule(}#1\mathsf{)}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% judgements
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\ConsistentSubkind}[3]{\mathrm{#1 \vdash #2 \lesssim #3}}
+\newcommand{\SynElab}[5]{#1 \vdash #2~\Rightarrow~#3 \rightsquigarrow #4 \dashv #5}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\pagenumbering{gobble}
+\nonfrenchspacing
+%\frenchspacing % when monospaced
+\begin{document}
+\title{Hazel PHI: 10-modules}
+\author{}
+\date{\today}
+\maketitle
+\section{how to read}
+\subsection*{}
+\begin{tabular}{rlrl}
+    \red{800000} & \red{kinds} & \purple{800080} & \purple{signatures} \\
+    \green{008000} & \green{types (constructors)} & \teal{008080} & \teal{modules} \\
+    \blue{000080} & \blue{terms} && \\
+\end{tabular}
+\section{notes}
+\subsection*{}
+\begin{tikzpicture}[
+    kind/.style={circle, draw=red!100, fill=red!10, thick},
+    type/.style={circle, draw=green!100, fill=green!10, thick},
+    term/.style={circle, draw=blue!100, fill=blue!10, thick},
+    signature/.style={rectangle, draw=purple!100, fill=purple!10, thick},
+    module/.style={rectangle, draw=teal!100, fill=teal!10, thick},
+    ->/.style={line join=round, decorate, decoration={zigzag, segment length=4, amplitude=.9, post=lineto, post length=10pt}},
+    note/.style={rectangle, thick},
+    ]
+    \node[kind](knd) at (0, 4){$\knd$};
+    \node[type](utyp) at (-1, 2){$\utyp$};
+    \node[type](typ) at (1, 2){$\typ$};
+    \node[term](uexp) at (-1, 0){$\uexp$};
+    \node[term](exp) at (1, 0){$\exp$};
+    \node[signature](usig) at (3, 3){$\usig$};
+    \node[signature](sig) at (5, 3){$\sig$};
+    \node[module](umod) at (3, 1){$\umod$};
+    \node[module](mod) at (5, 1){$\mod$};
+    \node[note] at (7, 2){$\utyp := \typ$};
+    \node[note] at (7, 3){$\usig := \sig$};
+    \node[note] at (7, 1){$\umod := \mod$};
+    \draw[->](utyp.east)--(typ.west);
+    \draw[->](uexp.east)--(exp.west);
+    \draw[->](usig.east)--(sig.west);
+    \draw[->](umod.east)--(mod.west);
+    \node[draw=none, shift={(-0.1, 0)}] at (typ.west){$>$};
+    \node[draw=none, shift={(-0.1, 0)}] at (exp.west){$>$};
+    \node[draw=none, shift={(-0.1, 0)}] at (sig.west){$>$};
+    \node[draw=none, shift={(-0.1, 0)}] at (mod.west){$>$};
+    \draw[-{Implies}, double]([shift={(-0.1, 0)}]uexp.north)--([shift={(-0.1, 0)}]utyp.south);
+    \draw[-{Implies}, double]([shift={(0.1, 0)}]utyp.south)--([shift={(0.1, 0)}]uexp.north);
+    \draw[-{Implies}, double]([shift={(-0.1, 0)}]utyp.north)--([shift={(-0.1, 0)}]knd.south);
+    \draw[-{Implies}, double]([shift={(0.1, 0)}]knd.south)--([shift={(0.1, 0)}]utyp.north);
+    \draw[-{Implies}, double]([shift={(-0.1, 0)}]umod.north)--([shift={(-0.1, 0)}]usig.south);
+    \draw[-{Implies}, double]([shift={(0.1, 0)}]usig.south)--([shift={(0.1, 0)}]umod.north);
+    % https://tex.stackexchange.com/questions/71478/how-to-center-one-node-exactly-between-two-others-with-tikz
+    \path (exp)--(typ) node[midway]{:};
+    \path (typ)--(knd) node[midway]{:: ?};
+    \path (mod)--(sig) node[midway]{$<:>$ ?};
+\end{tikzpicture}
+\section{syntax}
+\[\begin{array}{rcrlr}
+    \textrm{kind} & \knd & ::=
+                  & \Type & \textrm{kind of types} \\
+                  && \vert & \SKind{\typ} & \textrm{singleton kind} \\
+                  && \vert & \KHole & \textrm{kind hole} \\
+                  % functors?
+                  && \vert & \DepFunKind{\typvar :: \knd[_1]}{\knd[_2]} & \textrm{dependent function kind} \\
+                  %&& \vert & \DepProdKind{\typvar :: \knd[_1]}{\knd[_2]} & \textrm{dependent product kind} \\
+\end{array}\]
+\[\begin{array}{rcrlr}
+    \textrm{HTyp} & \typ & ::=
+                           & \typvar & \textrm{type variable} \\
+                           && \vert & \greenit{bse} & \textrm{base type} \\
+                           && \vert & \greentt{\typ[_1] \oplus \typ[_2]} & \textrm{type binop} \\
+                           && \vert & \ListTyp{\typ} & \textrm{list type} \\
+                           % functors?
+                           && \vert & \TypCFun{\typvar :: \knd}{\typ} & \textrm{type function} \\
+                           && \vert & \TypCAp{\typ[_1]}{\typ[_2]} & \textrm{type application} \\
+                           %&& \vert & \TypCPair{\typ[_1]}{\typ[_2]} & \textrm{type pair} \\
+                           %&& \vert & \TypCPairPrjL{\typ} & \textrm{type projection} \\
+                           %&& \vert & \TypCPairPrjR{\typ} & \textrm{type projection} \\
+                           % to compare against module term projection
+                           && \vert & \greentt{\{\lab[_1] \hookrightarrow \typ[_1], ...~\lab[_n] \hookrightarrow \typ[_n]\}} & \textrm{labelled product type (record)} \\
+                           && \vert & \greentt{\mod.\lab} & \textrm{module type projection} \\
+                           && \vert & \TypCHole & \textrm{empty type hole} \\
+                           && \vert & \TypCHole[\typ] & \textrm{nonempty type hole} \\
+\end{array}\]
+\[\begin{array}{rcrlr}
+    \textrm{base type} & \greenit{bse} & ::=
+                       & \Int \\
+                       && \vert & \Float \\
+                       && \vert & \Bool \\
+\end{array}\]
+\[\begin{array}{rcrlr}
+    \textrm{HTyp BinOp} & \greenit{\oplus} & ::=
+                   & \greentt{\times} \\
+                   && \vert & \greentt{+} \\
+                   && \vert & \greentt{\rightarrow}\\
+\end{array}\]
+\[\begin{array}{rcrlr}
+    \textrm{external expression} & \uexp & ::=
+                                 & ... \\
+                                 && \vert & \uexpvar \\
+                                 && \vert & \uLetSig{\usigvar}{\usig} \\
+                                 && \vert & \uLetMod{\umodvar}{\umod} \\
+                                 && \vert & \uLetMod{\umodvar <:> \usigvar}{\umod} \\
+                                 && \vert & \uLetFunctor{something}{something} \\
+                                 && \vert & \uModTermPrj{\umod}{\lab} & \textrm{module term projection} \\
+\end{array}\]
+\[\begin{array}{rcrlr}
+    \textrm{internal expression} & \exp & ::=
+                                 & ... \\
+                                 && \vert &  \expvar \\
+                                 && \vert & \LetSig{\sigvar}{\sig} \\
+                                 && \vert & \LetMod{\modvar <:> \sigvar}{\mod} \\
+                                 && \vert & \LetFunctor{something}{something} \\
+                                 && \vert & \ModTermPrj{\mod}{\lab} & \textrm{module term projection} \\
+\end{array}\]
+\[\begin{array}{rcrlr}
+    \textrm{signature} & \sig & ::=
+                       & \sigvar & \textrm{signature variable} \\
+                       && \vert & \Sig{\sdecs} & \textrm{structure signature} \\
+                       && \vert & \FunctorSig{\modvar <:> \sig[_1]}{\sig[_2]} & \textrm{functor signature} \\
+                       && \vert & \SigHole & \textrm{empty signature hole} \\
+                       && \vert & \SigHole[\sig] & \textrm{nonempty signature hole} \\
+\end{array}\]
+\[\begin{array}{rcrlr}
+    \textrm{module} & \mod & ::=
+                    & \modvar & \textrm{module variable} \\
+                    && \vert & \Struct{\sbnds} & \textrm{structure} \\
+                    && \vert & \Functor{\modvar <:> \sig}{\mod} & \textrm{functor} \\
+                    && \vert & \FunctorAp{\mod[_1]}{\mod[_2]} & \textrm{functor application} \\
+                    && \vert & \SubModulePrj{\mod}{\lab} & \textrm{submodule projection} \\
+                    && \vert & \ModHole & \textrm{empty module hole} \\
+                    && \vert & \ModHole[\mod] & \textrm{nonempty module hole} \\
+\end{array}\]
+\[\begin{array}{rcrlr}
+    \textrm{signature declarations} & \sdecs & ::=
+                                & \cdot \\
+                                && \vert & \sdec, \sdecs\\
+\end{array}\]
+\[\begin{array}{rcrlr}
+    \textrm{signature declaration} & \sdec & ::=
+                                   & \greentt{type~\lab} \\
+                                   && \vert & \greentt{type~\lab = \typ} \\
+                                   && \vert & \bluett{val~\lab : \typ} \\
+                                   && \vert & \tealtt{module~\lab <:> \sig} \\
+                                   && \vert & \tealtt{functor~\lab <:> \sig} \\
+\end{array}\]
+\[\begin{array}{rcrlr}
+    \textrm{structure bindings} & \sbnds & ::=
+                                & \cdot \\
+                                && \vert & \sbnd, \sbnds \\
+\end{array}\]
+\[\begin{array}{rcrlr}
+    \textrm{structure binding} & \sbnd & ::=
+                               & \greentt{type~\typvar = \typ} \\
+                               && \vert & \bluett{let~\expvar : \typ = \exp} \\
+                               && \vert & \tealtt{module~\modvar = \mod} \\
+                               && \vert & \tealtt{module~\modvar <:> \sigvar = \mod} \\
+                               && \vert & \tealtt{functor~\modvar <:> \sigvar = \mod} \\
+\end{array}\]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% rules
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{contexts}
+\subsection*{}
+\begin{minipage}{\textwidth}
+    \(\Gamma, \expvar : \typ; \Phi, \typvar :: \knd; \Xi, \modvar <:> \sig; \Delta, ?\)
+\end{minipage}
+\section{statics}
+\subsection*{}
+\begin{minipage}{\textwidth}
+    \judgbox{\ConsistentSubkind{\Delta;\Phi}{\knd[_1]}{\knd[_2]}}{$\knd[_1]$ is a consistent subkind of $\knd[_2]$}
+    \begin{mathpar}
+        \inferrule[KCSubsumption]{test}{test}
+    \end{mathpar}
+\end{minipage}
+\section{elab}
+\subsection*{}
+\begin{minipage}{\textwidth}
+    \judgbox{\SynElab{\Gamma;\Phi;\Xi}{\uexp}{\utyp}{\exp}{\Delta}}{$\uexp$ synthesizes type $\utyp$ and elaborates to $\exp$ with hole context \Delta}
+    \begin{mathpar}
+        \inferrule[SynElabLetMod]{
+            \SynElab{\Gamma;\Phi;\Xi}{\umod}{\usig}{\mod}{\Delta_1} \\
+            \SynElab{\Gamma;\Phi;\Xi, \umodvar <:> \usig}{\uexp}{\utyp}{\exp}{\Delta_2} \\
+            }
+        {\SynElab{\Gamma;\Phi;\Xi}{\uLetMod{\umodvar}{\umod}}{\utyp}
+        {\LetMod{\modvar}{\mod}}{\Delta_1\union\Delta_2}}
+    \end{mathpar}
+\end{minipage}
+\begin{minipage}{\textwidth}
+    \judgbox{\SynElab{\Gamma;\Phi;\Xi}{\umod}{\usig}{\mod}{\Delta}}{$\umod$ synthesizes signature $\usig$ and elaborates to $\mod$ with hole context \Delta}
+    \begin{mathpar}
+        \inferrule[SynElabModVar]{
+            \umodvar <:> \sig \in \Xi \\
+            }
+            {\SynElab{\Gamma;\Phi;\Xi}{\umodvar}{\usig}
+            {\modvar}{\cdot}}
+        \and
+        \inferrule[SynElabModVarFail]{
+            \umodvar \notin \dom{\Xi} \\
+            }
+            {\SynElab{\Gamma;\Phi;\Xi}{\umodvar}{\SigHole}
+            {\SigHole[\modvar]^u}{u <:> \SigHole}}
+        \and
+        \inferrule[SynElabStruct]{
+            \SynElab{\Gamma;\Phi;\Xi}{\sbnd}{\sdec}
+            {\sbnd}{\Delta_1} \\
+            \SynElab{\Gamma, \val{\sdec};\Phi, \type{\sdec};\Xi, \submodule{\sdec}}{\sbnds}{\sdecs}
+            {\sbnds}{\Delta_2} \\
+            }
+            {\SynElab{\Gamma;\Phi;\Xi}{\Struct{\sbnd, \sbnds}}{\Sig{\sdec, \sdecs}}
+            {\Struct{\sbnd, \sbnds}}{\Delta_1 \union \Delta_2}}
+    \end{mathpar}
+\end{minipage}
+\end{document}

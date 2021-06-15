@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+TODAY=$(date '+%Y-%m-%d') perl -p -e 's/\\today/$ENV{"TODAY"}/' < 10-modules.tex | pandoc --from=latex --to=markdown_strict -s -o 10-modules.md
+cp 10-modules.md README.md
