@@ -56,8 +56,9 @@
 
 % Helpers
 
-\DeclareMathOperator{\expand}{\text{\normalfont expand}}
-\DeclareMathOperator{\join}{\text{\normalfont join}}
+\DeclareMathOperator{\expand}{\text{expand}}
+\DeclareMathOperator{\join}{\text{join}}
+\DeclareMathOperator{\id}{\text{id}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -145,7 +146,7 @@ $\boxed{\syn{\Gamma}{e}{\tau}}$
   \inferrule[SInj]{
     \valid{\Gamma}{E}
   }{
-    \syn{\Gamma}{\hole[\inj{C}{E}]}{\hole}
+    \syn{\Gamma}{\hole[\inj{C}{E}]^u}{\hole}
   }
 \end{mathpar}
 
@@ -201,21 +202,21 @@ $\boxed{\ana{\Gamma}{e}{\tau}}$
     C_j \in \C \\
     T_j = \Nothing
   }{
-    \ana{\Gamma}{\hole[\inj{C_j}{e}]}{\sumtype{C_i(T_i)}_{C_i \in \C}}
+    \ana{\Gamma}{\hole[\inj{C_j}{e}]^u}{\sumtype{C_i(T_i)}_{C_i \in \C}}
   }
 
   \inferrule[AInjExpectedBody]{
     C_j \in \C \\
     T_j = \tau
   }{
-    \ana{\Gamma}{\hole[\inj{C_j}{\Nothing}]}{\sumtype{C_i(T_i)}_{C_i \in \C}}
+    \ana{\Gamma}{\hole[\inj{C_j}{\Nothing}]^u}{\sumtype{C_i(T_i)}_{C_i \in \C}}
   }
 
   \inferrule[AInjBadTag]{
     C \notin \C \\
     \valid{\Gamma}{E}
   }{
-    \ana{\Gamma}{\hole[\inj{C}{E}]}{\sumtype{C_i(T_i)}_{C_i \in \C}}
+    \ana{\Gamma}{\hole[\inj{C}{E}]^u}{\sumtype{C_i(T_i)}_{C_i \in \C}}
   }
 \end{mathpar}
 
@@ -229,14 +230,14 @@ $\boxed{\synelab{\Gamma}{e}{\tau}{d}{\Delta}}$
 \quad $e$ synthesizes type $\tau$ and elaborates to $d$
 %
 \begin{mathpar}
-  \inferrule{
+  \inferrule[ESInj]{
     \anaelabE{\Gamma}{E}{\hole}{D}{T}{\Delta}
   }{
     \synelab{\Gamma}{
-      \hole[\inj{C}{E}]
+      \hole[\inj{C}{E}]^u
     }{\hole}{
-      \hole[{\inj[\hole]{C}{\cast{D}{T}{\hole}}}]
-    }{\Delta}
+      \hole[{\inj[\hole]{C}{\cast{D}{T}{\hole}}}]_{\id(\Gamma)}^u
+    }{\Delta, u :: \hole{}[\Gamma]}
   }
 \end{mathpar}
 
@@ -304,8 +305,8 @@ $\boxed{\anaelab{\Gamma}{e}{\tau_1}{d}{\tau_2}{\Delta}}$
     \anaelab{\Gamma}{
       \inj{C_j}{E}
     }{\tau}{
-      \hole[{\inj[\tau]{C_j}{\cast{D}{T}{\hole}}}]
-    }{\tau}{\Delta}
+      \hole[{\inj[\tau]{C_j}{\cast{D}{T}{\hole}}}]_{\id(\Gamma)}^u
+    }{\tau}{\Delta, u :: \hole{}[\Gamma]}
   }
 
   \inferrule[EAInjExpectedBody]{
@@ -316,8 +317,8 @@ $\boxed{\anaelab{\Gamma}{e}{\tau_1}{d}{\tau_2}{\Delta}}$
     \anaelab{\Gamma}{
       \inj{C_j}{\Nothing}
     }{\tau}{
-      \hole[{\inj[\tau]{C_j}{\Nothing}}]
-    }{\tau}{\Delta}
+      \hole[{\inj[\tau]{C_j}{\Nothing}}]_{\id(\Gamma)}^u
+    }{\tau}{\Delta, u :: \hole{}[\Gamma]}
   }
 
   \inferrule[EAInjBadTag]{
@@ -328,8 +329,8 @@ $\boxed{\anaelab{\Gamma}{e}{\tau_1}{d}{\tau_2}{\Delta}}$
     \anaelab{\Gamma}{
       \inj{C}{E}
     }{\tau}{
-      \hole[{\inj[\tau]{C}{\cast{D}{T}{\hole}}}]
-    }{\tau}{\Delta}
+      \hole[{\inj[\tau]{C}{\cast{D}{T}{\hole}}}]_{\id(\Gamma)}^u
+    }{\tau}{\Delta, u :: \hole{}[\Gamma]}
   }
 \end{mathpar}
 
