@@ -111,7 +111,7 @@
 \renewcommand{\exp}[1][]{\blueit{\delta#1}}
 \newcommand{\uexpvar}[1][]{\blueit{x#1}}
 \newcommand{\expvar}[1][]{\blueit{x#1}}
-\newcommand{\temp}[1][]{\orangeit{\xi#1}}
+\newcommand{\sigknd}[1][]{\orangeit{\xi#1}}
 \newcommand{\usig}[1][]{\purpleit{\hat{\sigma#1}}}
 \newcommand{\sig}[1][]{\purpleit{\sigma#1}}
 \newcommand{\usigvar}[1][]{\purpleit{s#1}}
@@ -185,6 +185,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % misc
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand*{\ExpVarCtx}{\Gamma}
+\newcommand*{\TypVarCtx}{\Phi}
+\newcommand*{\ModVarCtx}{\Xi}
+\newcommand*{\SigVarCtx}{\Psi}
+\newcommand*{\HoleCtx}{\Delta}
 \newcommand{\dom}[1]{\mathsf{dom(}#1\mathsf{)}}
 \newcommand{\val}[1]{\mathsf{val(}#1\mathsf{)}}
 \newcommand{\type}[1]{\mathsf{type(}#1\mathsf{)}}
@@ -235,7 +240,7 @@
 \section{how to read}
 \subsection*{}
 \begin{tabular}{rlrl}
-    \red{800000} & \red{kinds} & \orange{D08000} & \orange{temperment} \\
+    \red{800000} & \red{kinds} & \orange{D08000} & \orange{signature kind} \\
     \green{008000} & \green{types (constructors)} & \purple{800080} & \purple{signatures} \\
     \blue{000080} & \blue{terms} & \teal{008080} & \teal{modules} \\
 \end{tabular}
@@ -245,7 +250,7 @@
     kind/.style={circle, draw=red!100, fill=red!10, thick},
     type/.style={circle, draw=green!100, fill=green!10, thick},
     term/.style={circle, draw=blue!100, fill=blue!10, thick},
-    temperment/.style={rectangle, draw=orange!100, fill=orange!10, thick},
+    signature kind/.style={rectangle, draw=orange!100, fill=orange!10, thick},
     signature/.style={rectangle, draw=purple!100, fill=purple!10, thick},
     module/.style={rectangle, draw=teal!100, fill=teal!10, thick},
     ->/.style={line join=round, decorate, decoration={zigzag, segment length=4, amplitude=.9, post=lineto, post length=10pt}},
@@ -256,7 +261,7 @@
     \node[type](typ) at (1, 2){$\typ$};
     \node[term](uexp) at (-1, 0){$\uexp$};
     \node[term](exp) at (1, 0){$\exp$};
-    \node[temperment](temp) at (4, 5){$\temp$};
+    \node[signature kind](sigknd) at (4, 5){$\sigknd$};
     \node[signature](usig) at (3, 3){$\usig$};
     \node[signature](sig) at (5, 3){$\sig$};
     \node[module](umod) at (3, 1){$\umod$};
@@ -282,10 +287,10 @@
     \draw[-{Implies}, double]([shift={(0.1, 0)}]knd.south)--([shift={(0.1, 0)}]typ.north);
     \draw[-{Implies}, double]([shift={(-0.1, 0)}]umod.north)--([shift={(-0.1, 0)}]sig.south);
     \draw[-{Implies}, double]([shift={(0.1, 0)}]sig.south)--([shift={(0.1, 0)}]umod.north);
-    \draw[-{Implies}, double]([shift={(-0.1, 0)}]usig.north)--([shift={(-0.1, 0)}]temp.south);
-    \draw[-{Implies}, double]([shift={(0.1, 0)}]temp.south)--([shift={(0.1, 0)}]usig.north);
-    \draw[-{Implies}, double]([shift={(-0.1, 0)}]sig.north)--([shift={(-0.1, 0)}]temp.south);
-    \draw[-{Implies}, double]([shift={(0.1, 0)}]temp.south)--([shift={(0.1, 0)}]sig.north);
+    \draw[-{Implies}, double]([shift={(-0.1, 0)}]usig.north)--([shift={(-0.1, 0)}]sigknd.south);
+    \draw[-{Implies}, double]([shift={(0.1, 0)}]sigknd.south)--([shift={(0.1, 0)}]usig.north);
+    \draw[-{Implies}, double]([shift={(-0.1, 0)}]sig.north)--([shift={(-0.1, 0)}]sigknd.south);
+    \draw[-{Implies}, double]([shift={(0.1, 0)}]sigknd.south)--([shift={(0.1, 0)}]sig.north);
     % https://tex.stackexchange.com/questions/71478/how-to-center-one-node-exactly-between-two-others-with-tikz
     \path (exp)--(typ) node[midway]{$\TypAsc$};
     \path (mod)--(sig) node[midway]{$\SigAsc$ ?};
@@ -347,7 +352,7 @@ patterns not handled yet-- will be left till end.
                                  && \vert & \LetFunctor{something}{something} \\
                                  && \vert & \ModTermPrj{\mod}{\lab} & \textrm{module term projection} \\
     \hintpagebreak
-    \textrm{temperment} & \temp & ::=
+    \textrm{signature kind} & \sigknd & ::=
                         & & \\
     \hintpagebreak
     \textrm{signature} & \sig & ::=
@@ -394,12 +399,12 @@ patterns not handled yet-- will be left till end.
 \section{contexts}
 \subsection*{}
 \begin{minipage}{\textwidth}
-    \(\Gamma, \expvar\TypAssump\typ; \Phi, \typvar\KndAssump\knd; \Xi, \modvar\SigAssump\sig; \Delta, ?\)
+    \(\ExpVarCtx, \expvar\TypAssump\typ; \TypVarCtx, \typvar\KndAssump\knd; \ModVarCtx, \modvar\SigAssump\sig; \HoleCtx, ?\)
 \end{minipage}
 \section{statics}
 \subsection*{}
 \begin{minipage}{\textwidth}
-    \judgbox{\ConsistentSubkind{\Delta;\Phi}{\knd[_1]}{\knd[_2]}}{$\knd[_1]$ is a consistent subkind of $\knd[_2]$}
+    \judgbox{\ConsistentSubkind{\HoleCtx;\TypVarCtx}{\knd[_1]}{\knd[_2]}}{$\knd[_1]$ is a consistent subkind of $\knd[_2]$}
     \begin{mathpar}
         \inferrule[KCSubsumption]{test}{test}
     \end{mathpar}
@@ -407,91 +412,91 @@ patterns not handled yet-- will be left till end.
 \section{elab}
 \subsection*{}
 \begin{minipage}{\textwidth}
-    \judgbox{\SynElab{\Gamma;\Phi;\Xi}{\uexp}{\typ}{\exp}{\Delta}}{$\uexp$ synthesizes type $\typ$ and elaborates to $\exp$ with hole context $\Delta$}
+    \judgbox{\SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\uexp}{\typ}{\exp}{\HoleCtx}}{$\uexp$ synthesizes type $\typ$ and elaborates to $\exp$ with hole context $\HoleCtx$}
     \begin{mathpar}
         \inferrule[...]{ }{ }
         \and
         \inferrule[SynElabLetMod]{
-            \SynElab{\Gamma;\Phi;\Xi}{\umod}{\sig}{\mod}{\Delta_1} \\
-            \SynElab{\Gamma;\Phi;\Xi, \modvar\SigAssump\sig}{\uexp}{\typ}{\exp}{\Delta_2} \\
+            \SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\umod}{\sig}{\mod}{\HoleCtx_1} \\
+            \SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx, \modvar\SigAssump\sig}{\uexp}{\typ}{\exp}{\HoleCtx_2} \\
         }
-        {\SynElab{\Gamma;\Phi;\Xi}{\uLetMod{\umodvar}{\umod}}{\typ}
-            {\LetMod{\modvar}{\mod}}{\Delta_1\union\Delta_2}}
+        {\SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\uLetMod{\umodvar}{\umod}}{\typ}
+            {\LetMod{\modvar}{\mod}}{\HoleCtx_1\union\HoleCtx_2}}
         \and
         \inferrule[SynElabLetModAnn]{
-            \SynElab{\Phi;\Xi}{\usig}{\temp}
-                {\sig}{\Delta_1} \\
-            \AnaElab{\Gamma;\Phi;\Xi}{\umod}{\sig}
-                {\mod}{\Delta_2} \\
-            \SynElab{\Gamma;\Phi;\Xi, \modvar\SigAssump\sig}{\uexp}{\typ}
-                {\exp}{\Delta_3} \\
+            \SynElab{\TypVarCtx;\ModVarCtx}{\usig}{\sigknd}
+                {\sig}{\HoleCtx_1} \\
+            \AnaElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\umod}{\sig}
+                {\mod}{\HoleCtx_2} \\
+            \SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx, \modvar\SigAssump\sig}{\uexp}{\typ}
+                {\exp}{\HoleCtx_3} \\
         }
-        {\SynElab{\Gamma;\Phi;\Xi}{\uLetMod{\umodvar\SigAnn\usig}{\umod}}{\typ}
-            {\LetMod{\modvar\SigAnn\sig}{\mod}}{\Delta_1\union\Delta_2\union\Delta_3}}
+        {\SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\uLetMod{\umodvar\SigAnn\usig}{\umod}}{\typ}
+            {\LetMod{\modvar\SigAnn\sig}{\mod}}{\HoleCtx_1\union\HoleCtx_2\union\HoleCtx_3}}
         \and
         \inferrule[SynElabModTermPrj]{
-            \SynElab{\Gamma;\Phi;\Xi}{\umod}{\sig}
-                {\mod}{\Delta} \\
-            \Syn{\Phi;\Xi}{\sig}{\temp} \\
+            \SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\umod}{\sig}
+                {\mod}{\HoleCtx} \\
+            \Syn{\TypVarCtx;\ModVarCtx}{\sig}{\sigknd} \\
         }
-        {\SynElab{\Gamma;\Phi;\Xi}{\uModTermPrj{\umod}{\lab}}{\typ}
-            {\ModTermPrj{\mod}{\lab}}{\Delta}}
+        {\SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\uModTermPrj{\umod}{\lab}}{\typ}
+            {\ModTermPrj{\mod}{\lab}}{\HoleCtx}}
     \end{mathpar}
 \end{minipage}
 \begin{minipage}{\textwidth}
-    \judgbox{\SynElab{\Phi;\Xi}{\utyp}{\knd}{\typ}{\Delta}}{$\utyp$ synthesizes kind $\knd$ and elaborates to $\typ$ with hole context $\Delta$}
+    \judgbox{\SynElab{\TypVarCtx;\ModVarCtx}{\utyp}{\knd}{\typ}{\HoleCtx}}{$\utyp$ synthesizes kind $\knd$ and elaborates to $\typ$ with hole context $\HoleCtx$}
     \begin{mathpar}
         \inferrule[...]{ }{ }
         \and
         \inferrule[SynElabModTypPrj]{
-            \SynElab{\Phi;\Xi}{\umodvar}{\sig}
-                {\modvar}{\Delta} \\
+            \SynElab{\TypVarCtx;\ModVarCtx}{\umodvar}{\sig}
+                {\modvar}{\HoleCtx} \\
             something \sig \knd \\
         }
-        {\SynElab{\Phi;\Xi}{\ModTypPrj{\umodvar}{\lab}}{\knd}
-            {\ModTypPrj{\modvar}{\lab}}{\Delta}}
+        {\SynElab{\TypVarCtx;\ModVarCtx}{\ModTypPrj{\umodvar}{\lab}}{\knd}
+            {\ModTypPrj{\modvar}{\lab}}{\HoleCtx}}
     \end{mathpar}
 \end{minipage}
 \begin{minipage}{\textwidth}
-    \judgbox{\AnaElab{\Phi;\Xi}{\utyp}{\knd}{\typ}{\Delta}}{$\utyp$ analyzes against kind $\knd$ and elaborates to $\typ$ with hole context $\Delta$}
+    \judgbox{\AnaElab{\TypVarCtx;\ModVarCtx}{\utyp}{\knd}{\typ}{\HoleCtx}}{$\utyp$ analyzes against kind $\knd$ and elaborates to $\typ$ with hole context $\HoleCtx$}
 \end{minipage}
 \begin{minipage}{\textwidth}
-    \judgbox{\SynElab{\Gamma;\Phi;\Xi}{\umod}{\sig}{\mod}{\Delta}}{$\umod$ synthesizes signature $\sig$ and elaborates to $\mod$ with hole context $\Delta$}
+    \judgbox{\SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\umod}{\sig}{\mod}{\HoleCtx}}{$\umod$ synthesizes signature $\sig$ and elaborates to $\mod$ with hole context $\HoleCtx$}
     \begin{mathpar}
         \inferrule[SynElabModVar]{
-            \umodvar\SigAssump\sig \in \Xi \\
+            \umodvar\SigAssump\sig \in \ModVarCtx \\
         }
-        {\SynElab{\Gamma;\Phi;\Xi}{\umodvar}{\sig}
+        {\SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\umodvar}{\sig}
             {\modvar}{\cdot}}
         \and
         \inferrule[SynElabModVarFail]{
-            \umodvar \notin \dom{\Xi} \\
+            \umodvar \notin \dom{\ModVarCtx} \\
         }
-        {\SynElab{\Gamma;\Phi;\Xi}{\umodvar}{\SigHole}
+        {\SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\umodvar}{\SigHole}
             {\ModHole[\modvar]^u}{u\SigAssump\SigHole}}
         \and
         \inferrule[SynElabConsStruct]{
-            \SynElab{\Gamma;\Phi;\Xi}{\usbnd}{\sdec}
-                {\sbnd}{\Delta_1} \\
-            \SynElab{\Gamma, \val{\sdec};\Phi, \type{\sdec};\Xi, \submodule{\sdec}}{\Struct{\usbnds}}{\Sig{\sdecs}}
-                {\Struct{\sbnds}}{\Delta_2} \\
+            \SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\usbnd}{\sdec}
+                {\sbnd}{\HoleCtx_1} \\
+            \SynElab{\ExpVarCtx, \val{\sdec};\TypVarCtx, \type{\sdec};\ModVarCtx, \submodule{\sdec}}{\Struct{\usbnds}}{\Sig{\sdecs}}
+                {\Struct{\sbnds}}{\HoleCtx_2} \\
         }
-        {\SynElab{\Gamma;\Phi;\Xi}{\Struct{\usbnd, \usbnds}}{\Sig{\sdec, \sdecs}}
-            {\Struct{\sbnd, \sbnds}}{\Delta_1\union\Delta_2}}
+        {\SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\Struct{\usbnd, \usbnds}}{\Sig{\sdec, \sdecs}}
+            {\Struct{\sbnd, \sbnds}}{\HoleCtx_1\union\HoleCtx_2}}
         \and
         \inferrule[SynElabNilStruct]{
         }
-        {\SynElab{\Gamma;\Phi;\Xi}{\Struct{\cdot}}{\Sig{\cdot}}
+        {\SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\Struct{\cdot}}{\Sig{\cdot}}
             {\Struct{\cdot}}{\cdot}}
         \and
         \inferrule[SynElabEmptyModHole]{
         }
-        {\SynElab{\Gamma;\Phi;\Xi}{\ModHole^u}{\SigHole}
+        {\SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\ModHole^u}{\SigHole}
             {\ModHole^u}{u\SigAssump\SigHole}}
         \and
         \inferrule[SynElabNonemptyModHole]{
         }
-        {\SynElab{\Gamma;\Phi;\Xi}{\ModHole[\umodvar]^u}{\SigHole}
+        {\SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\ModHole[\umodvar]^u}{\SigHole}
             {\ModHole[\modvar]^u}{u\SigAssump\SigHole}}
         \and
         \inferrule[functor stuff]{
@@ -500,60 +505,60 @@ patterns not handled yet-- will be left till end.
     \end{mathpar}
 \end{minipage}
 \begin{minipage}{\textwidth}
-    \judgbox{\AnaElab{\Gamma;\Phi;\Xi}{\umod}{\sig}{\mod}{\Delta}}{$\umod$ analyzes against signature $\sig$ and elaborates to $\mod$ with hole context $\Delta$}
+    \judgbox{\AnaElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\umod}{\sig}{\mod}{\HoleCtx}}{$\umod$ analyzes against signature $\sig$ and elaborates to $\mod$ with hole context $\HoleCtx$}
     \begin{mathpar}
         \inferrule[AnaElabModSubsumption]{
-            \SynElab{\Gamma;\Phi;\Xi}{\umod}{\sig}
-                {\mod}{\Delta} \\
+            \SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\umod}{\sig}
+                {\mod}{\HoleCtx} \\
         }
-        {\AnaElab{\Gamma;\Phi;\Xi}{\umod}{\sig}
-            {\mod}{\Delta}}
+        {\AnaElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\umod}{\sig}
+            {\mod}{\HoleCtx}}
     \end{mathpar}
 \end{minipage}
 \begin{minipage}{\textwidth}
-    \judgbox{\SynElab{\Gamma;\Phi;\Xi}{\usbnd}{\sdec}{\sbnd}{\Delta}}{$\usbnd$ synthesizes declaration $\sdec$ and elaborates to $\sbnd$ with hole context $\Delta$}
+    \judgbox{\SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\usbnd}{\sdec}{\sbnd}{\HoleCtx}}{$\usbnd$ synthesizes declaration $\sdec$ and elaborates to $\sbnd$ with hole context $\HoleCtx$}
     \begin{mathpar}
         \inferrule[SynElabTypeSbnd]{
-            \SynElab{\Phi;\Xi}{\utyp}{\knd}
-                {\typ}{\Delta} \\
+            \SynElab{\TypVarCtx;\ModVarCtx}{\utyp}{\knd}
+                {\typ}{\HoleCtx} \\
         }
-        {\SynElab{\Gamma;\Phi;\Xi}{\TypeSbnd{\utypvar}{\utyp}}{\TransparentTypeSdec{\typvar}{\typ}}
-            {\TypeSbnd{\typvar}{\typ}}{\Delta}}
+        {\SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\TypeSbnd{\utypvar}{\utyp}}{\TransparentTypeSdec{\typvar}{\typ}}
+            {\TypeSbnd{\typvar}{\typ}}{\HoleCtx}}
         \and
         \inferrule[SynElabValSbnd]{
-            \SynElab{\Phi;\Xi}{\utyp}{\knd}
-                {\typ}{\Delta_1} \\
-            \AnaElab{\Gamma;\Phi;\Xi}{\uexp}{\typ}
-                {\exp}{\Delta_2} \\
+            \SynElab{\TypVarCtx;\ModVarCtx}{\utyp}{\knd}
+                {\typ}{\HoleCtx_1} \\
+            \AnaElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\uexp}{\typ}
+                {\exp}{\HoleCtx_2} \\
         }
-        {\SynElab{\Gamma;\Phi;\Xi}{\ValSbnd{\uexpvar\TypAnn\utyp}{\uexp}}{\ValSdec{\expvar}{\typ}}
-            {\ValSbnd{\expvar\TypAnn\typ}{\exp}}{\Delta_1\union\Delta_2}}
+        {\SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\ValSbnd{\uexpvar\TypAnn\utyp}{\uexp}}{\ValSdec{\expvar}{\typ}}
+            {\ValSbnd{\expvar\TypAnn\typ}{\exp}}{\HoleCtx_1\union\HoleCtx_2}}
         \and
         \inferrule[SynElabModSbnd]{
-            \SynElab{\Gamma;\Phi;\Xi}{\umod}{\sig}
-                {\mod}{\Delta} \\
+            \SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\umod}{\sig}
+                {\mod}{\HoleCtx} \\
         }
-        {\SynElab{\Gamma;\Phi;\Xi}{\ModSbnd{\umodvar}{\umod}}{\ModSdec{\modvar}{\sig}}
-        {\ModSbnd{\modvar\SigAnn\sig}{\mod}}{\Delta}}
+        {\SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\ModSbnd{\umodvar}{\umod}}{\ModSdec{\modvar}{\sig}}
+        {\ModSbnd{\modvar\SigAnn\sig}{\mod}}{\HoleCtx}}
         \and
         \inferrule[SynElabModAnnSbnd]{
-            \SynElab{\Phi;\Xi}{\usig}{\temp}
-                {\sig}{\Delta_1} \\
-            \AnaElab{\Gamma;\Phi;\Xi}{\umod}{\sig}
-                {\mod}{\Delta_2} \\
+            \SynElab{\TypVarCtx;\ModVarCtx}{\usig}{\sigknd}
+                {\sig}{\HoleCtx_1} \\
+            \AnaElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\umod}{\sig}
+                {\mod}{\HoleCtx_2} \\
         }
-        {\SynElab{\Gamma;\Phi;\Xi}{\ModSbnd{\umodvar\SigAnn\usig}{\umod}}{\ModSdec{\modvar}{\sig}}
-        {\ModSbnd{\modvar\SigAnn\sig}{\mod}}{\Delta_1\union\Delta_2}}
+        {\SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\ModSbnd{\umodvar\SigAnn\usig}{\umod}}{\ModSdec{\modvar}{\sig}}
+        {\ModSbnd{\modvar\SigAnn\sig}{\mod}}{\HoleCtx_1\union\HoleCtx_2}}
     \end{mathpar}
 \end{minipage}
 \begin{minipage}{\textwidth}
-    \judgbox{\AnaElab{\Gamma;\Phi;\Xi}{\usbnd}{\sdec}{\sbnd}{\Delta}}{$\usbnd$ analyzes against declaration $\sdec$ and elaborates to $\sbnd$ with hole context $\Delta$}
+    \judgbox{\AnaElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\usbnd}{\sdec}{\sbnd}{\HoleCtx}}{$\usbnd$ analyzes against declaration $\sdec$ and elaborates to $\sbnd$ with hole context $\HoleCtx$}
 \end{minipage}
 \begin{minipage}{\textwidth}
-    \judgbox{\SynElab{\Phi;\Xi}{\usig}{\temp}{\sig}{\Delta}}{$\usig$ synthesizes temperment $\temp$ and elaborates to $\sig$ with hole context $\Delta$}
+    \judgbox{\SynElab{\TypVarCtx;\ModVarCtx}{\usig}{\sigknd}{\sig}{\HoleCtx}}{$\usig$ synthesizes signature kind $\sigknd$ and elaborates to $\sig$ with hole context $\HoleCtx$}
 \end{minipage}
 \begin{minipage}{\textwidth}
-    \judgbox{\AnaElab{\Phi;\Xi}{\usig}{\temp}{\sig}{\Delta}}{$\usig$ analyzes against temperment $\temp$ and elaborates to $\sig$ with hole context $\Delta$}
+    \judgbox{\AnaElab{\TypVarCtx;\ModVarCtx}{\usig}{\sigknd}{\sig}{\HoleCtx}}{$\usig$ analyzes against signature kind $\sigknd$ and elaborates to $\sig$ with hole context $\HoleCtx$}
 \end{minipage}
 \subsection*{misc}
 \begin{align*}
