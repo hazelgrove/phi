@@ -205,6 +205,8 @@
 \newcommand{\SigAnn}{\black{:_{\mod}}}
 
 \newcommand{\ConsistentSubkind}[3]{\mathrm{#1 \vdash #2 \lesssim #3}}
+\newcommand{\Syn}[3]{#1 \vdash #2~\Rightarrow~#3}
+\newcommand{\Ana}[3]{#1 \vdash #2~\Leftarrow~#3}
 \newcommand{\SynElab}[5]{#1 \vdash #2~\Rightarrow~#3 \rightsquigarrow #4 \dashv #5}
 \newcommand{\AnaElab}[5]{#1 \vdash #2~\Leftarrow~#3 \rightsquigarrow #4 \dashv #5}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -263,6 +265,7 @@
     %\node[note] at (7, 3){$\usig := \sig$};
     %\node[note] at (7, 1){$\umod := \mod$};
     \node[note] at (0.7, 4){$\lesssim$};
+    \node[note] at (4.7, 5){$\lesssim$};
     \draw[->](utyp.east)--(typ.west);
     \draw[->](uexp.east)--(exp.west);
     \draw[->](usig.east)--(sig.west);
@@ -275,13 +278,16 @@
     \draw[-{Implies}, double]([shift={(0.1, 0)}]typ.south)--([shift={(0.1, 0)}]uexp.north);
     \draw[-{Implies}, double]([shift={(-0.1, 0)}]utyp.north)--([shift={(-0.1, 0)}]knd.south);
     \draw[-{Implies}, double]([shift={(0.1, 0)}]knd.south)--([shift={(0.1, 0)}]utyp.north);
-    \draw[-{Implies}, double]([shift={(-0.1, 0)}]usig.north)--([shift={(-0.1, 0)}]temp.south);
-    \draw[-{Implies}, double]([shift={(0.1, 0)}]temp.south)--([shift={(0.1, 0)}]usig.north);
+    \draw[-{Implies}, double]([shift={(-0.1, 0)}]typ.north)--([shift={(-0.1, 0)}]knd.south);
+    \draw[-{Implies}, double]([shift={(0.1, 0)}]knd.south)--([shift={(0.1, 0)}]typ.north);
     \draw[-{Implies}, double]([shift={(-0.1, 0)}]umod.north)--([shift={(-0.1, 0)}]sig.south);
     \draw[-{Implies}, double]([shift={(0.1, 0)}]sig.south)--([shift={(0.1, 0)}]umod.north);
+    \draw[-{Implies}, double]([shift={(-0.1, 0)}]usig.north)--([shift={(-0.1, 0)}]temp.south);
+    \draw[-{Implies}, double]([shift={(0.1, 0)}]temp.south)--([shift={(0.1, 0)}]usig.north);
+    \draw[-{Implies}, double]([shift={(-0.1, 0)}]sig.north)--([shift={(-0.1, 0)}]temp.south);
+    \draw[-{Implies}, double]([shift={(0.1, 0)}]temp.south)--([shift={(0.1, 0)}]sig.north);
     % https://tex.stackexchange.com/questions/71478/how-to-center-one-node-exactly-between-two-others-with-tikz
     \path (exp)--(typ) node[midway]{$\TypAsc$};
-    \path (typ)--(knd) node[midway]{$\KndAsc$ ?};
     \path (mod)--(sig) node[midway]{$\SigAsc$ ?};
 \end{tikzpicture}
 \subsection*{}
@@ -341,6 +347,9 @@ patterns not handled yet-- will be left till end.
                                  && \vert & \LetFunctor{something}{something} \\
                                  && \vert & \ModTermPrj{\mod}{\lab} & \textrm{module term projection} \\
     \hintpagebreak
+    \textrm{temperment} & \temp & ::=
+                        & & \\
+    \hintpagebreak
     \textrm{signature} & \sig & ::=
                        & \sigvar & \textrm{signature variable} \\
                        && \vert & \Sig{\sdecs} & \textrm{structure signature} \\
@@ -360,6 +369,7 @@ patterns not handled yet-- will be left till end.
     \textrm{signature declarations} & \sdecs & ::=
                                 & \cdot \\
                                 && \vert & \sdec, \sdecs\\
+    \hintpagebreak
     \textrm{signature declaration} & \sdec & ::=
                                    & \OpaqueTypeSdec{\lab} \\
                                    && \vert & \TransparentTypeSdec{\lab}{\typ} \\
@@ -370,6 +380,7 @@ patterns not handled yet-- will be left till end.
     \textrm{structure bindings} & \sbnds & ::=
                                 & \cdot \\
                                 && \vert & \sbnd, \sbnds \\
+    \hintpagebreak
     \textrm{structure binding} & \sbnd & ::=
                                & \TypeSbnd{\typvar}{\typ} \\
                                && \vert & \ValSbnd{\expvar\TypAnn\typ}{\exp} \\
@@ -408,17 +419,23 @@ patterns not handled yet-- will be left till end.
             {\LetMod{\modvar}{\mod}}{\Delta_1\union\Delta_2}}
         \and
         \inferrule[SynElabLetModAnn]{
-            \SynElab{\Phi;\Xi}{\usig}{\temp}{\sig}{\Delta_1} \\
-            \AnaElab{\Gamma;\Phi;\Xi}{\umod}{\sig}{\mod}{\Delta_2} \\
-            \SynElab{\Gamma;\Phi;\Xi, \modvar\SigAssump\sig}{\uexp}{\typ}{\exp}{\Delta_3} \\
+            \SynElab{\Phi;\Xi}{\usig}{\temp}
+                {\sig}{\Delta_1} \\
+            \AnaElab{\Gamma;\Phi;\Xi}{\umod}{\sig}
+                {\mod}{\Delta_2} \\
+            \SynElab{\Gamma;\Phi;\Xi, \modvar\SigAssump\sig}{\uexp}{\typ}
+                {\exp}{\Delta_3} \\
         }
         {\SynElab{\Gamma;\Phi;\Xi}{\uLetMod{\umodvar\SigAnn\usig}{\umod}}{\typ}
             {\LetMod{\modvar\SigAnn\sig}{\mod}}{\Delta_1\union\Delta_2\union\Delta_3}}
         \and
         \inferrule[SynElabModTermPrj]{
+            \SynElab{\Gamma;\Phi;\Xi}{\umod}{\sig}
+                {\mod}{\Delta} \\
+            \Syn{\Phi;\Xi}{\sig}{\temp} \\
         }
-        {\SynElab{\Gamma;\Phi;\Xi}{\uModTermPrj{\umod}{\lab}}{}
-            {}{}}
+        {\SynElab{\Gamma;\Phi;\Xi}{\uModTermPrj{\umod}{\lab}}{\typ}
+            {\ModTermPrj{\mod}{\lab}}{\Delta}}
     \end{mathpar}
 \end{minipage}
 \begin{minipage}{\textwidth}
@@ -439,7 +456,7 @@ patterns not handled yet-- will be left till end.
     \judgbox{\AnaElab{\Phi;\Xi}{\utyp}{\knd}{\typ}{\Delta}}{$\utyp$ analyzes against kind $\knd$ and elaborates to $\typ$ with hole context $\Delta$}
 \end{minipage}
 \begin{minipage}{\textwidth}
-    \judgbox{\SynElab{\Gamma;\Phi;\Xi}{\umod}{\usig}{\mod}{\Delta}}{$\umod$ synthesizes signature $\sig$ and elaborates to $\mod$ with hole context $\Delta$}
+    \judgbox{\SynElab{\Gamma;\Phi;\Xi}{\umod}{\sig}{\mod}{\Delta}}{$\umod$ synthesizes signature $\sig$ and elaborates to $\mod$ with hole context $\Delta$}
     \begin{mathpar}
         \inferrule[SynElabModVar]{
             \umodvar\SigAssump\sig \in \Xi \\
@@ -451,13 +468,13 @@ patterns not handled yet-- will be left till end.
             \umodvar \notin \dom{\Xi} \\
         }
         {\SynElab{\Gamma;\Phi;\Xi}{\umodvar}{\SigHole}
-            {\SigHole[\modvar]^u}{u\SigAssump\SigHole}}
+            {\ModHole[\modvar]^u}{u\SigAssump\SigHole}}
         \and
         \inferrule[SynElabConsStruct]{
             \SynElab{\Gamma;\Phi;\Xi}{\usbnd}{\sdec}
                 {\sbnd}{\Delta_1} \\
-            \SynElab{\Gamma, \val{\sdec};\Phi, \type{\sdec};\Xi, \submodule{\sdec}}{\usbnds}{\sdecs}
-                {\sbnds}{\Delta_2} \\
+            \SynElab{\Gamma, \val{\sdec};\Phi, \type{\sdec};\Xi, \submodule{\sdec}}{\Struct{\usbnds}}{\Sig{\sdecs}}
+                {\Struct{\sbnds}}{\Delta_2} \\
         }
         {\SynElab{\Gamma;\Phi;\Xi}{\Struct{\usbnd, \usbnds}}{\Sig{\sdec, \sdecs}}
             {\Struct{\sbnd, \sbnds}}{\Delta_1\union\Delta_2}}
@@ -466,10 +483,32 @@ patterns not handled yet-- will be left till end.
         }
         {\SynElab{\Gamma;\Phi;\Xi}{\Struct{\cdot}}{\Sig{\cdot}}
             {\Struct{\cdot}}{\cdot}}
+        \and
+        \inferrule[SynElabEmptyModHole]{
+        }
+        {\SynElab{\Gamma;\Phi;\Xi}{\ModHole^u}{\SigHole}
+            {\ModHole^u}{u\SigAssump\SigHole}}
+        \and
+        \inferrule[SynElabNonemptyModHole]{
+        }
+        {\SynElab{\Gamma;\Phi;\Xi}{\ModHole[\umodvar]^u}{\SigHole}
+            {\ModHole[\modvar]^u}{u\SigAssump\SigHole}}
+        \and
+        \inferrule[functor stuff]{
+        }
+        { }
     \end{mathpar}
 \end{minipage}
 \begin{minipage}{\textwidth}
     \judgbox{\AnaElab{\Gamma;\Phi;\Xi}{\umod}{\sig}{\mod}{\Delta}}{$\umod$ analyzes against signature $\sig$ and elaborates to $\mod$ with hole context $\Delta$}
+    \begin{mathpar}
+        \inferrule[AnaElabModSubsumption]{
+            \SynElab{\Gamma;\Phi;\Xi}{\umod}{\sig}
+                {\mod}{\Delta} \\
+        }
+        {\AnaElab{\Gamma;\Phi;\Xi}{\umod}{\sig}
+            {\mod}{\Delta}}
+    \end{mathpar}
 \end{minipage}
 \begin{minipage}{\textwidth}
     \judgbox{\SynElab{\Gamma;\Phi;\Xi}{\usbnd}{\sdec}{\sbnd}{\Delta}}{$\usbnd$ synthesizes declaration $\sdec$ and elaborates to $\sbnd$ with hole context $\Delta$}
@@ -516,4 +555,23 @@ patterns not handled yet-- will be left till end.
 \begin{minipage}{\textwidth}
     \judgbox{\AnaElab{\Phi;\Xi}{\usig}{\temp}{\sig}{\Delta}}{$\usig$ analyzes against temperment $\temp$ and elaborates to $\sig$ with hole context $\Delta$}
 \end{minipage}
+\subsection*{misc}
+\begin{align*}
+    \val{\sdec} &=
+    \begin{cases}
+        \lab\TypAssump\typ & \sdec \equiv \ValSdec{\lab}{\typ} \\
+        \cdot & \textrm{otherwise} \\
+    \end{cases} \\
+    \type{\sdec} &=
+    \begin{cases}
+        \lab\KndAssump\Type & \sdec \equiv \OpaqueTypeSdec{\lab} \\
+        \lab\KndAssump\SKind{\typ} & \sdec \equiv \TransparentTypeSdec{\lab}{\typ} \\
+        \cdot & \textrm{otherwise} \\
+    \end{cases} \\
+    \submodule{\sdec} &=
+    \begin{cases}
+        \lab\SigAssump\sig & \sdec \equiv \ModSdec{\lab}{\sig} \\
+        \cdot & \textrm{otherwise} \\
+    \end{cases} \\
+\end{align*}
 \end{document}
