@@ -151,6 +151,9 @@
 \newcommand{\uModTermPrj}[2]{\bluett{#1.#2}}
 \newcommand{\ModTermPrj}[2]{\bluett{#1.#2}}
 
+\newcommand*{\SSigKind}[1]{\orangett{SSigKind(#1)}}
+\newcommand*{\SigKHole}{\orangett{SigKHole}}
+
 \newcommand{\Sig}[1]{\purplett{\{#1\}}}
 \newcommand{\FunctorSig}[2]{\purplett{\Pi_{#1}.{#2}}}
 \newcommand{\SigHole}[1][]{\purplett{\llparenthesis#1\rrparenthesis}}
@@ -205,11 +208,13 @@
 \newcommand{\KndAsc}{\black{::}}
 \newcommand{\KndAssump}{\black{::}}
 \newcommand{\KndAnn}{\black{::}}
+\newcommand*{\SigKndAssump}{\black{::_{\sig}}}
 \newcommand{\SigAsc}{\black{:_{\mod}}}
 \newcommand{\SigAssump}{\black{:_{\mod}}}
 \newcommand{\SigAnn}{\black{:_{\mod}}}
 
 \newcommand{\ConsistentSubkind}[3]{\mathrm{#1 \vdash #2 \lesssim #3}}
+\newcommand{\ConsistentSubSigKind}[3]{\mathrm{#1 \vdash #2 \lesssim #3}}
 \newcommand{\Syn}[3]{#1 \vdash #2~\Rightarrow~#3}
 \newcommand{\Ana}[3]{#1 \vdash #2~\Leftarrow~#3}
 \newcommand{\SynElab}[5]{#1 \vdash #2~\Rightarrow~#3 \rightsquigarrow #4 \dashv #5}
@@ -353,7 +358,8 @@ patterns not handled yet-- will be left till end.
                                  && \vert & \ModTermPrj{\mod}{\lab} & \textrm{module term projection} \\
     \hintpagebreak
     \textrm{signature kind} & \sigknd & ::=
-                        & & \\
+                            & \SSigKind{\sig} & \\
+                            && \vert & \SigKHole & \\
     \hintpagebreak
     \textrm{signature} & \sig & ::=
                        & \sigvar & \textrm{signature variable} \\
@@ -407,6 +413,51 @@ patterns not handled yet-- will be left till end.
     \judgbox{\ConsistentSubkind{\HoleCtx;\TypVarCtx}{\knd[_1]}{\knd[_2]}}{$\knd[_1]$ is a consistent subkind of $\knd[_2]$}
     \begin{mathpar}
         \inferrule[KCSubsumption]{test}{test}
+    \end{mathpar}
+\end{minipage}
+\begin{minipage}{\textwidth}
+    \judgbox{\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sigknd[_1]}{\sigknd[_2]}}{ }
+    \begin{mathpar}
+    \end{mathpar}
+\end{minipage}
+\begin{minipage}{\textwidth}
+    \judgbox{\Syn{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sig}{\sigknd}}{$\sig$ synthesizes signature kind $\sigknd$}
+    \begin{mathpar}
+        \inferrule[SynSigKndVar]{
+            \sigvar\SigKndAssump\sigknd\in\SigVarCtx \\
+        }
+        {\Syn{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sigvar}{\SSigKind{\sigvar}}}
+        \and
+        \inferrule[SynSigKndVarFail]{
+            \sigvar\notin\dom{\SigVarCtx} \\
+        }
+        {\Syn{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sigvar}{\SigKHole}}
+        \and
+        \inferrule[]{
+            \Sig{\sdecs} wellformed?
+        }
+        {\Syn{}{\Sig{\sdecs}}{\SSigKind{\Sig{\sdecs}}}}
+        \and
+        \inferrule[SynSigKndSigHole]{
+            u\SigKndAssump\sigknd\in\HoleCtx \\
+        }
+        {\Syn{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SigHole^u}{\sigknd}}
+        \and
+        \inferrule[SynSigKndSigHole]{
+            u\SigKndAssump\sigknd\in\HoleCtx \\
+            \Syn{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sigvar}{\sigknd[_1]} \\
+        }
+        {\Syn{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SigHole[\sigvar]^u}{\sigknd}}
+    \end{mathpar}
+\end{minipage}
+\begin{minipage}{\textwidth}
+    \judgbox{\Ana{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sig}{\sigknd}}{$\sig$ analyzes against signature kind $\sigknd$}
+    \begin{mathpar}
+        \inferrule[Sub]{
+            \Syn{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sig}{\sigknd[_1]} \\
+            \ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sigknd[_1]}{\sigknd}
+        }
+        {\Ana{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sig}{\sigknd}}
     \end{mathpar}
 \end{minipage}
 \section{elab}
@@ -543,19 +594,30 @@ patterns not handled yet-- will be left till end.
         \and
         \inferrule[SynElabModAnnSbnd]{
             \SynElab{\TypVarCtx;\ModVarCtx}{\usig}{\sigknd}
-                {\sig}{\HoleCtx_1} \\
-            \AnaElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\umod}{\sig}
+                {\sig[_1]}{\HoleCtx_1} \\
+            \SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\umod}{\sig[_2]}
                 {\mod}{\HoleCtx_2} \\
+            \Ana{\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sig[_2]}{\sigknd} \\
         }
-        {\SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\ModSbnd{\umodvar\SigAnn\usig}{\umod}}{\ModSdec{\modvar}{\sig}}
-        {\ModSbnd{\modvar\SigAnn\sig}{\mod}}{\HoleCtx_1\union\HoleCtx_2}}
+        {\SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\ModSbnd{\umodvar\SigAnn\usig}{\umod}}{\ModSdec{\modvar}{\sig[_1]}}
+        {\ModSbnd{\modvar\SigAnn\sig[_1]}{\mod}}{\HoleCtx_1\union\HoleCtx_2}}
     \end{mathpar}
 \end{minipage}
 \begin{minipage}{\textwidth}
     \judgbox{\AnaElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\usbnd}{\sdec}{\sbnd}{\HoleCtx}}{$\usbnd$ analyzes against declaration $\sdec$ and elaborates to $\sbnd$ with hole context $\HoleCtx$}
 \end{minipage}
 \begin{minipage}{\textwidth}
-    \judgbox{\SynElab{\TypVarCtx;\ModVarCtx}{\usig}{\sigknd}{\sig}{\HoleCtx}}{$\usig$ synthesizes signature kind $\sigknd$ and elaborates to $\sig$ with hole context $\HoleCtx$}
+    \judgbox{\SynElab{\TypVarCtx;\ModVarCtx;\SigVarCtx}{\usig}{\sigknd}{\sig}{\HoleCtx}}{$\usig$ synthesizes signature kind $\sigknd$ and elaborates to $\sig$ with hole context $\HoleCtx$}
+    \begin{mathpar}
+        \inferrule[SynSigEmptyHole]{
+        }
+        {\SynElab{\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SigHole^u}{\SigKHole}
+            {\SigHole^u}{u\SigKndAssump\SigKHole}}
+       \and
+       \inferrule[SynSigNonEmptyHole]{
+       }
+       {}
+    \end{mathpar}
 \end{minipage}
 \begin{minipage}{\textwidth}
     \judgbox{\AnaElab{\TypVarCtx;\ModVarCtx}{\usig}{\sigknd}{\sig}{\HoleCtx}}{$\usig$ analyzes against signature kind $\sigknd$ and elaborates to $\sig$ with hole context $\HoleCtx$}
