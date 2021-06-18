@@ -269,19 +269,23 @@ $\boxed{\anaelabE{\Gamma}{E}{T_1}{D}{T_2}{\Delta}}$
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 % Gamma |- e <= tau_1 ~> d : tau_2 -| Delta
 
+% TODO: define D<T => T>
+% TODO: add u as hole macro param
+
 \noindent
 $\boxed{\anaelab{\Gamma}{e}{\tau_1}{d}{\tau_2}{\Delta}}$
 \quad $e$ analyzes against type $\tau_1$ and elaborates to $d$ of consistent type $\tau_2$
 %
 \begin{mathpar}
   \inferrule[EAInjHole]{
-    \anaelabE{\Gamma}{E}{\hole}{D}{T}{\Delta}
+    \anaelabE{\Gamma}{E}{\hole}{D}{T}{\Delta} \\
+    \tau = \sumtype{C(T)}
   }{
     \anaelab{\Gamma}{
       \inj{C}{E}
     }{\hole}{
-      \inj[\hole]{C}{\cast{D}{T}{\hole}}
-    }{\hole}{\Delta}
+      \inj[\tau]{C}{D}
+    }{\tau}{\Delta}
   }
 
   \inferrule[EAInj]{
@@ -300,37 +304,40 @@ $\boxed{\anaelab{\Gamma}{e}{\tau_1}{d}{\tau_2}{\Delta}}$
     \tau = \sumtype{C_i(T_i)}_{C_i \in \C} \\
     C_j \in \C \\
     T_j = \Nothing \\
-    \anaelabE{\Gamma}{E}{\hole}{D}{T}{\Delta}
+    \anaelab{\Gamma}{e}{\hole}{d}{\tau_j}{\Delta} \\
+    \tau' = \tau \uplus \sumtype{C_j(\tau_j)}
   }{
     \anaelab{\Gamma}{
-      \inj{C_j}{E}
+      \hole[\inj{C_j}{e}]^u
     }{\tau}{
-      \hole[{\inj[\tau]{C_j}{\cast{D}{T}{\hole}}}]_{\id(\Gamma)}^u
-    }{\tau}{\Delta, u :: \hole{}[\Gamma]}
+      \hole[{\inj[\tau']{C_j}{d}}]_{\id(\Gamma)}^u
+    }{\tau}{\Delta, u :: \tau[\Gamma]}
   }
 
   \inferrule[EAInjExpectedBody]{
     \tau = \sumtype{C_i(T_i)}_{C_i \in \C} \\
     C_j \in \C \\
-    T_j = \tau_j
+    T_j = \tau_j \\
+    \tau' = \tau \uplus \sumtype{C_j(\Nothing)}
   }{
     \anaelab{\Gamma}{
-      \inj{C_j}{\Nothing}
+      \hole[\inj{C_j}{\Nothing}]^u
     }{\tau}{
-      \hole[{\inj[\tau]{C_j}{\Nothing}}]_{\id(\Gamma)}^u
-    }{\tau}{\Delta, u :: \hole{}[\Gamma]}
+      \hole[{\inj[\tau']{C_j}{\Nothing}}]_{\id(\Gamma)}^u
+    }{\tau}{\Delta, u :: \tau[\Gamma]}
   }
 
   \inferrule[EAInjBadTag]{
     \tau = \sumtype{C_i(T_i)}_{C_i \in \C} \\
     C \notin \C \\
-    \anaelabE{\Gamma}{E}{\hole}{D}{T}{\Delta}
+    \anaelabE{\Gamma}{E}{\hole}{D}{T}{\Delta} \\
+    \tau' = \tau \uplus \sumtype{C(T)}
   }{
     \anaelab{\Gamma}{
-      \inj{C}{E}
+      \hole[\inj{C}{E}]^u
     }{\tau}{
-      \hole[{\inj[\tau]{C}{\cast{D}{T}{\hole}}}]_{\id(\Gamma)}^u
-    }{\tau}{\Delta, u :: \hole{}[\Gamma]}
+      \hole[{\inj[\tau']{C}{D}}]_{\id(\Gamma)}^u
+    }{\tau}{\Delta, u :: \tau[\Gamma]}
   }
 \end{mathpar}
 
