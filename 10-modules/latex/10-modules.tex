@@ -151,7 +151,7 @@
 \newcommand{\uModTermPrj}[2]{\bluett{#1.#2}}
 \newcommand{\ModTermPrj}[2]{\bluett{#1.#2}}
 
-\newcommand*{\SSigKind}[1]{\orangett{SSigKind(#1)}}
+\newcommand*{\SSigKind}[2][]{\orangett{SSigKind(#2)#1}}
 \newcommand*{\SigKHole}{\orangett{SigKHole}}
 
 \newcommand{\Sig}[1]{\purplett{\{#1\}}}
@@ -403,10 +403,9 @@ patterns not handled yet-- will be left till end.
 % rules
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{contexts}
-\subsection*{}
-\begin{minipage}{\textwidth}
-    \(\ExpVarCtx, \expvar\TypAssump\typ; \TypVarCtx, \typvar\KndAssump\knd; \ModVarCtx, \modvar\SigAssump\sig; \HoleCtx, ?\)
-\end{minipage}
+    \[
+        \HoleCtx, ?;\ExpVarCtx, \expvar\TypAssump\typ; \TypVarCtx, \typvar\KndAssump\knd; \ModVarCtx, \modvar\SigAssump\sig; \SigVarCtx, \sigvar\SigKndAssump\sigknd
+    \]
 \section{statics}
 \subsection*{}
 \begin{minipage}{\textwidth}
@@ -416,8 +415,19 @@ patterns not handled yet-- will be left till end.
     \end{mathpar}
 \end{minipage}
 \begin{minipage}{\textwidth}
-    \judgbox{\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sigknd[_1]}{\sigknd[_2]}}{ }
+    \judgbox{\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sigknd[_1]}{\sigknd[_2]}}{$\sigknd[_1]$ is a consistent sub signature kind of $\sigknd[_2]$}
     \begin{mathpar}
+        \inferrule[nameMe]{
+        }
+        {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SSigKind[_1]{\sig[_1]}}{\SSigKind[_2]{\sig[_2]}}}
+        \and
+        \inferrule[nameMe]{
+        }
+        {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SigKHole}{\sigknd}}
+        \and
+        \inferrule[nameMe]{
+        }
+        {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sigknd}{\SigKHole}}
     \end{mathpar}
 \end{minipage}
 \begin{minipage}{\textwidth}
