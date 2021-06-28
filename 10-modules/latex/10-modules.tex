@@ -173,6 +173,7 @@
 \newcommand{\sdec}[1][]{\greyit{sdec#1}}
 \newcommand{\usdecs}{\greyit{\hat{sdecs}}}
 \newcommand{\sdecs}[1][]{\greyit{sdecs#1}}
+\newcommand*{\sdecknd}[1][]{\greyit{sdecknd#1}}
 
 \newcommand{\OpaqueTypeSdec}[1]{\greentt{type~#1}}
 \newcommand{\TransparentTypeSdec}[2]{\greentt{type~#1 = #2}}
@@ -197,7 +198,6 @@
 \newcommand{\val}[1]{\mathsf{val(}#1\mathsf{)}}
 \newcommand{\type}[1]{\mathsf{type(}#1\mathsf{)}}
 \newcommand{\submodule}[1]{\mathsf{submodule(}#1\mathsf{)}}
-\renewcommand*{\hole}[1]{\mathsf{submodule(}#1\mathsf{)}}
 
 \newcommand{\hintpagebreak}{\pagebreak[3]} % 0-4; 2 too weak, 4 too strong
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -425,7 +425,7 @@ patterns not handled yet-- will be left till end.
     \judgbox{\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sigknd[_1]}{\sigknd[_2]}}{$\sigknd[_1]$ is a consistent sub signature kind of $\sigknd[_2]$}
     \begin{mathpar}
         \inferrule[nameMe]{
-        \exists\sdec[_x]\in\sdecs[_1]~st~\ConsistentSubSigKind{}{\SSigKind{\Sig{\sdec[_x]}}}{\SSigKind{\Sig{\sdec[_2]}}} \\
+        \exists\sdec[_x]\in\sdecs[_1]~st~\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SSigKind{\Sig{\sdec[_x]}}}{\SSigKind{\Sig{\sdec[_2]}}} \\
         \ConsistentSubSigKind{\HoleCtx;\TypVarCtx, \type{\sdec[_2]};\ModVarCtx, \submodule{\sdec[_2]};\SigVarCtx}{\Sig{\sdecs[_1]}}{\Sig{\sdecs[_2]}} \\
         }
     {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SSigKind{\Sig{\sdec[_{11}], \sdec[_{12}], \sdecs[_{13}]~as~\sdecs[_1]}}}{\SSigKind{\Sig{\sdec[_2], \sdecs[_2]}}}}
@@ -663,6 +663,9 @@ patterns not handled yet-- will be left till end.
     \judgbox{\AnaElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\usbnd}{\sdec}{\sbnd}{\HoleCtx}}{$\usbnd$ analyzes against declaration $\sdec$ and elaborates to $\sbnd$ with hole context $\HoleCtx$}
 \end{minipage}
 \begin{minipage}{\textwidth}
+    \judgbox{\SynElab{}{\usdec}{\sdecknd}{\sdec}{\HoleCtx}}{}
+\end{minipage}
+\begin{minipage}{\textwidth}
     \judgbox{\SynElab{\TypVarCtx;\ModVarCtx;\SigVarCtx}{\usig}{\sigknd}{\sig}{\HoleCtx}}{$\usig$ synthesizes signature kind $\sigknd$ and elaborates to $\sig$ with hole context $\HoleCtx$}
     \begin{mathpar}
         \inferrule[SynSigEmptyHole]{
@@ -688,7 +691,8 @@ patterns not handled yet-- will be left till end.
     \type{\sdec} &=
     \begin{cases}
         \lab\KndAssump\Type & \sdec \equiv \OpaqueTypeSdec{\lab} \\
-        \lab\KndAssump\SKind{\typ} & \sdec \equiv \TransparentTypeSdec{\lab}{\typ} \\
+        \lab\KndAssump\knd & \sdec \equiv \TransparentTypeSdec{\lab}{\typ} \\
+                           & \textrm{where} \Syn{}{\typ}{\knd}\\
         \cdot & \textrm{otherwise} \\
     \end{cases} \\
     \submodule{\sdec} &=
