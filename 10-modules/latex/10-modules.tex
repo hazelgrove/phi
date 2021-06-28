@@ -151,7 +151,7 @@
 \newcommand{\uModTermPrj}[2]{\bluett{#1.#2}}
 \newcommand{\ModTermPrj}[2]{\bluett{#1.#2}}
 
-\newcommand*{\SSigKind}[2][]{\orangett{SSigKind(#2)#1}}
+\newcommand*{\SSigKind}[1]{\orangett{SSigKind(#1)}}
 \newcommand*{\SigKHole}{\orangett{SigKHole}}
 
 \newcommand{\Sig}[1]{\purplett{\{#1\}}}
@@ -170,9 +170,9 @@
 \newcommand{\usbnds}{\greyit{\hat{sbnds}}}
 \newcommand{\sbnds}{\greyit{sbnds}}
 \newcommand{\usdec}{\greyit{\hat{sdec}}}
-\newcommand{\sdec}{\greyit{sdec}}
+\newcommand{\sdec}[1][]{\greyit{sdec#1}}
 \newcommand{\usdecs}{\greyit{\hat{sdecs}}}
-\newcommand{\sdecs}{\greyit{sdecs}}
+\newcommand{\sdecs}[1][]{\greyit{sdecs#1}}
 
 \newcommand{\OpaqueTypeSdec}[1]{\greentt{type~#1}}
 \newcommand{\TransparentTypeSdec}[2]{\greentt{type~#1 = #2}}
@@ -197,6 +197,7 @@
 \newcommand{\val}[1]{\mathsf{val(}#1\mathsf{)}}
 \newcommand{\type}[1]{\mathsf{type(}#1\mathsf{)}}
 \newcommand{\submodule}[1]{\mathsf{submodule(}#1\mathsf{)}}
+\renewcommand*{\hole}[1]{\mathsf{submodule(}#1\mathsf{)}}
 
 \newcommand{\hintpagebreak}{\pagebreak[3]} % 0-4; 2 too weak, 4 too strong
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -213,12 +214,17 @@
 \newcommand{\SigAssump}{\black{:_{\mod}}}
 \newcommand{\SigAnn}{\black{:_{\mod}}}
 
-\newcommand{\ConsistentSubkind}[3]{\mathrm{#1 \vdash #2 \lesssim #3}}
-\newcommand{\ConsistentSubSigKind}[3]{\mathrm{#1 \vdash #2 \lesssim #3}}
+\newcommand{\ConsistentSubkindOp}{\lesssim}
+\newcommand{\ConsistentSubkind}[3]{\mathrm{#1 \vdash #2 \ConsistentSubkindOp #3}}
+\newcommand{\ConsistentSubSigKindOp}{\lesssim_{\sigknd}}
+\newcommand{\ConsistentSubSigKind}[3]{\mathrm{#1 \vdash #2 \ConsistentSubSigKindOp #3}}
+\newcommand*{\TypeEquiv}[3]{\mathrm{#1 \vdash #2 \equiv #3}}
 \newcommand{\Syn}[3]{#1 \vdash #2~\Rightarrow~#3}
 \newcommand{\Ana}[3]{#1 \vdash #2~\Leftarrow~#3}
 \newcommand{\SynElab}[5]{#1 \vdash #2~\Rightarrow~#3 \rightsquigarrow #4 \dashv #5}
 \newcommand{\AnaElab}[5]{#1 \vdash #2~\Leftarrow~#3 \rightsquigarrow #4 \dashv #5}
+
+\newcommand{\WellFormedSig}[2]{#1 \vdash #2~\textsf{Ok}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \pagenumbering{gobble}
 \nonfrenchspacing
@@ -274,8 +280,8 @@
     %\node[note] at (7, 2){$\utyp := \typ$};
     %\node[note] at (7, 3){$\usig := \sig$};
     %\node[note] at (7, 1){$\umod := \mod$};
-    \node[note] at (0.7, 4){$\lesssim$};
-    \node[note] at (4.7, 5){$\lesssim$};
+    \node[note] at (0.7, 4){$\ConsistentSubkindOp$};
+    \node[note] at (4.7, 5){$\ConsistentSubSigKindOp$};
     \draw[->](utyp.east)--(typ.west);
     \draw[->](uexp.east)--(exp.west);
     \draw[->](usig.east)--(sig.west);
@@ -409,6 +415,7 @@ patterns not handled yet-- will be left till end.
 \section{statics}
 \subsection*{}
 \begin{minipage}{\textwidth}
+    scratch \\
     \judgbox{\ConsistentSubkind{\HoleCtx;\TypVarCtx}{\knd[_1]}{\knd[_2]}}{$\knd[_1]$ is a consistent subkind of $\knd[_2]$}
     \begin{mathpar}
         \inferrule[KCSubsumption]{test}{test}
@@ -418,14 +425,53 @@ patterns not handled yet-- will be left till end.
     \judgbox{\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sigknd[_1]}{\sigknd[_2]}}{$\sigknd[_1]$ is a consistent sub signature kind of $\sigknd[_2]$}
     \begin{mathpar}
         \inferrule[nameMe]{
+        \exists\sdec[_x]\in\sdecs[_1]~st~\ConsistentSubSigKind{}{\SSigKind{\Sig{\sdec[_x]}}}{\SSigKind{\Sig{\sdec[_2]}}} \\
+        \ConsistentSubSigKind{\HoleCtx;\TypVarCtx, \type{\sdec[_2]};\ModVarCtx, \submodule{\sdec[_2]};\SigVarCtx}{\Sig{\sdecs[_1]}}{\Sig{\sdecs[_2]}} \\
         }
-        {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SSigKind[_1]{\sig[_1]}}{\SSigKind[_2]{\sig[_2]}}}
+    {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SSigKind{\Sig{\sdec[_{11}], \sdec[_{12}], \sdecs[_{13}]~as~\sdecs[_1]}}}{\SSigKind{\Sig{\sdec[_2], \sdecs[_2]}}}}
+        \and
+        \inferrule[singleType]{
+        }
+        {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SSigKind{\Sig{\TransparentTypeSdec{\lab}{\typ}}}}{\SSigKind{\Sig{\OpaqueTypeSdec{\lab}}}}}
+        \and
+        \inferrule[singleType2]{
+            \TypeEquiv{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\typ[_1]}{\typ[_2]} \\
+        }
+        {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SSigKind{\Sig{\TransparentTypeSdec{\lab}{\typ[_1]}}}}{\SSigKind{\Sig{\TransparentTypeSdec{\lab}{\typ[_2]}}}}}
+        \and
+        \inferrule[singleType3]{
+        }
+        {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SSigKind{\Sig{\OpaqueTypeSdec{\lab}}}}{\SSigKind{\Sig{\OpaqueTypeSdec{\lab}}}}}
+        \and
+        \inferrule[singleVa]{
+            \TypeEquiv{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\typ[_1]}{\typ[_2]} \\
+        }
+        {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SSigKind{\Sig{\ValSdec{\lab}{\typ[_1]}}}}{\SSigKind{\Sig{\ValSdec{\lab}{\typ[_2]}}}}}
+        \and
+        \inferrule[singleMod]{
+            \Ana{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sig[_1]}{\SSigKind{\sig[_2]}} \\
+        }
+        {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SSigKind{\Sig{\ModSdec{\lab}{\sig[_1]}}}}{\SSigKind{\Sig{\ModSdec{\lab}{\sig[_2]}}}}}
+        \and
+        \inferrule[nil]{
+        }
+        {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SSigKind{\Sig{\sdecs}}}{\SSigKind{\Sig{\cdot}}}}
+        \and
+        \inferrule[varprop]{
+            \sigvar\SigKndAssump\sigknd\in\SigVarCtx
+        }
+        {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SSigKind{\sigvar}}{\sigknd}}
         \and
         \inferrule[nameMe]{
+            \Ana{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sig[_1]}{\SSigKind{\sig[_2]}} \\
+        }
+        {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SSigKind{\sig[_1]}}{\SSigKind{\sig[_2]}}}
+        \and
+        \inferrule[CSubSigKindHoleL]{
         }
         {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SigKHole}{\sigknd}}
         \and
-        \inferrule[nameMe]{
+        \inferrule[CSubSigKindHoleR]{
         }
         {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sigknd}{\SigKHole}}
     \end{mathpar}
