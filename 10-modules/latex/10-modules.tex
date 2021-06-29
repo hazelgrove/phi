@@ -80,6 +80,7 @@
 \newcommand{\teal}[1]{\textcolor{teal}{#1}}
 \newcommand{\black}[1]{\textcolor{black}{#1}}
 \newcommand{\grey}[1]{\textcolor{grey}{#1}}
+\newcommand*{\blackrm}[1]{\black{\mathtt{#1}}}
 \newcommand{\redtt}[1]{\red{\mathtt{#1}}}
 \newcommand{\greentt}[1]{\green{\mathtt{#1}}}
 \newcommand{\bluett}[1]{\blue{\mathtt{#1}}}
@@ -195,8 +196,9 @@
 \newcommand*{\HoleCtx}{\Delta}
 \newcommand{\dom}[1]{\mathsf{dom(}#1\mathsf{)}}
 \newcommand{\val}[1]{\mathsf{val(}#1\mathsf{)}}
-\newcommand{\type}[1]{\mathsf{type(}#1\mathsf{)}}
+\newcommand*{\type}[2]{\mathsf{type(}#1, #2\mathsf{)}}
 \newcommand{\submodule}[1]{\mathsf{submodule(}#1\mathsf{)}}
+\renewcommand*{\hole}[1][]{\blackrm{u#1}}
 
 \newcommand{\hintpagebreak}{\pagebreak[3]} % 0-4; 2 too weak, 4 too strong
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -217,6 +219,8 @@
 \newcommand{\ConsistentSubkind}[3]{\mathrm{#1 \vdash #2 \ConsistentSubkindOp #3}}
 \newcommand{\ConsistentSubSigKindOp}{\lesssim_{\sigknd}}
 \newcommand{\ConsistentSubSigKind}[3]{\mathrm{#1 \vdash #2 \ConsistentSubSigKindOp #3}}
+\newcommand*{\SubSdecOp}{\le_{\sdec}}
+\newcommand*{\SubSdec}[3]{\mathrm{#1 \vdash #2 \SubSdecOp #3}}
 \newcommand*{\TypeEquiv}[3]{\mathrm{#1 \vdash #2 \equiv #3}}
 \newcommand{\Syn}[3]{#1 \vdash #2~\Rightarrow~#3}
 \newcommand{\Ana}[3]{#1 \vdash #2~\Leftarrow~#3}
@@ -288,6 +292,7 @@
     %\node[note] at (7, 1){$\umod := \mod$};
     \node[note] at (0.7, 4){$\ConsistentSubkindOp$};
     \node[note] at (4.7, 5){$\ConsistentSubSigKindOp$};
+    \node[note] at (10.1, 3){$\SubSdecOp$};
     \draw[->](utyp.east)--(typ.west);
     \draw[->](uexp.east)--(exp.west);
     \draw[->](usig.east)--(sig.west);
@@ -438,32 +443,14 @@ patterns not handled yet-- will be left till end.
     \begin{mathpar}
         \inferrule[nameMe]{
         \exists\sdec[_x]\in\sdecs[_1]~st~\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SSigKind{\Sig{\sdec[_x]}}}{\SSigKind{\Sig{\sdec[_2]}}} \\
-        \ConsistentSubSigKind{\HoleCtx;\TypVarCtx, \type{\sdec[_2]};\ModVarCtx, \submodule{\sdec[_2]};\SigVarCtx}{\Sig{\sdecs[_1]}}{\Sig{\sdecs[_2]}} \\
+        \ConsistentSubSigKind{\HoleCtx;\TypVarCtx, \type{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sdec[_2]};\ModVarCtx, \submodule{\sdec[_2]};\SigVarCtx}{\Sig{\sdecs[_1]}}{\Sig{\sdecs[_2]}} \\
         }
-    {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SSigKind{\Sig{\sdec[_{11}], \sdec[_{12}], \sdecs[_{13}]~as~\sdecs[_1]}}}{\SSigKind{\Sig{\sdec[_2], \sdecs[_2]}}}}
+        {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SSigKind{\Sig{\sdec[_{11}], \sdec[_{12}], \sdecs[_{13}]~as~\sdecs[_1]}}}{\SSigKind{\Sig{\sdec[_2], \sdecs[_2]}}}}
         \and
-        \inferrule[singleType]{
+        \inferrule[single]{
+            \SubSdec{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sdec[_1]}{\sdec[_2]} \\
         }
-        {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SSigKind{\Sig{\TransparentTypeSdec{\lab}{\typ}}}}{\SSigKind{\Sig{\OpaqueTypeSdec{\lab}}}}}
-        \and
-        \inferrule[singleType2]{
-            \TypeEquiv{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\typ[_1]}{\typ[_2]} \\
-        }
-        {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SSigKind{\Sig{\TransparentTypeSdec{\lab}{\typ[_1]}}}}{\SSigKind{\Sig{\TransparentTypeSdec{\lab}{\typ[_2]}}}}}
-        \and
-        \inferrule[singleType3]{
-        }
-        {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SSigKind{\Sig{\OpaqueTypeSdec{\lab}}}}{\SSigKind{\Sig{\OpaqueTypeSdec{\lab}}}}}
-        \and
-        \inferrule[singleVa]{
-            \TypeEquiv{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\typ[_1]}{\typ[_2]} \\
-        }
-        {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SSigKind{\Sig{\ValSdec{\lab}{\typ[_1]}}}}{\SSigKind{\Sig{\ValSdec{\lab}{\typ[_2]}}}}}
-        \and
-        \inferrule[singleMod]{
-            \Ana{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sig[_1]}{\SSigKind{\sig[_2]}} \\
-        }
-        {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SSigKind{\Sig{\ModSdec{\lab}{\sig[_1]}}}}{\SSigKind{\Sig{\ModSdec{\lab}{\sig[_2]}}}}}
+        {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SSigKind{\Sig{\sdec[_1]}}}{\SSigKind{\Sig{\sdec[_2]}}}}
         \and
         \inferrule[nil]{
         }
@@ -474,10 +461,27 @@ patterns not handled yet-- will be left till end.
         }
         {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SSigKind{\sigvar}}{\sigknd}}
         \and
-        \inferrule[nameMe]{
+        \inferrule[nameMe?delete?]{
+            \sig[_1] \ne \sigvar \\
             \Ana{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sig[_1]}{\SSigKind{\sig[_2]}} \\
         }
         {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SSigKind{\sig[_1]}}{\SSigKind{\sig[_2]}}}
+        \and
+        \inferrule[funct]{
+            \ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SSigKind{\sig[_{21}]}}{\SSigKind{\sig[_{11}]}} \\
+            \ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx, \modvar\SigAssump\sig[_{11}];\SigVarCtx}{\SSigKind{\sig[_{12}]}}{\SSigKind{\sig[_{22}]}} \\
+        }
+        {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SSigKind{\FunctorSig{\modvar\SigAnn\sig[_{11}]}{\sig[_{12}]}}}{\SSigKind{\FunctorSig{\modvar\SigAnn\sig[_{21}]}{\sig[_{22}]}}}}
+        \and
+        \inferrule[holes]{
+            \Ana{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SigHole^{\hole}}{\sigknd} \\
+        }
+        {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SSigKind{\SigHole^{\hole}}}{\sigknd}}
+        \and
+        \inferrule[neholes]{
+            \Ana{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SigHole[s]^{\hole}}{\sigknd} \\
+        }
+        {\ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SSigKind{\SigHole[s]^{\hole}}}{\sigknd}}
         \and
         \inferrule[CSubSigKindHoleL]{
         }
@@ -506,16 +510,21 @@ patterns not handled yet-- will be left till end.
         }
         {\Syn{}{\Sig{\sdecs}}{\SSigKind{\Sig{\sdecs}}}}
         \and
+        \inferrule[]{
+            \Syn{\HoleCtx;\TypVarCtx;\ModVarCtx, \modvar\SigAssump\sig[_1];\SigVarCtx}{\sig[_2]}{\sigknd} \\
+        }
+        {\Syn{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\FunctorSig{\modvar\SigAnn\sig[_1]}{\sig[_2]}}{\SSigKind{\FunctorSig{\modvar\SigAnn\sig[_1]}{\sig[_2]}}}}
+        \and
         \inferrule[SynSigKndSigHole]{
             u\SigKndAssump\sigknd\in\HoleCtx \\
         }
-        {\Syn{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SigHole^u}{\sigknd}}
+        {\Syn{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SigHole^{\hole}}{\sigknd}}
         \and
         \inferrule[SynSigKndSigHole]{
             u\SigKndAssump\sigknd\in\HoleCtx \\
             \Syn{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sigvar}{\sigknd[_1]} \\
         }
-        {\Syn{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SigHole[\sigvar]^u}{\sigknd}}
+        {\Syn{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SigHole[\sigvar]^{\hole}}{\sigknd}}
     \end{mathpar}
 \end{minipage}
 \begin{minipage}{\textwidth}
@@ -526,6 +535,33 @@ patterns not handled yet-- will be left till end.
             \ConsistentSubSigKind{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sigknd[_1]}{\sigknd}
         }
         {\Ana{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sig}{\sigknd}}
+    \end{mathpar}
+\end{minipage}
+\begin{minipage}{\textwidth}
+    \judgbox{\SubSdec{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sdec[_1]}{\sdec[_2]}}{$\sdec[_1]$ is a subsdec of $\sdec[_2]$}
+    \begin{mathpar}
+        \inferrule[singleType]{
+        }
+        {\SubSdec{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\TransparentTypeSdec{\lab}{\typ}}{\OpaqueTypeSdec{\lab}}}
+        \and
+        \inferrule[singleType2]{
+            \TypeEquiv{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\typ[_1]}{\typ[_2]} \\
+        }
+        {\SubSdec{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\TransparentTypeSdec{\lab}{\typ[_1]}}{\TransparentTypeSdec{\lab}{\typ[_2]}}}
+        \and
+        \inferrule[singleType3]{
+        }
+        {\SubSdec{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\OpaqueTypeSdec{\lab}}{\OpaqueTypeSdec{\lab}}}
+        \and
+        \inferrule[singleVa]{
+            \TypeEquiv{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\typ[_1]}{\typ[_2]} \\
+        }
+        {\SubSdec{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\ValSdec{\lab}{\typ[_1]}}{\ValSdec{\lab}{\typ[_2]}}}
+        \and
+        \inferrule[singleMod]{
+            \Ana{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sig[_1]}{\SSigKind{\sig[_2]}} \\
+        }
+        {\SubSdec{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\ModSdec{\lab}{\sig[_1]}}{\ModSdec{\lab}{\sig[_2]}}}
     \end{mathpar}
 \end{minipage}
 \section{elab}
@@ -592,12 +628,12 @@ patterns not handled yet-- will be left till end.
             \umodvar \notin \dom{\ModVarCtx} \\
         }
         {\SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\umodvar}{\SigHole}
-            {\ModHole[\modvar]^u}{u\SigAssump\SigHole}}
+            {\ModHole[\modvar]^{\hole}}{u\SigAssump\SigHole}}
         \and
         \inferrule[SynElabConsStruct]{
             \SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\usbnd}{\sdec}
                 {\sbnd}{\HoleCtx_1} \\
-            \SynElab{\ExpVarCtx, \val{\sdec};\TypVarCtx, \type{\sdec};\ModVarCtx, \submodule{\sdec}}{\Struct{\usbnds}}{\Sig{\sdecs}}
+            \SynElab{\ExpVarCtx, \val{\sdec};\TypVarCtx, \type{\HoleCtx_1;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sdec};\ModVarCtx, \submodule{\sdec}}{\Struct{\usbnds}}{\Sig{\sdecs}}
                 {\Struct{\sbnds}}{\HoleCtx_2} \\
         }
         {\SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\Struct{\usbnd, \usbnds}}{\Sig{\sdec, \sdecs}}
@@ -610,13 +646,13 @@ patterns not handled yet-- will be left till end.
         \and
         \inferrule[SynElabEmptyModHole]{
         }
-        {\SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\ModHole^u}{\SigHole}
-            {\ModHole^u}{u\SigAssump\SigHole}}
+        {\SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\ModHole^{\hole}}{\SigHole}
+            {\ModHole^{\hole}}{u\SigAssump\SigHole}}
         \and
         \inferrule[SynElabNonemptyModHole]{
         }
-        {\SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\ModHole[\umodvar]^u}{\SigHole}
-            {\ModHole[\modvar]^u}{u\SigAssump\SigHole}}
+        {\SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\ModHole[\umodvar]^{\hole}}{\SigHole}
+            {\ModHole[\modvar]^{\hole}}{u\SigAssump\SigHole}}
         \and
         \inferrule[functor stuff]{
         }
@@ -673,6 +709,15 @@ patterns not handled yet-- will be left till end.
 \end{minipage}
 \begin{minipage}{\textwidth}
     \judgbox{\AnaElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\usbnd}{\sdec}{\sbnd}{\HoleCtx}}{$\usbnd$ analyzes against declaration $\sdec$ and elaborates to $\sbnd$ with hole context $\HoleCtx$}
+    \begin{mathpar}
+        \inferrule[subsump]{
+            \SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx;l\SigVarCtx}{\usbnd}{\sdec[_1]}
+                {\sbnd}{\HoleCtx} \\
+            \SubSdec{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sdec[_1]}{\sdec} \\
+        }
+        {\AnaElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\usbnd}{\sdec}
+            {\sbnd}{\HoleCtx}}
+    \end{mathpar}
 \end{minipage}
 \begin{minipage}{\textwidth}
     \judgbox{\ElabDegenerate{\ExpVarCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\usdec}{\sdec}{\HoleCtx}}{$\usdec$ elaborates to $\sdec$ with hole context $\HoleCtx$}
@@ -713,8 +758,8 @@ patterns not handled yet-- will be left till end.
     \begin{mathpar}
         \inferrule[SynSigEmptyHole]{
         }
-        {\SynElab{\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SigHole^u}{\SigKHole}
-            {\SigHole^u}{u\SigKndAssump\SigKHole}}
+        {\SynElab{\TypVarCtx;\ModVarCtx;\SigVarCtx}{\SigHole^{\hole}}{\SigKHole}
+            {\SigHole^{\hole}}{u\SigKndAssump\SigKHole}}
        \and
        \inferrule[SynSigNonEmptyHole]{
        }
@@ -728,19 +773,19 @@ patterns not handled yet-- will be left till end.
 \begin{align*}
     \val{\sdec} &=
     \begin{cases}
-        \lab\TypAssump\typ & \sdec \equiv \ValSdec{\lab}{\typ} \\
+        \lab\TypAssump\typ & \sdec = \ValSdec{\lab}{\typ} \\
         \cdot & \textrm{otherwise} \\
     \end{cases} \\
-    \type{\sdec} &=
+    \type{cntxts}{\sdec} &=
     \begin{cases}
-        \lab\KndAssump\Type & \sdec \equiv \OpaqueTypeSdec{\lab} \\
-        \lab\KndAssump\knd & \sdec \equiv \TransparentTypeSdec{\lab}{\typ} \\
-                           & \textrm{where} \Syn{}{\typ}{\knd}\\
+        \lab\KndAssump\Type & \sdec = \OpaqueTypeSdec{\lab} \\
+        \lab\KndAssump\knd & \sdec = \TransparentTypeSdec{\lab}{\typ} \\
+                           & \textrm{where}~\Syn{cntxts}{\typ}{\knd}\\
         \cdot & \textrm{otherwise} \\
     \end{cases} \\
     \submodule{\sdec} &=
     \begin{cases}
-        \lab\SigAssump\sig & \sdec \equiv \ModSdec{\lab}{\sig} \\
+        \lab\SigAssump\sig & \sdec = \ModSdec{\lab}{\sig} \\
         \cdot & \textrm{otherwise} \\
     \end{cases} \\
 \end{align*}
