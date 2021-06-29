@@ -1,4 +1,4 @@
-\documentclass[11pt,fleqn]{article}
+\documentclass[10pt,fleqn]{article}
 \usepackage[top=2cm,bottom=2cm,left=1cm,right=1cm]{geometry}
 \usepackage{titlesec} % see below
 \usepackage{xcolor} % \color \textcolor
@@ -173,7 +173,6 @@
 \newcommand{\sdec}[1][]{\greyit{sdec#1}}
 \newcommand{\usdecs}{\greyit{\hat{sdecs}}}
 \newcommand{\sdecs}[1][]{\greyit{sdecs#1}}
-\newcommand*{\sdecknd}[1][]{\greyit{sdecknd#1}}
 
 \newcommand{\OpaqueTypeSdec}[1]{\greentt{type~#1}}
 \newcommand{\TransparentTypeSdec}[2]{\greentt{type~#1 = #2}}
@@ -223,6 +222,7 @@
 \newcommand{\Ana}[3]{#1 \vdash #2~\Leftarrow~#3}
 \newcommand{\SynElab}[5]{#1 \vdash #2~\Rightarrow~#3 \rightsquigarrow #4 \dashv #5}
 \newcommand{\AnaElab}[5]{#1 \vdash #2~\Leftarrow~#3 \rightsquigarrow #4 \dashv #5}
+\newcommand*{\ElabDegenerate}[4]{#1 \vdash #2 \rightsquigarrow #3 \dashv #4}
 
 \newcommand{\WellFormedSig}[2]{#1 \vdash #2~\textsf{Ok}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -264,6 +264,8 @@
     signature kind/.style={rectangle, draw=orange!100, fill=orange!10, thick},
     signature/.style={rectangle, draw=purple!100, fill=purple!10, thick},
     module/.style={rectangle, draw=teal!100, fill=teal!10, thick},
+    sdec/.style={rectangle, draw=grey!100, fill=grey!10, thick},
+    sbnd/.style={rectangle, draw=grey!100, fill=grey!10, thick},
     ->/.style={line join=round, decorate, decoration={zigzag, segment length=4, amplitude=.9, post=lineto, post length=10pt}},
     note/.style={rectangle, thick},
     ]
@@ -277,6 +279,10 @@
     \node[signature](sig) at (5, 3){$\sig$};
     \node[module](umod) at (3, 1){$\umod$};
     \node[module](mod) at (5, 1){$\mod$};
+    \node[sdec](usdec) at (7, 3){$\usdec$};
+    \node[sdec](sdec) at (9, 3){$\sdec$};
+    \node[sbnd](usbnd) at (7, 1){$\usbnd$};
+    \node[sbnd](sbnd) at (9, 1){$\sbnd$};
     %\node[note] at (7, 2){$\utyp := \typ$};
     %\node[note] at (7, 3){$\usig := \sig$};
     %\node[note] at (7, 1){$\umod := \mod$};
@@ -286,10 +292,14 @@
     \draw[->](uexp.east)--(exp.west);
     \draw[->](usig.east)--(sig.west);
     \draw[->](umod.east)--(mod.west);
+    \draw[->](usdec.east)--(sdec.west);
+    \draw[->](usbnd.east)--(sbnd.west);
     \node[draw=none, shift={(-0.1, 0)}] at (typ.west){$>$};
     \node[draw=none, shift={(-0.1, 0)}] at (exp.west){$>$};
     \node[draw=none, shift={(-0.1, 0)}] at (sig.west){$>$};
     \node[draw=none, shift={(-0.1, 0)}] at (mod.west){$>$};
+    \node[draw=none, shift={(-0.1, 0)}] at (sdec.west){$>$};
+    \node[draw=none, shift={(-0.1, 0)}] at (sbnd.west){$>$};
     \draw[-{Implies}, double]([shift={(-0.1, 0)}]uexp.north)--([shift={(-0.1, 0)}]typ.south);
     \draw[-{Implies}, double]([shift={(0.1, 0)}]typ.south)--([shift={(0.1, 0)}]uexp.north);
     \draw[-{Implies}, double]([shift={(-0.1, 0)}]utyp.north)--([shift={(-0.1, 0)}]knd.south);
@@ -302,6 +312,8 @@
     \draw[-{Implies}, double]([shift={(0.1, 0)}]sigknd.south)--([shift={(0.1, 0)}]usig.north);
     \draw[-{Implies}, double]([shift={(-0.1, 0)}]sig.north)--([shift={(-0.1, 0)}]sigknd.south);
     \draw[-{Implies}, double]([shift={(0.1, 0)}]sigknd.south)--([shift={(0.1, 0)}]sig.north);
+    \draw[-{Implies}, double]([shift={(-0.1, 0)}]usbnd.north)--([shift={(-0.1, 0)}]sdec.south);
+    \draw[-{Implies}, double]([shift={(0.1, 0)}]sdec.south)--([shift={(0.1, 0)}]usbnd.north);
     % https://tex.stackexchange.com/questions/71478/how-to-center-one-node-exactly-between-two-others-with-tikz
     \path (exp)--(typ) node[midway]{$\TypAsc$};
     \path (mod)--(sig) node[midway]{$\SigAsc$ ?};
@@ -663,7 +675,38 @@ patterns not handled yet-- will be left till end.
     \judgbox{\AnaElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\usbnd}{\sdec}{\sbnd}{\HoleCtx}}{$\usbnd$ analyzes against declaration $\sdec$ and elaborates to $\sbnd$ with hole context $\HoleCtx$}
 \end{minipage}
 \begin{minipage}{\textwidth}
-    \judgbox{\SynElab{}{\usdec}{\sdecknd}{\sdec}{\HoleCtx}}{}
+    \judgbox{\ElabDegenerate{\ExpVarCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\usdec}{\sdec}{\HoleCtx}}{$\usdec$ elaborates to $\sdec$ with hole context $\HoleCtx$}
+    \begin{mathpar}
+        \inferrule[opq]{
+        }
+        {\ElabDegenerate{\ExpVarCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\OpaqueTypeSdec{\lab}}
+            {\OpaqueTypeSdec{\lab}}{\cdot}}
+        \and
+        \inferrule[trn]{
+            \SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\utyp}{\knd}
+                {\typ}{\HoleCtx}
+        }
+        {\ElabDegenerate{\ExpVarCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\TransparentTypeSdec{\lab}{\utyp}}
+            {\TransparentTypeSdec{\lab}{\typ}}{\HoleCtx}}
+        \and
+        \inferrule[val]{
+            \SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\utyp}{\knd}
+                {\typ}{\HoleCtx}
+        }
+        {\ElabDegenerate{\ExpVarCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\ValSdec{\lab}{\utyp}}
+            {\ValSdec{\lab}{\typ}}{\HoleCtx}}
+        \and
+        \inferrule[mod]{
+            \SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\usig}{\sigknd}
+                {\sig}{\HoleCtx}
+        }
+        {\ElabDegenerate{\ExpVarCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\ModSdec{\lab}{\usig}}
+        {\ModSdec{\lab}{\sig}}{\HoleCtx}}
+        \and
+        \inferrule[we're going to need HOFunctors so we don't need to preclude users from typing a functor into a module and vice versa]{
+        }
+        {}
+    \end{mathpar}
 \end{minipage}
 \begin{minipage}{\textwidth}
     \judgbox{\SynElab{\TypVarCtx;\ModVarCtx;\SigVarCtx}{\usig}{\sigknd}{\sig}{\HoleCtx}}{$\usig$ synthesizes signature kind $\sigknd$ and elaborates to $\sig$ with hole context $\HoleCtx$}
