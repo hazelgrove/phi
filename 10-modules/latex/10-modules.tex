@@ -202,31 +202,40 @@
     \newcommand{\hintpagebreak}{\pagebreak[3]} % 0-4; 2 too weak, 4 too strong
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % judgements
-    \newcommand{\TypAsc}{\black{:}}
-    \newcommand{\TypAssump}{\black{:}}
-    \newcommand{\TypAnn}{\black{:}}
-    \newcommand{\KndAsc}{\black{::}}
-    \newcommand{\KndAssump}{\black{::}}
-    \newcommand{\KndAnn}{\black{::}}
-    \newcommand*{\SigKndAssump}{\black{::_{\sig}}}
-    \newcommand{\SigAsc}{\black{:_{\mod}}}
-    \newcommand{\SigAssump}{\black{:_{\mod}}}
-    \newcommand{\SigAnn}{\black{:_{\mod}}}
+    % declarative
+        \newcommand{\TypAsc}{\black{:}}
+        \newcommand{\TypAssump}{\black{:}}
+        \newcommand{\TypAnn}{\black{:}}
+        \newcommand{\KndAsc}{\black{::}}
+        \newcommand{\KndAssump}{\black{::}}
+        \newcommand{\KndAnn}{\black{::}} % why do we have this?
+        \newcommand*{\SigKndAsc}{\black{::_{\sig}}}
+        \newcommand*{\SigKndAssump}{\black{::_{\sig}}}
+        \newcommand{\SigAsc}{\black{:_{\mod}}}
+        \newcommand{\SigAssump}{\black{:_{\mod}}}
+        \newcommand{\SigAnn}{\black{:_{\mod}}}
 
-    \newcommand{\ConsistentSubkindOp}{\lesssim}
-    \newcommand{\ConsistentSubkind}[3]{\mathrm{#1 \vdash #2 \ConsistentSubkindOp #3}}
-    \newcommand{\ConsistentSubSigKindOp}{\lesssim_{\sigknd}}
-    \newcommand{\ConsistentSubSigKind}[3]{\mathrm{#1 \vdash #2 \ConsistentSubSigKindOp #3}}
-    \newcommand*{\SubSdecOp}{\le_{\sdec}}
-    \newcommand*{\SubSdec}[3]{\mathrm{#1 \vdash #2 \SubSdecOp #3}}
-    \newcommand*{\TypeEquiv}[3]{\mathrm{#1 \vdash #2 \equiv #3}}
-    \newcommand{\Syn}[3]{#1 \vdash #2~\Rightarrow~#3}
-    \newcommand{\Ana}[3]{#1 \vdash #2~\Leftarrow~#3}
-    \newcommand{\SynElab}[5]{#1 \vdash #2~\Rightarrow~#3 \rightsquigarrow #4 \dashv #5}
-    \newcommand{\AnaElab}[5]{#1 \vdash #2~\Leftarrow~#3 \rightsquigarrow #4 \dashv #5}
-    \newcommand*{\ElabDegenerate}[4]{#1 \vdash #2 \rightsquigarrow #3 \dashv #4}
+        \newcommand{\ConsistentSubkindOp}{\lesssim}
+        \newcommand{\ConsistentSubkind}[3]{\mathrm{#1 \vdash #2 \ConsistentSubkindOp #3}}
+        \newcommand{\ConsistentSubSigKindOp}{\lesssim_{\sigknd}}
+        \newcommand{\ConsistentSubSigKind}[3]{\mathrm{#1 \vdash #2 \ConsistentSubSigKindOp #3}}
+        \newcommand*{\SubSdecOp}{\le_{\sdec}}
+        \newcommand*{\SubSdec}[3]{\mathrm{#1 \vdash #2 \SubSdecOp #3}}
 
-    \newcommand{\WellFormedSig}[2]{#1 \vdash #2~\textsf{Ok}}
+        \newcommand*{\TypeEquiv}[3]{\mathrm{#1 \vdash #2 \equiv #3}}
+        \newcommand*{\KindEquiv}[3]{\mathrm{#1 \vdash #2 \equiv #3}}
+        \newcommand*{\SigEquiv}[3]{\mathrm{#1 \vdash #2 \equiv #3}}
+        \newcommand*{\SigKindEquiv}[3]{\mathrm{#1 \vdash #2 \equiv #3}}
+        \newcommand*{\WellFormedAtType}[3]{\mathrm{#1 \vdash #2 \TypAsc #3}}
+        \newcommand*{\WellFormedAtKind}[3]{\mathrm{#1 \vdash #2 \KndAsc #3}}
+        \newcommand*{\WellFormedAtSig}[3]{\mathrm{#1 \vdash #2 \SigAsc #3}}
+        \newcommand*{\WellFormedAtSigKind}[3]{\mathrm{#1 \vdash #2 \SigKndAsc #3}}
+    % algorithmic
+        \newcommand{\Syn}[3]{#1 \vdash #2~\Rightarrow~#3}
+        \newcommand{\Ana}[3]{#1 \vdash #2~\Leftarrow~#3}
+        \newcommand{\SynElab}[5]{#1 \vdash #2~\Rightarrow~#3 \rightsquigarrow #4 \dashv #5}
+        \newcommand{\AnaElab}[5]{#1 \vdash #2~\Leftarrow~#3 \rightsquigarrow #4 \dashv #5}
+        \newcommand*{\ElabDegenerate}[4]{#1 \vdash #2 \rightsquigarrow #3 \dashv #4}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \pagenumbering{gobble}
 \nonfrenchspacing
@@ -422,6 +431,8 @@
 \end{longtable}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % rules
+\section{declarative statics}
+    \subsection*{}
 \section{contexts}
         \[
             \HoleCtx, ?;\ExpVarCtx, \expvar\TypAssump\typ; \TypVarCtx, \typvar\KndAssump\knd; \ModVarCtx, \modvar\SigAssump\sig; \SigVarCtx, \sigvar\SigKndAssump\sigknd
