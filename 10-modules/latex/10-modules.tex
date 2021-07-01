@@ -60,6 +60,8 @@
     \newcolumntype{C}{>{\(}c<{\)}}
     \newcolumntype{R}{>{\(}r<{\)}}
     \setlength\tabcolsep{5pt}
+    % https://tex.stackexchange.com/questions/29973/more-than-one-optional-argument-for-newcommand
+    \usepackage{xparse}
 
     %% Joshua Dunfield macros
     \def\OPTIONConf{1}%
@@ -156,9 +158,13 @@
     \newcommand*{\SSigKind}[1]{\orangett{SSigKind(#1)}}
     \newcommand*{\SigKHole}{\orangett{SigKHole}}
 
+    \newcommand*{\uSig}{\Sig}
     \newcommand{\Sig}[1]{\purplett{\{#1\}}}
+    \newcommand*{\uFunctorSig}{\FunctorSig}
     \newcommand{\FunctorSig}[2]{\purplett{\Pi_{#1}.{#2}}}
-    \newcommand{\SigHole}[1][]{\purplett{\llparenthesis#1\rrparenthesis}}
+    \newcommand*{\uSigHole}{\SigHole}
+    \NewDocumentCommand{\SigHole}{O{}O{}}{\purplett{\llparenthesis#1\rrparenthesis#2}}
+    \newcommand*{\UnboundSigVar}[1][]{\uwave{\hphantom{.}\sigvar\hphantom{.}}}
 
     \newcommand{\Struct}[1]{\tealtt{\{#1\}}}
     \newcommand{\Functor}[2]{\tealtt{\lambda #1.#2}}
@@ -176,10 +182,14 @@
     \newcommand{\usdecs}{\greyit{\hat{sdecs}}}
     \newcommand{\sdecs}[1][]{\greyit{sdecs#1}}
 
-    \newcommand*{\OpaqueTypeSdec}[1]{\greentt{type~#1}}
-    \newcommand*{\TransparentTypeSdec}[2]{\greentt{type~#1\KndAnn #2}}
+    \newcommand*{\uOpaqueTypeSdec}[1]{\greentt{type~#1}}
+    \newcommand*{\uTransparentTypeSdec}{\TypeSdec}
+    \newcommand*{\uValSdec}{\ValSdec}
+    \newcommand*{\TypeSdec}[2]{\greentt{type~#1\KndAnn #2}}
     \newcommand{\ValSdec}[2]{\bluett{val~#1\TypAnn #2}}
+    \newcommand*{\uModSdec}{\ModSdec}
     \newcommand{\ModSdec}[2]{\tealtt{module~#1\SigAnn #2}}
+    \newcommand*{\uFunctorSdec}{\FunctorSdec}
     \newcommand{\FunctorSdec}[2]{\tealtt{functor~#1\SigAnn #2}}
 
     \newcommand{\TypeSbnd}[2]{\greentt{type~#1 = #2}}
@@ -391,12 +401,20 @@
                             & \SSigKind{\sig} & \\
                             && \vert & \SigKHole & \\
     \hintpagebreak
+    \textrm{external signature} & \usig & ::=
+                                & \sigvar & \textrm{signature variable} \\
+                                && \vert & \uSig{\usdecs} & \textrm{structure signature} \\
+                                && \vert & \uFunctorSig{\modvar\SigAnn\usig[_1]}{\usig[_2]} & \textrm{functor signature} \\
+                                && \vert & \uSigHole[][^{\hole}] & \textrm{empty signature hole} \\
+                                && \vert & \uSigHole[\sigvar][^{\hole}] & \textrm{nonempty signature hole} \\
+    \hintpagebreak
     \textrm{signature} & \sig & ::=
                        & \sigvar & \textrm{signature variable} \\
                        && \vert & \Sig{\sdecs} & \textrm{structure signature} \\
                        && \vert & \FunctorSig{\modvar\SigAnn\sig[_1]}{\sig[_2]} & \textrm{functor signature} \\
-                       && \vert & \SigHole & \textrm{empty signature hole} \\
-                       && \vert & \SigHole[\sigvar] & \textrm{nonempty signature hole} \\
+                       && \vert & \SigHole[][^{\hole}] & \textrm{empty signature hole} \\
+                       && \vert & \SigHole[\sigvar][^{\hole}] & \textrm{nonempty signature hole} \\
+                       && \vert & \UnboundSigVar & \textrm{unbound signature variable} \\
     \hintpagebreak
     \textrm{module} & \mod & ::=
                     & \modvar & \textrm{module variable} \\
@@ -412,8 +430,7 @@
                                 && \vert & \sdec, \sdecs\\
     \hintpagebreak
     \textrm{signature declaration} & \sdec & ::=
-                                   & \OpaqueTypeSdec{\lab} \\
-                                   && \vert & \TransparentTypeSdec{\lab}{\knd} \\
+                                   & \TypeSdec{\lab}{\knd} \\
                                    && \vert & \ValSdec{\lab}{\typ} \\
                                    && \vert & \ModSdec{\lab}{\sig} \\
                                    && \vert & \FunctorSdec{\lab}{\sig} \\
@@ -545,17 +562,9 @@
         \judgbox{\SubSdec{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\sdec[_1]}{\sdec[_2]}}{$\sdec[_1]$ is a subsdec of $\sdec[_2]$}
         \begin{mathpar}
             \inferrule[singleType]{
+                \ConsistentSubkind{}{\knd[_1]}{\knd[_2]}
             }
-            {\SubSdec{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\TransparentTypeSdec{\lab}{\typ}}{\OpaqueTypeSdec{\lab}}}
-            \and
-            \inferrule[singleType2]{
-                \TypeEquiv{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\typ[_1]}{\typ[_2]} \\
-            }
-            {\SubSdec{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\TransparentTypeSdec{\lab}{\typ[_1]}}{\TransparentTypeSdec{\lab}{\typ[_2]}}}
-            \and
-            \inferrule[singleType3]{
-            }
-            {\SubSdec{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\OpaqueTypeSdec{\lab}}{\OpaqueTypeSdec{\lab}}}
+            {\SubSdec{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\TypeSdec{\lab}{\knd[_1]}}{\TypeSdec{\lab}{\knd[_2]}}}
             \and
             \inferrule[singleVa]{
                 \TypeEquiv{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\typ[_1]}{\typ[_2]} \\
@@ -681,7 +690,7 @@
                 \SynElab{\TypVarCtx;\ModVarCtx}{\utyp}{\knd}
                     {\typ}{\HoleCtx} \\
             }
-            {\SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\TypeSbnd{\utypvar}{\utyp}}{\TransparentTypeSdec{\typvar}{\typ}}
+            {\SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\TypeSbnd{\utypvar}{\utyp}}{\TypeSdec{\typvar}{\knd}}
                 {\TypeSbnd{\typvar}{\typ}}{\HoleCtx}}
             \and
             \inferrule[SynElabValSbnd]{
@@ -728,15 +737,15 @@
         \begin{mathpar}
             \inferrule[opq]{
             }
-            {\ElabDegenerate{\ExpVarCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\OpaqueTypeSdec{\lab}}
-                {\OpaqueTypeSdec{\lab}}{\cdot}}
+            {\ElabDegenerate{\ExpVarCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\uOpaqueTypeSdec{\lab}}
+                {\TypeSdec{\lab}{\Type}}{\cdot}}
             \and
             \inferrule[trn]{
                 \SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\utyp}{\knd}
                     {\typ}{\HoleCtx}
             }
-            {\ElabDegenerate{\ExpVarCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\TransparentTypeSdec{\lab}{\utyp}}
-                {\TransparentTypeSdec{\lab}{\typ}}{\HoleCtx}}
+            {\ElabDegenerate{\ExpVarCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\uTransparentTypeSdec{\lab}{\utyp}}
+                {\TypeSdec{\lab}{\knd}}{\HoleCtx}}
             \and
             \inferrule[val]{
                 \SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\utyp}{\knd}
@@ -782,8 +791,7 @@
         \end{cases} \\
         \type{cntxts}{\sdec} &=
         \begin{cases}
-            \lab\KndAssump\Type & \sdec = \OpaqueTypeSdec{\lab} \\
-            \lab\KndAssump\knd & \sdec = \TransparentTypeSdec{\lab}{\knd} \\
+            \lab\KndAssump\knd & \sdec = \TypeSdec{\lab}{\knd} \\
             \cdot & \textrm{otherwise} \\
         \end{cases} \\
         \submodule{\sdec} &=
