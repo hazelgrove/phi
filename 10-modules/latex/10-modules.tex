@@ -125,7 +125,7 @@
     \newcommand{\lab}[1][]{\mathit{lab#1}}
 
     \newcommand{\Type}{\redtt{Type}}
-    \newcommand{\SKind}[1]{\redtt{S(#1)}}
+    \newcommand{\SKind}[2][]{\redtt{S_{#1}(#2)}}
     \newcommand{\KHole}{\redtt{KHole}}
     \newcommand{\DepFunKind}[2]{\redtt{\Pi_{#1}.{#2}}}
     \newcommand{\DepProdKind}[2]{\redtt{\Sigma_{#1}.{#2}}}
@@ -176,8 +176,8 @@
     \newcommand{\usdecs}{\greyit{\hat{sdecs}}}
     \newcommand{\sdecs}[1][]{\greyit{sdecs#1}}
 
-    \newcommand{\OpaqueTypeSdec}[1]{\greentt{type~#1}}
-    \newcommand{\TransparentTypeSdec}[2]{\greentt{type~#1 = #2}}
+    \newcommand*{\OpaqueTypeSdec}[1]{\greentt{type~#1}}
+    \newcommand*{\TransparentTypeSdec}[2]{\greentt{type~#1\KndAnn #2}}
     \newcommand{\ValSdec}[2]{\bluett{val~#1\TypAnn #2}}
     \newcommand{\ModSdec}[2]{\tealtt{module~#1\SigAnn #2}}
     \newcommand{\FunctorSdec}[2]{\tealtt{functor~#1\SigAnn #2}}
@@ -413,7 +413,7 @@
     \hintpagebreak
     \textrm{signature declaration} & \sdec & ::=
                                    & \OpaqueTypeSdec{\lab} \\
-                                   && \vert & \TransparentTypeSdec{\lab}{\typ} \\
+                                   && \vert & \TransparentTypeSdec{\lab}{\knd} \\
                                    && \vert & \ValSdec{\lab}{\typ} \\
                                    && \vert & \ModSdec{\lab}{\sig} \\
                                    && \vert & \FunctorSdec{\lab}{\sig} \\
@@ -429,15 +429,11 @@
                                && \vert & \ModSbnd{\modvar\SigAnn\sigvar}{\mod} \\
                                && \vert & \FunctorSbnd{\modvar\SigAnn\sigvar}{\mod} \\
 \end{longtable}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% rules
-\section{declarative statics}
-    \subsection*{}
-\section{contexts}
+\section{context definitions}
         \[
             \HoleCtx, ?;\ExpVarCtx, \expvar\TypAssump\typ; \TypVarCtx, \typvar\KndAssump\knd; \ModVarCtx, \modvar\SigAssump\sig; \SigVarCtx, \sigvar\SigKndAssump\sigknd
         \]
-\section{statics}
+\section{declarative statics}
     \subsection*{}
     \begin{minipage}{\textwidth}
         scratch \\
@@ -572,7 +568,7 @@
             {\SubSdec{\HoleCtx;\TypVarCtx;\ModVarCtx;\SigVarCtx}{\ModSdec{\lab}{\sig[_1]}}{\ModSdec{\lab}{\sig[_2]}}}
         \end{mathpar}
     \end{minipage}
-\section{elab}
+\section{elaboration}
     \subsection*{}
     \begin{minipage}{\textwidth}
         \judgbox{\SynElab{\ExpVarCtx;\TypVarCtx;\ModVarCtx}{\uexp}{\typ}{\exp}{\HoleCtx}}{$\uexp$ synthesizes type $\typ$ and elaborates to $\exp$ with hole context $\HoleCtx$}
@@ -777,24 +773,37 @@
     \begin{minipage}{\textwidth}
         \judgbox{\AnaElab{\TypVarCtx;\ModVarCtx}{\usig}{\sigknd}{\sig}{\HoleCtx}}{$\usig$ analyzes against signature kind $\sigknd$ and elaborates to $\sig$ with hole context $\HoleCtx$}
     \end{minipage}
-\subsection*{misc}
-\begin{align*}
-    \val{\sdec} &=
-    \begin{cases}
-        \lab\TypAssump\typ & \sdec = \ValSdec{\lab}{\typ} \\
-        \cdot & \textrm{otherwise} \\
-    \end{cases} \\
-    \type{cntxts}{\sdec} &=
-    \begin{cases}
-        \lab\KndAssump\Type & \sdec = \OpaqueTypeSdec{\lab} \\
-        \lab\KndAssump\knd & \sdec = \TransparentTypeSdec{\lab}{\typ} \\
-                           & \textrm{where}~\Syn{cntxts}{\typ}{\knd}\\
-        \cdot & \textrm{otherwise} \\
-    \end{cases} \\
-    \submodule{\sdec} &=
-    \begin{cases}
-        \lab\SigAssump\sig & \sdec = \ModSdec{\lab}{\sig} \\
-        \cdot & \textrm{otherwise} \\
-    \end{cases} \\
-\end{align*}
+\section*{misc functions}
+    \begin{align*}
+        \val{\sdec} &=
+        \begin{cases}
+            \lab\TypAssump\typ & \sdec = \ValSdec{\lab}{\typ} \\
+            \cdot & \textrm{otherwise} \\
+        \end{cases} \\
+        \type{cntxts}{\sdec} &=
+        \begin{cases}
+            \lab\KndAssump\Type & \sdec = \OpaqueTypeSdec{\lab} \\
+            \lab\KndAssump\knd & \sdec = \TransparentTypeSdec{\lab}{\knd} \\
+            \cdot & \textrm{otherwise} \\
+        \end{cases} \\
+        \submodule{\sdec} &=
+        \begin{cases}
+            \lab\SigAssump\sig & \sdec = \ModSdec{\lab}{\sig} \\
+            \cdot & \textrm{otherwise} \\
+        \end{cases} \\
+    \end{align*}
+    \begin{align*}
+        \SKind[\Type]{\typ} &:= \SKind{\typ} \\
+        \SKind[\SKind{\typ[_1]}]{\typ} &:= \SKind{\typ} \\
+        \SKind[\KHole]{\typ} &:= \KHole \\
+    \end{align*}
+\section*{theorems}
+    \subsection*{}
+    Kind Synthesis Precision
+    \[
+        \mathrm{
+            If~\Syn{cntxts}{\typ}{\knd}~then~
+            \forall \knd[_1].\WellFormedAtKind{cntxts}{\typ}{\knd[_1]} \implies \ConsistentSubkind{cntxts}{\knd}{\knd[_1]}
+        }
+    \]
 \end{document}
