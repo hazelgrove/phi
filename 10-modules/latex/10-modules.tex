@@ -1,234 +1,232 @@
-\documentclass[10pt,fleqn]{article}
-\usepackage[top=2cm,bottom=2cm,left=1cm,right=1cm]{geometry}
-\usepackage{titlesec} % see below
-\usepackage{xcolor} % \color \textcolor
-\usepackage{hyperref} % \href
-\usepackage[normalem]{ulem} % normalem retains \emph as italic
-% \uline \uuline \uwave \sout
-\usepackage{enumitem}
-% \begin{enumerate}[label=\Alpha*.]
-% \begin{enumerate}[label=\(\bullet\)]
-\usepackage{graphicx}
-% \includegraphicswidth=0.5\textwidth,trim=[0cm 0cm 0cm 0cm,clip]{file.png}
-\usepackage{pdfpages} % \includepdf[pages=1]{file.pdf}
-% for prose
-%\usepackage[doublespacing]{setspace}
-\usepackage{csquotes} % \blockquote
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\renewcommand{\rmdefault}{cmr}
-\renewcommand{\sfdefault}{cmss}
-\renewcommand{\ttdefault}{cmtt}
-\renewcommand{\familydefault}{\rmdefault}
-\setlength{\titlewidth}{\textwidth}
+% standard header
+    \documentclass[10pt,fleqn]{article}
+    \usepackage[top=2cm,bottom=2cm,left=1cm,right=1cm]{geometry}
+    \usepackage{titlesec} % see below
+    \usepackage{xcolor} % \color \textcolor
+    \usepackage{hyperref} % \href
+    \usepackage[normalem]{ulem} % normalem retains \emph as italic
+    % \uline \uuline \uwave \sout
+    \usepackage{enumitem}
+    % \begin{enumerate}[label=\Alpha*.]
+    % \begin{enumerate}[label=\(\bullet\)]
+    \usepackage{graphicx}
+    % \includegraphicswidth=0.5\textwidth,trim=[0cm 0cm 0cm 0cm,clip]{file.png}
+    \usepackage{pdfpages} % \includepdf[pages=1]{file.pdf}
+    % for prose
+    %\usepackage[doublespacing]{setspace}
+    \usepackage{csquotes} % \blockquote
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \renewcommand{\rmdefault}{cmr}
+    \renewcommand{\sfdefault}{cmss}
+    \renewcommand{\ttdefault}{cmtt}
+    \renewcommand{\familydefault}{\rmdefault}
+    \setlength{\titlewidth}{\textwidth}
 
-\titlespacing{\section}{0pt}{0pt}{0pt}
-\titlespacing{\subsection}{0pt}{0pt}{0pt}
-\titlespacing{\subsubsection}{0pt}{0pt}{0pt}
-\titlespacing{\paragraph}{0pt}{0pt}{0pt}
-% https://www.overleaf.com/learn/latex/How_to_write_a_LaTeX_class_file_and_design_your_own_CV_(Part_1)
-% \titleformat{command}[shape]{format}{label}{sep}{before-code}[after-code]
-\titleformat{\section}         % Customise the \section command 
-    [hang]
-    {\Large\ttfamily\raggedright} % Make the \section headers large (\Large),
-                               % small capitals (\scshape) and left aligned (\raggedright)
-    {}{0em}                      % Can be used to give a prefix to all sections, like 'Section ...'
-    {}                           % Can be used to insert code before the heading
-    [\titlerule]                 % Inserts a horizontal line after the heading
-\titleformat{\subsection}
-    [hang]
-    {\large\ttfamily\raggedright}
-    {}{0em}
-    {}
-    []
+    \titlespacing{\section}{0pt}{0pt}{0pt}
+    \titlespacing{\subsection}{0pt}{0pt}{0pt}
+    \titlespacing{\subsubsection}{0pt}{0pt}{0pt}
+    \titlespacing{\paragraph}{0pt}{0pt}{0pt}
+    % https://www.overleaf.com/learn/latex/How_to_write_a_LaTeX_class_file_and_design_your_own_CV_(Part_1)
+    % \titleformat{command}[shape]{format}{label}{sep}{before-code}[after-code]
+    \titleformat{\section}         % Customise the \section command 
+        [hang]
+        {\Large\ttfamily\raggedright} % Make the \section headers large (\Large),
+                                   % small capitals (\scshape) and left aligned (\raggedright)
+        {}{0em}                      % Can be used to give a prefix to all sections, like 'Section ...'
+        {}                           % Can be used to insert code before the heading
+        [\titlerule]                 % Inserts a horizontal line after the heading
+    \titleformat{\subsection}
+        [hang]
+        {\large\ttfamily\raggedright}
+        {}{0em}
+        {}
+        []
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\usepackage{mathpartir}
-\usepackage{latexsym}
-\usepackage{stmaryrd}
-\usepackage{amssymb}
-\usepackage{thmtools}
-\usepackage{tikz}
-% https://tex.stackexchange.com/questions/12678/squiggly-arrows-in-tikz
-\usetikzlibrary{decorations.pathmorphing}
-\usetikzlibrary{arrows.meta}
-% https://tex.stackexchange.com/questions/317121/automatically-adding-page-breaks-into-long-array-environments
-\usepackage{array}
-\usepackage{longtable}
-\newcolumntype{L}{>{\(}l<{\)}}
-\newcolumntype{C}{>{\(}c<{\)}}
-\newcolumntype{R}{>{\(}r<{\)}}
-\setlength\tabcolsep{5pt}
+% packages
+    \usepackage{mathpartir}
+    \usepackage{latexsym}
+    \usepackage{stmaryrd}
+    \usepackage{amssymb}
+    \usepackage{thmtools}
+    \usepackage{tikz}
+    % https://tex.stackexchange.com/questions/12678/squiggly-arrows-in-tikz
+    \usetikzlibrary{decorations.pathmorphing}
+    \usetikzlibrary{arrows.meta}
+    % https://tex.stackexchange.com/questions/317121/automatically-adding-page-breaks-into-long-array-environments
+    \usepackage{array}
+    \usepackage{longtable}
+    \newcolumntype{L}{>{\(}l<{\)}}
+    \newcolumntype{C}{>{\(}c<{\)}}
+    \newcolumntype{R}{>{\(}r<{\)}}
+    \setlength\tabcolsep{5pt}
 
-%% Joshua Dunfield macros
-\def\OPTIONConf{1}%
-\usepackage{joshuadunfield}
+    %% Joshua Dunfield macros
+    \def\OPTIONConf{1}%
+    \usepackage{joshuadunfield}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % color defs
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\definecolor{red}{HTML}{800000}
-\definecolor{green}{HTML}{008000}
-\definecolor{blue}{HTML}{000080}
-\definecolor{orange}{HTML}{D08000}
-\definecolor{purple}{HTML}{800080}
-\definecolor{teal}{HTML}{008080}
-\definecolor{black}{HTML}{000000}
-\definecolor{grey}{HTML}{808080}
-\newcommand{\red}[1]{\textcolor{red}{#1}}
-\newcommand{\green}[1]{\textcolor{green}{#1}}
-\newcommand{\blue}[1]{\textcolor{blue}{#1}}
-\newcommand{\orange}[1]{\textcolor{orange}{#1}}
-\newcommand{\purple}[1]{\textcolor{purple}{#1}}
-\newcommand{\teal}[1]{\textcolor{teal}{#1}}
-\newcommand{\black}[1]{\textcolor{black}{#1}}
-\newcommand{\grey}[1]{\textcolor{grey}{#1}}
-\newcommand*{\blackrm}[1]{\black{\mathtt{#1}}}
-\newcommand{\redtt}[1]{\red{\mathtt{#1}}}
-\newcommand{\greentt}[1]{\green{\mathtt{#1}}}
-\newcommand{\bluett}[1]{\blue{\mathtt{#1}}}
-\newcommand{\orangett}[1]{\orange{\mathtt{#1}}}
-\newcommand{\purplett}[1]{\purple{\mathtt{#1}}}
-\newcommand{\tealtt}[1]{\teal{\mathtt{#1}}}
-\newcommand{\blacktt}[1]{\black{\mathtt{#1}}}
-\newcommand{\greytt}[1]{\grey{\mathtt{#1}}}
-\newcommand{\redit}[1]{\red{\mathit{#1}}}
-\newcommand{\greenit}[1]{\green{\mathit{#1}}}
-\newcommand{\blueit}[1]{\blue{\mathit{#1}}}
-\newcommand{\orangeit}[1]{\orange{\mathit{#1}}}
-\newcommand{\purpleit}[1]{\purple{\mathit{#1}}}
-\newcommand{\tealit}[1]{\teal{\mathit{#1}}}
-\newcommand{\blackit}[1]{\black{\mathit{#1}}}
-\newcommand{\greyit}[1]{\grey{\mathit{#1}}}
-% traditional hazel hole color
-\newcommand{\violettt}[1]{\textcolor{violet}{\mathtt{#1}}}
-\newcommand{\violetit}[1]{\textcolor{violet}{\mathit{#1}}}
+    \definecolor{red}{HTML}{800000}
+    \definecolor{green}{HTML}{008000}
+    \definecolor{blue}{HTML}{000080}
+    \definecolor{orange}{HTML}{D08000}
+    \definecolor{purple}{HTML}{800080}
+    \definecolor{teal}{HTML}{008080}
+    \definecolor{black}{HTML}{000000}
+    \definecolor{grey}{HTML}{808080}
+    \newcommand{\red}[1]{\textcolor{red}{#1}}
+    \newcommand{\green}[1]{\textcolor{green}{#1}}
+    \newcommand{\blue}[1]{\textcolor{blue}{#1}}
+    \newcommand{\orange}[1]{\textcolor{orange}{#1}}
+    \newcommand{\purple}[1]{\textcolor{purple}{#1}}
+    \newcommand{\teal}[1]{\textcolor{teal}{#1}}
+    \newcommand{\black}[1]{\textcolor{black}{#1}}
+    \newcommand{\grey}[1]{\textcolor{grey}{#1}}
+    \newcommand*{\blackrm}[1]{\black{\mathtt{#1}}}
+    \newcommand{\redtt}[1]{\red{\mathtt{#1}}}
+    \newcommand{\greentt}[1]{\green{\mathtt{#1}}}
+    \newcommand{\bluett}[1]{\blue{\mathtt{#1}}}
+    \newcommand{\orangett}[1]{\orange{\mathtt{#1}}}
+    \newcommand{\purplett}[1]{\purple{\mathtt{#1}}}
+    \newcommand{\tealtt}[1]{\teal{\mathtt{#1}}}
+    \newcommand{\blacktt}[1]{\black{\mathtt{#1}}}
+    \newcommand{\greytt}[1]{\grey{\mathtt{#1}}}
+    \newcommand{\redit}[1]{\red{\mathit{#1}}}
+    \newcommand{\greenit}[1]{\green{\mathit{#1}}}
+    \newcommand{\blueit}[1]{\blue{\mathit{#1}}}
+    \newcommand{\orangeit}[1]{\orange{\mathit{#1}}}
+    \newcommand{\purpleit}[1]{\purple{\mathit{#1}}}
+    \newcommand{\tealit}[1]{\teal{\mathit{#1}}}
+    \newcommand{\blackit}[1]{\black{\mathit{#1}}}
+    \newcommand{\greyit}[1]{\grey{\mathit{#1}}}
+    % traditional hazel hole color
+    \newcommand{\violettt}[1]{\textcolor{violet}{\mathtt{#1}}}
+    \newcommand{\violetit}[1]{\textcolor{violet}{\mathit{#1}}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % syntax
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\knd}[1][]{\redit{\kappa#1}}
-\newcommand{\utyp}[1][]{\greenit{\hat{\tau#1}}}
-\newcommand{\typ}[1][]{\greenit{\tau#1}}
-\newcommand{\utypvar}[1][]{\greenit{t#1}}
-\newcommand{\typvar}[1][]{\greenit{t#1}}
-\newcommand{\uexp}[1][]{\blueit{\hat{\delta#1}}}
-\renewcommand{\exp}[1][]{\blueit{\delta#1}}
-\newcommand{\uexpvar}[1][]{\blueit{x#1}}
-\newcommand{\expvar}[1][]{\blueit{x#1}}
-\newcommand{\sigknd}[1][]{\orangeit{\xi#1}}
-\newcommand{\usig}[1][]{\purpleit{\hat{\sigma#1}}}
-\newcommand{\sig}[1][]{\purpleit{\sigma#1}}
-\newcommand{\usigvar}[1][]{\purpleit{s#1}}
-\newcommand{\sigvar}[1][]{\purpleit{s#1}}
-\newcommand{\umod}[1][]{\tealit{\hat{\mu#1}}}
-\renewcommand{\mod}[1][]{\tealit{\mu#1}}
-\newcommand{\umodvar}[1][]{\tealit{m#1}}
-\newcommand{\modvar}[1][]{\tealit{m#1}}
-\newcommand{\lab}[1][]{\mathit{lab#1}}
+    \newcommand{\knd}[1][]{\redit{\kappa#1}}
+    \newcommand{\utyp}[1][]{\greenit{\hat{\tau#1}}}
+    \newcommand{\typ}[1][]{\greenit{\tau#1}}
+    \newcommand{\utypvar}[1][]{\greenit{t#1}}
+    \newcommand{\typvar}[1][]{\greenit{t#1}}
+    \newcommand{\uexp}[1][]{\blueit{\hat{\delta#1}}}
+    \renewcommand{\exp}[1][]{\blueit{\delta#1}}
+    \newcommand{\uexpvar}[1][]{\blueit{x#1}}
+    \newcommand{\expvar}[1][]{\blueit{x#1}}
+    \newcommand{\sigknd}[1][]{\orangeit{\xi#1}}
+    \newcommand{\usig}[1][]{\purpleit{\hat{\sigma#1}}}
+    \newcommand{\sig}[1][]{\purpleit{\sigma#1}}
+    \newcommand{\usigvar}[1][]{\purpleit{s#1}}
+    \newcommand{\sigvar}[1][]{\purpleit{s#1}}
+    \newcommand{\umod}[1][]{\tealit{\hat{\mu#1}}}
+    \renewcommand{\mod}[1][]{\tealit{\mu#1}}
+    \newcommand{\umodvar}[1][]{\tealit{m#1}}
+    \newcommand{\modvar}[1][]{\tealit{m#1}}
+    \newcommand{\lab}[1][]{\mathit{lab#1}}
 
-\newcommand{\Type}{\redtt{Type}}
-\newcommand{\SKind}[1]{\redtt{S(#1)}}
-\newcommand{\KHole}{\redtt{KHole}}
-\newcommand{\DepFunKind}[2]{\redtt{\Pi_{#1}.{#2}}}
-\newcommand{\DepProdKind}[2]{\redtt{\Sigma_{#1}.{#2}}}
+    \newcommand{\Type}{\redtt{Type}}
+    \newcommand{\SKind}[1]{\redtt{S(#1)}}
+    \newcommand{\KHole}{\redtt{KHole}}
+    \newcommand{\DepFunKind}[2]{\redtt{\Pi_{#1}.{#2}}}
+    \newcommand{\DepProdKind}[2]{\redtt{\Sigma_{#1}.{#2}}}
 
-\newcommand{\TypCFun}[2]{\greentt{\lambda #1.#2}}
-\newcommand{\TypCAp}[2]{\greentt{#1~#2}}
-\newcommand{\TypCPair}[2]{\greentt{\langle #1, #2\rangle}}
-\newcommand{\TypCPairPrjL}[1]{\greentt{\pi_1~#1}}
-\newcommand{\TypCPairPrjR}[1]{\greentt{\pi_2~#1}}
-\newcommand{\ListTyp}[1]{\greentt{[#1]}}
-% use violet instead of green?
-\newcommand{\TypCHole}[1][]{\greentt{\llparenthesis #1 \rrparenthesis}}
-\newcommand{\ModTypPrj}[2]{\greentt{#1.#2}}
+    \newcommand{\TypCFun}[2]{\greentt{\lambda #1.#2}}
+    \newcommand{\TypCAp}[2]{\greentt{#1~#2}}
+    \newcommand{\TypCPair}[2]{\greentt{\langle #1, #2\rangle}}
+    \newcommand{\TypCPairPrjL}[1]{\greentt{\pi_1~#1}}
+    \newcommand{\TypCPairPrjR}[1]{\greentt{\pi_2~#1}}
+    \newcommand{\ListTyp}[1]{\greentt{[#1]}}
+    % use violet instead of green?
+    \newcommand{\TypCHole}[1][]{\greentt{\llparenthesis #1 \rrparenthesis}}
+    \newcommand{\ModTypPrj}[2]{\greentt{#1.#2}}
 
-\newcommand{\Int}{\greentt{Int}}
-\newcommand{\Float}{\greentt{Float}}
-\newcommand{\Bool}{\greentt{Bool}}
+    \newcommand{\Int}{\greentt{Int}}
+    \newcommand{\Float}{\greentt{Float}}
+    \newcommand{\Bool}{\greentt{Bool}}
 
-\newcommand{\uLetSig}[2]{\purplett{signature~#1=#2}\bluett{~in~\uexp}}
-\newcommand{\LetSig}[2]{\purplett{signature~#1=#2}\bluett{~in~\exp}}
-\newcommand{\uLetMod}[2]{\tealtt{module~#1=#2}\bluett{~in~\uexp}}
-\newcommand{\LetMod}[2]{\tealtt{module~#1=#2}\bluett{~in~\exp}}
-\newcommand{\uLetFunctor}[2]{\tealtt{functor~#1=#2}\bluett{~in~\uexp}}
-\newcommand{\LetFunctor}[2]{\tealtt{functor~#1=#2}\bluett{~in~\exp}}
-\newcommand{\uModTermPrj}[2]{\bluett{#1.#2}}
-\newcommand{\ModTermPrj}[2]{\bluett{#1.#2}}
+    \newcommand{\uLetSig}[2]{\purplett{signature~#1=#2}\bluett{~in~\uexp}}
+    \newcommand{\LetSig}[2]{\purplett{signature~#1=#2}\bluett{~in~\exp}}
+    \newcommand{\uLetMod}[2]{\tealtt{module~#1=#2}\bluett{~in~\uexp}}
+    \newcommand{\LetMod}[2]{\tealtt{module~#1=#2}\bluett{~in~\exp}}
+    \newcommand{\uLetFunctor}[2]{\tealtt{functor~#1=#2}\bluett{~in~\uexp}}
+    \newcommand{\LetFunctor}[2]{\tealtt{functor~#1=#2}\bluett{~in~\exp}}
+    \newcommand{\uModTermPrj}[2]{\bluett{#1.#2}}
+    \newcommand{\ModTermPrj}[2]{\bluett{#1.#2}}
 
-\newcommand*{\SSigKind}[1]{\orangett{SSigKind(#1)}}
-\newcommand*{\SigKHole}{\orangett{SigKHole}}
+    \newcommand*{\SSigKind}[1]{\orangett{SSigKind(#1)}}
+    \newcommand*{\SigKHole}{\orangett{SigKHole}}
 
-\newcommand{\Sig}[1]{\purplett{\{#1\}}}
-\newcommand{\FunctorSig}[2]{\purplett{\Pi_{#1}.{#2}}}
-\newcommand{\SigHole}[1][]{\purplett{\llparenthesis#1\rrparenthesis}}
+    \newcommand{\Sig}[1]{\purplett{\{#1\}}}
+    \newcommand{\FunctorSig}[2]{\purplett{\Pi_{#1}.{#2}}}
+    \newcommand{\SigHole}[1][]{\purplett{\llparenthesis#1\rrparenthesis}}
 
-\newcommand{\Struct}[1]{\tealtt{\{#1\}}}
-\newcommand{\Functor}[2]{\tealtt{\lambda #1.#2}}
-\newcommand{\FunctorAp}[2]{\tealtt{#1~#2}}
-\newcommand{\SubModulePrj}[2]{\tealtt{#1.#2}}
-\newcommand{\ModHole}[1][]{\tealtt{\llparenthesis#1\rrparenthesis}}
+    \newcommand{\Struct}[1]{\tealtt{\{#1\}}}
+    \newcommand{\Functor}[2]{\tealtt{\lambda #1.#2}}
+    \newcommand{\FunctorAp}[2]{\tealtt{#1~#2}}
+    \newcommand{\SubModulePrj}[2]{\tealtt{#1.#2}}
+    \newcommand{\ModHole}[1][]{\tealtt{\llparenthesis#1\rrparenthesis}}
 
 
-\newcommand{\usbnd}{\greyit{\hat{sbnd}}}
-\newcommand{\sbnd}{\greyit{sbnd}}
-\newcommand{\usbnds}{\greyit{\hat{sbnds}}}
-\newcommand{\sbnds}{\greyit{sbnds}}
-\newcommand{\usdec}{\greyit{\hat{sdec}}}
-\newcommand{\sdec}[1][]{\greyit{sdec#1}}
-\newcommand{\usdecs}{\greyit{\hat{sdecs}}}
-\newcommand{\sdecs}[1][]{\greyit{sdecs#1}}
+    \newcommand{\usbnd}{\greyit{\hat{sbnd}}}
+    \newcommand{\sbnd}{\greyit{sbnd}}
+    \newcommand{\usbnds}{\greyit{\hat{sbnds}}}
+    \newcommand{\sbnds}{\greyit{sbnds}}
+    \newcommand{\usdec}{\greyit{\hat{sdec}}}
+    \newcommand{\sdec}[1][]{\greyit{sdec#1}}
+    \newcommand{\usdecs}{\greyit{\hat{sdecs}}}
+    \newcommand{\sdecs}[1][]{\greyit{sdecs#1}}
 
-\newcommand{\OpaqueTypeSdec}[1]{\greentt{type~#1}}
-\newcommand{\TransparentTypeSdec}[2]{\greentt{type~#1 = #2}}
-\newcommand{\ValSdec}[2]{\bluett{val~#1\TypAnn #2}}
-\newcommand{\ModSdec}[2]{\tealtt{module~#1\SigAnn #2}}
-\newcommand{\FunctorSdec}[2]{\tealtt{functor~#1\SigAnn #2}}
+    \newcommand{\OpaqueTypeSdec}[1]{\greentt{type~#1}}
+    \newcommand{\TransparentTypeSdec}[2]{\greentt{type~#1 = #2}}
+    \newcommand{\ValSdec}[2]{\bluett{val~#1\TypAnn #2}}
+    \newcommand{\ModSdec}[2]{\tealtt{module~#1\SigAnn #2}}
+    \newcommand{\FunctorSdec}[2]{\tealtt{functor~#1\SigAnn #2}}
 
-\newcommand{\TypeSbnd}[2]{\greentt{type~#1 = #2}}
-\newcommand{\ValSbnd}[2]{\bluett{let~#1 = #2}}
-\newcommand{\ModSbnd}[2]{\tealtt{module~#1 = #2}}
-\newcommand{\FunctorSbnd}[2]{\tealtt{functor~#1 = #2}}
-
+    \newcommand{\TypeSbnd}[2]{\greentt{type~#1 = #2}}
+    \newcommand{\ValSbnd}[2]{\bluett{let~#1 = #2}}
+    \newcommand{\ModSbnd}[2]{\tealtt{module~#1 = #2}}
+    \newcommand{\FunctorSbnd}[2]{\tealtt{functor~#1 = #2}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % misc
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand*{\ExpVarCtx}{\Gamma}
-\newcommand*{\TypVarCtx}{\Phi}
-\newcommand*{\ModVarCtx}{\Xi}
-\newcommand*{\SigVarCtx}{\Psi}
-\newcommand*{\HoleCtx}{\Delta}
-\newcommand{\dom}[1]{\mathsf{dom(}#1\mathsf{)}}
-\newcommand{\val}[1]{\mathsf{val(}#1\mathsf{)}}
-\newcommand*{\type}[2]{\mathsf{type(}#1, #2\mathsf{)}}
-\newcommand{\submodule}[1]{\mathsf{submodule(}#1\mathsf{)}}
-\renewcommand*{\hole}[1][]{\blackrm{u#1}}
+    \newcommand*{\ExpVarCtx}{\Gamma}
+    \newcommand*{\TypVarCtx}{\Phi}
+    \newcommand*{\ModVarCtx}{\Xi}
+    \newcommand*{\SigVarCtx}{\Psi}
+    \newcommand*{\HoleCtx}{\Delta}
+    \newcommand{\dom}[1]{\mathsf{dom(}#1\mathsf{)}}
+    \newcommand{\val}[1]{\mathsf{val(}#1\mathsf{)}}
+    \newcommand*{\type}[2]{\mathsf{type(}#1, #2\mathsf{)}}
+    \newcommand{\submodule}[1]{\mathsf{submodule(}#1\mathsf{)}}
+    \renewcommand*{\hole}[1][]{\blackrm{u#1}}
 
-\newcommand{\hintpagebreak}{\pagebreak[3]} % 0-4; 2 too weak, 4 too strong
+    \newcommand{\hintpagebreak}{\pagebreak[3]} % 0-4; 2 too weak, 4 too strong
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % judgements
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\TypAsc}{\black{:}}
-\newcommand{\TypAssump}{\black{:}}
-\newcommand{\TypAnn}{\black{:}}
-\newcommand{\KndAsc}{\black{::}}
-\newcommand{\KndAssump}{\black{::}}
-\newcommand{\KndAnn}{\black{::}}
-\newcommand*{\SigKndAssump}{\black{::_{\sig}}}
-\newcommand{\SigAsc}{\black{:_{\mod}}}
-\newcommand{\SigAssump}{\black{:_{\mod}}}
-\newcommand{\SigAnn}{\black{:_{\mod}}}
+    \newcommand{\TypAsc}{\black{:}}
+    \newcommand{\TypAssump}{\black{:}}
+    \newcommand{\TypAnn}{\black{:}}
+    \newcommand{\KndAsc}{\black{::}}
+    \newcommand{\KndAssump}{\black{::}}
+    \newcommand{\KndAnn}{\black{::}}
+    \newcommand*{\SigKndAssump}{\black{::_{\sig}}}
+    \newcommand{\SigAsc}{\black{:_{\mod}}}
+    \newcommand{\SigAssump}{\black{:_{\mod}}}
+    \newcommand{\SigAnn}{\black{:_{\mod}}}
 
-\newcommand{\ConsistentSubkindOp}{\lesssim}
-\newcommand{\ConsistentSubkind}[3]{\mathrm{#1 \vdash #2 \ConsistentSubkindOp #3}}
-\newcommand{\ConsistentSubSigKindOp}{\lesssim_{\sigknd}}
-\newcommand{\ConsistentSubSigKind}[3]{\mathrm{#1 \vdash #2 \ConsistentSubSigKindOp #3}}
-\newcommand*{\SubSdecOp}{\le_{\sdec}}
-\newcommand*{\SubSdec}[3]{\mathrm{#1 \vdash #2 \SubSdecOp #3}}
-\newcommand*{\TypeEquiv}[3]{\mathrm{#1 \vdash #2 \equiv #3}}
-\newcommand{\Syn}[3]{#1 \vdash #2~\Rightarrow~#3}
-\newcommand{\Ana}[3]{#1 \vdash #2~\Leftarrow~#3}
-\newcommand{\SynElab}[5]{#1 \vdash #2~\Rightarrow~#3 \rightsquigarrow #4 \dashv #5}
-\newcommand{\AnaElab}[5]{#1 \vdash #2~\Leftarrow~#3 \rightsquigarrow #4 \dashv #5}
-\newcommand*{\ElabDegenerate}[4]{#1 \vdash #2 \rightsquigarrow #3 \dashv #4}
+    \newcommand{\ConsistentSubkindOp}{\lesssim}
+    \newcommand{\ConsistentSubkind}[3]{\mathrm{#1 \vdash #2 \ConsistentSubkindOp #3}}
+    \newcommand{\ConsistentSubSigKindOp}{\lesssim_{\sigknd}}
+    \newcommand{\ConsistentSubSigKind}[3]{\mathrm{#1 \vdash #2 \ConsistentSubSigKindOp #3}}
+    \newcommand*{\SubSdecOp}{\le_{\sdec}}
+    \newcommand*{\SubSdec}[3]{\mathrm{#1 \vdash #2 \SubSdecOp #3}}
+    \newcommand*{\TypeEquiv}[3]{\mathrm{#1 \vdash #2 \equiv #3}}
+    \newcommand{\Syn}[3]{#1 \vdash #2~\Rightarrow~#3}
+    \newcommand{\Ana}[3]{#1 \vdash #2~\Leftarrow~#3}
+    \newcommand{\SynElab}[5]{#1 \vdash #2~\Rightarrow~#3 \rightsquigarrow #4 \dashv #5}
+    \newcommand{\AnaElab}[5]{#1 \vdash #2~\Leftarrow~#3 \rightsquigarrow #4 \dashv #5}
+    \newcommand*{\ElabDegenerate}[4]{#1 \vdash #2 \rightsquigarrow #3 \dashv #4}
 
-\newcommand{\WellFormedSig}[2]{#1 \vdash #2~\textsf{Ok}}
+    \newcommand{\WellFormedSig}[2]{#1 \vdash #2~\textsf{Ok}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \pagenumbering{gobble}
 \nonfrenchspacing
