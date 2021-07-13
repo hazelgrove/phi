@@ -91,6 +91,8 @@
             \inferrule{\KindEquiv{\knd[1]}{\knd[2]}}{\ConsistentSubKind{\knd[1]}{\knd[2]}}
             \and
             \inferrule{\WellFormedAtKind{\typ}}{\ConsistentSubKind{\SKind}{\knd}}
+            \and
+            \inferrule{\ConsistentSubKind{\knd[3]}{\knd[1]} \\ \ConsistentSubKind[\HoleCtx\TypVarCtx,\typvar\KndAssump\knd[3]]{\knd[2]}{\knd[4]}}{\ConsistentSubKind{\DepFunKind}{\DepFunKind[][\knd[3]][\knd[4]]}}
         \end{mathpar}
     \end{minipage}
 \subsection*{}
@@ -124,7 +126,7 @@
             \and
             \inferrule{\TypeEquivAtKind{\typ[1]}{\typ[3]}[\Type] \\ \TypeEquivAtKind{\typ[2]}{\typ[4]}[\Type]}{\TypeEquivAtKind{\binop}{\binop[\typ[3]][\typ[4]]}[\Type]}
             \and
-            \inferrule{\KindEquiv{}{} \\ \TypeEquivAtKind[\HoleCtx\TypVarCtx[],\typvar\KndAssump\knd[1]]{\typ[1]}{\typ[2]}}{\TypeEquivAtKind{\TypeFun[][\knd[1]][\typ[1]]}{\TypeFun[][\knd[2]][\typ[2]]}[\DepFunKind[][\knd[1]][\knd]]}
+            \inferrule{\KindEquiv{\knd[1]}{\knd[2]} \\ \TypeEquivAtKind[\HoleCtx\TypVarCtx[],\typvar\KndAssump\knd[1]]{\typ[1]}{\typ[2]}}{\TypeEquivAtKind{\TypeFun[][\knd[1]][\typ[1]]}{\TypeFun[][\knd[2]][\typ[2]]}[\DepFunKind[][\knd[1]][\knd]]}
             \and
             \inferrule{\TypeEquivAtKind{\typ[1]}{\typ[3]}[\DepFunKind] \\ \TypeEquivAtKind{\typ[2]}{\typ[4]}[\knd[1]]}{\TypeEquivAtKind{\TypeAp}{\TypeAp[\typ[3]][\typ[4]]}[\subst{\typ[1]}{\typvar}{\knd[2]}]}
             \and
