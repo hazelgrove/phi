@@ -108,6 +108,8 @@
             \inferrule{\WellFormedAtKind{\typ}[\SKind[\knd][\typ[1]]]}{\KindEquiv{\SKind[\SKind[\knd][\typ[1]]][\typ]}{\SKind[\knd][\typ[1]]}}
             \and
             \inferrule{\WellFormedAtKind{\typ}[\DepFunKind]}{\KindEquiv{\SKind[\DepFunKind][\typ]}{\DepFunKind[][\knd[1]][\SKind[\knd[2]][\TypeAp[\typ][\typvar]]]}}
+            \and
+            \inferrule{\KindEquiv{\knd[1]}{\knd[2]} \\ \KindEquiv[\HoleCtx\TypVarCtx[],\typvar\KndAssump\knd[1]]{\knd[3]}{\knd[4]}}{\KindEquiv{\DepFunKind[][\knd[1]][\knd[2]]}{\DepFunKind[][\knd[3]][\knd[4]]}}
         \end{mathpar}
     \end{minipage}
 \subsection*{}
@@ -122,8 +124,14 @@
             \and
             \inferrule{\TypeEquivAtKind{\typ[1]}{\typ[3]}[\Type] \\ \TypeEquivAtKind{\typ[2]}{\typ[4]}[\Type]}{\TypeEquivAtKind{\binop}{\binop[\typ[3]][\typ[4]]}[\Type]}
             \and
-            \inferrule{\WellFormedAtKind{\typ[1]}[\SKind[\knd][\typ[2]]] \\ \WellFormedAtKind{\typ[2]}}{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\SKind[\knd][\typ[2]]]}
+            \inferrule{\KindEquiv{}{} \\ \TypeEquivAtKind[\HoleCtx\TypVarCtx[],\typvar\KndAssump\knd[1]]{\typ[1]}{\typ[2]}}{\TypeEquivAtKind{\TypeFun[][\knd[1]][\typ[1]]}{\TypeFun[][\knd[2]][\typ[2]]}[\DepFunKind[][\knd[1]][\knd]]}
             \and
+            \inferrule{\TypeEquivAtKind{\typ[1]}{\typ[3]}[\DepFunKind] \\ \TypeEquivAtKind{\typ[2]}{\typ[4]}[\knd[1]]}{\TypeEquivAtKind{\TypeAp}{\TypeAp[\typ[3]][\typ[4]]}[\subst{\typ[1]}{\typvar}{\knd[2]}]}
+            \and
+            \inferrule{\WellFormedAtKind{\typ[1]}[\DepFunKind[][\knd[1]][\knd[3]]] \\ \WellFormedAtKind{\typ[2]}[\DepFunKind[][\knd[1]][\knd[4]]] \\ \TypeEquivAtKind[\HoleCtx\TypVarCtx,\typvar\KndAssump\knd[1]]{\TypeAp[\typ[1]][\typvar]}{\TypeAp[\typ[2]][\typvar]}[\knd[2]]}{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\DepFunKind]}
+            \\
+            \inferrule{\WellFormedAtKind{\typ[1]}[\SKind[\knd][\typ[2]]] \\ \WellFormedAtKind{\typ[2]}}{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\SKind[\knd][\typ[2]]]}
+            \\
             \mprset{myfraction=\inferruledotfrac}
             \inferrule{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\knd[1]] \\ \KindEquiv{\knd[1]}{\knd}}{\TypeEquivAtKind{\typ[1]}{\typ[2]}}
     \end{mathpar}
@@ -147,6 +155,23 @@
         \judgbox{\PrincipalKind{\typ}}{$\typ$ has principal kind $\knd$}
         \begin{mathpar}
             \inferrule{ }{\PrincipalKind{\bse}[\SKind[\Type][\bse]]}
+            \and
+            \inferrule{\typvar\KndAssump\knd\in\TypVarCtx[]}{\PrincipalKind{\typvar}[\SKind[\knd][\typvar]]}
         \end{mathpar}
+    \end{minipage}
+\subsection*{}
+    \begin{minipage}{\textwidth}
+        \judgbox{\MatchedPiKind{\knd}}{$\knd$ has matched $\Pi$-kind $\DepFunKind$}
+        \begin{mathpar}
+            \inferrule{ }{\MatchedPiKind{\KHole}[\DepFunKind[][\KHole][\KHole]]}
+            \and
+            \inferrule{ }{\MatchedPiKind{\DepFunKind}}
+            \and
+            \inferrule{\KindEquiv{\knd}{\DepFunKind}}{\MatchedPiKind{\SKind[\knd][\typ]}[\DepFunKind[][\knd[1]][\SKind[\knd[2]][\TypeAp[\typ][\typvar]]]]}
+        \end{mathpar}
+    \end{minipage}
+\subsection*{}
+    \begin{minipage}{\textwidth}
+        \judgbox{\WellFormedAtKind{\typ}}{$\typ$ is well formed at kind $\knd$}
     \end{minipage}
 \end{document}
