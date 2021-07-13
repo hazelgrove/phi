@@ -73,8 +73,8 @@
                             & \Int \vt \Float \vt \Bool \\
         \textrm{User Types} & \utyp & ::=
                             & \utypvar \vt \bse \vt \ubinop \vt \ETypeHole \vt \NETypeHole[\utyp] \vt \TypeFun[][\Type][\utyp] \vt \TypeAp[\utyp[1]][\utyp[2]] \\
-        \textrm{Internal Types} & \utyp & ::=
-                            & \utypvar \vt \bse \vt \binop \vt \ETypeHole \vt \NETypeHole \vt \TypeFun \vt \TypeAp \\
+        \textrm{Internal Types} & \typ & ::=
+                            & \typvar \vt \bse \vt \binop \vt \ETypeHole \vt \NETypeHole \vt \TypeFun \vt \TypeAp \\
         \textrm{Type Pattern} & \\
         \textrm{User Expression} & \\
         \textrm{Internal Expression} & \\
@@ -87,7 +87,7 @@
             \inferrule{ }{\ConsistentSubKind{\KHole}{\knd}}
             \and
             \inferrule{ }{\ConsistentSubKind{\knd}{\KHole}}
-            \and
+            \\
             \inferrule{\KindEquiv{\knd[1]}{\knd[2]}}{\ConsistentSubKind{\knd[1]}{\knd[2]}}
             \and
             \inferrule{\WellFormedAtKind{\typ}}{\ConsistentSubKind{\SKind}{\knd}}
@@ -167,9 +167,7 @@
         \begin{mathpar}
             \inferrule{ }{\MatchedPiKind{\KHole}[\DepFunKind[][\KHole][\KHole]]}
             \and
-            \inferrule{ }{\MatchedPiKind{\DepFunKind}}
-            \and
-            \inferrule{\KindEquiv{\knd}{\DepFunKind}}{\MatchedPiKind{\SKind[\knd][\typ]}[\DepFunKind[][\knd[1]][\SKind[\knd[2]][\TypeAp[\typ][\typvar]]]]}
+            \inferrule{\KindEquiv{\knd}{\DepFunKind}}{\MatchedPiKind{\knd}}
         \end{mathpar}
     \end{minipage}
 \subsection*{}
