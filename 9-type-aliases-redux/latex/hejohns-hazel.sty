@@ -178,11 +178,11 @@
         % types
             \newcommand*{\TypeEquivOp}{\equiv}
             \newcommand*{\TypeEquivAtKindOp}[1][\knd]{\stackrel{#1}{\TypeEquivOp}}
-            \NewDocumentCommand{\TypeEquivAtKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mmO{\knd}}{\mathrm{#1 \vdash #2 \TypeEquivAtKindOp[#4] #3}}
+            \NewDocumentCommand{\TypeEquivAtKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mmO{\knd}}{\mathrm{#1 \vdash #2 \TypeEquivAtKindOp[{#4}] #3}}
             \newcommand*{\TypeEquiv}[2]{\TypeEquivAtKind{#1}{#2}[]}
 
             \newcommand*{\PrincipalKindOp}{::>}
-            \NewDocumentCommand{\PrincipalKind}{O{}mO{}}{\mathrm{#1 \vdash #2 \PrincipalKindOp #3}}
+            \NewDocumentCommand{\PrincipalKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{\knd}}{\mathrm{#1 \vdash #2 \PrincipalKindOp #3}}
 
             \NewDocumentCommand{\WellFormedAtKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{\knd}}{\mathrm{#1 \vdash #2 \KndAsc #3}}
         % signature kinds

@@ -109,18 +109,44 @@
             \and
             \inferrule{\WellFormedAtKind{\typ}[\DepFunKind]}{\KindEquiv{\SKind[\DepFunKind][\typ]}{\DepFunKind[][\knd[1]][\SKind[\knd[2]][\TypeAp[\typ][\typvar]]]}}
         \end{mathpar}
-        \begin{mathpar}
-            \mprset{myfraction=\inferruledotfrac}
-        \end{mathpar}
     \end{minipage}
 \subsection*{}
     \begin{minipage}{\textwidth}
         \judgbox{\TypeEquivAtKind{\typ[1]}{\typ[2]}}{$\typ[1]$ is equivalent to $\typ[2]$ at kind $\knd$}
-        \inferrule{\WellFormedAtKind{\typ}}{\TypeEquivAtKind{\typ}{\typ}}
+        \begin{mathpar}
+            \inferrule{\WellFormedAtKind{\typ}}{\TypeEquivAtKind{\typ}{\typ}}
+            \and
+            \inferrule{\TypeEquivAtKind{\typ[2]}{\typ[1]}}{\TypeEquivAtKind{\typ[1]}{\typ[2]}}
+            \and
+            \inferrule{\TypeEquivAtKind{\typ[1]}{\typ[3]} \\ \TypeEquivAtKind{\typ[3]}{\typ[1]}}{\TypeEquivAtKind{\typ[1]}{\typ[2]}}
+            \and
+            \inferrule{\TypeEquivAtKind{\typ[1]}{\typ[3]}[\Type] \\ \TypeEquivAtKind{\typ[2]}{\typ[4]}[\Type]}{\TypeEquivAtKind{\binop}{\binop[\typ[3]][\typ[4]]}[\Type]}
+            \and
+            \inferrule{\WellFormedAtKind{\typ[1]}[\SKind[\knd][\typ[2]]] \\ \WellFormedAtKind{\typ[2]}}{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\SKind[\knd][\typ[2]]]}
+            \and
+            \mprset{myfraction=\inferruledotfrac}
+            \inferrule{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\knd[1]] \\ \KindEquiv{\knd[1]}{\knd}}{\TypeEquivAtKind{\typ[1]}{\typ[2]}}
+    \end{mathpar}
     \end{minipage}
 \subsection*{}
     \begin{minipage}{\textwidth}
         \judgbox{\TypeEquiv{\typ[1]}{\typ[2]}}{$\typ[1]$ is equivalent to $\typ[2]$ at ``top" kind}
-        \inferrule{\TypeEquivAtKind{\typ[1]}{\typ[2]}}{\TypeEquiv{\typ[1]}{\typ[2]}}
+        \begin{mathpar}
+            \inferrule{\TypeEquivAtKind{\typ[1]}{\typ[2]}}{\TypeEquiv{\typ[1]}{\typ[2]}}
+            \and
+            \mprset{myfraction=\inferruledotfrac}
+            \inferrule{\WellFormedAtKind{\typ}}{\TypeEquiv{\typ}{\typ}}
+            \and
+            \inferrule{\TypeEquiv{\typ[2]}{\typ[1]}}{\TypeEquiv{\typ[1]}{\typ[2]}}
+            \and
+            \inferrule{\TypeEquiv{\typ[1]}{\typ[3]} \\ \TypeEquiv{\typ[3]}{\typ[2]}}{\TypeEquiv{\typ[1]}{\typ[2]}}
+        \end{mathpar}
+    \end{minipage}
+\subsection*{}
+    \begin{minipage}{\textwidth}
+        \judgbox{\PrincipalKind{\typ}}{$\typ$ has principal kind $\knd$}
+        \begin{mathpar}
+            \inferrule{ }{\PrincipalKind{\bse}[\SKind[\Type][\bse]]}
+        \end{mathpar}
     \end{minipage}
 \end{document}
