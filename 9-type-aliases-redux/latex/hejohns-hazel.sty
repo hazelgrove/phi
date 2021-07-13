@@ -1,0 +1,216 @@
+\ProvidesPackage{hejohns-hazel}[2021/07/02 - for phis]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% packages
+    \RequirePackage{hejohns-colors}
+    \RequirePackage{mathpartir}
+    \RequirePackage{latexsym}
+    \RequirePackage{stmaryrd}
+    \RequirePackage{amssymb}
+    \RequirePackage{thmtools}
+    \RequirePackage{tikz}
+    % https://tex.stackexchange.com/questions/12678/squiggly-arrows-in-tikz
+    \usetikzlibrary{decorations.pathmorphing}
+    \usetikzlibrary{arrows.meta}
+    % https://tex.stackexchange.com/questions/317121/automatically-adding-page-breaks-into-long-array-environments
+    \RequirePackage{array}
+    \RequirePackage{longtable}
+    \newcolumntype{L}{>{\(}l<{\)}}
+    \newcolumntype{C}{>{\(}c<{\)}}
+    \newcolumntype{R}{>{\(}r<{\)}}
+    \setlength\tabcolsep{5pt}
+    % https://tex.stackexchange.com/questions/29973/more-than-one-optional-argument-for-newcommand
+    \RequirePackage{xparse}
+
+    %% Joshua Dunfield macros
+    \def\OPTIONConf{1}%
+    \RequirePackage{joshuadunfield}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% syntax
+    \newcommand*{\knd}[1][]{\redit{\kappa_{#1}}}
+    \newcommand*{\utyp}[1][]{\greenit{\hat{\tau_{#1}}}}
+    \newcommand*{\typ}[1][]{\greenit{\tau_{#1}}}
+    \newcommand*{\utypvar}[1][]{\greenit{t_{#1}}}
+    \newcommand*{\typvar}[1][]{\greenit{t_{#1}}}
+    \newcommand*{\uexp}[1][]{\blueit{\hat{\delta_{#1}}}}
+    \renewcommand*{\exp}[1][]{\blueit{\delta_{#1}}}
+    \newcommand*{\uexpvar}[1][]{\blueit{x_{#1}}}
+    \newcommand*{\expvar}[1][]{\blueit{x_{#1}}}
+    \newcommand*{\sigknd}[1][]{\orangeit{\xi_{#1}}}
+    \newcommand*{\usig}[1][]{\purpleit{\hat{\sigma_{#1}}}}
+    \newcommand*{\sig}[1][]{\purpleit{\sigma_{#1}}}
+    \newcommand*{\usigvar}[1][]{\purpleit{s_{#1}}}
+    \newcommand*{\sigvar}[1][]{\purpleit{s_{#1}}}
+    \newcommand*{\umod}[1][]{\tealit{\hat{\mu_{#1}}}}
+    \renewcommand*{\mod}[1][]{\tealit{\mu_{#1}}}
+    \newcommand*{\umodvar}[1][]{\tealit{m_{#1}}}
+    \newcommand*{\modvar}[1][]{\tealit{m_{#1}}}
+    \newcommand*{\lab}[1][]{\mathit{lab_{#1}}}
+
+    \newcommand*{\Type}{\redtt{Type}}
+    \NewDocumentCommand{\SKind}{O{\knd}O{\typ}}{\redtt{S_{#1}(#2)}}
+    \newcommand*{\KHole}{\redtt{KHole}}
+    \NewDocumentCommand{\DepFunKind}{O{}O{\knd[1]}O{\knd[2]}}{\redtt{\Pi_{\typvar[#1]\KndAssump#2}.{#3}}}
+    \NewDocumentCommand{\DepProdKind}{O{}O{\knd[1]}O{\knd[2]}}{\redtt{\Sigma_{\typvar[#1]\KndAssump#2}.{#3}}}
+
+    \NewDocumentCommand{\TypeFun}{O{}O{\knd}O{\typ}}{\greentt{\lambda\typvar[#1]\KndAssump#2.#3}}
+    \NewDocumentCommand{\TypeAp}{O{\typ[1]}O{\typ[2]}}{\greentt{#1~#2}}
+    \newcommand*{\ListType}[1]{\greentt{list~#1}}
+    % use violet instead of green?
+    \NewDocumentCommand{\TypeHole}{O{}O{u}}{\greentt{\llparenthesis#1\rrparenthesis^{#2}}}
+    \newcommand*{\ETypeHole}{\TypeHole}
+    \NewDocumentCommand{\NETypeHole}{O{\typ}}{\TypeHole[#1]}
+    \NewDocumentCommand{\UnboundTypeVar}{O{\typvar}}{\TypeHole[#1]}
+    \newcommand{\ModTypePrj}[2]{\greentt{#1.#2}}
+
+    \newcommand*{\bse}[1][]{\greentt{bse_{#1}}}
+    \newcommand*{\Int}{\greentt{Int}}
+    \newcommand*{\Float}{\greentt{Float}}
+    \newcommand*{\Bool}{\greentt{Bool}}
+
+    \NewDocumentCommand{\ubinop}{O{\utyp[1]}O{\utyp[2]}}{\greentt{#1\oplus#2}}
+    \NewDocumentCommand{\binop}{O{\typ[1]}O{\typ[2]}}{\greentt{#1\oplus#2}}
+    \newcommand*{\ProdType}{\greentt{\times}}
+    \newcommand*{\SumType}{\greentt{+}}
+    \newcommand*{\FunType}{\greentt{\rightarrow}}
+
+    \newcommand{\uLetSig}[2]{\purplett{signature~#1=#2}\bluett{~in~\uexp}}
+    \newcommand{\LetSig}[2]{\purplett{signature~#1=#2}\bluett{~in~\exp}}
+    \newcommand{\uLetMod}[2]{\tealtt{module~#1=#2}\bluett{~in~\uexp}}
+    \newcommand{\LetMod}[2]{\tealtt{module~#1=#2}\bluett{~in~\exp}}
+    \newcommand{\uLetFunctor}[2]{\tealtt{functor~#1=#2}\bluett{~in~\uexp}}
+    \newcommand{\LetFunctor}[2]{\tealtt{functor~#1=#2}\bluett{~in~\exp}}
+    \newcommand{\uModTermPrj}[2]{\bluett{#1.#2}}
+    \newcommand{\ModTermPrj}[2]{\bluett{#1.#2}}
+
+    \newcommand{\SSigKind}[1]{\orangett{SSigKind(#1)}}
+    \newcommand{\SigKHole}{\orangett{SigKHole}}
+
+    \newcommand{\uSig}{\Sig}
+    \newcommand{\Sig}[1]{\purplett{\{#1\}}}
+    \newcommand{\uFunctorSig}{\FunctorSig}
+    \newcommand{\FunctorSig}[2]{\purplett{\Pi_{#1}.{#2}}}
+    \newcommand{\uSigHole}{\SigHole}
+    \NewDocumentCommand{\SigHole}{O{}O{^{\hole}}}{\purplett{\llparenthesis#1\rrparenthesis#2}}
+    \newcommand{\UnboundSigVar}[1][]{\uwave{\hphantom{.}\sigvar\hphantom{.}}}
+
+    \newcommand{\Struct}[1]{\tealtt{\{#1\}}}
+    \newcommand{\Functor}[2]{\tealtt{\lambda #1.#2}}
+    \newcommand{\FunctorAp}[2]{\tealtt{#1~#2}}
+    \newcommand{\SubModulePrj}[2]{\tealtt{#1.#2}}
+    \newcommand{\ModHole}[1][]{\tealtt{\llparenthesis#1\rrparenthesis}}
+
+
+    \newcommand{\usbnd}{\greyit{\hat{sbnd}}}
+    \newcommand{\sbnd}{\greyit{sbnd}}
+    \newcommand{\usbnds}{\greyit{\hat{sbnds}}}
+    \newcommand{\sbnds}{\greyit{sbnds}}
+    \newcommand{\usdec}{\greyit{\hat{sdec}}}
+    \newcommand{\sdec}[1][]{\greyit{sdec#1}}
+    \newcommand{\usdecs}{\greyit{\hat{sdecs}}}
+    \newcommand{\sdecs}[1][]{\greyit{sdecs#1}}
+
+    \newcommand{\uOpaqueTypeSdec}[1]{\greentt{type~#1}}
+    \newcommand{\uTransparentTypeSdec}{\TypeSdec}
+    \newcommand{\uValSdec}{\ValSdec}
+    \newcommand{\TypeSdec}[2]{\greentt{type~#1\KndAnn #2}}
+    \newcommand{\ValSdec}[2]{\bluett{val~#1\TypAnn #2}}
+    \newcommand{\uModSdec}{\ModSdec}
+    \newcommand{\ModSdec}[2]{\tealtt{module~#1\SigAnn #2}}
+    \newcommand{\uFunctorSdec}{\FunctorSdec}
+    \newcommand{\FunctorSdec}[2]{\tealtt{functor~#1\SigAnn #2}}
+
+    \newcommand{\TypeSbnd}[2]{\greentt{type~#1 = #2}}
+    \newcommand{\ValSbnd}[2]{\bluett{let~#1 = #2}}
+    \newcommand{\ModSbnd}[2]{\tealtt{module~#1 = #2}}
+    \newcommand{\FunctorSbnd}[2]{\tealtt{functor~#1 = #2}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% misc
+    \newcommand*{\ExpVarCtx}[1][;]{\Gamma#1}
+    \newcommand*{\TypVarCtx}[1][;]{\Phi#1}
+    \newcommand*{\ModVarCtx}[1][;]{\Xi#1}
+    \newcommand*{\SigVarCtx}[1][;]{\Psi#1}
+    \newcommand*{\HoleCtx}[1][;]{\Delta#1}
+    \newcommand*{\dom}[1]{\mathsf{dom(}#1\mathsf{)}}
+    \newcommand*{\val}[1]{\mathsf{val(}#1\mathsf{)}}
+    \newcommand*{\type}[2]{\mathsf{type(}#1, #2\mathsf{)}}
+    \newcommand*{\submodule}[1]{\mathsf{submodule(}#1\mathsf{)}}
+    \renewcommand*{\hole}[1][]{\blackrm{u#1}}
+
+    % https://tex.stackexchange.com/questions/128991/frac-or-inference-rule-with-dotted-line
+    % for mathpartir's inferrule
+    \makeatletter
+    \newcommand*{\dotfrac}[2]{
+    \mathchoice
+    {\ooalign{$\genfrac{}{}{0pt}{0}{#1}{#2}$\cr\leavevmode\cleaders\hb@xt@ .22em{\hss $\displaystyle\cdot$\hss}\hfill\kern\z@\cr}}
+    {\ooalign{$\genfrac{}{}{0pt}{1}{#1}{#2}$\cr\leavevmode\cleaders\hb@xt@ .22em{\hss $\textstyle\cdot$\hss}\hfill\kern\z@\cr}}
+    {\ooalign{$\genfrac{}{}{0pt}{2}{#1}{#2}$\cr\leavevmode\cleaders\hb@xt@ .22em{\hss $\scriptstyle\cdot$\hss}\hfill\kern\z@\cr}}
+    {\ooalign{$\genfrac{}{}{0pt}{3}{#1}{#2}$\cr\leavevmode\cleaders\hb@xt@ .22em{\hss $\scriptscriptstyle\cdot$\hss}\hfill\kern\z@\cr}}
+    }
+    \makeatother
+    \newcommand*{\inferruledotfrac}[2]{
+        \hbox{$\dotfrac{#1}{#2}$}
+    }
+    \newcommand{\hintpagebreak}{\pagebreak[3]} % 0-4; 2 too weak, 4 too strong
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% judgements
+    % declarative
+        \newcommand*{\TypAsc}{\black{:}}
+        \newcommand*{\TypAssump}{\TypAsc}
+        \newcommand*{\TypAnn}{\TypAsc}
+        \newcommand*{\KndAsc}{\black{::}}
+        \newcommand*{\KndAssump}{\KndAsc}
+        \newcommand*{\KndAnn}{\KndAsc} % why do we have this?
+        \newcommand*{\SigAsc}{\black{:_{\mod}}}
+        \newcommand*{\SigAssump}{\SigAsc}
+        \newcommand*{\SigAnn}{\SigAsc}
+        \newcommand*{\SigKndAsc}{\black{::_{\sig}}}
+        \newcommand*{\SigKndAssump}{\SigKndAsc}
+
+        % kinds
+            \newcommand*{\ConsistentSubKindOp}{\lesssim}
+            \NewDocumentCommand{\ConsistentSubKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mm}{\mathrm{#1 \vdash #2 \ConsistentSubKindOp #3}}
+
+            \newcommand*{\KindEquivOp}{\equiv}
+            \NewDocumentCommand{\KindEquiv}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mm}{\mathrm{#1 \vdash #2 \KindEquivOp #3}}
+
+            \newcommand*{\MatchedPiKindOp}{\stackrel{\blacktriangleright}{\Pi}}
+            \NewDocumentCommand{\MatchedPiKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{\DepFunKind}}{\mathrm{#1 \vdash #2 \MatchedPiKindOp #3}}
+        % types
+            \newcommand*{\TypeEquivOp}{\equiv}
+            \newcommand*{\TypeEquivAtKindOp}[1][\knd]{\stackrel{#1}{\TypeEquivOp}}
+            \NewDocumentCommand{\TypeEquivAtKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mmO{\knd}}{\mathrm{#1 \vdash #2 \TypeEquivAtKindOp[#4] #3}}
+            \newcommand*{\TypeEquiv}[2]{\TypeEquivAtKind{#1}{#2}[]}
+
+            \newcommand*{\PrincipalKindOp}{::>}
+            \NewDocumentCommand{\PrincipalKind}{O{}mO{}}{\mathrm{#1 \vdash #2 \PrincipalKindOp #3}}
+
+            \NewDocumentCommand{\WellFormedAtKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{\knd}}{\mathrm{#1 \vdash #2 \KndAsc #3}}
+        % signature kinds
+            \newcommand{\ConsistentSubSigKindOp}{\lesssim_{\sigknd}}
+            \newcommand{\ConsistentSubSigKind}[3]{\mathrm{#1 \vdash #2 \ConsistentSubSigKindOp #3}}
+
+            \newcommand*{\SigKindEquivOp}{\equiv}
+            \NewDocumentCommand{\SigKindEquiv}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mm}{\mathrm{#1 \vdash #2 \equiv #3}}
+        % signatures
+            \newcommand*{\SigEquivOp}{\equiv}
+            \NewDocumentCommand{\SigEquiv}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mmO{\sigknd}}{\mathrm{#1 \vdash #2 \stackrel{#4}{\SigEquivOp} #3 #4}}
+
+            \NewDocumentCommand{\WellFormedAtSigKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{\sigknd}}{\mathrm{#1 \vdash #2 \SigKndAsc #3}}
+        % modules
+            \NewDocumentCommand{\WellFormedAtSig}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{\sig}}{\mathrm{#1 \vdash #2 \SigAsc #3}}
+        % sdecs
+            \newcommand{\SubSdecOp}{\le_{\sdec}}
+            \newcommand{\SubSdec}[3]{\mathrm{#1 \vdash #2 \SubSdecOp #3}}
+        % ???
+            \newcommand*{\WellFormedAtType}[3]{\mathrm{#1 \vdash #2 \TypAsc #3}}
+    % algorithmic
+        \newcommand{\Syn}[3]{#1 \vdash #2~\Rightarrow~#3}
+        \NewDocumentCommand{\SynKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{\knd}}{\Syn{#1}{#2}{#3}}
+        \newcommand{\Ana}[3]{#1 \vdash #2~\Leftarrow~#3}
+        \NewDocumentCommand{\AnaKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{\knd}}{\Ana{#1}{#2}{#3}}
+        \newcommand{\SynElab}[5]{#1 \vdash #2~\Rightarrow~#3 \rightsquigarrow #4 \dashv #5}
+        \NewDocumentCommand{\SynKindElab}{O{\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{\knd}mO{\HoleCtx[]}}{\SynElab{#1}{#2}{#3}{#4}{#5}}
+        \newcommand{\AnaElab}[5]{#1 \vdash #2~\Leftarrow~#3 \rightsquigarrow #4 \dashv #5}
+        \NewDocumentCommand{\AnaKindElab}{O{\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{\knd}mO{\HoleCtx[]}}{\AnaElab{#1}{#2}{#3}{#4}{#5}}
+        \newcommand*{\ElabDegenerate}[4]{#1 \vdash #2 \rightsquigarrow #3 \dashv #4}
+\endinput
