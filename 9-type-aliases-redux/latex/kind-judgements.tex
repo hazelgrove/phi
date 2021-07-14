@@ -99,7 +99,7 @@
     \begin{minipage}{\textwidth}
         \judgbox{\KindEquiv{\knd[1]}{\knd[2]}}{$\knd[1]$ is equivalent to $\knd[2]$}
         \begin{mathpar}
-            \inferrule{ }{\KindEquiv{\knd}{\knd}}
+            \inferrule{\KindWellFormed}{\KindEquiv{\knd}{\knd}}
             \and
             \inferrule{\KindEquiv{\knd[2]}{\knd[1]}}{\KindEquiv{\knd[1]}{\knd[2]}}
             \and
@@ -136,20 +136,6 @@
             \inferrule{\WellFormedAtKind{\typ[1]}[\DepFunKind[][\knd[1]][\knd[3]]] \\ \WellFormedAtKind{\typ[2]}[\DepFunKind[][\knd[1]][\knd[4]]] \\ \TypeEquivAtKind[\HoleCtx\TypVarCtx,\typvar\KndAssump\knd[1]]{\TypeAp[\typ[1]][\typvar]}{\TypeAp[\typ[2]][\typvar]}[\knd[2]]}{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\DepFunKind]}
             \and
             \inferrule{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\knd[1]] \\ \KindEquiv{\knd[1]}{\knd}}{\TypeEquivAtKind{\typ[1]}{\typ[2]}}
-    \end{mathpar}
-    \end{minipage}
-\subsection*{}
-    \begin{minipage}{\textwidth}
-        \judgbox{\TypeEquiv{\typ[1]}{\typ[2]}}{$\typ[1]$ is equivalent to $\typ[2]$ at ``top" kind}
-        \begin{mathpar}
-            \inferrule{\TypeEquivAtKind{\typ[1]}{\typ[2]}}{\TypeEquiv{\typ[1]}{\typ[2]}}
-            \and
-            \mprset{myfraction=\inferruledotfrac}
-            \inferrule{\WellFormedAtKind{\typ}}{\TypeEquiv{\typ}{\typ}}
-            \and
-            \inferrule{\TypeEquiv{\typ[2]}{\typ[1]}}{\TypeEquiv{\typ[1]}{\typ[2]}}
-            \and
-            \inferrule{\TypeEquiv{\typ[1]}{\typ[3]} \\ \TypeEquiv{\typ[3]}{\typ[2]}}{\TypeEquiv{\typ[1]}{\typ[2]}}
         \end{mathpar}
     \end{minipage}
 \subsection*{}
@@ -186,9 +172,11 @@
     \begin{minipage}{\textwidth}
         \judgbox{\WellFormedAtKind{\typ}}{$\typ$ is well formed at kind $\knd$}
         \begin{mathpar}
-            \inferrule{\PrincipalKind{\typ}[\knd[1]] \\ \ConsistentSubKind{\knd[1]}{\knd}}{\WellFormedAtKind{\typ}}
+            \inferrule{\PrincipalKind{\typ}[\SKind[\knd][\typ]]}{\WellFormedAtKind{\typ}}
             \and
-            \inferrule{\WellFormedAtKind{\typ}[\SKind[\knd][\typ[1]]]}{\WellFormedAtKind{\typ}}
+            \inferrule{\WellFormedAtKind{\typ}[\SKind[\knd][\typ[1]]] \\ \WellFormedAtKind{\typ[1]}}{\WellFormedAtKind{\typ}}
+            \and
+            \inferrule{\PrincipalKind{\typ}[\knd[1]] \\ \ConsistentSubKind{\knd[1]}{\knd}}{\WellFormedAtKind{\typ}}
         \end{mathpar}
     \end{minipage}
 \end{document}

@@ -167,6 +167,8 @@
         \newcommand*{\SigKndAsc}{\black{::_{\sig}}}
         \newcommand*{\SigKndAssump}{\SigKndAsc}
 
+        \NewDocumentCommand{\WellFormed}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}m}{\mathrm{#1 \vdash #2~\textsf{OK}}}
+
         % kinds
             \newcommand*{\ConsistentSubKindOp}{\lesssim}
             \NewDocumentCommand{\ConsistentSubKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mm}{\mathrm{#1 \vdash #2 \ConsistentSubKindOp #3}}
@@ -186,6 +188,7 @@
             \NewDocumentCommand{\PrincipalKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{\knd}}{\mathrm{#1 \vdash #2 \PrincipalKindOp #3}}
 
             \NewDocumentCommand{\WellFormedAtKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{\knd}}{\mathrm{#1 \vdash #2 \KndAsc #3}}
+            \newcommand*{\KindWellFormed}[1][\knd]{\WellFormed{#1}}
         % signature kinds
             \newcommand{\ConsistentSubSigKindOp}{\lesssim_{\sigknd}}
             \newcommand{\ConsistentSubSigKind}[3]{\mathrm{#1 \vdash #2 \ConsistentSubSigKindOp #3}}
