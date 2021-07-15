@@ -84,13 +84,17 @@
     \begin{minipage}{\textwidth}
         \judgbox{\ConsistentSubKind{\knd[1]}{\knd[2]}}{$\knd[1]$ is a consistent subkind of $\knd[2]$}
         \begin{mathpar}
-            \inferrule{ }{\ConsistentSubKind{\KHole}{\knd}}
+            \inferrule{\KindWellFormed}{\ConsistentSubKind{\KHole}{\knd}}
             \and
-            \inferrule{ }{\ConsistentSubKind{\knd}{\KHole}}
+            \inferrule{\KindWellFormed}{\ConsistentSubKind{\knd}{\KHole}}
             \\
             \inferrule{\KindEquiv{\knd[1]}{\knd[2]}}{\ConsistentSubKind{\knd[1]}{\knd[2]}}
             \and
+            \inferrule{\KindEquiv{\knd[1]}{\knd[3]} \\ \ConsistentSubKind{\knd[3]}{\knd[2]}}{\ConsistentSubKind{\knd[1]}{\knd[2]}}
+            \and
             \inferrule{\WellFormedAtKind{\typ}}{\ConsistentSubKind{\SKind}{\knd}}
+            \and
+            \inferrule{\ConsistentSubKind{\knd[1]}{\knd[2]} \\ \TypeEquivAtKind{\typ[1]}{\typ[2]}[\knd[1]]}{\ConsistentSubKind{\SKind[\knd[1]][\typ[1]]}{\SKind[\knd[2]][\typ[2]]}}
             \and
             \inferrule{\ConsistentSubKind{\knd[3]}{\knd[1]} \\ \ConsistentSubKind[\HoleCtx\TypVarCtx,\typvar\KndAssump\knd[3]]{\knd[2]}{\knd[4]}}{\ConsistentSubKind{\DepFunKind}{\DepFunKind[][\knd[3]][\knd[4]]}}
         \end{mathpar}
@@ -118,7 +122,7 @@
     \begin{minipage}{\textwidth}
         \judgbox{\TypeEquivAtKind{\typ[1]}{\typ[2]}}{$\typ[1]$ is equivalent to $\typ[2]$ at kind $\knd$}
         \begin{mathpar}
-            \inferrule{\WellFormedAtKind{\typ[1]}[\SKind[\knd][\typ[2]]] \\ \WellFormedAtKind{\typ[2]}}{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\knd]}
+            \inferrule{\WellFormedAtKind{\typ[1]}[\SKind[\knd][\typ[2]]]}{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\knd]}
             \\
             \mprset{myfraction=\inferruledotfrac}
             \inferrule{\WellFormedAtKind{\typ}}{\TypeEquivAtKind{\typ}{\typ}}
@@ -172,11 +176,15 @@
     \begin{minipage}{\textwidth}
         \judgbox{\WellFormedAtKind{\typ}}{$\typ$ is well formed at kind $\knd$}
         \begin{mathpar}
-            \inferrule{\PrincipalKind{\typ}[\SKind[\knd][\typ]]}{\WellFormedAtKind{\typ}}
+            \inferrule{\PrincipalKind{\typ}}{\WellFormedAtKind{\typ}}
             \and
-            \inferrule{\WellFormedAtKind{\typ}[\SKind[\knd][\typ[1]]] \\ \WellFormedAtKind{\typ[1]}}{\WellFormedAtKind{\typ}}
+            \inferrule{\WellFormedAtKind{\typ}[\SKind[\knd][\typ[1]]]}{\WellFormedAtKind{\typ}}
             \and
             \inferrule{\PrincipalKind{\typ}[\knd[1]] \\ \ConsistentSubKind{\knd[1]}{\knd}}{\WellFormedAtKind{\typ}}
+            \\
+            \inferrule{\WellFormedAtKind{\typ[2]}[\SKind[\knd][\typ[1]]]}{\WellFormedAtKind{\typ[1]}[\SKind[\knd][\typ[2]]]}
+            \and
+            \inferrule{\WellFormedAtKind{\typ[1]}[\SKind[\knd][\typ[3]]] \\ \WellFormedAtKind{\typ[3]}[\SKind[\knd][\typ[2]]]}{\WellFormedAtKind{\typ[1]}[\SKind[\knd][\typ[2]]]}
         \end{mathpar}
     \end{minipage}
 \end{document}

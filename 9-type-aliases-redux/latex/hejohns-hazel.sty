@@ -178,6 +178,7 @@
 
             \newcommand*{\MatchedPiKindOp}{\stackrel{\blacktriangleright}{{}_{\Pi}}}
             \NewDocumentCommand{\MatchedPiKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{\DepFunKind}}{\mathrm{#1 \vdash #2 \MatchedPiKindOp #3}}
+            \newcommand*{\KindWellFormed}[1][\knd]{\WellFormed{#1}}
         % types
             \newcommand*{\TypeEquivOp}{\equiv}
             \newcommand*{\TypeEquivAtKindOp}[1][\knd]{\stackrel{#1}{\TypeEquivOp}}
@@ -188,7 +189,6 @@
             \NewDocumentCommand{\PrincipalKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{\knd}}{\mathrm{#1 \vdash #2 \PrincipalKindOp #3}}
 
             \NewDocumentCommand{\WellFormedAtKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{\knd}}{\mathrm{#1 \vdash #2 \KndAsc #3}}
-            \newcommand*{\KindWellFormed}[1][\knd]{\WellFormed{#1}}
         % signature kinds
             \newcommand{\ConsistentSubSigKindOp}{\lesssim_{\sigknd}}
             \newcommand{\ConsistentSubSigKind}[3]{\mathrm{#1 \vdash #2 \ConsistentSubSigKindOp #3}}
