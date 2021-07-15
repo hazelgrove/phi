@@ -82,22 +82,47 @@
 \section{Declaratives}
 \subsection*{}
     \begin{minipage}{\textwidth}
-        \judgbox{\ConsistentSubKind{\knd[1]}{\knd[2]}}{$\knd[1]$ is a consistent subkind of $\knd[2]$}
+        \judgbox{\PrincipalKind{\typ}}{$\typ$ has principal kind $\knd$}
         \begin{mathpar}
-            \inferrule{\KindWellFormed}{\ConsistentSubKind{\KHole}{\knd}}
+            \inferrule{ }{\PrincipalKind{\bse}[\SKind[\Type][\bse]]}
             \and
-            \inferrule{\KindWellFormed}{\ConsistentSubKind{\knd}{\KHole}}
+            \inferrule{\typvar\KndAssump\knd\in\TypVarCtx[]}{\PrincipalKind{\typvar}[\SKind[\knd][\typvar]]}
+            \and
+            \inferrule{\WellFormedAtKind{\typ[1]}[\Type] \\ \WellFormedAtKind{\typ[2]}[\Type]}{\PrincipalKind{\binop}[\SKind[\Type][\binop]]}
+            \and
+            \inferrule{\hole\KndAssump\knd\in\HoleCtx[]}{\PrincipalKind{\ETypeHole}}
+            \and
+            \inferrule{\hole\KndAssump\knd\in\HoleCtx[] \\ \WellFormedAtKind{\typ}[\knd[1]]}{\PrincipalKind{\NETypeHole}}
+            \and
+            \inferrule{\hole\KndAssump\knd\in\HoleCtx[] \\ \typvar\notin\dom{\TypVarCtx[]}}{\PrincipalKind{\UnboundTypeVar}}
+            \and
+            \inferrule{\PrincipalKind[\HoleCtx\TypVarCtx[],\typvar\KndAssump\knd[1]]{\typ}[\knd[2]]}{\PrincipalKind{\TypeFun[][\knd[1]]}[\SKind[\DepFunKind][\TypeFun[][\knd[1]]]]}
+            \and
+            \inferrule{\PrincipalKind{\typ[1]} \\ \MatchedPiKind{\knd} \\ \WellFormedAtKind{\typ[2]}[\knd[1]]}{\PrincipalKind{\TypeAp}[\subst{\typ[2]}{\typvar}{\knd[2]}]}
+        \end{mathpar}
+    \end{minipage}
+\subsection*{}
+    \begin{minipage}{\textwidth}
+        \judgbox{\WellFormedAtKind{\typ}}{$\typ$ is well formed at kind $\knd$}
+        \begin{mathpar}
+            \inferrule{\PrincipalKind{\typ}}{\WellFormedAtKind{\typ}}
+            \and
+            \inferrule{\WellFormedAtKind{\typ}[\SKind[\knd][\typ[1]]]}{\WellFormedAtKind{\typ}}
+            \and
+            \inferrule{\PrincipalKind{\typ}[\knd[1]] \\ \ConsistentSubKind{\knd[1]}{\knd}}{\WellFormedAtKind{\typ}}
             \\
-            \inferrule{\KindEquiv{\knd[1]}{\knd[2]}}{\ConsistentSubKind{\knd[1]}{\knd[2]}}
+            \inferrule{\WellFormedAtKind{\typ[2]}[\SKind[\knd][\typ[1]]]}{\WellFormedAtKind{\typ[1]}[\SKind[\knd][\typ[2]]]}
             \and
-            \inferrule{\KindEquiv{\knd[1]}{\knd[3]} \\ \ConsistentSubKind{\knd[3]}{\knd[4]} \\ \KindEquiv{\knd[4]}{\knd[2]}}{\ConsistentSubKind{\knd[1]}{\knd[2]}}
+            \inferrule{\WellFormedAtKind{\typ[1]}[\SKind[\knd][\typ[3]]] \\ \WellFormedAtKind{\typ[3]}[\SKind[\knd][\typ[2]]]}{\WellFormedAtKind{\typ[1]}[\SKind[\knd][\typ[2]]]}
+        \end{mathpar}
+    \end{minipage}
+\subsection*{}
+    \begin{minipage}{\textwidth}
+        \judgbox{\MatchedPiKind{\knd}}{$\knd$ has matched $\Pi$-kind $\DepFunKind$}
+        \begin{mathpar}
+            \inferrule{ }{\MatchedPiKind{\KHole}[\DepFunKind[][\KHole][\KHole]]}
             \and
-            \inferrule{\WellFormedAtKind{\typ}}{\ConsistentSubKind{\SKind}{\knd}}
-            \and
-            \inferrule{\ConsistentSubKind{\knd[3]}{\knd[1]} \\ \ConsistentSubKind[\HoleCtx\TypVarCtx,\typvar\KndAssump\knd[3]]{\knd[2]}{\knd[4]}}{\ConsistentSubKind{\DepFunKind}{\DepFunKind[][\knd[3]][\knd[4]]}}
-            \mprset{myfraction=\inferruledotfrac}
-            \\
-            \inferrule{\ConsistentSubKind{\knd[1]}{\knd[2]} \\ \TypeEquivAtKind{\typ[1]}{\typ[2]}[\knd[1]]}{\ConsistentSubKind{\SKind[\knd[1]][\typ[1]]}{\SKind[\knd[2]][\typ[2]]}}
+            \inferrule{\KindEquiv{\knd}{\DepFunKind}}{\MatchedPiKind{\knd}}
         \end{mathpar}
     \end{minipage}
 \subsection*{}
@@ -117,6 +142,26 @@
             \inferrule{\WellFormedAtKind{\typ}[\DepFunKind]}{\KindEquiv{\SKind[\DepFunKind][\typ]}{\DepFunKind[][\knd[1]][\SKind[\knd[2]][\TypeAp[\typ][\typvar]]]}}
             \and
             \inferrule{\KindEquiv{\knd[1]}{\knd[2]} \\ \KindEquiv[\HoleCtx\TypVarCtx[],\typvar\KndAssump\knd[1]]{\knd[3]}{\knd[4]}}{\KindEquiv{\DepFunKind[][\knd[1]][\knd[2]]}{\DepFunKind[][\knd[3]][\knd[4]]}}
+        \end{mathpar}
+    \end{minipage}
+\subsection*{}
+    \begin{minipage}{\textwidth}
+        \judgbox{\ConsistentSubKind{\knd[1]}{\knd[2]}}{$\knd[1]$ is a consistent subkind of $\knd[2]$}
+        \begin{mathpar}
+            \inferrule{\KindWellFormed}{\ConsistentSubKind{\KHole}{\knd}}
+            \and
+            \inferrule{\KindWellFormed}{\ConsistentSubKind{\knd}{\KHole}}
+            \\
+            \inferrule{\KindEquiv{\knd[1]}{\knd[2]}}{\ConsistentSubKind{\knd[1]}{\knd[2]}}
+            \and
+            \inferrule{\KindEquiv{\knd[1]}{\knd[3]} \\ \ConsistentSubKind{\knd[3]}{\knd[4]} \\ \KindEquiv{\knd[4]}{\knd[2]}}{\ConsistentSubKind{\knd[1]}{\knd[2]}}
+            \and
+            \inferrule{\WellFormedAtKind{\typ}}{\ConsistentSubKind{\SKind}{\knd}}
+            \and
+            \inferrule{\ConsistentSubKind{\knd[3]}{\knd[1]} \\ \ConsistentSubKind[\HoleCtx\TypVarCtx,\typvar\KndAssump\knd[3]]{\knd[2]}{\knd[4]}}{\ConsistentSubKind{\DepFunKind}{\DepFunKind[][\knd[3]][\knd[4]]}}
+            \mprset{myfraction=\inferruledotfrac}
+            \\
+            \inferrule{\ConsistentSubKind{\knd[1]}{\knd[2]} \\ \TypeEquivAtKind{\typ[1]}{\typ[2]}[\knd[1]]}{\ConsistentSubKind{\SKind[\knd[1]][\typ[1]]}{\SKind[\knd[2]][\typ[2]]}}
         \end{mathpar}
     \end{minipage}
 \subsection*{}
@@ -141,51 +186,6 @@
             \inferrule{\WellFormedAtKind{\typ[1]}[\DepFunKind[][\knd[1]][\knd[3]]] \\ \WellFormedAtKind{\typ[2]}[\DepFunKind[][\knd[1]][\knd[4]]] \\ \TypeEquivAtKind[\HoleCtx\TypVarCtx,\typvar\KndAssump\knd[1]]{\TypeAp[\typ[1]][\typvar]}{\TypeAp[\typ[2]][\typvar]}[\knd[2]]}{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\DepFunKind]}
             \and
             \inferrule{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\knd[1]] \\ \KindEquiv{\knd[1]}{\knd}}{\TypeEquivAtKind{\typ[1]}{\typ[2]}}
-        \end{mathpar}
-    \end{minipage}
-\subsection*{}
-    \begin{minipage}{\textwidth}
-        \judgbox{\PrincipalKind{\typ}}{$\typ$ has principal kind $\knd$}
-        \begin{mathpar}
-            \inferrule{ }{\PrincipalKind{\bse}[\SKind[\Type][\bse]]}
-            \and
-            \inferrule{\typvar\KndAssump\knd\in\TypVarCtx[]}{\PrincipalKind{\typvar}[\SKind[\knd][\typvar]]}
-            \and
-            \inferrule{\WellFormedAtKind{\typ[1]}[\Type] \\ \WellFormedAtKind{\typ[2]}[\Type]}{\PrincipalKind{\binop}[\SKind[\Type][\binop]]}
-            \and
-            \inferrule{\hole\KndAssump\knd\in\HoleCtx[]}{\PrincipalKind{\ETypeHole}}
-            \and
-            \inferrule{\hole\KndAssump\knd\in\HoleCtx[] \\ \WellFormedAtKind{\typ}[\knd[1]]}{\PrincipalKind{\NETypeHole}}
-            \and
-            \inferrule{\hole\KndAssump\knd\in\HoleCtx[] \\ \typvar\notin\dom{\TypVarCtx[]}}{\PrincipalKind{\UnboundTypeVar}}
-            \and
-            \inferrule{\PrincipalKind[\HoleCtx\TypVarCtx[],\typvar\KndAssump\knd[1]]{\typ}[\knd[2]]}{\PrincipalKind{\TypeFun[][\knd[1]]}[\SKind[\DepFunKind][\TypeFun[][\knd[1]]]]}
-            \and
-            \inferrule{\PrincipalKind{\typ[1]} \\ \MatchedPiKind{\knd} \\ \WellFormedAtKind{\typ[2]}[\knd[1]]}{\PrincipalKind{\TypeAp}[\subst{\typ[2]}{\typvar}{\knd[2]}]}
-        \end{mathpar}
-    \end{minipage}
-\subsection*{}
-    \begin{minipage}{\textwidth}
-        \judgbox{\MatchedPiKind{\knd}}{$\knd$ has matched $\Pi$-kind $\DepFunKind$}
-        \begin{mathpar}
-            \inferrule{ }{\MatchedPiKind{\KHole}[\DepFunKind[][\KHole][\KHole]]}
-            \and
-            \inferrule{\KindEquiv{\knd}{\DepFunKind}}{\MatchedPiKind{\knd}}
-        \end{mathpar}
-    \end{minipage}
-\subsection*{}
-    \begin{minipage}{\textwidth}
-        \judgbox{\WellFormedAtKind{\typ}}{$\typ$ is well formed at kind $\knd$}
-        \begin{mathpar}
-            \inferrule{\PrincipalKind{\typ}}{\WellFormedAtKind{\typ}}
-            \and
-            \inferrule{\WellFormedAtKind{\typ}[\SKind[\knd][\typ[1]]]}{\WellFormedAtKind{\typ}}
-            \and
-            \inferrule{\PrincipalKind{\typ}[\knd[1]] \\ \ConsistentSubKind{\knd[1]}{\knd}}{\WellFormedAtKind{\typ}}
-            \\
-            \inferrule{\WellFormedAtKind{\typ[2]}[\SKind[\knd][\typ[1]]]}{\WellFormedAtKind{\typ[1]}[\SKind[\knd][\typ[2]]]}
-            \and
-            \inferrule{\WellFormedAtKind{\typ[1]}[\SKind[\knd][\typ[3]]] \\ \WellFormedAtKind{\typ[3]}[\SKind[\knd][\typ[2]]]}{\WellFormedAtKind{\typ[1]}[\SKind[\knd][\typ[2]]]}
         \end{mathpar}
     \end{minipage}
 \end{document}
