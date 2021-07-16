@@ -54,7 +54,7 @@
 % (will give actual names sometime)
     \newcounter{counter}
     \refstepcounter{counter}
-    \renewcommand*{\rule}[1][\thecounter\refstepcounter{counter}]{\inferrule*[right=\texttt{#1}]}
+    \renewcommand*{\rule}[1][(\thecounter)\refstepcounter{counter}]{\inferrule*[vcenter,rightstyle=\texttt,right=#1]}
 % get rid of 10-modules stuff
     \renewcommand*{\TypVarCtx}[1][]{\Phi}
     \renewcommand*{\ModVarCtx}[1][]{}
