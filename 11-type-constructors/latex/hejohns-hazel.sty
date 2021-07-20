@@ -2,11 +2,15 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % packages
     \RequirePackage{hejohns-colors}
-    \RequirePackage{mathpartir}
-    \RequirePackage{latexsym}
-    \RequirePackage{stmaryrd}
-    \RequirePackage{amssymb}
+    \RequirePackage{mathpartir} % \inferrule
+    \RequirePackage{latexsym} % ?
+    \RequirePackage{stmaryrd} % ?
+    \RequirePackage{amssymb} % ?
+    \RequirePackage{amsthm} % thmtool backend
     \RequirePackage{thmtools}
+    \declaretheorem{theorem}
+    \declaretheorem[sibling=theorem]{lemma}
+    \declaretheorem{definition}
     \RequirePackage{tikz}
     % https://tex.stackexchange.com/questions/12678/squiggly-arrows-in-tikz
     \usetikzlibrary{decorations.pathmorphing}
@@ -19,11 +23,11 @@
     \newcolumntype{R}{>{\(}r<{\)}}
     \setlength\tabcolsep{5pt}
     % https://tex.stackexchange.com/questions/29973/more-than-one-optional-argument-for-newcommand
-    \RequirePackage{xparse}
+    \RequirePackage{xparse} % \NewDocumentCommand
 
     %% Joshua Dunfield macros
     \def\OPTIONConf{1}%
-    \RequirePackage{joshuadunfield}
+    \RequirePackage{joshuadunfield} % ?
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % syntax
     \newcommand*{\knd}[1][]{\redit{\kappa_{#1}}}
