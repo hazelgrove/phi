@@ -113,7 +113,7 @@
             \begin{mathpar}
                 \rule{\PrincipalKind{\typ}}{\WellFormedAtKind{\typ}}
                 \and
-                \rule{\WellFormedAtKind{\typ}[\SKind[\knd][\typ[1]]]}{\WellFormedAtKind{\typ}}
+                \rule{\WellFormedAtKind{\typ}[\SKind[\knd][\typ[1]]] \\ \WellFormedAtKind{\typ[1]}}{\WellFormedAtKind{\typ}}
                 \\
                 \rule{\PrincipalKind{\typ}[\knd[1]] \\ \ConsistentSubKind{\knd[1]}{\knd}}{\WellFormedAtKind{\typ}}
                 \\
@@ -247,22 +247,18 @@
     \end{lemma}
     \begin{proof}
         By simultaneous rule induction/length of proof. \\
-        The interesting cases per lemma:
-        \begin{enumerate}[label=L\arabic*.]
-            \item
-                \vphantom{.} \\
-                \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}ll}
-                    (1)& $\WellFormedAtKind{\bse}[\SKind[\Type][\bse]]$ & by (9) \\
-                       & $\WellFormedAtKind{\bse}[\Type]$ & by (10) \\
-                       & $\KindWellFormed[{\SKind[\Type][\bse]}]$ & by (43) \\
-                    (8)& & text \\
-                \end{tabular*}
-            \item
-            \item
-            \item
-            \item (25): L6 + (42)
-            \item (43): L2
-        \end{enumerate}
+        The interesting cases per lemma: \\
+        \begin{tabular*}{\textwidth}{lc@{\extracolsep{\fill}}ll}
+            L1.&(1)& $\WellFormedAtKind{\bse}[\SKind[\Type][\bse]]$ & by (9) \\
+               & & $\WellFormedAtKind{\bse}[\Type]$ & by (10) \\
+               &*& $\KindWellFormed[{\SKind[\Type][\bse]}]$ & by (43) \\
+               &*& $\ContextWellFormed$ & by premiss \\
+               &(8)& & bad \\
+            L2.&(10)& $\KindWellFormed[{\SKind[\knd][\typ[1]]}]$ & by L2 \\
+               &*& $\KindWellFormed$ & by (?) \\
+               &(12)& $\WellFormedAtKind{\typ[2]}$ & by (10) \\
+               &*& $\KindWellFormed[{\SKind[\knd][\typ[2]]}]$ & by (43) \\
+        \end{tabular*}
     \end{proof}
     \vphantom{.}
     \begin{lemma}
