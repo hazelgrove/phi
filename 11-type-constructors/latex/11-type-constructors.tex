@@ -56,7 +56,8 @@
     \refstepcounter{counter}
     \renewcommand*{\rule}[1][(\thecounter)\refstepcounter{counter}]{\inferrule*[vcenter,rightstyle=\texttt,right=#1]}
 % get rid of 10-modules stuff
-    \renewcommand*{\TypVarCtx}[1][]{\Phi}
+    \RenewDocumentCommand{\TypVarCtx}{oO{}}{\Phi_{#2}}
+    \RenewDocumentCommand{\InTypVarCtx}{oO{}O{\knd}}{\TypVarCtx[][1],\typvar[#2]\KndAssump{#3},\TypVarCtx[][2]}
     \renewcommand*{\ModVarCtx}[1][]{}
     \renewcommand*{\SigVarCtx}[1][]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -89,17 +90,17 @@
         \begin{minipage}{\textwidth}
             \judgbox{\PrincipalKind{\typ}}{$\typ$ has principal (well formed) kind $\knd$}
             \begin{mathpar}
-                \rule{ }{\PrincipalKind{\bse}[\SKind[\Type][\bse]]}
+                \rule{\ContextWellFormed}{\PrincipalKind{\bse}[\SKind[\Type][\bse]]}
                 \and
-                \rule{\typvar\KndAssump\knd\in\TypVarCtx[]}{\PrincipalKind{\typvar}[\SKind[\knd][\typvar]]}
+                \rule{\ContextWellFormed[\HoleCtx\InTypVarCtx]}{\PrincipalKind{\typvar}[\SKind[\knd][\typvar]]}
                 \and
-                \rule{\WellFormedAtKind{\typ[1]}[\Type] \\ \WellFormedAtKind{\typ[2]}[\Type]}{\PrincipalKind{\binop}[\SKind[\Type][\binop]]}
+                \rule{\ContextWellFormed \\ \WellFormedAtKind{\typ[1]}[\Type] \\ \WellFormedAtKind{\typ[2]}[\Type]}{\PrincipalKind{\binop}[\SKind[\Type][\binop]]}
                 \and
-                \rule{\hole\KndAssump\knd\in\HoleCtx[]}{\PrincipalKind{\ETypeHole}[\SKind[\knd][\ETypeHole]]}
+                \rule{\ContextWellFormed[\InTypHoleCtx\TypVarCtx]}{\PrincipalKind{\ETypeHole}[\SKind[\knd][\ETypeHole]]}
                 \and
-                \rule{\hole\KndAssump\knd\in\HoleCtx[] \\ \WellFormedAtKind{\typ}[\knd[1]]}{\PrincipalKind{\NETypeHole}[\SKind[\knd][\NETypeHole]]}
+                \rule{\ContextWellFormed[\InTypHoleCtx\TypVarCtx] \\ \WellFormedAtKind{\typ}[\knd[1]]}{\PrincipalKind{\NETypeHole}[\SKind[\knd][\NETypeHole]]}
                 \and
-                \rule{\hole\KndAssump\knd\in\HoleCtx[] \\ \typvar\notin\dom{\TypVarCtx[]}}{\PrincipalKind{\UnboundTypeVar}[\SKind[\knd][\UnboundTypeVar]]}
+                \rule{\ContextWellFormed[\InTypHoleCtx\TypVarCtx] \\ \typvar\notin\dom{\TypVarCtx[]}}{\PrincipalKind{\UnboundTypeVar}[\SKind[\knd][\UnboundTypeVar]]}
                 \and
                 \rule{\KindWellFormed[{\knd[1]}] \\ \PrincipalKind[\HoleCtx\TypVarCtx[],\typvar\KndAssump\knd[1]]{\typ}[\knd[2]]}{\PrincipalKind{\TypeFun[][\knd[1]]}[\SKind[\DepFunKind][\TypeFun[][\knd[1]]]]}
                 \and
@@ -203,40 +204,67 @@
         \begin{minipage}{\textwidth}
             \judgbox{\KindWellFormed}{$\knd$ is well formed}
             \begin{mathpar}
-                \rule{ }{\KindWellFormed[\Type]}
+                \rule{\ContextWellFormed}{\KindWellFormed[\Type]}
                 \and
-                \rule{ }{\KindWellFormed[\KHole]}
+                \rule{\ContextWellFormed}{\KindWellFormed[\KHole]}
                 \and
                 \rule{\WellFormedAtKind{\typ}}{\KindWellFormed[\SKind]}
                 \and
                 \rule{\KindWellFormed[{\knd[1]}] \\ \KindWellFormed[{\knd[2]}]}{\KindWellFormed[\DepFunKind]}
             \end{mathpar}
         \end{minipage}
+    \subsection*{}
+        \begin{minipage}{\textwidth}
+            \judgbox{\ContextWellFormed}{Context is well formed}
+            \begin{mathpar}
+                \rule{ }{\ContextWellFormed[;]}
+                \and
+                \rule{\KindWellFormed}{\ContextWellFormed[\HoleCtx\TypVarCtx[],\typvar\KndAssump\knd]}
+                \and
+                \rule{\KindWellFormed}{\ContextWellFormed[\HoleCtx[],\hole\KndAssump\knd;\TypVarCtx[]]}
+            \end{mathpar}
+            Variables implicitly assumed to be fresh as necessary
+        \end{minipage}
 \section{Metatheory}
     \subsection*{}
-    Contexts implicitly assumed to be wellformed in the usual way.
-    \begin{definition}[size of kinds a la Stone]
-        \vphantom{.}
-        \begin{longtable}{LCL}
-            size(\Type) &=& 1 \\
-            size(\KHole) &=& 1 \\
-            size(\SKind) &=& size(\knd) + 2 \\
-            size(\DepFunKind) &=& size(\knd[1]) + size(\knd[2]) + 2 \\
-        \end{longtable}
-    \end{definition}
     \begin{lemma}
-        If $\PrincipalKind{\typ}$, then $\KindWellFormed$
+        If $\PrincipalKind{\typ}$, then $\ContextWellFormed$ and $\KindWellFormed$
     \end{lemma}
     \begin{lemma}
-        If $\WellFormedAtKind{\typ}$, then $\KindWellFormed$
+        If $\WellFormedAtKind{\typ}$, then $\ContextWellFormed$ and $\KindWellFormed$
     \end{lemma}
     \begin{lemma}
-        If $\KindEquiv{\knd[1]}{\knd[2]}$, then $\KindWellFormed[{\knd[1]}]$ and $\KindWellFormed[{\knd[2]}]$
+        If $\MatchedPiKind{\knd}$, then $\ContextWellFormed$ and $\KindWellFormed$ and $\KindWellFormed[\DepFunKind]$
     \end{lemma}
     \begin{lemma}
-        If $\ConsistentSubKind{\knd[1]}{\knd[2]}$, then $\KindWellFormed[{\knd[1]}]$ and $\KindWellFormed[{\knd[2]}]$
+        If $\KindEquiv{\knd[1]}{\knd[2]}$, then $\ContextWellFormed$ and $\KindWellFormed[{\knd[1]}]$ and $\KindWellFormed[{\knd[2]}]$
     \end{lemma}
-    \vphantom{.}\\
+    \begin{lemma}
+        If $\ConsistentSubKind{\knd[1]}{\knd[2]}$, then $\ContextWellFormed$ and $\KindWellFormed[{\knd[1]}]$ and $\KindWellFormed[{\knd[2]}]$
+    \end{lemma}
+    \begin{lemma}
+        If $\KindWellFormed$, then $\ContextWellFormed$
+    \end{lemma}
+    \begin{proof}
+        By simultaneous rule induction/length of proof. \\
+        The interesting cases per lemma:
+        \begin{enumerate}[label=L\arabic*.]
+            \item
+                \vphantom{.} \\
+                \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}ll}
+                    (1)& $\WellFormedAtKind{\bse}[\SKind[\Type][\bse]]$ & by (9) \\
+                       & $\WellFormedAtKind{\bse}[\Type]$ & by (10) \\
+                       & $\KindWellFormed[{\SKind[\Type][\bse]}]$ & by (43) \\
+                    (8)& & text \\
+                \end{tabular*}
+            \item
+            \item
+            \item
+            \item (25): L6 + (42)
+            \item (43): L2
+        \end{enumerate}
+    \end{proof}
+    \vphantom{.}
     \begin{lemma}
         If $\PrincipalKind{\typ}[\knd[1]]$ and $\WellFormedAtKind{\typ}[\knd[2]]$, then $\ConsistentSubKind{\knd[1]}{\knd[2]}$
     \end{lemma}
