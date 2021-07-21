@@ -173,7 +173,7 @@
         \newcommand*{\SigKndAsc}{\black{::_{\sig}}}
         \newcommand*{\SigKndAssump}{\SigKndAsc}
 
-        \NewDocumentCommand{\WellFormed}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}m}{\mathrm{#1 \vdash #2~\textsf{OK}}}
+        \NewDocumentCommand{\WellFormed}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{~}}{\mathrm{#1 \vdash #2#3\textsf{OK}}}
 
         % kinds
             \newcommand*{\ConsistentSubKindOp}{\lesssim}
@@ -184,7 +184,7 @@
 
             \newcommand*{\MatchedPiKindOp}{\stackrel{\blacktriangleright}{{}_{\Pi}}}
             \NewDocumentCommand{\MatchedPiKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{\DepFunKind}}{\mathrm{#1 \vdash #2 \MatchedPiKindOp #3}}
-            \newcommand*{\KindWellFormed}[1][\knd]{\WellFormed{#1}}
+            \NewDocumentCommand{\KindWellFormed}{O{\knd}o}{\WellFormed[#2]{#1}}
         % types
             \newcommand*{\TypeEquivOp}{\equiv}
             \newcommand*{\TypeEquivAtKindOp}[1][\knd]{\stackrel{#1}{\TypeEquivOp}}
@@ -212,7 +212,7 @@
             \newcommand{\SubSdecOp}{\le_{\sdec}}
             \newcommand{\SubSdec}[3]{\mathrm{#1 \vdash #2 \SubSdecOp #3}}
         % contexts
-            \NewDocumentCommand{\ContextWellFormed}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}}{\mathrm{#1 \vdash \textsf{OK}}}
+            \NewDocumentCommand{\ContextWellFormed}{o}{\WellFormed[#1]{}[]}
         % ???
             \newcommand*{\WellFormedAtType}[3]{\mathrm{#1 \vdash #2 \TypAsc #3}}
     % algorithmic

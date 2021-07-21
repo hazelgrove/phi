@@ -210,7 +210,7 @@
                 \and
                 \rule{\WellFormedAtKind{\typ}}{\KindWellFormed[\SKind]}
                 \and
-                \rule{\KindWellFormed[{\knd[1]}] \\ \KindWellFormed[{\knd[2]}]}{\KindWellFormed[\DepFunKind]}
+                \rule{\KindWellFormed[{\knd[1]}] \\ \KindWellFormed[{\knd[2]}][\HoleCtx\TypVarCtx,\typvar\KndAssump\knd[1]]}{\KindWellFormed[\DepFunKind]}
             \end{mathpar}
         \end{minipage}
     \subsection*{}
@@ -227,6 +227,10 @@
         \end{minipage}
 \section{Metatheory}
     \subsection*{}
+    \begin{lemma}[substitution]
+        If $\WellFormedAtKind{\typ[1]}[\knd[1]]$ and $\WellFormedAtKind[\HoleCtx\TypVarCtx[],\typvar\KndAssump\knd[1]]{\typ[2]}[\knd[2]]$, then $\WellFormedAtKind{\subst{\typ[1]}{\typvar}{\typ[2]}}[\knd[2]]$
+    \end{lemma}
+    \vphantom{.}\\
     \begin{lemma}
         If $\PrincipalKind{\typ}$, then $\ContextWellFormed$ and $\KindWellFormed$
     \end{lemma}
@@ -249,15 +253,17 @@
         By simultaneous rule induction/length of proof. \\
         The interesting cases per lemma: \\
         \begin{tabular*}{\textwidth}{lc@{\extracolsep{\fill}}ll}
-            L1.&(1)& $\WellFormedAtKind{\bse}[\SKind[\Type][\bse]]$ & by (9) \\
+            L1.
+               &(1)& $\WellFormedAtKind{\bse}[\SKind[\Type][\bse]]$ & by (9) \\
                & & $\WellFormedAtKind{\bse}[\Type]$ & by (10) \\
                &*& $\KindWellFormed[{\SKind[\Type][\bse]}]$ & by (43) \\
                &*& $\ContextWellFormed$ & by premiss \\
                &(8)& & bad \\
-            L2.&(10)& $\KindWellFormed[{\SKind[\knd][\typ[1]]}]$ & by L2 \\
-               &*& $\KindWellFormed$ & by (?) \\
+            L2.
                &(12)& $\WellFormedAtKind{\typ[2]}$ & by (10) \\
                &*& $\KindWellFormed[{\SKind[\knd][\typ[2]]}]$ & by (43) \\
+           L4.
+               &(22)& $\PrincipalKind{\TypeAp[\typ][\typvar]}$ & \\
         \end{tabular*}
     \end{proof}
     \vphantom{.}
