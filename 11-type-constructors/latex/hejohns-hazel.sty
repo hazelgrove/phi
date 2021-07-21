@@ -131,7 +131,8 @@
 % misc
     \newcommand*{\ExpVarCtx}[1][;]{\Gamma#1}
     \NewDocumentCommand{\TypVarCtx}{O{;}O{}}{\Phi#1_{#2}}
-    \NewDocumentCommand{\InTypVarCtx}{O{;}O{}O{\knd}}{\TypVarCtx[][1],\typvar[#2]\KndAssump{#3},\TypVarCtx[][2]#1}
+    \NewDocumentCommand{\InTypVarCtx}{O{;}oO{\knd}}{\TypVarCtx[][1],\typvar[#2]\KndAssump{#3},\TypVarCtx[][2]#1}
+    \NewDocumentCommand{\ExtendTypVarCtx}{O{;}oO{\knd}}{\TypVarCtx[],\typvar[#2]\KndAssump{#3}#1}
     \newcommand*{\ModVarCtx}[1][;]{\Xi#1}
     \newcommand*{\SigVarCtx}[1][;]{\Psi#1}
     \NewDocumentCommand{\HoleCtx}{O{;}O{}}{\Delta#1_{#2}}

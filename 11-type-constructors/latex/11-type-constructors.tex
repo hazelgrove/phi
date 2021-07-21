@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % standard header
-    \documentclass[12pt]{article}
-    \usepackage[margin=2cm]{geometry}
+    \documentclass[11pt]{article}
+    \usepackage[margin=1.5cm]{geometry}
     \usepackage[utf8x]{inputenc} % for utf8
     \usepackage{titlesec} % see below
     \usepackage{xcolor} % \color \textcolor
@@ -57,7 +57,8 @@
     \renewcommand*{\rule}[1][(\thecounter)\refstepcounter{counter}]{\inferrule*[vcenter,rightstyle=\texttt,right=#1]}
 % get rid of 10-modules stuff
     \RenewDocumentCommand{\TypVarCtx}{oO{}}{\Phi_{#2}}
-    \RenewDocumentCommand{\InTypVarCtx}{oO{}O{\knd}}{\TypVarCtx[][1],\typvar[#2]\KndAssump{#3},\TypVarCtx[][2]}
+    \RenewDocumentCommand{\InTypVarCtx}{ooO{\knd}}{\TypVarCtx[][1],\typvar[#2]\KndAssump{#3},\TypVarCtx[][2]}
+    \RenewDocumentCommand{\ExtendTypVarCtx}{ooO{\knd}}{\TypVarCtx[],\typvar[#2]\KndAssump{#3}#1}
     \renewcommand*{\ModVarCtx}[1][]{}
     \renewcommand*{\SigVarCtx}[1][]{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -102,7 +103,7 @@
                 \and
                 \rule{\ContextWellFormed[\InTypHoleCtx\TypVarCtx] \\ \typvar\notin\dom{\TypVarCtx[]}}{\PrincipalKind{\UnboundTypeVar}[\SKind[\knd][\UnboundTypeVar]]}
                 \and
-                \rule{\KindWellFormed[{\knd[1]}] \\ \PrincipalKind[\HoleCtx\TypVarCtx[],\typvar\KndAssump\knd[1]]{\typ}[\knd[2]]}{\PrincipalKind{\TypeFun[][\knd[1]]}[\SKind[\DepFunKind][\TypeFun[][\knd[1]]]]}
+                \rule{\KindWellFormed[{\knd[1]}] \\ \PrincipalKind[\HoleCtx\ExtendTypVarCtx[][][{\knd[1]}]]{\typ}[\knd[2]]}{\PrincipalKind{\TypeFun[][\knd[1]]}[\SKind[\DepFunKind][\TypeFun[][\knd[1]]]]}
                 \and
                 \rule{\PrincipalKind{\typ[1]} \\ \MatchedPiKind{\knd} \\ \WellFormedAtKind{\typ[2]}[\knd[1]]}{\PrincipalKind{\TypeAp}[\subst{\typ[2]}{\typvar}{\knd[2]}]}
             \end{mathpar}
@@ -210,7 +211,7 @@
                 \and
                 \rule{\WellFormedAtKind{\typ}}{\KindWellFormed[\SKind]}
                 \and
-                \rule{\KindWellFormed[{\knd[1]}] \\ \KindWellFormed[{\knd[2]}][\HoleCtx\TypVarCtx,\typvar\KndAssump\knd[1]]}{\KindWellFormed[\DepFunKind]}
+                \rule{\KindWellFormed[{\knd[1]}] \\ \KindWellFormed[{\knd[2]}][\HoleCtx\ExtendTypVarCtx[][][{\knd[1]}]]}{\KindWellFormed[\DepFunKind]}
             \end{mathpar}
         \end{minipage}
     \subsection*{}
@@ -227,43 +228,76 @@
         \end{minipage}
 \section{Metatheory}
     \subsection*{}
-    \begin{lemma}[substitution]
-        If $\WellFormedAtKind{\typ[1]}[\knd[1]]$ and $\WellFormedAtKind[\HoleCtx\TypVarCtx[],\typvar\KndAssump\knd[1]]{\typ[2]}[\knd[2]]$, then $\WellFormedAtKind{\subst{\typ[1]}{\typvar}{\typ[2]}}[\knd[2]]$
+    \begin{lemma}[Weakening]
+        If $\WellFormedAtKind{\typ}$, then $\WellFormedAtKind[\HoleCtx\TypVarCtx[],\typvar\KndAssump\knd[1]]{\typ}$ when $\ContextWellFormed[\HoleCtx\TypVarCtx,\typvar\KndAssump\knd[1]]$
     \end{lemma}
+    \begin{proof}
+        By rule induction/length of proof. \\
+        \begin{tabular*}{\textwidth}{lc@{\extracolsep{\fill}}ll}
+            L1.
+               &(9)& $ $ & \\
+        \end{tabular*}
+    \end{proof}
+    \begin{proof}
+        By rule induction/length of proof. \\
+        \begin{tabular*}{\textwidth}{lc@{\extracolsep{\fill}}ll}
+            L2.
+               &(9)& $ $ & \\
+        \end{tabular*}
+    \end{proof}
     \vphantom{.}\\
-    \begin{lemma}
+    \begin{lemma}[OK-PK]
         If $\PrincipalKind{\typ}$, then $\ContextWellFormed$ and $\KindWellFormed$
     \end{lemma}
-    \begin{lemma}
+    \begin{lemma}[OK-WFaK]
         If $\WellFormedAtKind{\typ}$, then $\ContextWellFormed$ and $\KindWellFormed$
     \end{lemma}
-    \begin{lemma}
+    \begin{lemma}[OK-MatchPi]
         If $\MatchedPiKind{\knd}$, then $\ContextWellFormed$ and $\KindWellFormed$ and $\KindWellFormed[\DepFunKind]$
     \end{lemma}
-    \begin{lemma}
+    \begin{lemma}[OK-KEquiv]
         If $\KindEquiv{\knd[1]}{\knd[2]}$, then $\ContextWellFormed$ and $\KindWellFormed[{\knd[1]}]$ and $\KindWellFormed[{\knd[2]}]$
     \end{lemma}
-    \begin{lemma}
+    \begin{lemma}[OK-CSK]
         If $\ConsistentSubKind{\knd[1]}{\knd[2]}$, then $\ContextWellFormed$ and $\KindWellFormed[{\knd[1]}]$ and $\KindWellFormed[{\knd[2]}]$
     \end{lemma}
-    \begin{lemma}
+    \begin{lemma}[OK-KWF]
         If $\KindWellFormed$, then $\ContextWellFormed$
+    \end{lemma}
+    \begin{lemma}[OK-Substitution]
+        \vphantom{.}\\ If $\WellFormedAtKind{\typ[L]}[\knd[L1]]$ and $\KindWellFormed[{\knd[L2]}][\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]$, then $\ContextWellFormed$ and $\KindWellFormed[\subst{\typ[L]}{\typvar[L]}{\knd[L2]}]$ \\
+        (induction on $\KindWellFormed[{\knd[L2]}][\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]$)
+    \end{lemma}
+    \begin{lemma}[K-Substitution]
+        \vphantom{.}\\ If $\WellFormedAtKind{\typ[L1]}[\knd[L1]]$ and $\WellFormedAtKind[\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]{\typ[L2]}[\knd[L2]]$, then $\WellFormedAtKind{\subst{\typ[L1]}{\typvar[L]}{\typ[L2]}}[\subst{\typ[L1]}{\typvar[L]}{\knd[L2]}]$ \\
+        (induction on $\WellFormedAtKind[\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]{\typ[L2]}[\knd[L2]]$)
     \end{lemma}
     \begin{proof}
         By simultaneous rule induction/length of proof. \\
         The interesting cases per lemma: \\
         \begin{tabular*}{\textwidth}{lc@{\extracolsep{\fill}}ll}
-            L1.
-               &(1)& $\WellFormedAtKind{\bse}[\SKind[\Type][\bse]]$ & by (9) \\
-               & & $\WellFormedAtKind{\bse}[\Type]$ & by (10) \\
-               &*& $\KindWellFormed[{\SKind[\Type][\bse]}]$ & by (43) \\
-               &*& $\ContextWellFormed$ & by premiss \\
-               &(8)& & bad \\
-            L2.
-               &(12)& $\WellFormedAtKind{\typ[2]}$ & by (10) \\
-               &*& $\KindWellFormed[{\SKind[\knd][\typ[2]]}]$ & by (43) \\
-           L4.
-               &(22)& $\PrincipalKind{\TypeAp[\typ][\typvar]}$ & \\
+            OK-PK.
+                &(1)& $\WellFormedAtKind{\bse}[\SKind[\Type][\bse]]$ & by (9) \\
+                & & $\WellFormedAtKind{\bse}[\Type]$ & by (10) \\
+                &*& $\KindWellFormed[{\SKind[\Type][\bse]}]$ & by (43) \\
+                &*& $\ContextWellFormed$ & by premiss \\
+                &(8)& & bad \\
+            OK-WFaK.
+                &(12)& $\WellFormedAtKind{\typ[2]}$ & by (10) \\
+                &*& $\KindWellFormed[{\SKind[\knd][\typ[2]]}]$ & by (43) \\
+            OK-KEquiv.
+                &(22)& $\PrincipalKind{\TypeAp[\typ][\typvar]}$ & \\
+            OK-Substitution.
+                &(41)& $\ContextWellFormed[\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]$ & premiss (41) \\
+                & & $\KindWellFormed[{\knd[L1]}]$ & by subderivation premiss (46) \\
+                &*& $\ContextWellFormed$ & by OK-KWF \\
+                &*& $\KindWellFormed[\subst{\typ[L]}{\typvar[L]}{\Type}]$ & by (41) and degenerate subst \\
+                &(43)& $\WellFormedAtKind[\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]{\typ}[\knd]$ & premiss (43) \\
+                & & $\ContextWellFormed[\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]$ & by OK-WFaK \\
+                & & $\KindWellFormed[{\knd[L1]}]$ & by subderivation premiss (46) \\
+                &*& $\ContextWellFormed$ & by OK-KWF \\
+                & & $\WellFormedAtKind{\subst{\typ[L1]}{\typvar[L]}{\typ}}[\subst{\typ[L1]}{\typvar[L]}{\knd}]$ & by K-Substitution on premiss \\
+                &*& $\KindWellFormed[\subst{\typ[L]}{\typvar[L]}{\SKind}]$ & by (43) \\
         \end{tabular*}
     \end{proof}
     \vphantom{.}
