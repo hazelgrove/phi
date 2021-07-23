@@ -147,7 +147,7 @@
                 \and
                 \rule{\WellFormedAtKind{\typ}[\SKind[\knd][\typ[1]]]}{\KindEquiv{\SKind[\SKind[\knd][\typ[1]]][\typ]}{\SKind[\knd][\typ[1]]}}
                 \and
-                \rule{\WellFormedAtKind{\typ}[\KHole]}{\KindEquiv{\SKind[\KHole]}{\KHole}}
+                \rule{\WellFormedAtKind{\typ}[\SKind[\KHole][\typ[1]]]}{\KindEquiv{\SKind[\KHole]}{\KHole}}
                 \and
                 \rule{\WellFormedAtKind{\typ}[\DepFunKind]}{\KindEquiv{\SKind[\DepFunKind][\typ]}{\DepFunKind[][\knd[1]][\SKind[\knd[2]][\TypeAp[\typ][\typvar]]]}}
                 \and
