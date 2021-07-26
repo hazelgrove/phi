@@ -130,8 +130,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % misc
     \newcommand*{\ExpVarCtx}[1][;]{\Gamma#1}
-    \NewDocumentCommand{\TypVarCtx}{O{;}o}{\Phi#1_{#2}}
-    \NewDocumentCommand{\InTypVarCtx}{O{;}oO{\knd}}{\TypVarCtx[][1],\typvar[#2]\KndAssump{#3},\TypVarCtx[][2]#1}
+    \NewDocumentCommand{\TypVarCtx}{O{;}O{}}{\Phi#1_{#2}}
+    \NewDocumentCommand{\InTypVarCtx}{O{;}O{}O{\knd}}{\TypVarCtx[][1],\typvar[#2]\KndAssump{#3},\TypVarCtx[][2]#1}
     \NewDocumentCommand{\ExtendTypVarCtx}{O{;}oO{\knd}}{\TypVarCtx[],\typvar[#2]\KndAssump{#3}#1}
     \newcommand*{\ModVarCtx}[1][;]{\Xi#1}
     \newcommand*{\SigVarCtx}[1][;]{\Psi#1}
@@ -142,7 +142,7 @@
     \newcommand*{\type}[2]{\mathsf{type(}#1, #2\mathsf{)}}
     \newcommand*{\submodule}[1]{\mathsf{submodule(}#1\mathsf{)}}
     \renewcommand*{\hole}[1][]{\blackrm{u_{#1}}}
-    \newcommand*{\subst}[3]{\mathsf{[#1/#2]#3}}
+    \newcommand*{\subst}[3]{\blacksf{[#1/#2]#3}}
 
     % https://tex.stackexchange.com/questions/128991/frac-or-inference-rule-with-dotted-line
     % for mathpartir's inferrule
