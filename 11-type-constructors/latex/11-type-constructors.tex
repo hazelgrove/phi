@@ -115,13 +115,15 @@
                 \rule{\PrincipalKind{\typ}}{\WellFormedAtKind{\typ}}
                 \and
                 \rule{\PrincipalKind{\typ}[\SKind[\knd][\typ]]}{\WellFormedAtKind{\typ}}
-                \and
-                \rule{\WellFormedAtKind{\typ}[\SKind[\knd][\typ[1]]] \\ \WellFormedAtKind{\typ[1]}}{\WellFormedAtKind{\typ}}
                 \\
                 \rule{\PrincipalKind{\typ}[\knd[1]] \\ \ConsistentSubKind{\knd[1]}{\knd}}{\WellFormedAtKind{\typ}}
                 \\
                 \mprset{myfraction=\inferruledotfrac}
                 \rule{\WellFormedAtKind{\typ}}{\WellFormedAtKind{\typ}[\SKind[\knd][\typ]]}
+                \and
+                \rule{\WellFormedAtKind{\typ}[\DepFunKind[][\knd[3]][\knd[4]]] \\ \ConsistentSubKind{\DepFunKind[][\knd[3]][\knd[4]]}{\DepFunKind}}{\WellFormedAtKind{\typ}[\DepFunKind]}
+                \\
+                \rule{\WellFormedAtKind{\typ}[\SKind[\knd][\typ[1]]] \\ \WellFormedAtKind{\typ[1]}}{\WellFormedAtKind{\typ}}
             \end{mathpar}
         \end{minipage}
     \subsection*{}
@@ -130,7 +132,7 @@
             \begin{mathpar}
                 \rule{ }{\MatchedPiKind{\KHole}[\DepFunKind[][\KHole][\KHole]]}
                 \and
-                \rule{\KindEquiv{\knd}{\SKind[\KHole][\typ[1]]}}{\MatchedPiKind{\knd}[\DepFunKind[][\knd][\knd]]}
+                \rule{\KindEquiv{\knd}{\SKind[\KHole]}}{\MatchedPiKind{\knd}[\DepFunKind[][\SKind[\KHole]][\SKind[\KHole][\TypeAp[\typ][\typvar]]]]}
                 \and
                 \rule{\KindEquiv{\knd}{\DepFunKind}}{\MatchedPiKind{\knd}}
             \end{mathpar}
@@ -149,8 +151,8 @@
                 \and
                 \rule{\WellFormedAtKind{\typ}[\DepFunKind]}{\KindEquiv{\SKind[\DepFunKind][\typ]}{\DepFunKind[1][\knd[1]][\SKind[\subst{\typvar[1]}{\typvar}{\knd[2]}][\TypeAp[\typ][\typvar[1]]]]}}
                 \and
-                \mprset{myfraction=\inferruledotfrac}
                 \rule{\KindEquiv{\knd[1]}{\knd[2]} \\ \KindEquiv[\HoleCtx\TypVarCtx[],\typvar\KndAssump\knd[1]]{\knd[3]}{\knd[4]}}{\KindEquiv{\DepFunKind[][\knd[1]][\knd[2]]}{\DepFunKind[][\knd[3]][\knd[4]]}}
+                \mprset{myfraction=\inferruledotfrac}
                 \and
                 \rule{\TypeEquivAtKind{\typ[1]}{\typ[2]}}{\KindEquiv{\SKind[\knd][\typ[1]]}{\SKind[\knd][\typ[2]]}}
             \end{mathpar}
@@ -265,6 +267,9 @@
     \end{lemma}
     \begin{lemma}[OK-CSK]
         If $\ConsistentSubKind{\knd[1]}{\knd[2]}$, then $\ContextWellFormed$ and $\KindWellFormed[{\knd[1]}]$ and $\KindWellFormed[{\knd[2]}]$
+    \end{lemma}
+    \begin{lemma}[OK-TEquivAK]
+        If $\TypeEquivAtKind{\typ[1]}{\typ[2]}$, then $\ContextWellFormed$ and $\WellFormedAtKind{\typ[1]}$ and $\WellFormedAtKind{\typ[2]}$ and $\KindWellFormed$
     \end{lemma}
     \begin{lemma}[OK-KWF]
         If $\KindWellFormed$, then $\ContextWellFormed$
