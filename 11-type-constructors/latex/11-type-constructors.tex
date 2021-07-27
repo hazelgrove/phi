@@ -188,11 +188,11 @@
                 \rule{\PrincipalKind{\typ[1]}[\knd[1]] \\ \KindEquiv{\knd[1]}{\SKind[\knd][\typ[2]]}}{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\knd]}
                 \and
                 \rule{\WellFormedAtKind{\typ[1]}[\DepFunKind[][\knd[1]][\knd[3]]] \\ \WellFormedAtKind{\typ[2]}[\DepFunKind[][\knd[1]][\knd[4]]] \\ \TypeEquivAtKind[\HoleCtx\TypVarCtx,\typvar\KndAssump\knd[1]]{\TypeAp[\typ[1]][\typvar]}{\TypeAp[\typ[2]][\typvar]}[\knd[2]]}{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\DepFunKind]}
+                \and
+                \rule{\TypeEquivAtKind{\typ[1]}{\typ[3]}[\DepFunKind] \\ \TypeEquivAtKind{\typ[2]}{\typ[4]}[\knd[1]]}{\TypeEquivAtKind{\TypeAp}{\TypeAp[\typ[3]][\typ[4]]}[\subst{\typ[2]}{\typvar}{\knd[2]}]}
                 \mprset{myfraction=\inferruledotfrac}
                 \and
                 \rule{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\SKind]}{\TypeEquivAtKind{\typ[1]}{\typ[2]}}
-                \and
-                \rule{\TypeEquivAtKind{\typ[1]}{\typ[3]}[\DepFunKind] \\ \TypeEquivAtKind{\typ[2]}{\typ[4]}[\knd[1]]}{\TypeEquivAtKind{\TypeAp}{\TypeAp[\typ[3]][\typ[4]]}[\subst{\typ[2]}{\typvar}{\knd[2]}]}
                 \\
                 \mprset{myfraction=\inferruledotfrac}
                 \rule{\WellFormedAtKind{\typ}}{\TypeEquivAtKind{\typ}{\typ}}
