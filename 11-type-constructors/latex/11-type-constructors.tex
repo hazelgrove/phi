@@ -169,33 +169,34 @@
                 \and
                 \rule[CSK\hyph SKind_{KHole}R]{\KindWellFormed \\ \KindWellFormed[{\SKind[\KHole]}]}{\ConsistentSubKind{\knd}{\SKind[\KHole]}}
                 \\
-                \rule{\KindEquiv{\knd[1]}{\knd[2]}}{\ConsistentSubKind{\knd[1]}{\knd[2]}}
+                \rule[CSK\hyph KEquiv]{\KindEquiv{\knd[1]}{\knd[2]}}{\ConsistentSubKind{\knd[1]}{\knd[2]}}
                 \and
-                \rule{\KindEquiv{\knd[1]}{\knd[3]} \\ \ConsistentSubKind{\knd[3]}{\knd[4]} \\ \KindEquiv{\knd[4]}{\knd[2]}}{\ConsistentSubKind{\knd[1]}{\knd[2]}}
+                \rule[CSK\hyph Normal]{\KindEquiv{\knd[1]}{\knd[3]} \\ \ConsistentSubKind{\knd[3]}{\knd[4]} \\ \KindEquiv{\knd[4]}{\knd[2]}}{\ConsistentSubKind{\knd[1]}{\knd[2]}}
                 \and
-                \rule{\KindWellFormed[{\SKind}]}{\ConsistentSubKind{\SKind}{\knd}}
+                \rule[CSK\hyph SKind]{\KindWellFormed[{\SKind}]}{\ConsistentSubKind{\SKind}{\knd}}
                 \and
-                \rule{\ConsistentSubKind{\knd[3]}{\knd[1]} \\ \ConsistentSubKind[\HoleCtx\TypVarCtx,\typvar\KndAssump\knd[3]]{\knd[2]}{\knd[4]}}{\ConsistentSubKind{\DepFunKind}{\DepFunKind[][\knd[3]][\knd[4]]}}
+                \rule[CSK\hyph \Pi]{\ConsistentSubKind{\knd[3]}{\knd[1]} \\ \ConsistentSubKind[\HoleCtx\TypVarCtx,\typvar\KndAssump\knd[3]]{\knd[2]}{\knd[4]}}{\ConsistentSubKind{\DepFunKind}{\DepFunKind[][\knd[3]][\knd[4]]}}
                 \\
                 \mprset{myfraction=\inferruledotfrac}
-                \rule{\ConsistentSubKind{\knd[1]}{\knd[2]} \\ \TypeEquivAtKind{\typ[1]}{\typ[2]}[\knd[1]]}{\ConsistentSubKind{\SKind[\knd[1]][\typ[1]]}{\SKind[\knd[2]][\typ[2]]}}
+                \rule[CSK-?]{\ConsistentSubKind{\knd[1]}{\knd[2]} \\ \TypeEquivAtKind{\typ[1]}{\typ[2]}[\knd[1]]}{\ConsistentSubKind{\SKind[\knd[1]][\typ[1]]}{\SKind[\knd[2]][\typ[2]]}}
             \end{mathpar}
         \end{minipage}
     \subsection*{}
         \begin{minipage}{\textwidth}
             \judgbox{\TypeEquivAtKind{\typ[1]}{\typ[2]}}{$\typ[1]$ is provably equivalent to $\typ[2]$ at kind $\knd$}
             \begin{mathpar}
-                \rule{\PrincipalKind{\typ[1]}[\knd[1]] \\ \KindEquiv{\knd[1]}{\SKind[\knd][\typ[2]]}}{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\knd]}
+                \rule[EquivAK\hyph Refl]{\WellFormedAtKind{\typ}}{\TypeEquivAtKind{\typ}{\typ}}
                 \and
-                \rule{\WellFormedAtKind{\typ[1]}[\DepFunKind[][\knd[1]][\knd[3]]] \\ \WellFormedAtKind{\typ[2]}[\DepFunKind[][\knd[1]][\knd[4]]] \\ \TypeEquivAtKind[\HoleCtx\TypVarCtx,\typvar\KndAssump\knd[1]]{\TypeAp[\typ[1]][\typvar]}{\TypeAp[\typ[2]][\typvar]}[\knd[2]]}{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\DepFunKind]}
+                \rule[EquivAK\hyph Symm]{\TypeEquivAtKind{\typ[2]}{\typ[1]}}{\TypeEquivAtKind{\typ[1]}{\typ[2]}}
                 \and
-                \rule{\TypeEquivAtKind{\typ[1]}{\typ[3]}[\DepFunKind] \\ \TypeEquivAtKind{\typ[2]}{\typ[4]}[\knd[1]]}{\TypeEquivAtKind{\TypeAp}{\TypeAp[\typ[3]][\typ[4]]}[\subst{\typ[2]}{\typvar}{\knd[2]}]}
+                \rule[EquivAK\hyph Trans]{\TypeEquivAtKind{\typ[1]}{\typ[3]} \\ \TypeEquivAtKind{\typ[3]}{\typ[1]}}{\TypeEquivAtKind{\typ[1]}{\typ[2]}}
                 \\
-                \rule{\WellFormedAtKind{\typ}}{\TypeEquivAtKind{\typ}{\typ}}
+                \rule[EquivAK\hyph SKind]{\PrincipalKind{\typ[1]}[\knd[1]] \\ \KindEquiv{\knd[1]}{\SKind[\knd][\typ[2]]}}{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\knd]}
                 \and
-                \rule{\TypeEquivAtKind{\typ[2]}{\typ[1]}}{\TypeEquivAtKind{\typ[1]}{\typ[2]}}
+                \rule[EquivAK\hyph\Pi]{\WellFormedAtKind{\typ[1]}[\DepFunKind[][\knd[1]][\knd[3]]] \\ \WellFormedAtKind{\typ[2]}[\DepFunKind[][\knd[1]][\knd[4]]] \\ \TypeEquivAtKind[\HoleCtx\TypVarCtx,\typvar\KndAssump\knd[1]]{\TypeAp[\typ[1]][\typvar]}{\TypeAp[\typ[2]][\typvar]}[\knd[2]]}{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\DepFunKind]}
                 \and
-                \rule{\TypeEquivAtKind{\typ[1]}{\typ[3]} \\ \TypeEquivAtKind{\typ[3]}{\typ[1]}}{\TypeEquivAtKind{\typ[1]}{\typ[2]}}
+                \rule[EquivAK\hyph Ap]{\TypeEquivAtKind{\typ[1]}{\typ[3]}[\DepFunKind] \\ \TypeEquivAtKind{\typ[2]}{\typ[4]}[\knd[1]]}{\TypeEquivAtKind{\TypeAp}{\TypeAp[\typ[3]][\typ[4]]}[\subst{\typ[2]}{\typvar}{\knd[2]}]}
+                \\
                 \mprset{myfraction=\inferruledotfrac}
                 \and
                 \rule{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\SKind]}{\TypeEquivAtKind{\typ[1]}{\typ[2]}}
@@ -212,24 +213,24 @@
         \begin{minipage}{\textwidth}
             \judgbox{\KindWellFormed}{$\knd$ is well formed}
             \begin{mathpar}
-                \rule{\ContextWellFormed}{\KindWellFormed[\Type]}
+                \rule[KWF\hyph Type]{\ContextWellFormed}{\KindWellFormed[\Type]}
                 \and
-                \rule{\ContextWellFormed}{\KindWellFormed[\KHole]}
+                \rule[KWF\hyph KHole]{\ContextWellFormed}{\KindWellFormed[\KHole]}
                 \and
-                \rule{\WellFormedAtKind{\typ}}{\KindWellFormed[\SKind]}
+                \rule[KWF\hyph SKind]{\WellFormedAtKind{\typ}}{\KindWellFormed[\SKind]}
                 \and
-                \rule{\KindWellFormed[{\knd[1]}] \\ \KindWellFormed[{\knd[2]}][\HoleCtx\ExtendTypVarCtx[][][{\knd[1]}]]}{\KindWellFormed[\DepFunKind]}
+                \rule[KWF\hyph\Pi]{\KindWellFormed[{\knd[1]}] \\ \KindWellFormed[{\knd[2]}][\HoleCtx\ExtendTypVarCtx[][][{\knd[1]}]]}{\KindWellFormed[\DepFunKind]}
             \end{mathpar}
         \end{minipage}
     \subsection*{}
         \begin{minipage}{\textwidth}
             \judgbox{\ContextWellFormed}{Context is well formed}
             \begin{mathpar}
-                \rule{ }{\ContextWellFormed[;]}
+                \rule[CWF\hyph Nil]{ }{\ContextWellFormed[;]}
                 \and
-                \rule{\KindWellFormed}{\ContextWellFormed[\HoleCtx\TypVarCtx[],\typvar\KndAssump\knd]}
+                \rule[CWF\hyph TypVar]{\KindWellFormed}{\ContextWellFormed[\HoleCtx\TypVarCtx[],\typvar\KndAssump\knd]}
                 \and
-                \rule{\KindWellFormed}{\ContextWellFormed[\HoleCtx[],\hole\KndAssump\knd;\TypVarCtx[]]}
+                \rule[CWF\hyph Hole]{\KindWellFormed}{\ContextWellFormed[\HoleCtx[],\hole\KndAssump\knd;\TypVarCtx[]]}
             \end{mathpar}
             Variables implicitly assumed to be fresh as necessary
         \end{minipage}
@@ -268,7 +269,7 @@
     \begin{lemma}[OK-CSK]
         If $\ConsistentSubKind{\knd[1]}{\knd[2]}$, then $\ContextWellFormed$ and $\KindWellFormed[{\knd[1]}]$ and $\KindWellFormed[{\knd[2]}]$
     \end{lemma}
-    \begin{lemma}[OK-TEquivAK]
+    \begin{lemma}[OK-EquivAK]
         If $\TypeEquivAtKind{\typ[1]}{\typ[2]}$, then $\ContextWellFormed$ and $\WellFormedAtKind{\typ[1]}$ and $\WellFormedAtKind{\typ[2]}$ and $\KindWellFormed$
     \end{lemma}
     \begin{lemma}[OK-KWF]
