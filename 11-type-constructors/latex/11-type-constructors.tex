@@ -91,70 +91,69 @@
         \begin{minipage}{\textwidth}
             \judgbox{\PrincipalKind{\typ}}{$\typ$ has principal (well formed) kind $\knd$}
             \begin{mathpar}
-                \rule{\ContextWellFormed}{\PrincipalKind{\bse}[\SKind[\Type][\bse]]}
+                \rule[PK-Base]{\ContextWellFormed}{\PrincipalKind{\bse}[\SKind[\Type][\bse]]}
                 \and
-                \rule{\ContextWellFormed[\HoleCtx\InTypVarCtx]}{\PrincipalKind{\typvar}[\SKind[\knd][\typvar]]}
+                \rule[PK-Var]{\ContextWellFormed[\HoleCtx\InTypVarCtx]}{\PrincipalKind{\typvar}[\SKind[\knd][\typvar]]}
                 \and
-                \rule{\WellFormedAtKind{\typ[1]}[\Type] \\ \WellFormedAtKind{\typ[2]}[\Type]}{\PrincipalKind{\binop}[\SKind[\Type][\binop]]}
+                \rule[PK-$\oplus$]{\WellFormedAtKind{\typ[1]}[\Type] \\ \WellFormedAtKind{\typ[2]}[\Type]}{\PrincipalKind{\binop}[\SKind[\Type][\binop]]}
                 \and
-                \rule{\ContextWellFormed[\InTypHoleCtx\TypVarCtx]}{\PrincipalKind{\ETypeHole}[\SKind[\knd][\ETypeHole]]}
+                \rule[PK-EHole]{\ContextWellFormed[\InTypHoleCtx\TypVarCtx]}{\PrincipalKind{\ETypeHole}[\SKind[\knd][\ETypeHole]]}
                 \and
-                \rule{\ContextWellFormed[\InTypHoleCtx\TypVarCtx] \\ \WellFormedAtKind{\typ}[\knd[1]]}{\PrincipalKind{\NETypeHole}[\SKind[\knd][\NETypeHole]]}
+                \rule[PK-NEHole]{\ContextWellFormed[\InTypHoleCtx\TypVarCtx] \\ \WellFormedAtKind{\typ}[\knd[1]]}{\PrincipalKind{\NETypeHole}[\SKind[\knd][\NETypeHole]]}
                 \and
-                \rule{\ContextWellFormed[\InTypHoleCtx\TypVarCtx] \\ \typvar\notin\dom{\TypVarCtx[]}}{\PrincipalKind{\UnboundTypeVar}[\SKind[\knd][\UnboundTypeVar]]}
+                \rule[PK-Unbound]{\ContextWellFormed[\InTypHoleCtx\TypVarCtx] \\ \typvar\notin\dom{\TypVarCtx[]}}{\PrincipalKind{\UnboundTypeVar}[\SKind[\knd][\UnboundTypeVar]]}
                 \and
-                \rule{\PrincipalKind[\HoleCtx\ExtendTypVarCtx[][][{\knd[1]}]]{\typ}[\knd[2]]}{\PrincipalKind{\TypeFun[][\knd[1]]}[\SKind[\DepFunKind][\TypeFun[][\knd[1]]]]}
+                \rule[PK-$\lambda$]{\PrincipalKind[\HoleCtx\ExtendTypVarCtx[][][{\knd[1]}]]{\typ}[\knd[2]]}{\PrincipalKind{\TypeFun[][\knd[1]]}[\SKind[\DepFunKind][\TypeFun[][\knd[1]]]]}
                 \and
-                \rule{\PrincipalKind{\typ[1]} \\ \MatchedPiKind{\knd} \\ \WellFormedAtKind{\typ[2]}[\knd[1]]}{\PrincipalKind{\TypeAp}[\subst{\typ[2]}{\typvar}{\knd[2]}]}
+                \rule[PK-Ap]{\PrincipalKind{\typ[1]} \\ \MatchedPiKind{\knd} \\ \WellFormedAtKind{\typ[2]}[\knd[1]]}{\PrincipalKind{\TypeAp}[\subst{\typ[2]}{\typvar}{\knd[2]}]}
             \end{mathpar}
         \end{minipage}
     \subsection*{}
         \begin{minipage}{\textwidth}
             \judgbox{\WellFormedAtKind{\typ}}{$\typ$ is well formed at kind $\knd$}
             \begin{mathpar}
-                \rule{\PrincipalKind{\typ}}{\WellFormedAtKind{\typ}}
+                \rule[WFaK-1]{\PrincipalKind{\typ}[\SKind[\knd][\typ]]}{\WellFormedAtKind{\typ}}
                 \and
-                \rule{\PrincipalKind{\typ}[\SKind[\knd][\typ]]}{\WellFormedAtKind{\typ}}
-                \\
-                \rule{\PrincipalKind{\typ}[\knd[1]] \\ \ConsistentSubKind{\knd[1]}{\knd}}{\WellFormedAtKind{\typ}}
+                \rule[WFaK-Subsump]{\PrincipalKind{\typ}[\knd[1]] \\ \ConsistentSubKind{\knd[1]}{\knd}}{\WellFormedAtKind{\typ}}
                 \\
                 \mprset{myfraction=\inferruledotfrac}
-                \rule{\WellFormedAtKind{\typ}}{\WellFormedAtKind{\typ}[\SKind[\knd][\typ]]}
+                \rule[WFaK-Reit]{\PrincipalKind{\typ}}{\WellFormedAtKind{\typ}}
                 \and
-                \rule{\WellFormedAtKind{\typ}[\DepFunKind[][\knd[3]][\knd[4]]] \\ \ConsistentSubKind{\DepFunKind[][\knd[3]][\knd[4]]}{\DepFunKind}}{\WellFormedAtKind{\typ}[\DepFunKind]}
-                \\
-                \rule{\WellFormedAtKind{\typ}[\SKind[\knd][\typ[1]]] \\ \WellFormedAtKind{\typ[1]}}{\WellFormedAtKind{\typ}}
+                \rule[WFaK-Self]{\WellFormedAtKind{\typ}}{\WellFormedAtKind{\typ}[\SKind[\knd][\typ]]}
+                \and
+                \rule[WFaK-$\Pi$CSKTrans]{\WellFormedAtKind{\typ}[\DepFunKind[][\knd[3]][\knd[4]]] \\ \ConsistentSubKind{\DepFunKind[][\knd[3]][\knd[4]]}{\DepFunKind}}{\WellFormedAtKind{\typ}[\DepFunKind]}
+                \and
+                \rule[WFaK-Flatten]{\WellFormedAtKind{\typ}[\SKind[\knd][\typ[1]]] \\ \WellFormedAtKind{\typ[1]}}{\WellFormedAtKind{\typ}}
             \end{mathpar}
         \end{minipage}
     \subsection*{}
         \begin{minipage}{\textwidth}
             \judgbox{\MatchedPiKind{\knd}}{$\knd$ has matched $\Pi$-kind $\DepFunKind$}
             \begin{mathpar}
-                \rule{ }{\MatchedPiKind{\KHole}[\DepFunKind[][\KHole][\KHole]]}
+                \rule[$\MatchedPiKindOp$-KHole]{\ContextWellFormed}{\MatchedPiKind{\KHole}[\DepFunKind[][\KHole][\KHole]]}
                 \and
-                \rule{\KindEquiv{\knd}{\SKind[\KHole]}}{\MatchedPiKind{\knd}[\DepFunKind[][\SKind[\KHole]][\SKind[\KHole][\TypeAp[\typ][\typvar]]]]}
+                \rule[$\MatchedPiKindOp$-SKHole]{\KindEquiv{\knd}{\SKind[\KHole]}}{\MatchedPiKind{\knd}[\DepFunKind[][\SKind[\KHole]][\SKind[\KHole][\TypeAp[\typ][\typvar]]]]}
                 \and
-                \rule{\KindEquiv{\knd}{\DepFunKind}}{\MatchedPiKind{\knd}}
+                \rule[$\MatchedPiKindOp$-$\Pi$]{\KindEquiv{\knd}{\DepFunKind}}{\MatchedPiKind{\knd}}
             \end{mathpar}
         \end{minipage}
     \subsection*{}
         \begin{minipage}{\textwidth}
             \judgbox{\KindEquiv{\knd[1]}{\knd[2]}}{$\knd[1]$ is equivalent to $\knd[2]$}
             \begin{mathpar}
-                \rule{\KindWellFormed}{\KindEquiv{\knd}{\knd}}
+                \rule[KEquiv-Refl]{\KindWellFormed}{\KindEquiv{\knd}{\knd}}
                 \and
-                \rule{\KindEquiv{\knd[2]}{\knd[1]}}{\KindEquiv{\knd[1]}{\knd[2]}}
+                \rule[KEquiv-Symm]{\KindEquiv{\knd[2]}{\knd[1]}}{\KindEquiv{\knd[1]}{\knd[2]}}
                 \and
-                \rule{\KindEquiv{\knd[1]}{\knd[3]} \\ \KindEquiv{\knd[3]}{\knd[2]}}{\KindEquiv{\knd[1]}{\knd[2]}}
+                \rule[KEquiv-Trans]{\KindEquiv{\knd[1]}{\knd[3]} \\ \KindEquiv{\knd[3]}{\knd[2]}}{\KindEquiv{\knd[1]}{\knd[2]}}
+                \\
+                \rule[KEquiv-$\mathtt{SKind_{SKind}}$]{\WellFormedAtKind{\typ}[\SKind[\knd][\typ[1]]]}{\KindEquiv{\SKind[\SKind[\knd][\typ[1]]][\typ]}{\SKind[\knd][\typ[1]]}}
                 \and
-                \rule{\WellFormedAtKind{\typ}[\SKind[\knd][\typ[1]]]}{\KindEquiv{\SKind[\SKind[\knd][\typ[1]]][\typ]}{\SKind[\knd][\typ[1]]}}
+                \rule[KEquiv-$\mathtt{SKind_{\Pi}}$]{\WellFormedAtKind{\typ}[\DepFunKind]}{\KindEquiv{\SKind[\DepFunKind][\typ]}{\DepFunKind[1][\knd[1]][\SKind[\subst{\typvar[1]}{\typvar}{\knd[2]}][\TypeAp[\typ][\typvar[1]]]]}}
                 \and
-                \rule{\WellFormedAtKind{\typ}[\DepFunKind]}{\KindEquiv{\SKind[\DepFunKind][\typ]}{\DepFunKind[1][\knd[1]][\SKind[\subst{\typvar[1]}{\typvar}{\knd[2]}][\TypeAp[\typ][\typvar[1]]]]}}
+                \rule[KEquiv-$\Pi$]{\KindEquiv{\knd[1]}{\knd[2]} \\ \KindEquiv[\HoleCtx\TypVarCtx[],\typvar\KndAssump\knd[1]]{\knd[3]}{\knd[4]}}{\KindEquiv{\DepFunKind[][\knd[1]][\knd[2]]}{\DepFunKind[][\knd[3]][\knd[4]]}}
                 \and
-                \rule{\KindEquiv{\knd[1]}{\knd[2]} \\ \KindEquiv[\HoleCtx\TypVarCtx[],\typvar\KndAssump\knd[1]]{\knd[3]}{\knd[4]}}{\KindEquiv{\DepFunKind[][\knd[1]][\knd[2]]}{\DepFunKind[][\knd[3]][\knd[4]]}}
-                %\mprset{myfraction=\inferruledotfrac}
-                \and
-                \rule{\TypeEquivAtKind{\typ[1]}{\typ[2]}}{\KindEquiv{\SKind[\knd][\typ[1]]}{\SKind[\knd][\typ[2]]}}
+                \rule[KEquiv-SKind]{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\knd[1]] \\ \KindEquiv{\knd[1]}{\knd[2]}}{\KindEquiv{\SKind[\knd[1]][\typ[1]]}{\SKind[\knd[2]][\typ[2]]}}
             \end{mathpar}
         \end{minipage}
     \subsection*{}
