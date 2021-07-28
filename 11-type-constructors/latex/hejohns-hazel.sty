@@ -162,6 +162,7 @@
     \newcommand{\hintpagebreak}{\pagebreak[3]} % 0-4; 2 too weak, 4 too strong
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % judgments
+    \NewDocumentCommand{\J}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}}{\mathrm{#1 \vdash \mathcal{J}}}
     % declarative
         \newcommand*{\TypAsc}{\black{:}}
         \newcommand*{\TypAssump}{\TypAsc}
