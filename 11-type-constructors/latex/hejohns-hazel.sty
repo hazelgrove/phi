@@ -135,8 +135,9 @@
     \NewDocumentCommand{\ExtendTypVarCtx}{O{;}oO{\knd}}{\TypVarCtx[],\typvar[#2]\KndAssump{#3}#1}
     \newcommand*{\ModVarCtx}[1][;]{\Xi#1}
     \newcommand*{\SigVarCtx}[1][;]{\Psi#1}
-    \NewDocumentCommand{\HoleCtx}{O{;}O{}}{\Delta#1_{#2}}
+    \NewDocumentCommand{\HoleCtx}{O{;}O{}}{\Delta_{#2}#1}
     \NewDocumentCommand{\InTypHoleCtx}{O{;}O{}O{\knd}}{\HoleCtx[][1],\hole[#2]\KndAssump{#3},\HoleCtx[][2]#1}
+    \NewDocumentCommand{\ExtendTypHoleCtx}{O{;}oO{\knd}}{\HoleCtx[],\hole[#2]\KndAssump{#3}#1}
     \newcommand*{\dom}[1]{\mathsf{dom(}#1\mathsf{)}}
     \newcommand*{\val}[1]{\mathsf{val(}#1\mathsf{)}}
     \newcommand*{\type}[2]{\mathsf{type(}#1, #2\mathsf{)}}

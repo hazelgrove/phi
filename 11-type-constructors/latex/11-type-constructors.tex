@@ -237,19 +237,40 @@
 \section{Metatheory}
     \subsection*{}
     \begin{lemma}[Weakening]
-        If $\WellFormedAtKind{\typ}$, then $\WellFormedAtKind[\HoleCtx\TypVarCtx[],\typvar\KndAssump\knd[1]]{\typ}$ when $\ContextWellFormed[\HoleCtx\TypVarCtx,\typvar\KndAssump\knd[1]]$
+        \vphantom{.}\\
+
+        If $\PrincipalKind{\typ}$ and $\ContextWellFormed[\ExtendTypHoleCtx[;][][\knd[L]]\TypVarCtx[]]$, then $\PrincipalKind[\ExtendTypHoleCtx[;][][\knd[L]]\TypVarCtx[]]{\typ}$
+
+        If $\PrincipalKind{\typ}$ and $\ContextWellFormed[\HoleCtx\ExtendTypVarCtx[][][\knd[L]]]$, then $\PrincipalKind[\HoleCtx\ExtendTypVarCtx[][][\knd[L]]]{\typ}$
+
+        If $\WellFormedAtKind{\typ}$ and $\ContextWellFormed[\ExtendTypHoleCtx[;][][\knd[L]]\TypVarCtx[]]$, then $\WellFormedAtKind[\ExtendTypHoleCtx[;][][\knd[L]]\TypVarCtx[]]{\typ}$
+
+        If $\WellFormedAtKind{\typ}$ and $\ContextWellFormed[\HoleCtx\ExtendTypVarCtx[][][\knd[L]]]$, then $\WellFormedAtKind[\HoleCtx\ExtendTypVarCtx[][][\knd[L]]]{\typ}$
+
+        If $\MatchedPiKind{\knd}$ and $\ContextWellFormed[\ExtendTypHoleCtx[;][][\knd[L]]\TypVarCtx[]]$, then $\MatchedPiKind[\ExtendTypHoleCtx[;][][\knd[L]]\TypVarCtx[]]{\knd}$
+
+        If $\MatchedPiKind{\knd}$ and $\ContextWellFormed[\HoleCtx\ExtendTypVarCtx[][][\knd[L]]]$, then $\MatchedPiKind[\HoleCtx\ExtendTypVarCtx[][][\knd[L]]]{\knd}$
+
+        If $\KindEquiv{\knd[1]}{\knd[2]}$ and $\ContextWellFormed[\ExtendTypHoleCtx[;][][\knd[L]]\TypVarCtx[]]$, then $\KindEquiv[\ExtendTypHoleCtx[;][][\knd[L]]\TypVarCtx[]]{\knd[1]}{\knd[2]}$
+
+        If $\KindEquiv{\knd[1]}{\knd[2]}$ and $\ContextWellFormed[\HoleCtx\ExtendTypVarCtx[][][\knd[L]]]$, then $\KindEquiv[\HoleCtx\ExtendTypVarCtx[][][\knd[L]]]{\knd[1]}{\knd[2]}$
+
+        If $\ConsistentSubKind{\knd[1]}{\knd[2]}$ and $\ContextWellFormed[\ExtendTypHoleCtx[;][][\knd[L]]\TypVarCtx[]]$, then $\ConsistentSubKind[\ExtendTypHoleCtx[;][][\knd[L]]\TypVarCtx[]]{\knd[1]}{\knd[2]}$
+
+        If $\ConsistentSubKind{\knd[1]}{\knd[2]}$ and $\ContextWellFormed[\HoleCtx\ExtendTypVarCtx[][][\knd[L]]]$, then $\ConsistentSubKind[\HoleCtx\ExtendTypVarCtx[][][\knd[L]]]{\knd[1]}{\knd[2]}$
+
+        If $\TypeEquivAtKind{\typ[1]}{\typ[2]}$ and $\ContextWellFormed[\ExtendTypHoleCtx[;][][\knd[L]]\TypVarCtx[]]$, then $\TypeEquivAtKind[\ExtendTypHoleCtx[;][][\knd[L]]\TypVarCtx[]]{\typ[1]}{\typ[2]}$
+
+        If $\TypeEquivAtKind{\typ[1]}{\typ[2]}$ and $\ContextWellFormed[\HoleCtx\ExtendTypVarCtx[][][\knd[L]]]$, then $\TypeEquivAtKind[\HoleCtx\ExtendTypVarCtx[][][\knd[L]]]{\typ[1]}{\typ[2]}$
+        
+        If $\KindWellFormed$ and $\ContextWellFormed[\ExtendTypHoleCtx[;][][\knd[L]]\TypVarCtx[]]$, then $\KindWellFormed[\ExtendTypHoleCtx[;][][\knd[L]]\TypVarCtx[]]$
+
+        If $\KindWellFormed$ and $\ContextWellFormed[\HoleCtx\ExtendTypVarCtx[][][\knd[L]]]$, then $\KindWellFormed[\HoleCtx\ExtendTypVarCtx[][][\knd[L]]]$
     \end{lemma}
     \begin{proof}
-        By rule induction/length of proof. \\
+        By simultaneous induction on derivations. \\
         \begin{tabular*}{\textwidth}{lc@{\extracolsep{\fill}}ll}
             L1.
-               &(9)& $ $ & \\
-        \end{tabular*}
-    \end{proof}
-    \begin{proof}
-        By rule induction/length of proof. \\
-        \begin{tabular*}{\textwidth}{lc@{\extracolsep{\fill}}ll}
-            L2.
                &(9)& $ $ & \\
         \end{tabular*}
     \end{proof}
@@ -288,7 +309,7 @@
         (induction on $\WellFormedAtKind[\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]{\typ[L2]}[\knd[L2]]$)
     \end{lemma}
     \begin{proof}
-        By simultaneous rule induction/length of proof. \\
+        By simultaneous induction on derivations. \\
         The interesting cases per lemma: \\
         \begin{tabular*}{\textwidth}{lc@{\extracolsep{\fill}}ll}
             OK-PK.
