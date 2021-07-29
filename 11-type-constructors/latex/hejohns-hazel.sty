@@ -167,7 +167,7 @@
     \newcommand*{\inferruledotfrac}[2]{
         \hbox{$\dotfrac{#1}{#2}$}
     }
-    \RenewDocumentCommand{\infer}{o}{\inferrule*[right=#1]}
+    \RenewDocumentCommand{\infer}{oO{}}{\inferrule*[right=#1#2]}
     \newcommand{\hintpagebreak}{\pagebreak[3]} % 0-4; 2 too weak, 4 too strong
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % judgments

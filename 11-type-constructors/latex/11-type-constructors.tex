@@ -48,6 +48,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % packages
     \usepackage{hejohns-hazel}
+    \usepackage{pdflscape} % https://tex.stackexchange.com/questions/150394/how-to-switch-from-portrait-to-landscape-page-orientation?noredirect=1&lq=1
 % commands
     \newcommand*{\vt}{~\vert~}
 % automatically label rules
@@ -295,12 +296,23 @@
     \begin{proof}
         By simultaneous induction on derivations. \\
         The interesting cases per lemma: \\
+        \begin{landscape}
         \subsubsection*{Weakening}
         \begin{mathpar}
             \infer[PK-$\lambda$]
                 {\infer[Marked-Exchange]
                     {\infer[Weakening]
-                        { }
+                        {\infer[premiss]
+                            {d}
+                        {\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\typ}[\knd[2]]}
+                        \\\infer[CWF-TypVar]
+                            {\infer[Weakening]
+                                {a}
+                            {\KindWellFormed[\knd[2]]}
+                            \\\infer[]
+                                {b}
+                            {c}}
+                        {\ContextWellFormed[\HoleCtx\xxExtendTypVarCtx[][]{\knd[1]}[L]{\knd[L]}]}}
                     {\PrincipalKind[\HoleCtx\xxExtendTypVarCtx[][]{\knd[1]}[L]{\knd[L]}]{\typ}[\knd[2]]}
                     \\\infer[CWF-TypVar]
                         { }
@@ -308,6 +320,7 @@
                 {\PrincipalKind[\HoleCtx\xxExtendTypVarCtx[][L]{\knd[L]}[]{\knd[1]}]{\typ}[\knd[2]]}}
             {\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]{\TypeFun[][\knd[1]]}[\SKind[\DepFunKind][\TypeFun[][\knd[1]]]]}
         \end{mathpar}
+        \end{landscape}
         \begin{tabular*}{\textwidth}{lc@{\extracolsep{\fill}}ll}
             Weakening.
                 %&PK-$\lambda$& $\PrincipalKind[\HoleCtx\xxExtendTypVarCtx[][]{\knd[1]}[L]{\knd[L]}]{\typ}[\knd[2]]$ & by Weakening on premiss \\
