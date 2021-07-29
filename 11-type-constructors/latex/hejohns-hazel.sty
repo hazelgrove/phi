@@ -130,15 +130,20 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % misc
     \newcommand*{\ExpVarCtx}[1][;]{\Gamma#1}
-    \NewDocumentCommand{\TypVarCtx}{O{;}O{}}{\Phi#1_{#2}}
+    \NewDocumentCommand{\TypVarCtx}{O{;}O{}}{\Phi_{#2}#1}
+    \NewDocumentCommand{\xTypVarCtx}{O{;}O{}}{\underline{\Phi_{#2}}#1}
     \NewDocumentCommand{\InTypVarCtx}{O{;}O{}O{\knd}}{\TypVarCtx[][1],\typvar[#2]\KndAssump{#3},\TypVarCtx[][2]#1}
     \NewDocumentCommand{\ExtendTypVarCtx}{O{;}oO{\knd}}{\TypVarCtx[],\typvar[#2]\KndAssump{#3}#1}
+    \NewDocumentCommand{\xExtendTypVarCtx}{O{;}oO{\knd}}{\xTypVarCtx[],\typvar[#2]\KndAssump{#3}#1}
     \newcommand*{\ModVarCtx}[1][;]{\Xi#1}
     \newcommand*{\SigVarCtx}[1][;]{\Psi#1}
     \NewDocumentCommand{\HoleCtx}{O{;}O{}}{\Delta_{#2}#1}
+    \NewDocumentCommand{\xHoleCtx}{O{;}O{}}{\underline{\Delta_{#2}}#1}
     \NewDocumentCommand{\InTypHoleCtx}{O{;}O{}O{\knd}}{\HoleCtx[][1],\hole[#2]\KndAssump{#3},\HoleCtx[][2]#1}
     \NewDocumentCommand{\ExtendTypHoleCtx}{O{;}oO{\knd}}{\HoleCtx[],\hole[#2]\KndAssump{#3}#1}
+    \NewDocumentCommand{\xExtendTypHoleCtx}{O{;}oO{\knd}}{\xHoleCtx[],\hole[#2]\KndAssump{#3}#1}
     \newcommand*{\dom}[1]{\mathsf{dom(}#1\mathsf{)}}
+    \renewcommand*{\dom}[1]{#1}
     \newcommand*{\val}[1]{\mathsf{val(}#1\mathsf{)}}
     \newcommand*{\type}[2]{\mathsf{type(}#1, #2\mathsf{)}}
     \newcommand*{\submodule}[1]{\mathsf{submodule(}#1\mathsf{)}}

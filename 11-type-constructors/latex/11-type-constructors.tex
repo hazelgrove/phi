@@ -104,7 +104,7 @@
                 \and
                 \rule[PK\hyph Unbound]{\ContextWellFormed[\InTypHoleCtx\TypVarCtx] \\ \typvar\notin\dom{\TypVarCtx[]}}{\PrincipalKind{\UnboundTypeVar}[\SKind[\knd][\UnboundTypeVar]]}
                 \and
-                \rule[PK\hyph \lambda]{\PrincipalKind[\HoleCtx\ExtendTypVarCtx[][][{\knd[1]}]]{\typ}[\knd[2]]}{\PrincipalKind{\TypeFun[][\knd[1]]}[\SKind[\DepFunKind][\TypeFun[][\knd[1]]]]}
+                \rule[PK\hyph \lambda]{\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][][{\knd[1]}]]{\typ}[\knd[2]]}{\PrincipalKind{\TypeFun[][\knd[1]]}[\SKind[\DepFunKind][\TypeFun[][\knd[1]]]]}
                 \and
                 \rule[PK\hyph Ap]{\PrincipalKind{\typ[1]} \\ \MatchedPiKind{\knd} \\ \WellFormedAtKind{\typ[2]}[\knd[1]]}{\PrincipalKind{\TypeAp}[\subst{\typ[2]}{\typvar}{\knd[2]}]}
             \end{mathpar}
@@ -152,7 +152,7 @@
                 \and
                 \rule[KEquiv\hyph SKind_{\Pi}]{\WellFormedAtKind{\typ}[\DepFunKind]}{\KindEquiv{\SKind[\DepFunKind][\typ]}{\DepFunKind[1][\knd[1]][\SKind[\subst{\typvar[1]}{\typvar}{\knd[2]}][\TypeAp[\typ][\typvar[1]]]]}}
                 \and
-                \rule[KEquiv\hyph \Pi]{\KindEquiv{\knd[1]}{\knd[2]} \\ \KindEquiv[\HoleCtx\TypVarCtx[],\typvar\KndAssump\knd[1]]{\knd[3]}{\knd[4]}}{\KindEquiv{\DepFunKind[][\knd[1]][\knd[2]]}{\DepFunKind[][\knd[3]][\knd[4]]}}
+                \rule[KEquiv\hyph \Pi]{\KindEquiv{\knd[1]}{\knd[2]} \\ \KindEquiv[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\knd[3]}{\knd[4]}}{\KindEquiv{\DepFunKind[][\knd[1]][\knd[2]]}{\DepFunKind[][\knd[3]][\knd[4]]}}
                 \and
                 \rule[KEquiv\hyph SKind]{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\knd[1]] \\ \KindEquiv{\knd[1]}{\knd[2]}}{\KindEquiv{\SKind[\knd[1]][\typ[1]]}{\SKind[\knd[2]][\typ[2]]}}
             \end{mathpar}
@@ -175,7 +175,7 @@
                 \and
                 \rule[CSK\hyph SKind]{\KindWellFormed[{\SKind}]}{\ConsistentSubKind{\SKind}{\knd}}
                 \and
-                \rule[CSK\hyph \Pi]{\ConsistentSubKind{\knd[3]}{\knd[1]} \\ \ConsistentSubKind[\HoleCtx\TypVarCtx,\typvar\KndAssump\knd[3]]{\knd[2]}{\knd[4]}}{\ConsistentSubKind{\DepFunKind}{\DepFunKind[][\knd[3]][\knd[4]]}}
+                \rule[CSK\hyph \Pi]{\ConsistentSubKind{\knd[3]}{\knd[1]} \\ \ConsistentSubKind[\HoleCtx\xExtendTypVarCtx[][][\knd[3]]]{\knd[2]}{\knd[4]}}{\ConsistentSubKind{\DepFunKind}{\DepFunKind[][\knd[3]][\knd[4]]}}
                 \\
                 \mprset{myfraction=\inferruledotfrac}
                 \rule[CSK-?]{\ConsistentSubKind{\knd[1]}{\knd[2]} \\ \TypeEquivAtKind{\typ[1]}{\typ[2]}[\knd[1]]}{\ConsistentSubKind{\SKind[\knd[1]][\typ[1]]}{\SKind[\knd[2]][\typ[2]]}}
@@ -193,7 +193,7 @@
                 \\
                 \rule[EquivAK\hyph SKind]{\PrincipalKind{\typ[1]}[\knd[1]] \\ \KindEquiv{\knd[1]}{\SKind[\knd][\typ[2]]}}{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\knd]}
                 \and
-                \rule[EquivAK\hyph\Pi]{\WellFormedAtKind{\typ[1]}[\DepFunKind[][\knd[1]][\knd[3]]] \\ \WellFormedAtKind{\typ[2]}[\DepFunKind[][\knd[1]][\knd[4]]] \\ \TypeEquivAtKind[\HoleCtx\TypVarCtx,\typvar\KndAssump\knd[1]]{\TypeAp[\typ[1]][\typvar]}{\TypeAp[\typ[2]][\typvar]}[\knd[2]]}{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\DepFunKind]}
+                \rule[EquivAK\hyph\Pi]{\WellFormedAtKind{\typ[1]}[\DepFunKind[][\knd[1]][\knd[3]]] \\ \WellFormedAtKind{\typ[2]}[\DepFunKind[][\knd[1]][\knd[4]]] \\ \TypeEquivAtKind[\HoleCtx\xTypVarCtx,\typvar\KndAssump\knd[1]]{\TypeAp[\typ[1]][\typvar]}{\TypeAp[\typ[2]][\typvar]}[\knd[2]]}{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\DepFunKind]}
                 \and
                 \rule[EquivAK\hyph Ap]{\TypeEquivAtKind{\typ[1]}{\typ[3]}[\DepFunKind] \\ \TypeEquivAtKind{\typ[2]}{\typ[4]}[\knd[1]]}{\TypeEquivAtKind{\TypeAp}{\TypeAp[\typ[3]][\typ[4]]}[\subst{\typ[2]}{\typvar}{\knd[2]}]}
                 \\
@@ -204,7 +204,7 @@
                 \mprset{myfraction=\inferruledotfrac}
                 \rule{\TypeEquivAtKind{\typ[1]}{\typ[3]}[\Type] \\ \TypeEquivAtKind{\typ[2]}{\typ[4]}[\Type]}{\TypeEquivAtKind{\binop}{\binop[\typ[3]][\typ[4]]}[\Type]}
                 \and
-                \rule{\KindEquiv{\knd[1]}{\knd[2]} \\ \TypeEquivAtKind[\HoleCtx\TypVarCtx[],\typvar\KndAssump\knd[1]]{\typ[1]}{\typ[2]}}{\TypeEquivAtKind{\TypeFun[][\knd[1]][\typ[1]]}{\TypeFun[][\knd[2]][\typ[2]]}[\DepFunKind[][\knd[1]][\knd]]}
+                \rule{\KindEquiv{\knd[1]}{\knd[2]} \\ \TypeEquivAtKind[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\typ[1]}{\typ[2]}}{\TypeEquivAtKind{\TypeFun[][\knd[1]][\typ[1]]}{\TypeFun[][\knd[2]][\typ[2]]}[\DepFunKind[][\knd[1]][\knd]]}
                 \and
                 \rule{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\knd[1]] \\ \KindEquiv{\knd[1]}{\knd}}{\TypeEquivAtKind{\typ[1]}{\typ[2]}}
             \end{mathpar}
@@ -219,7 +219,7 @@
                 \and
                 \rule[KWF\hyph SKind]{\WellFormedAtKind{\typ}}{\KindWellFormed[\SKind]}
                 \and
-                \rule[KWF\hyph\Pi]{\KindWellFormed[{\knd[1]}] \\ \KindWellFormed[{\knd[2]}][\HoleCtx\ExtendTypVarCtx[][][{\knd[1]}]]}{\KindWellFormed[\DepFunKind]}
+                \rule[KWF\hyph\Pi]{\KindWellFormed[{\knd[2]}][\HoleCtx\xExtendTypVarCtx[][][{\knd[1]}]]}{\KindWellFormed[\DepFunKind]}
             \end{mathpar}
         \end{minipage}
     \subsection*{}
@@ -228,15 +228,20 @@
             \begin{mathpar}
                 \rule[CWF\hyph Nil]{ }{\ContextWellFormed[\cdot;\cdot]}
                 \and
-                \rule[CWF\hyph TypVar]{\KindWellFormed}{\ContextWellFormed[\HoleCtx\TypVarCtx[],\typvar\KndAssump\knd]}
+                \rule[CWF\hyph TypVar]{\typvar\notin\dom{\TypVarCtx[]} \\ \KindWellFormed}{\ContextWellFormed[\HoleCtx\xTypVarCtx[],\typvar\KndAssump\knd]}
                 \and
-                \rule[CWF\hyph Hole]{\KindWellFormed}{\ContextWellFormed[\HoleCtx[],\hole\KndAssump\knd;\TypVarCtx[]]}
+                \rule[CWF\hyph Hole]{\hole\notin\dom{\HoleCtx[]} \\ \KindWellFormed}{\ContextWellFormed[\xHoleCtx[],\hole\KndAssump\knd;\TypVarCtx[]]}
             \end{mathpar}
-            *Variables implicitly assumed to be fresh as necessary* \\
-            (eg $\typvar[L]$ is fresh in $\mathcal{J}$ in Weakening)
         \end{minipage}
 \section{Metatheory}
     \subsection*{}
+    \begin{lemma}[COK]
+        If $\J$, then $\ContextWellFormed$% in a subderivation (where $\J \neq \ContextWellFormed$)
+    \end{lemma}
+    \begin{proof}
+        By simultaneous induction on derivations. \\
+        No interesting cases.
+    \end{proof}
     \begin{lemma}[Exchange]
         \vphantom{.}\\
         If $\J[\HoleCtx\TypVarCtx[][1],\typvar[L1]\KndAssump\knd[L1],\typvar[L2]\KndAssump\knd[L2],\TypVarCtx[][2]]$ and $\ContextWellFormed[\HoleCtx\TypVarCtx[][1],\typvar[L2]\KndAssump\knd[L2],\typvar[L1]\KndAssump\knd[L1],\TypVarCtx[][2]]$, then $\J[\HoleCtx\TypVarCtx[][1],\typvar[L2]\KndAssump\knd[L2],\typvar[L1]\KndAssump\knd[L1],\TypVarCtx[][2]]$
@@ -248,29 +253,26 @@
     \end{proof}
     \begin{lemma}[Weakening]
         \vphantom{.}\\
-        If $\J$ and $\ContextWellFormed[\HoleCtx\ExtendTypVarCtx[][L][\knd[L]]]$, then $\J[\HoleCtx\ExtendTypVarCtx[][L][\knd[L]]]$
+        If $\J$ and $\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]$, then $\J[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]$
         %If $\J$ and $\ContextWellFormed[\ExtendTypHoleCtx[;][L][\knd[L]]\TypVarCtx[]]$, then $\J[\ExtendTypHoleCtx[;][L][\knd[L]]\TypVarCtx[]]$
     \end{lemma}
     \begin{lemma}[OK-PK]
-        If $\PrincipalKind{\typ}$, then $\ContextWellFormed$ and $\KindWellFormed$
+        If $\PrincipalKind{\typ}$, then $\KindWellFormed$
     \end{lemma}
     \begin{lemma}[OK-WFaK]
-        If $\WellFormedAtKind{\typ}$, then $\ContextWellFormed$ and $\KindWellFormed$
+        If $\WellFormedAtKind{\typ}$, then $\KindWellFormed$
     \end{lemma}
     \begin{lemma}[OK-MatchPi]
-        If $\MatchedPiKind{\knd}$, then $\ContextWellFormed$ and $\KindWellFormed$ and $\KindWellFormed[\DepFunKind]$
+        If $\MatchedPiKind{\knd}$, then $\KindWellFormed$ and $\KindWellFormed[\DepFunKind]$
     \end{lemma}
     \begin{lemma}[OK-KEquiv]
-        If $\KindEquiv{\knd[1]}{\knd[2]}$, then $\ContextWellFormed$ and $\KindWellFormed[{\knd[1]}]$ and $\KindWellFormed[{\knd[2]}]$
+        If $\KindEquiv{\knd[1]}{\knd[2]}$, then $\KindWellFormed[{\knd[1]}]$ and $\KindWellFormed[{\knd[2]}]$
     \end{lemma}
     \begin{lemma}[OK-CSK]
-        If $\ConsistentSubKind{\knd[1]}{\knd[2]}$, then $\ContextWellFormed$ and $\KindWellFormed[{\knd[1]}]$ and $\KindWellFormed[{\knd[2]}]$
+        If $\ConsistentSubKind{\knd[1]}{\knd[2]}$, then $\KindWellFormed[{\knd[1]}]$ and $\KindWellFormed[{\knd[2]}]$
     \end{lemma}
     \begin{lemma}[OK-EquivAK]
-        If $\TypeEquivAtKind{\typ[1]}{\typ[2]}$, then $\ContextWellFormed$ and $\WellFormedAtKind{\typ[1]}$ and $\WellFormedAtKind{\typ[2]}$ and $\KindWellFormed$
-    \end{lemma}
-    \begin{lemma}[OK-KWF]
-        If $\KindWellFormed$, then $\ContextWellFormed$
+        If $\TypeEquivAtKind{\typ[1]}{\typ[2]}$, then $\WellFormedAtKind{\typ[1]}$ and $\WellFormedAtKind{\typ[2]}$ and $\KindWellFormed$
     \end{lemma}
     \begin{lemma}[OK-Substitution]
         \vphantom{.}\\
@@ -292,10 +294,12 @@
         \begin{tabular*}{\textwidth}{lc@{\extracolsep{\fill}}ll}
             Weakening.
                 &PK-$\lambda$& $\ContextWellFormed[\HoleCtx\ExtendTypVarCtx[][L][\knd[2]]]$ & by IH \\
-                & & $\ContextWellFormed[\HoleCtx\ExtendTypVarCtx[][][\knd[1]]]$ & by OK-PK on premiss \\
-                & & $\KindWellFormed[\knd[1]]$ & by CWF-TypVar \\
-                & & $\KindWellFormed[\knd[1]][\HoleCtx\ExtendTypVarCtx[][L][\knd[L]]]$ & by Weakening \\
-                & & $\PrincipalKind[\HoleCtx\TypVarCtx[],\typvar\KndAssump\knd[1]]{\typ}[\knd[2]]$ & by premiss \\
+                & & $\ContextWellFormed[\HoleCtx\ExtendTypVarCtx[][][\knd[1]]]$ & by COK on premiss \\
+                && $\KindWellFormed[\knd[1]]$ & by premiss \\
+                && $\KindWellFormed[\knd[1]][\HoleCtx\ExtendTypVarCtx[][L][\knd[L]]]$ & by Weakening on premiss \\
+                && $\ContextWellFormed[\HoleCtx\TypVarCtx[],\typvar[L]\KndAssump\knd[L],\typvar\KndAssump\knd[1]]$ & \\
+                && $\PrincipalKind[\HoleCtx\TypVarCtx[],\typvar\KndAssump\knd[1],\typvar[L]\KndAssump\knd[L]]{\typ}[\knd[2]]$ & \\
+                && $\PrincipalKind[\HoleCtx\TypVarCtx[],\typvar[L]\KndAssump\knd[L],\typvar\KndAssump\knd[1]]{\typ}[\knd[2]]$ & \\
             OK-PK.
                 &PK-Base& $\WellFormedAtKind{\bse}[\SKind[\Type][\bse]]$ & by (9) \\
                 & & $\WellFormedAtKind{\bse}[\Type]$ & by (10) \\
