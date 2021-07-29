@@ -10,6 +10,7 @@
     \RequirePackage{thmtools}
     \declaretheorem{theorem}
     \declaretheorem[sibling=theorem]{lemma}
+    \declaretheorem[sibling=theorem]{corollary}
     \declaretheorem{definition}
     \RequirePackage{tikz}
     % https://tex.stackexchange.com/questions/12678/squiggly-arrows-in-tikz
@@ -133,15 +134,17 @@
     \NewDocumentCommand{\TypVarCtx}{O{;}O{}}{\Phi_{#2}#1}
     \NewDocumentCommand{\xTypVarCtx}{O{;}O{}}{\underline{\Phi_{#2}}#1}
     \NewDocumentCommand{\InTypVarCtx}{O{;}O{}O{\knd}}{\TypVarCtx[][1],\typvar[#2]\KndAssump{#3},\TypVarCtx[][2]#1}
-    \NewDocumentCommand{\ExtendTypVarCtx}{O{;}oO{\knd}}{\TypVarCtx[],\typvar[#2]\KndAssump{#3}#1}
-    \NewDocumentCommand{\xExtendTypVarCtx}{O{;}oO{\knd}}{\underline{\TypVarCtx[],\typvar[#2]\KndAssump{#3}}#1}
+    \NewDocumentCommand{\ExtendTypVarCtx}{O{;}O{}O{\knd}}{\TypVarCtx[],\typvar[#2]\KndAssump{#3}#1}
+    \NewDocumentCommand{\xExtendTypVarCtx}{O{;}O{}O{\knd}}{\underline{\TypVarCtx[],\typvar[#2]\KndAssump{#3}}#1}
+    \NewDocumentCommand{\xxExtendTypVarCtx}{O{;}O{}mO{}m}{\underline{\underline{\TypVarCtx[],\typvar[#2]\KndAssump{#3}},\typvar[#4]\KndAssump{#5}}#1}
     \newcommand*{\ModVarCtx}[1][;]{\Xi#1}
     \newcommand*{\SigVarCtx}[1][;]{\Psi#1}
     \NewDocumentCommand{\HoleCtx}{O{;}O{}}{\Delta_{#2}#1}
     \NewDocumentCommand{\xHoleCtx}{O{;}O{}}{\underline{\Delta_{#2}}#1}
     \NewDocumentCommand{\InTypHoleCtx}{O{;}O{}O{\knd}}{\HoleCtx[][1],\hole[#2]\KndAssump{#3},\HoleCtx[][2]#1}
-    \NewDocumentCommand{\ExtendTypHoleCtx}{O{;}oO{\knd}}{\HoleCtx[],\hole[#2]\KndAssump{#3}#1}
-    \NewDocumentCommand{\xExtendTypHoleCtx}{O{;}oO{\knd}}{\underline{\HoleCtx[],\hole[#2]\KndAssump{#3}}#1}
+    \NewDocumentCommand{\ExtendTypHoleCtx}{O{;}O{}O{\knd}}{\HoleCtx[],\hole[#2]\KndAssump{#3}#1}
+    \NewDocumentCommand{\xExtendTypHoleCtx}{O{;}O{}O{\knd}}{\underline{\HoleCtx[],\hole[#2]\KndAssump{#3}}#1}
+    \NewDocumentCommand{\xxExtendTypHoleCtx}{O{;}O{}mO{}m}{\underline{\underline{\TypHoleCtx[],\hole[#2]\KndAssump{#3}},\hole[#4]\KndAssump{#5}}#1}
     \newcommand*{\dom}[1]{\mathsf{dom(}#1\mathsf{)}}
     \renewcommand*{\dom}[1]{#1}
     \newcommand*{\val}[1]{\mathsf{val(}#1\mathsf{)}}
@@ -164,6 +167,7 @@
     \newcommand*{\inferruledotfrac}[2]{
         \hbox{$\dotfrac{#1}{#2}$}
     }
+    \RenewDocumentCommand{\infer}{o}{\inferrule*[right=#1]}
     \newcommand{\hintpagebreak}{\pagebreak[3]} % 0-4; 2 too weak, 4 too strong
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % judgments

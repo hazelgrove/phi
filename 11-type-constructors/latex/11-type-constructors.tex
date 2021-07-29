@@ -247,10 +247,14 @@
         If $\J[\HoleCtx\TypVarCtx[][1],\typvar[L1]\KndAssump\knd[L1],\typvar[L2]\KndAssump\knd[L2],\TypVarCtx[][2]]$ and $\ContextWellFormed[\HoleCtx\TypVarCtx[][1],\typvar[L2]\KndAssump\knd[L2],\typvar[L1]\KndAssump\knd[L1],\TypVarCtx[][2]]$, then $\J[\HoleCtx\TypVarCtx[][1],\typvar[L2]\KndAssump\knd[L2],\typvar[L1]\KndAssump\knd[L1],\TypVarCtx[][2]]$
     \end{lemma}
     \begin{proof}
-        By simultaneous induction on derivations. \\
+        By induction on derivations. \\
         No interesting cases. \\
         (Only rules with $\TypVarCtx$ extended in the consequent are interesting, which is only CWF-TypVar, but when $\mathcal{J}$ is CWF, Exchange is identity)
     \end{proof}
+    \begin{corollary}[Marked-Exchange]
+        \vphantom{.}\\
+        If $\J[\HoleCtx\xxExtendTypVarCtx[][L1]{\knd[L1]}[L2]{\knd[L2]}]$ and $\ContextWellFormed[\HoleCtx\xxExtendTypVarCtx[][L2]{\knd[L2]}[L1]{\knd[L1]}]$, then $\J[\HoleCtx\xxExtendTypVarCtx[][L2]{\knd[L2]}[L1]{\knd[L1]}]$
+    \end{corollary}
     \begin{lemma}[Weakening]
         \vphantom{.}\\
         If $\J$ and $\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]$, then $\J[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]$
@@ -291,15 +295,30 @@
     \begin{proof}
         By simultaneous induction on derivations. \\
         The interesting cases per lemma: \\
+        \subsubsection*{Weakening}
+        \begin{mathpar}
+            \infer[PK-$\lambda$]
+                {\infer[Marked-Exchange]
+                    {\infer[Weakening]
+                        { }
+                    {\PrincipalKind[\HoleCtx\xxExtendTypVarCtx[][]{\knd[1]}[L]{\knd[L]}]{\typ}[\knd[2]]}
+                    \\\infer[CWF-TypVar]
+                        { }
+                    {\ContextWellFormed[\HoleCtx\xxExtendTypVarCtx[][L]{\knd[L]}[]{\knd[1]}]}}
+                {\PrincipalKind[\HoleCtx\xxExtendTypVarCtx[][L]{\knd[L]}[]{\knd[1]}]{\typ}[\knd[2]]}}
+            {\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]{\TypeFun[][\knd[1]]}[\SKind[\DepFunKind][\TypeFun[][\knd[1]]]]}
+        \end{mathpar}
         \begin{tabular*}{\textwidth}{lc@{\extracolsep{\fill}}ll}
             Weakening.
-                &PK-$\lambda$& $\ContextWellFormed[\HoleCtx\ExtendTypVarCtx[][L][\knd[2]]]$ & by IH \\
-                & & $\ContextWellFormed[\HoleCtx\ExtendTypVarCtx[][][\knd[1]]]$ & by COK on premiss \\
-                && $\KindWellFormed[\knd[1]]$ & by premiss \\
-                && $\KindWellFormed[\knd[1]][\HoleCtx\ExtendTypVarCtx[][L][\knd[L]]]$ & by Weakening on premiss \\
-                && $\ContextWellFormed[\HoleCtx\TypVarCtx[],\typvar[L]\KndAssump\knd[L],\typvar\KndAssump\knd[1]]$ & \\
-                && $\PrincipalKind[\HoleCtx\TypVarCtx[],\typvar\KndAssump\knd[1],\typvar[L]\KndAssump\knd[L]]{\typ}[\knd[2]]$ & \\
-                && $\PrincipalKind[\HoleCtx\TypVarCtx[],\typvar[L]\KndAssump\knd[L],\typvar\KndAssump\knd[1]]{\typ}[\knd[2]]$ & \\
+                %&PK-$\lambda$& $\PrincipalKind[\HoleCtx\xxExtendTypVarCtx[][]{\knd[1]}[L]{\knd[L]}]{\typ}[\knd[2]]$ & by Weakening on premiss \\
+                && $\KindWellFormed[\knd[1]][\HoleCtx\TypVarCtx[]]$ & by subderivation premiss \\
+                && $\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]$ & by IH \\
+                && $\KindWellFormed[\knd[1]][\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]$ & by Weakening on subderivation premiss \\
+                && $\ContextWellFormed[\HoleCtx\xxExtendTypVarCtx[][L]{\knd[L]}[]{\knd[1]}]$ & by CWF-TypVar \\
+                && $\ContextWellFormed[\HoleCtx\xxExtendTypVarCtx[][]{\knd[1]}[L]{\knd[L]}]$ & by ? \\
+                && $\PrincipalKind[\HoleCtx\xxExtendTypVarCtx[][]{\knd[1]}[L]{\knd[L]}]{\typ}[\knd[2]]$ & by Weakening on premiss \\
+                && $\PrincipalKind[\HoleCtx\xxExtendTypVarCtx[][L]{\knd[L]}[]{\knd[1]}]{\typ}[\knd[2]]$ & by Marked-Exchange \\
+                && $\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]{\TypeFun[][\knd[1]]}[\SKind[\DepFunKind][\TypeFun[][\knd[1]]]]$ & by PK-$\lambda$ \\
             OK-PK.
                 &PK-Base& $\WellFormedAtKind{\bse}[\SKind[\Type][\bse]]$ & by (9) \\
                 & & $\WellFormedAtKind{\bse}[\Type]$ & by (10) \\
