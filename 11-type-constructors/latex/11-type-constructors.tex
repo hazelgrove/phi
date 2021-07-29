@@ -226,24 +226,30 @@
         \begin{minipage}{\textwidth}
             \judgbox{\ContextWellFormed}{Context is well formed}
             \begin{mathpar}
-                \rule[CWF\hyph Nil]{ }{\ContextWellFormed[;]}
+                \rule[CWF\hyph Nil]{ }{\ContextWellFormed[\cdot;\cdot]}
                 \and
                 \rule[CWF\hyph TypVar]{\KindWellFormed}{\ContextWellFormed[\HoleCtx\TypVarCtx[],\typvar\KndAssump\knd]}
                 \and
                 \rule[CWF\hyph Hole]{\KindWellFormed}{\ContextWellFormed[\HoleCtx[],\hole\KndAssump\knd;\TypVarCtx[]]}
             \end{mathpar}
-            Variables implicitly assumed to be fresh as necessary
+            *Variables implicitly assumed to be fresh as necessary* \\
+            (eg $\typvar[L]$ is fresh in $\mathcal{J}$ in Weakening)
         \end{minipage}
 \section{Metatheory}
     \subsection*{}
+    \begin{lemma}[Exchange]
+        \vphantom{.}\\
+        If $\J[\HoleCtx\TypVarCtx[][1],\typvar[L1]\KndAssump\knd[L1],\typvar[L2]\KndAssump\knd[L2],\TypVarCtx[][2]]$ and $\ContextWellFormed[\HoleCtx\TypVarCtx[][1],\typvar[L2]\KndAssump\knd[L2],\typvar[L1]\KndAssump\knd[L1],\TypVarCtx[][2]]$, then $\J[\HoleCtx\TypVarCtx[][1],\typvar[L2]\KndAssump\knd[L2],\typvar[L1]\KndAssump\knd[L1],\TypVarCtx[][2]]$
+    \end{lemma}
+    \begin{proof}
+        By simultaneous induction on derivations. \\
+        No interesting cases. \\
+        (Only rules with $\TypVarCtx$ extended in the consequent are interesting, which is only CWF-TypVar, but when $\mathcal{J}$ is CWF, Exchange is identity)
+    \end{proof}
     \begin{lemma}[Weakening]
         \vphantom{.}\\
         If $\J$ and $\ContextWellFormed[\HoleCtx\ExtendTypVarCtx[][L][\knd[L]]]$, then $\J[\HoleCtx\ExtendTypVarCtx[][L][\knd[L]]]$
         %If $\J$ and $\ContextWellFormed[\ExtendTypHoleCtx[;][L][\knd[L]]\TypVarCtx[]]$, then $\J[\ExtendTypHoleCtx[;][L][\knd[L]]\TypVarCtx[]]$
-    \end{lemma}
-    \begin{lemma}[Exchange]
-        \vphantom{.}\\
-        If $\J[\HoleCtx\TypVarCtx[][1],\typvar[L1]\KndAssump\knd[L1],\typvar[L2]\KndAssump\knd[L2],\TypVarCtx[][2]]$ and $\ContextWellFormed[\HoleCtx\TypVarCtx[][1],\typvar[L2]\KndAssump\knd[L2],\typvar[L1]\KndAssump\knd[L1],\TypVarCtx[][2]]$, then $\J[\HoleCtx\TypVarCtx[][1],\typvar[L2]\KndAssump\knd[L2],\typvar[L1]\KndAssump\knd[L1],\TypVarCtx[][2]]$
     \end{lemma}
     \begin{lemma}[OK-PK]
         If $\PrincipalKind{\typ}$, then $\ContextWellFormed$ and $\KindWellFormed$
@@ -285,9 +291,11 @@
         The interesting cases per lemma: \\
         \begin{tabular*}{\textwidth}{lc@{\extracolsep{\fill}}ll}
             Weakening.
-                && $ $ & \\
-            Exchange.
-                && $ $ & \\
+                &PK-$\lambda$& $\ContextWellFormed[\HoleCtx\ExtendTypVarCtx[][L][\knd[2]]]$ & by IH \\
+                & & $\ContextWellFormed[\HoleCtx\ExtendTypVarCtx[][][\knd[1]]]$ & by OK-PK on premiss \\
+                & & $\KindWellFormed[\knd[1]]$ & by CWF-TypVar \\
+                & & $\KindWellFormed[\knd[1]][\HoleCtx\ExtendTypVarCtx[][L][\knd[L]]]$ & by Weakening \\
+                & & $\PrincipalKind[\HoleCtx\TypVarCtx[],\typvar\KndAssump\knd[1]]{\typ}[\knd[2]]$ & by premiss \\
             OK-PK.
                 &PK-Base& $\WellFormedAtKind{\bse}[\SKind[\Type][\bse]]$ & by (9) \\
                 & & $\WellFormedAtKind{\bse}[\Type]$ & by (10) \\
