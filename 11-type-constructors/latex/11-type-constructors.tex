@@ -243,7 +243,7 @@
     \end{lemma}
     \begin{lemma}[Exchange]
         \vphantom{.}\\
-        If $\J[\HoleCtx\TypVarCtx[],\typvar[L1]\KndAssump\knd[L1],\typvar[L2]\KndAssump\knd[L2]]$ and $\ContextWellFormed[\HoleCtx\ExtendTypVarCtx[][L2][\knd[L2]]]$, then $\J[\HoleCtx\TypVarCtx[],\typvar[L2]\KndAssump\knd[L2]\typvar[L1]\KndAssump\knd[L1]]$
+        If $\J[\HoleCtx\TypVarCtx[][1],\typvar[L1]\KndAssump\knd[L1],\typvar[L2]\KndAssump\knd[L2],\TypVarCtx[][2]]$ and $\ContextWellFormed[\HoleCtx\TypVarCtx[][1],\typvar[L2]\KndAssump\knd[L2],\typvar[L1]\KndAssump\knd[L1],\TypVarCtx[][2]]$, then $\J[\HoleCtx\TypVarCtx[][1],\typvar[L2]\KndAssump\knd[L2],\typvar[L1]\KndAssump\knd[L1],\TypVarCtx[][2]]$
     \end{lemma}
     \begin{lemma}[OK-PK]
         If $\PrincipalKind{\typ}$, then $\ContextWellFormed$ and $\KindWellFormed$
@@ -267,7 +267,8 @@
         If $\KindWellFormed$, then $\ContextWellFormed$
     \end{lemma}
     \begin{lemma}[OK-Substitution]
-        \vphantom{.}\\ If $\WellFormedAtKind{\typ[L]}[\knd[L1]]$ and $\KindWellFormed[{\knd[L2]}][\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]$, then $\ContextWellFormed$ and $\KindWellFormed[\subst{\typ[L]}{\typvar[L]}{\knd[L2]}]$ \\
+        \vphantom{.}\\
+        If $\WellFormedAtKind{\typ[L]}[\knd[L1]]$ and $\KindWellFormed[{\knd[L2]}][\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]$, then $\KindWellFormed[\subst{\typ[L]}{\typvar[L]}{\knd[L2]}]$ \\
         (induction on $\KindWellFormed[{\knd[L2]}][\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]$)
     \end{lemma}
     %\begin{lemma}[PK-Substitution]
@@ -275,19 +276,24 @@
     %    (induction on $\PrincipalKind[\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]{\typ[L2]}[\knd[L2]]$)
     %\end{lemma}
     \begin{lemma}[K-Substitution]
-        \vphantom{.}\\ If $\WellFormedAtKind{\typ[L1]}[\knd[L1]]$ and $\WellFormedAtKind[\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]{\typ[L2]}[\knd[L2]]$, then $\WellFormedAtKind{\subst{\typ[L1]}{\typvar[L]}{\typ[L2]}}[\subst{\typ[L1]}{\typvar[L]}{\knd[L2]}]$ \\
+        \vphantom{.}\\
+        If $\WellFormedAtKind{\typ[L1]}[\knd[L1]]$ and $\WellFormedAtKind[\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]{\typ[L2]}[\knd[L2]]$, then $\WellFormedAtKind{\subst{\typ[L1]}{\typvar[L]}{\typ[L2]}}[\subst{\typ[L1]}{\typvar[L]}{\knd[L2]}]$ \\
         (induction on $\WellFormedAtKind[\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]{\typ[L2]}[\knd[L2]]$)
     \end{lemma}
     \begin{proof}
         By simultaneous induction on derivations. \\
         The interesting cases per lemma: \\
         \begin{tabular*}{\textwidth}{lc@{\extracolsep{\fill}}ll}
+            Weakening.
+                && $ $ & \\
+            Exchange.
+                && $ $ & \\
             OK-PK.
-                &(1)& $\WellFormedAtKind{\bse}[\SKind[\Type][\bse]]$ & by (9) \\
+                &PK-Base& $\WellFormedAtKind{\bse}[\SKind[\Type][\bse]]$ & by (9) \\
                 & & $\WellFormedAtKind{\bse}[\Type]$ & by (10) \\
                 &*& $\KindWellFormed[{\SKind[\Type][\bse]}]$ & by (43) \\
                 &*& $\ContextWellFormed$ & by premiss \\
-                &(8)& & bad \\
+                &PK-Ap& & bad \\
             OK-WFaK.
                 &(12)& $\WellFormedAtKind{\typ[2]}$ & by (10) \\
                 &*& $\KindWellFormed[{\SKind[\knd][\typ[2]]}]$ & by (43) \\
