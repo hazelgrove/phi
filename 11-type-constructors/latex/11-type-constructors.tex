@@ -326,7 +326,9 @@
                         }
                         \\\rinfer[Weakening]{\KindWellFormed[\knd[1]][\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{
                             \rinfer[PoS]{\KindWellFormed[\knd[1]]}{
-                                \rinfer[premiss]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}{
+                                \rinfer[COK]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}{
+                                    \rinfer[premiss]{\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\typ}[\knd[2]]}{
+                                    }
                                 }
                             }
                             \\\rinfer[premiss]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{
