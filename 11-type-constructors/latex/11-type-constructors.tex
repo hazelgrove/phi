@@ -237,7 +237,7 @@
 \section{Metatheory}
     \subsection*{}
     \begin{lemma}[COK]
-        If $\J$, then $\ContextWellFormed$% in a subderivation (where $\J \neq \ContextWellFormed$)
+        If $\J$, then $\ContextWellFormed$ in a subderivation (where $\J\neq\ContextWellFormed$)
     \end{lemma}
     \begin{proof}
         By simultaneous induction on derivations. \\
@@ -263,11 +263,14 @@
     \end{lemma}
     \begin{proof}
         By induction on derivations. \\
-        When applying Weakening in the induction, check that the left premiss is always a subderivation. \\
+        When applying Weakening in the induction, check that the left premiss is always a subderivation,
+        and check variable exclusion conditions are satisfied. \\
         (PoS = premiss of subderivation)
         \begin{landscape}
         \subsubsection*{Weakening}
-\begin{mathpar}\rinfer[PK-$\lambda$]{\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]{\TypeFun[][\knd[1]]}[\SKind[\DepFunKind][\TypeFun[][\knd[1]]]]}{\rinfer[Marked-Exchange]{\PrincipalKind[\HoleCtx\xxExtendTypVarCtx[][L]{\knd[L]}[]{\knd[1]}]{\typ}[\knd[2]]}{\rinfer[Weakening]{\PrincipalKind[\HoleCtx\xxExtendTypVarCtx[][]{\knd[1]}[L]{\knd[L]}]{\typ}[\knd[2]]}{\rinfer[premiss]{\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\typ}[\knd[2]]}{ }\\\rinfer[CWF-TypVar]{\ContextWellFormed[\HoleCtx\xxExtendTypVarCtx[][]{\knd[1]}[L]{\knd[L]}]}{\rinfer[Weakening]{\KindWellFormed[\knd[L]][\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}{\rinfer[PoS]{\KindWellFormed[\knd[L]]}{\rinfer[IH]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{ }}\\\rinfer[COK]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}{\rinfer[premiss]{\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\typ}[\knd[2]]}{ }}}\\\rinfer[]{\typvar[L]\notin\xExtendTypVarCtx[][][\knd[1]]}{\rinfer[PoS]{\typvar[L]\notin\TypVarCtx}{\rinfer[IH]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{ }}\\\rinfer[]{\typvar[L]\neq\typvar}{\rinfer[IH]{\typvar[L]\notin\mathcal{J}}{ }\\\rinfer[]{\typvar\in\mathcal{J}}{ }}\\\rinfer[]{\typvar[L]\notin\knd[1]}{\rinfer[IH]{\typvar[L]\notin\mathcal{J}}{ }}}}}\\\rinfer[CWF-TypVar]{\ContextWellFormed[\HoleCtx\xxExtendTypVarCtx[][L]{\knd[L]}[]{\knd[1]}]}{\rinfer[]{\typvar\notin\xExtendTypVarCtx[][L][\knd[L]]}{\rinfer[PoS]{\typvar\notin\TypVarCtx}{\rinfer[COK]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}{\rinfer[premiss]{\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\typ}[\knd[2]]}{ }}}\\\rinfer[]{\typvar\neq\typvar[L]}{\rinfer[IH]{\typvar[L]\notin\mathcal{J}}{ }\\\rinfer[]{\typvar\in\mathcal{J}}{ }}\\\rinfer[]{\typvar\notin\knd[L]}{\rinfer[IH]{\forall\dot{\typvar}\in\knd[L],\dot{\typvar}\notin\mathcal{J}}{ }\\\rinfer[]{\typvar\in\mathcal{J}}{ }}}\\\rinfer[Weakening]{\KindWellFormed[\knd[1]][\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{\rinfer[PoS]{\KindWellFormed[\knd[1]]}{\rinfer[premiss]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}{ }}\\\rinfer[premiss]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{ }}}}}\end{mathpar}\begin{mathpar}
+        \begin{mathpar}
+            \rinfer[PK-$\lambda$]{\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]{\TypeFun[][\knd[1]]}[\SKind[\DepFunKind][\TypeFun[][\knd[1]]]]}{\rinfer[Marked-Exchange]{\PrincipalKind[\HoleCtx\xxExtendTypVarCtx[][L]{\knd[L]}[]{\knd[1]}]{\typ}[\knd[2]]}{\rinfer[Weakening]{\PrincipalKind[\HoleCtx\xxExtendTypVarCtx[][]{\knd[1]}[L]{\knd[L]}]{\typ}[\knd[2]]}{\rinfer[premiss]{\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\typ}[\knd[2]]}{ }\\\rinfer[CWF-TypVar]{\ContextWellFormed[\HoleCtx\xxExtendTypVarCtx[][]{\knd[1]}[L]{\knd[L]}]}{\rinfer[Weakening]{\KindWellFormed[\knd[L]][\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}{\rinfer[PoS]{\KindWellFormed[\knd[L]]}{\rinfer[IH]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{ }}\\\rinfer[COK]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}{\rinfer[premiss]{\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\typ}[\knd[2]]}{ }}}\\\rinfer[]{\typvar[L]\notin\xExtendTypVarCtx[][][\knd[1]]}{\rinfer[PoS]{\typvar[L]\notin\TypVarCtx}{\rinfer[IH]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{ }}\\\rinfer[]{\typvar[L]\neq\typvar}{\rinfer[IH]{\typvar[L]\notin\mathcal{J}}{ }\\\rinfer[]{\typvar\in\mathcal{J}}{ }}\\\rinfer[]{\typvar[L]\notin\knd[1]}{\rinfer[IH]{\typvar[L]\notin\mathcal{J}}{ }}}}}\\\rinfer[CWF-TypVar]{\ContextWellFormed[\HoleCtx\xxExtendTypVarCtx[][L]{\knd[L]}[]{\knd[1]}]}{\rinfer[]{\typvar\notin\xExtendTypVarCtx[][L][\knd[L]]}{\rinfer[PoS]{\typvar\notin\TypVarCtx}{\rinfer[COK]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}{\rinfer[premiss]{\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\typ}[\knd[2]]}{ }}}\\\rinfer[]{\typvar\neq\typvar[L]}{\rinfer[IH]{\typvar[L]\notin\mathcal{J}}{ }\\\rinfer[]{\typvar\in\mathcal{J}}{ }}\\\rinfer[]{\typvar\notin\knd[L]}{\rinfer[IH]{\forall\dot{\typvar}\in\knd[L],\dot{\typvar}\notin\mathcal{J}}{ }\\\rinfer[]{\typvar\in\mathcal{J}}{ }}}\\\rinfer[Weakening]{\KindWellFormed[\knd[1]][\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{\rinfer[PoS]{\KindWellFormed[\knd[1]]}{\rinfer[premiss]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}{ }}\\\rinfer[premiss]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{ }}}}}
+            \and
             \rinfer[KEquiv-$\Pi$]{\KindEquiv[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]{\DepFunKind}{\DepFunKind[][\knd[3]][\knd[4]]}}{
                 \rinfer[Weakening]{\KindEquiv[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]{\knd[1]}{\knd[2]}}{
                     \rinfer[premiss]{\KindEquiv{\knd[1]}{\knd[2]}}{
@@ -278,7 +281,19 @@
                 \\\rinfer[Marked-Exchange]{\KindEquiv[\HoleCtx\xxExtendTypVarCtx[][L]{\knd[L]}{\knd[1]}]{\knd[3]}{\knd[4]}}{
                     \rinfer[]{\KindEquiv[\HoleCtx\xxExtendTypVarCtx[]{\knd[1]}[L]{\knd[L]}]{\knd[3]}{\knd[4]}}{
                     }
-                    \\\rinfer[]{\ContextWellFormed[\HoleCtx\xxExtendTypVarCtx[][L]{\knd[L]}{\knd[1]}]}{
+                    \\\rinfer[CWF-TypVar]{\ContextWellFormed[\HoleCtx\xxExtendTypVarCtx[][L]{\knd[L]}{\knd[1]}]}{
+                        \rinfer[]{}{
+                        }
+                        \\\rinfer[Weakening]{\KindWellFormed[\knd[1]][\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{
+                            \rinfer[PoS]{\KindWellFormed[\knd[1]]}{
+                                \rinfer[COK]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}{
+                                    \rinfer[premiss]{\KindEquiv[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\knd[3]}{\knd[4]}}{
+                                    }
+                                }
+                            }
+                            \\\rinfer[IH]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{
+                            }
+                        }
                     }
                 }
             }
