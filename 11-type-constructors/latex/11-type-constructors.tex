@@ -261,41 +261,9 @@
         If $\J$ and $\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]$ and $\typvar[L]\notin\mathcal{J}$ and $\forall\typvar\in\knd[L],\typvar\notin\mathcal{J}$, then $\J[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]$
         %If $\J$ and $\ContextWellFormed[\ExtendTypHoleCtx[;][L][\knd[L]]\TypVarCtx[]]$, then $\J[\ExtendTypHoleCtx[;][L][\knd[L]]\TypVarCtx[]]$
     \end{lemma}
-    \begin{lemma}[OK-PK]
-        If $\PrincipalKind{\typ}$, then $\KindWellFormed$
-    \end{lemma}
-    \begin{lemma}[OK-WFaK]
-        If $\WellFormedAtKind{\typ}$, then $\KindWellFormed$
-    \end{lemma}
-    \begin{lemma}[OK-MatchPi]
-        If $\MatchedPiKind{\knd}$, then $\KindWellFormed$ and $\KindWellFormed[\DepFunKind]$
-    \end{lemma}
-    \begin{lemma}[OK-KEquiv]
-        If $\KindEquiv{\knd[1]}{\knd[2]}$, then $\KindWellFormed[{\knd[1]}]$ and $\KindWellFormed[{\knd[2]}]$
-    \end{lemma}
-    \begin{lemma}[OK-CSK]
-        If $\ConsistentSubKind{\knd[1]}{\knd[2]}$, then $\KindWellFormed[{\knd[1]}]$ and $\KindWellFormed[{\knd[2]}]$
-    \end{lemma}
-    \begin{lemma}[OK-EquivAK]
-        If $\TypeEquivAtKind{\typ[1]}{\typ[2]}$, then $\WellFormedAtKind{\typ[1]}$ and $\WellFormedAtKind{\typ[2]}$ and $\KindWellFormed$
-    \end{lemma}
-    \begin{lemma}[OK-Substitution]
-        \vphantom{.}\\
-        If $\WellFormedAtKind{\typ[L]}[\knd[L1]]$ and $\KindWellFormed[{\knd[L2]}][\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]$, then $\KindWellFormed[\subst{\typ[L]}{\typvar[L]}{\knd[L2]}]$ \\
-        (induction on $\KindWellFormed[{\knd[L2]}][\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]$)
-    \end{lemma}
-    %\begin{lemma}[PK-Substitution]
-    %    \vphantom{.}\\ If $\PrincipalKind{\typ[L1]}[\knd[L1]]$ and $\PrincipalKind[\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]{\typ[L2]}[\knd[L2]]$, then $\PrincipalKind{\subst{\typ[L1]}{\typvar[L]}{\typ[L2]}}[\subst{\typ[L1]}{\typvar[L]}{\knd[L2]}]$ \\
-    %    (induction on $\PrincipalKind[\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]{\typ[L2]}[\knd[L2]]$)
-    %\end{lemma}
-    \begin{lemma}[K-Substitution]
-        \vphantom{.}\\
-        If $\WellFormedAtKind{\typ[L1]}[\knd[L1]]$ and $\WellFormedAtKind[\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]{\typ[L2]}[\knd[L2]]$, then $\WellFormedAtKind{\subst{\typ[L1]}{\typvar[L]}{\typ[L2]}}[\subst{\typ[L1]}{\typvar[L]}{\knd[L2]}]$ \\
-        (induction on $\WellFormedAtKind[\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]{\typ[L2]}[\knd[L2]]$)
-    \end{lemma}
     \begin{proof}
-        By simultaneous induction on derivations. \\
-        The interesting cases per lemma: \\
+        By induction on derivations. \\
+        When applying Weakening in the induction, check that the left premiss is always a subderivation. \\
         (PoS = premiss of subderivation)
         \begin{landscape}
         \subsubsection*{Weakening}
@@ -342,17 +310,7 @@
                         {\ContextWellFormed[\HoleCtx\xxExtendTypVarCtx[][]{\knd[1]}[L]{\knd[L]}]}}
                     {\PrincipalKind[\HoleCtx\xxExtendTypVarCtx[][]{\knd[1]}[L]{\knd[L]}]{\typ}[\knd[2]]}
                     \\\infer[CWF-TypVar]
-                        {\infer[Weakening]
-                            {\infer[PoS]
-                                {\infer[premiss]
-                                    { }
-                                {\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}}
-                            {\KindWellFormed[\knd[1]]}
-                            \\\infer[premiss]
-                                { }
-                            {\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}}
-                            {\KindWellFormed[\knd[1]][\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}
-                        \\\infer[]
+                        {\infer[]
                             {\infer[PoS]
                                 {\infer[COK]
                                     {\infer[premiss]
@@ -376,23 +334,60 @@
                                     { }
                                 {\typvar\in\mathcal{J}}}
                             {\typvar\notin\knd[L]}}
-                        {\typvar\notin\xExtendTypVarCtx[][L][\knd[L]]}}
+                        {\typvar\notin\xExtendTypVarCtx[][L][\knd[L]]}
+                        \\\infer[Weakening]
+                            {\infer[PoS]
+                                {\infer[premiss]
+                                    { }
+                                {\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}}
+                            {\KindWellFormed[\knd[1]]}
+                            \\\infer[premiss]
+                                { }
+                            {\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}}
+                        {\KindWellFormed[\knd[1]][\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}}
                     {\ContextWellFormed[\HoleCtx\xxExtendTypVarCtx[][L]{\knd[L]}[]{\knd[1]}]}}
                 {\PrincipalKind[\HoleCtx\xxExtendTypVarCtx[][L]{\knd[L]}[]{\knd[1]}]{\typ}[\knd[2]]}}
             {\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]{\TypeFun[][\knd[1]]}[\SKind[\DepFunKind][\TypeFun[][\knd[1]]]]}
         \end{mathpar}
         \end{landscape}
+    \end{proof}
+    \begin{lemma}[OK-PK]
+        If $\PrincipalKind{\typ}$, then $\KindWellFormed$
+    \end{lemma}
+    \begin{lemma}[OK-WFaK]
+        If $\WellFormedAtKind{\typ}$, then $\KindWellFormed$
+    \end{lemma}
+    \begin{lemma}[OK-MatchPi]
+        If $\MatchedPiKind{\knd}$, then $\KindWellFormed$ and $\KindWellFormed[\DepFunKind]$
+    \end{lemma}
+    \begin{lemma}[OK-KEquiv]
+        If $\KindEquiv{\knd[1]}{\knd[2]}$, then $\KindWellFormed[{\knd[1]}]$ and $\KindWellFormed[{\knd[2]}]$
+    \end{lemma}
+    \begin{lemma}[OK-CSK]
+        If $\ConsistentSubKind{\knd[1]}{\knd[2]}$, then $\KindWellFormed[{\knd[1]}]$ and $\KindWellFormed[{\knd[2]}]$
+    \end{lemma}
+    \begin{lemma}[OK-EquivAK]
+        If $\TypeEquivAtKind{\typ[1]}{\typ[2]}$, then $\WellFormedAtKind{\typ[1]}$ and $\WellFormedAtKind{\typ[2]}$ and $\KindWellFormed$
+    \end{lemma}
+    \begin{lemma}[OK-Substitution]
+        \vphantom{.}\\
+        If $\WellFormedAtKind{\typ[L]}[\knd[L1]]$ and $\KindWellFormed[{\knd[L2]}][\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]$, then $\KindWellFormed[\subst{\typ[L]}{\typvar[L]}{\knd[L2]}]$ \\
+        (induction on $\KindWellFormed[{\knd[L2]}][\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]$)
+    \end{lemma}
+    %\begin{lemma}[PK-Substitution]
+    %    \vphantom{.}\\ If $\PrincipalKind{\typ[L1]}[\knd[L1]]$ and $\PrincipalKind[\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]{\typ[L2]}[\knd[L2]]$, then $\PrincipalKind{\subst{\typ[L1]}{\typvar[L]}{\typ[L2]}}[\subst{\typ[L1]}{\typvar[L]}{\knd[L2]}]$ \\
+    %    (induction on $\PrincipalKind[\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]{\typ[L2]}[\knd[L2]]$)
+    %\end{lemma}
+    \begin{lemma}[K-Substitution]
+        \vphantom{.}\\
+        If $\WellFormedAtKind{\typ[L1]}[\knd[L1]]$ and $\WellFormedAtKind[\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]{\typ[L2]}[\knd[L2]]$, then $\WellFormedAtKind{\subst{\typ[L1]}{\typvar[L]}{\typ[L2]}}[\subst{\typ[L1]}{\typvar[L]}{\knd[L2]}]$ \\
+        (induction on $\WellFormedAtKind[\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]{\typ[L2]}[\knd[L2]]$)
+    \end{lemma}
+    \begin{proof}
+        By simultaneous induction on derivations. \\
+        The interesting cases per lemma: \\
+        (PoS = premiss of subderivation)
         \begin{tabular*}{\textwidth}{lc@{\extracolsep{\fill}}ll}
-            Weakening.
-                %&PK-$\lambda$& $\PrincipalKind[\HoleCtx\xxExtendTypVarCtx[][]{\knd[1]}[L]{\knd[L]}]{\typ}[\knd[2]]$ & by Weakening on premiss \\
-                && $\KindWellFormed[\knd[1]][\HoleCtx\TypVarCtx[]]$ & by subderivation premiss \\
-                && $\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]$ & by IH \\
-                && $\KindWellFormed[\knd[1]][\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]$ & by Weakening on subderivation premiss \\
-                && $\ContextWellFormed[\HoleCtx\xxExtendTypVarCtx[][L]{\knd[L]}[]{\knd[1]}]$ & by CWF-TypVar \\
-                && $\ContextWellFormed[\HoleCtx\xxExtendTypVarCtx[][]{\knd[1]}[L]{\knd[L]}]$ & by ? \\
-                && $\PrincipalKind[\HoleCtx\xxExtendTypVarCtx[][]{\knd[1]}[L]{\knd[L]}]{\typ}[\knd[2]]$ & by Weakening on premiss \\
-                && $\PrincipalKind[\HoleCtx\xxExtendTypVarCtx[][L]{\knd[L]}[]{\knd[1]}]{\typ}[\knd[2]]$ & by Marked-Exchange \\
-                && $\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]{\TypeFun[][\knd[1]]}[\SKind[\DepFunKind][\TypeFun[][\knd[1]]]]$ & by PK-$\lambda$ \\
             OK-PK.
                 &PK-Base& $\WellFormedAtKind{\bse}[\SKind[\Type][\bse]]$ & by (9) \\
                 & & $\WellFormedAtKind{\bse}[\Type]$ & by (10) \\
