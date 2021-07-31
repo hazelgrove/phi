@@ -1,7 +1,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % standard header
     \documentclass[11pt]{article}
-    \usepackage[a1paper,margin=2cm]{geometry}
+    %\usepackage[a4paper,margin=2cm]{geometry} % using KOMA-script typearea
+    \usepackage[paper=A4,pagesize,DIV=18]{typearea}
     \usepackage[utf8x]{inputenc} % for utf8
     \usepackage{titlesec} % see below
     \usepackage{xcolor} % \color \textcolor
@@ -48,7 +49,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % packages
     \usepackage{hejohns-hazel}
-    \usepackage{pdflscape} % https://tex.stackexchange.com/questions/150394/how-to-switch-from-portrait-to-landscape-page-orientation?noredirect=1&lq=1
 % commands
     \newcommand*{\vt}{~\vert~}
 % automatically label rules
@@ -67,6 +67,7 @@
 \pagenumbering{gobble}
 \nonfrenchspacing
 %\frenchspacing % when monospaced
+\recalctypearea
 \begin{document}
 \title{Hazel Phi: 11-type-constructors}
 \author{}
@@ -265,6 +266,9 @@
     \begin{proof}
         Exchange when $\TypVarCtx[][2]=\cdot$
     \end{proof}
+    \newpage
+    \KOMAoptions{paper=A1,paper=landscape}
+    \recalctypearea
     \begin{lemma}[Weakening]
         \vphantom{.}\\
         If $\J$ and $\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]$ and $\typvar[L]\notin\mathcal{J}$ and $\forall\typvar\in\knd[L],\typvar\notin\mathcal{J}$, then $\J[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]$
@@ -274,7 +278,6 @@
         By induction on derivations. \\
         When applying Weakening in the induction, check that the left premiss is always a subderivation,
         and check variable exclusion conditions are satisfied (usually checked elsewhere in the derivation). \\
-        \begin{landscape}
         \subsubsection*{Weakening}
         \begin{mathpar}
             \rinfer[PK-$\lambda$]{\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]{\TypeFun[][\knd[1]]}[\SKind[\DepFunKind][\TypeFun[][\knd[1]]]]}{
@@ -430,8 +433,10 @@
             \rinfer[KWF-$\Pi$]{sim}{
             }
         \end{mathpar}
-        \end{landscape}
     \end{proof}
+    \newpage
+    \KOMAoptions{paper=A4,paper=portrait}
+    \recalctypearea
     \begin{lemma}[OK-PK]
         If $\PrincipalKind{\typ}$, then $\KindWellFormed$
     \end{lemma}
@@ -467,8 +472,7 @@
     \begin{proof}
         By simultaneous induction on derivations. \\
         The interesting cases per lemma: \\
-        (PoS = premiss of subderivation)
-        \begin{tabular*}{.5\textwidth}{lc@{\extracolsep{\fill}}ll}
+        \begin{tabular*}{.6\textwidth}{lc@{\extracolsep{\fill}}ll}
             OK-PK.
                 &PK-Base& $\WellFormedAtKind{\bse}[\SKind[\Type][\bse]]$ & by (9) \\
                 & & $\WellFormedAtKind{\bse}[\Type]$ & by (10) \\
