@@ -27,8 +27,15 @@ It is represented as greek letter `rho` in the attached
 [latex document](./latex/kind-judgements.pdf).
 
 ```
+module TyId = {
+  module BuiltInType = {
+    type t = Bool | Float | Int
+  }
+}
+
 module VarPatErrStatus = {
   type t =
+    | BuiltInType(TyId.BuiltInType.t)
     | Keyword(ExpandingKeyword.t)
 }
 
@@ -51,15 +58,15 @@ In expanded types, we will use a de Bruijn indexed representation. This requires
 defining a type abbreviation `HTyp.idx` as follows:
 
 ```
-type HTyp.idx = int
+type HTyp.Index.t = int
 ```
 
 Then, we extend the syntax of `HTyp.t` as follows:
 
 ```
 type HTyp.t = ... 
-            | TyVar(idx, TyId.t) 
-            | TyVarHole(MetaVar.t, Var.t)
+            | TyVar(Index.t, TyId.t) 
+            | TyVarHole(MetaVar.t, TyId.t)
 ```
 
 The `TyVar` constructor represents a bound type variable. We retain the original
@@ -76,7 +83,7 @@ We define a new type, `Kind.t`, as follows:
 ```
 type Kind.t = KHole
             | Type
-            | Singleton(HTyp.t)
+            | Singleton(t, HTyp.t)
 ```
 
 ## Unexpanded Expressions
