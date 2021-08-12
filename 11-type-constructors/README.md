@@ -6,6 +6,11 @@ Introduction
 
 something
 
+TODO
+----
+
+-   clean derivations w/ abbreviations
+
 Notes
 -----
 
