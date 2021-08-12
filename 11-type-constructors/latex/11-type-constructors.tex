@@ -279,29 +279,32 @@
         If $\WellFormedAtKind{\typ[L1]}[\knd[L1]]$ and $\WellFormedAtKind[\HoleCtx\xExtendTypVarCtx[][L][{\knd[L1]}]]{\typ[L2]}[\knd[L2]]$, then $\WellFormedAtKind{\subst{\typ[L1]}{\typvar[L]}{\typ[L2]}}[\subst{\typ[L1]}{\typvar[L]}{\knd[L2]}]$ \\
         (induction on $\WellFormedAtKind[\HoleCtx\xExtendTypVarCtx[][L][{\knd[L1]}]]{\typ[L2]}[\knd[L2]]$)
     \end{lemma}
+    \begin{lemma}[PK-Substitution]
+        If $\WellFormedAtKind{\typ[L1]}[\knd[L1]]$ and $\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][L][\knd[L1]]]{\typ[L2]}[\knd[L2]]$ and $\PrincipalKind{\subst{\typ[L1]}{\typvar[L]}{\typ[L2]}}[\knd[L3]]$, then $\KindEquiv{\subst{\typ[L2]}{\typvar[L]}{\knd[L2]}}{\knd[L3]}$
+    \end{lemma}
     \begin{lemma}[OK-Substitution]
         \vphantom{.}\\
         If $\WellFormedAtKind{\typ[L]}[\knd[L1]]$ and $\KindWellFormed[{\knd[L2]}][\HoleCtx\xExtendTypVarCtx[][L][{\knd[L1]}]]$, then $\KindWellFormed[\subst{\typ[L]}{\typvar[L]}{\knd[L2]}]$ \\
         (induction on $\KindWellFormed[{\knd[L2]}][\HoleCtx\xExtendTypVarCtx[][L][{\knd[L1]}]]$)
     \end{lemma}
-    \begin{lemma}[OK-PK]
+    \begin{theorem}[OK-PK]
         If $\PrincipalKind{\typ}$, then $\KindWellFormed$
-    \end{lemma}
-    \begin{lemma}[OK-WFaK]
+    \end{theorem}
+    \begin{theorem}[OK-WFaK]
         If $\WellFormedAtKind{\typ}$, then $\KindWellFormed$
-    \end{lemma}
-    \begin{lemma}[OK-MatchPi]
+    \end{theorem}
+    \begin{theorem}[OK-MatchPi]
         If $\MatchedPiKind{\knd}$, then $\KindWellFormed$ and $\KindWellFormed[\DepFunKind]$
-    \end{lemma}
-    \begin{lemma}[OK-KEquiv]
+    \end{theorem}
+    \begin{theorem}[OK-KEquiv]
         If $\KindEquiv{\knd[1]}{\knd[2]}$, then $\KindWellFormed[{\knd[1]}]$ and $\KindWellFormed[{\knd[2]}]$
-    \end{lemma}
-    \begin{lemma}[OK-CSK]
+    \end{theorem}
+    \begin{theorem}[OK-CSK]
         If $\ConsistentSubKind{\knd[1]}{\knd[2]}$, then $\KindWellFormed[{\knd[1]}]$ and $\KindWellFormed[{\knd[2]}]$
-    \end{lemma}
-    \begin{lemma}[OK-EquivAK]
+    \end{theorem}
+    \begin{theorem}[OK-EquivAK]
         If $\TypeEquivAtKind{\typ[1]}{\typ[2]}$, then $\WellFormedAtKind{\typ[1]}$ and $\WellFormedAtKind{\typ[2]}$ and $\KindWellFormed$
-    \end{lemma}
+    \end{theorem}
     \begin{proof}
         see addendum
     \end{proof}
@@ -499,44 +502,16 @@
     \newpage
     \KOMAoptions{paper=A4,paper=portrait}
     \recalctypearea
-    \begin{proof}
-        By simultaneous induction on derivations. \\
-        The interesting cases per lemma: \\
-        \begin{tabular*}{.6\textwidth}{lc@{\extracolsep{\fill}}ll}
-            OK-PK.
-                &PK-Base& $\WellFormedAtKind{\bse}[\SKind[\Type][\bse]]$ & by (9) \\
-                & & $\WellFormedAtKind{\bse}[\Type]$ & by (10) \\
-                &*& $\KindWellFormed[{\SKind[\Type][\bse]}]$ & by (43) \\
-                &*& $\ContextWellFormed$ & by premiss \\
-                &PK-Ap& & bad \\
-            OK-WFaK.
-                &(12)& $\WellFormedAtKind{\typ[2]}$ & by (10) \\
-                &*& $\KindWellFormed[{\SKind[\knd][\typ[2]]}]$ & by (43) \\
-            OK-KEquiv.
-                &(22)& $\PrincipalKind{\TypeAp[\typ][\typvar]}$ & \\
-            OK-Substitution.
-                &(41)& $\ContextWellFormed[\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]$ & premiss (41) \\
-                & & $\KindWellFormed[{\knd[L1]}]$ & by subderivation premiss (46) \\
-                &*& $\ContextWellFormed$ & by OK-KWF \\
-                &*& $\KindWellFormed[\subst{\typ[L]}{\typvar[L]}{\Type}]$ & by (41) and degenerate subst \\
-                &(43)& $\WellFormedAtKind[\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]{\typ}[\knd]$ & premiss (43) \\
-                & & $\ContextWellFormed[\HoleCtx\ExtendTypVarCtx[][L][{\knd[L1]}]]$ & by OK-WFaK \\
-                & & $\KindWellFormed[{\knd[L1]}]$ & by subderivation premiss (46) \\
-                &*& $\ContextWellFormed$ & by OK-KWF \\
-                & & $\WellFormedAtKind{\subst{\typ[L1]}{\typvar[L]}{\typ}}[\subst{\typ[L1]}{\typvar[L]}{\knd}]$ & by K-Substitution on premiss \\
-                &*& $\KindWellFormed[\subst{\typ[L]}{\typvar[L]}{\SKind}]$ & by (43) \\
-        \end{tabular*}
-    \end{proof}
     \vphantom{.}
-    \begin{lemma}[PK-Unicity]
-        If $\PrincipalKind{\typ[L]}[\knd[L1]]$ and $\PrincipalKind{\typ[L]}[\knd[L2]]$ then ${\knd[L1]}$ is ${\knd[L2]}$
-    \end{lemma}
-    \begin{lemma}
+    \begin{theorem}[PK-Unicity]
+        If $\PrincipalKind{\typ[L]}[\knd[L1]]$ and $\PrincipalKind{\typ[L]}[\knd[L2]]$ then ${\knd[L1]} = {\knd[L2]}$
+    \end{theorem}
+    \begin{theorem}
         If $\PrincipalKind{\typ}[\knd[1]]$ and $\WellFormedAtKind{\typ}[\knd[2]]$, then $\ConsistentSubKind{\knd[1]}{\knd[2]}$
-    \end{lemma}
-    \begin{lemma}
+    \end{theorem}
+    \begin{theorem}
         If $\ConsistentSubKind{\knd[1]}{\SKind[\knd[2]]}$, then $\ConsistentSubKind{\knd[1]}{\knd[2]}$
-    \end{lemma}
+    \end{theorem}
 \section*{Elaboration}
     \subsection*{todo}
 \end{document}
