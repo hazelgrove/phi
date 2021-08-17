@@ -73,6 +73,10 @@
 \author{}
 \date{\today}
 \maketitle
+\section{notes}
+    \subsection*{}
+    \noindent This is (sadly) the last version for summer 2021. \\
+    See markdown for a brief TODO list.
 \section{syntax}
     \begin{longtable}{RCRL}
         \textrm{Kind} & \knd & ::=
@@ -250,6 +254,7 @@
         By induction on derivations. \\
         No interesting cases.
     \end{proof}
+    \noindent\hrulefill
     \begin{lemma}[Exchange]
         \vphantom{.}\\
         If $\J[\HoleCtx\TypVarCtx[][1],\typvar[L1]\KndAssump\knd[L1],\typvar[L2]\KndAssump\knd[L2],\TypVarCtx[][2]]$ and $\ContextWellFormed[\HoleCtx\TypVarCtx[][1],\typvar[L2]\KndAssump\knd[L2],\typvar[L1]\KndAssump\knd[L1],\TypVarCtx[][2]]$, then $\J[\HoleCtx\TypVarCtx[][1],\typvar[L2]\KndAssump\knd[L2],\typvar[L1]\KndAssump\knd[L1],\TypVarCtx[][2]]$
@@ -266,6 +271,7 @@
     \begin{proof}
         Exchange when $\TypVarCtx[][2]=\cdot$
     \end{proof}
+    \noindent\hrulefill
     \begin{lemma}[Weakening]
         \vphantom{.}\\
         If $\J$ and $\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]$ and $\typvar[L]\notin\mathcal{J}$ and $\forall\typvar\in\knd[L],\typvar\notin\mathcal{J}$, then $\J[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]$
@@ -274,6 +280,7 @@
     \begin{proof}
         see addendum
     \end{proof}
+    \noindent\hrulefill
     \begin{lemma}[K-Substitution]
         \vphantom{.}\\
         If $\WellFormedAtKind{\typ[L1]}[\knd[L1]]$ and $\WellFormedAtKind[\HoleCtx\xExtendTypVarCtx[][L][{\knd[L1]}]]{\typ[L2]}[\knd[L2]]$, then $\WellFormedAtKind{\subst{\typ[L1]}{\typvar[L]}{\typ[L2]}}[\subst{\typ[L1]}{\typvar[L]}{\knd[L2]}]$ \\
@@ -308,6 +315,7 @@
     \begin{proof}
         see addendum
     \end{proof}
+    \noindent\hrulefill
     \newpage
     \KOMAoptions{paper=A0,paper=landscape,DIV=40}
     \recalctypearea
@@ -506,10 +514,23 @@
     \begin{theorem}[PK-Unicity]
         If $\PrincipalKind{\typ[L]}[\knd[L1]]$ and $\PrincipalKind{\typ[L]}[\knd[L2]]$ then ${\knd[L1]} = {\knd[L2]}$
     \end{theorem}
-    \begin{theorem}
+    \begin{proof}
+        \red{There's actually a slight problem here. In PK-Ap, $\MatchedPiKindOp$ doesn't have unicity since $\MatchedPiKindOp\hyph\Pi$ uses $\KindEquiv{\knd[1]}{\knd[2]}$, where ``the same left side can have mutliple right sides" (transitivity), causing unicity to fail for PK}. \\
+        Only thought about this quickly but we might need a seperate HO singleton normalization scheme that is essentially the KEquiv-$\mathrm{SKind_{SKind}}$, KEquiv-$\mathrm{SKind_{\Pi}}$ fragment of kind equality, and have the HO singleton normalization judgment have unicity. \\
+        Kind of gross but... \\
+        (and add other HO kinds, namely $\Sigma$, when they get here) \\
+        And as cleanup, we can remove the normalization fragment from kind equality and add a single rule (yay more sim judgments!) \\
+        Also we need some unicity lemmas for contexts like for PK-EHole and co. \\
+    \end{proof}
+    \noindent\hrulefill
+    \begin{theorem}[PK-Principality]
         If $\PrincipalKind{\typ}[\knd[1]]$ and $\WellFormedAtKind{\typ}[\knd[2]]$, then $\ConsistentSubKind{\knd[1]}{\knd[2]}$
     \end{theorem}
-    \begin{theorem}
+    \begin{proof}
+        From definition of $\WellFormedAtKind{\typ}$ and CSK-SKind
+    \end{proof}
+    \noindent\hrulefill
+    \begin{theorem}[$\redrm{why~is~this~here?}$]
         If $\ConsistentSubKind{\knd[1]}{\SKind[\knd[2]]}$, then $\ConsistentSubKind{\knd[1]}{\knd[2]}$
     \end{theorem}
 \section*{Elaboration}
