@@ -3,6 +3,9 @@
 \usepackage{fullpage}
 \usepackage{amsmath, stmaryrd, amssymb, mathtools, mathpartir}
 
+% Sets
+\newcommand{\SetOf}[1]{\left\{#1\right\}}
+
 % Sorts
 
 \newcommand{\IHExp}{\mathsf{IHExp}}
@@ -13,6 +16,7 @@
 \newcommand{\HTagExp}{\mathsf{HTagExp}}
 \newcommand{\HTagTyp}{\mathsf{HTagTyp}}
 \newcommand{\HTagVar}{\mathsf{HTagVar}}
+\newcommand{\EvalCtx}{\mathsf{EvalCtx}}
 
 % Types
 
@@ -36,7 +40,7 @@
 
 % Judgments
 
-\newcommand{\valid}[2]{#1 \vdash #2~\text{valid}}
+\newcommand{\valid}[2]{#1 \vdash #2~\mathsf{valid}}
 \newcommand{\assign}[4]{#1; #2 \vdash #3 : #4}
 \newcommand{\syn}[3]{#1 \vdash #2 \Rightarrow #3}
 \newcommand{\ana}[3]{#1 \vdash #2 \Leftarrow #3}
@@ -46,18 +50,28 @@
 \newcommand{\synelabE}[5]{#1 \vdash_E #2 \Rightarrow #3 \leadsto #4 \dashv #5}
 \newcommand{\anaelabE}[6]{#1 \vdash_E #2 \Leftarrow #3 \leadsto #4 : #5 \dashv #6}
 \newcommand{\assignD}[4]{#1; #2 \vdash_D #3 : #4}
+\newcommand{\consistent}[2]{#1 \sim #2}
+\newcommand{\join}[2]{\mathsf{join}\left(#1,#2\right)}
+\newcommand{\ground}[1]{#1~\mathsf{ground}}
+\newcommand{\matchedGround}[2]{#1 \blacktriangleright_{\mathsf{ground}} #2}
+\newcommand{\val}[1]{#1~\mathsf{val}}
+\newcommand{\boxedval}[1]{#1~\mathsf{boxedval}}
+\newcommand{\indet}[1]{#1~\mathsf{indet}}
+\newcommand{\final}[1]{#1~\mathsf{final}}
+\newcommand{\eval}[3]{#1 = #2\mathopen{}\left\{#3\right\}\mathclose{}}
+
+% Evaluation Contexts
+\newcommand{\E}{\mathcal{E}}
 
 % Operations
 
 \newcommand{\subst}[3]{[#1 / #2]#3}
 \newcommand{\defeq}{\stackrel{\text{def}}{=}}
-\newcommand{\isval}[1]{#1~\mathsf{\normalfont val}}
 \newcommand{\cast}[3]{#1\langle#2\,{\Rightarrow}\,#3\rangle}
 
 % Helpers
 
 \DeclareMathOperator{\expand}{\text{expand}}
-\DeclareMathOperator{\join}{\text{join}}
 \DeclareMathOperator{\id}{\text{id}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -417,6 +431,187 @@ $\boxed{\assign{\Delta}{\Gamma}{d}{\tau}}$
 \end{mathpar}
 
 $\expand(\rectype{\alpha}{\tau}) \defeq \subst{\rectype{\alpha}{\tau}}{\alpha}{\tau}$
+
+\vspace*{\baselineskip}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+\noindent
+$\boxed{\consistent{\tau}{\tau'}}$
+
+\begin{mathpar}
+  \inferrule{
+    \consistent{\tau_i}{\tau_i'}
+  }{
+    \consistent{
+      \sumtype{C_i(\tau_i)}_{C_i \in \C}
+    }{
+      \sumtype{C_i(\tau_i')}_{C_i \in \C}
+    }
+  }
+\end{mathpar}
+
+\vspace*{\baselineskip}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+\noindent
+$\boxed{\join{\tau_1}{\tau_2} = \tau}$
+
+\begin{mathpar}
+  \join{
+    \sumtype{C_i(\tau_i)}_{C_i \in \C}
+  }{
+    \sumtype{C_i(\tau_i')}_{C_i \in \C}
+  }
+  = \sumtype{C_i(\join{\tau_i}{\tau_i'})}_{C_i \in \C}
+\end{mathpar}
+
+\vspace*{\baselineskip}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+\noindent
+$\boxed{\ground{\tau}}$
+\quad $\tau$ is a ground type
+
+\begin{mathpar}
+  \inferrule[GSum]{
+    \SetOf{T_i = \hole \vee T_i = \Nothing}_i
+  }{
+    \ground{\sumtype{C_i(T_i)}_{C_i \in \C}}
+  }
+\end{mathpar}
+
+\vspace*{\baselineskip}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+\noindent
+$\boxed{\matchedGround{\tau}{\tau'}}$
+\quad $\tau$ has matched ground type $\tau'$
+
+\begin{mathpar}
+  \inferrule[MGSum]{
+    \tau = \sumtype{C_i(T_i)}_{C_i \in \C} \\
+    \tau' = \sumtype{C_i(T_i')}_{C_i \in \C} \\
+    \tau \neq \tau' \\
+    \SetOf{
+      T_i =   \tau_i \implies T_i' = \hole \wedge
+      T_i = \Nothing \implies T_i' = \Nothing
+    }_i
+  }{
+    \matchedGround{\tau}{\tau'}
+  }
+\end{mathpar}
+
+\vspace*{\baselineskip}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+\noindent
+$\boxed{\val{d}}$
+\quad $d$ is a value
+
+\begin{mathpar}
+  \inferrule[VInj]{
+    \val{d  }
+  }{
+    \val{\inj[\tau]{\Tag}{d}}
+  }
+
+  \inferrule[VInjNull]{
+  }{
+    \val{\inj[\tau]{\Tag}{\Nothing}}
+  }
+\end{mathpar}
+
+\vspace*{\baselineskip}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+\noindent
+$\boxed{\boxedval{d}}$
+\quad $d$ is a boxed value
+
+\begin{mathpar}
+  \inferrule[BVInj]{
+    \boxedval{d}
+  }{
+    \boxedval{\inj[\tau]{\Tag}{d}}
+  }
+
+  \inferrule[BVSumCast]{
+    \tau = \sumtype{C_i(T_i)}_{C_i \in \C} \\
+    \tau' = \sumtype{C_i(T_i')}_{C_i \in \C} \\
+    \tau \neq \tau' \\
+    \boxedval{d}
+  }{
+    \boxedval{\cast{d}{\tau}{\tau'}}
+  }
+\end{mathpar}
+
+\vspace*{\baselineskip}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+\noindent
+$\boxed{\indet{d}}$
+\quad $d$ is indeterminate
+
+\begin{mathpar}
+  \inferrule[IInj]{
+    \indet{d}
+  }{
+    \indet{\inj[\tau]{\Tag}{d}}
+  }
+
+  \inferrule[IInjTag]{
+    \final{d}
+  }{
+    \indet{\inj[\tau]{\TagHole}{d}}
+  }
+
+  \inferrule[IInjNull]{
+  }{
+    \indet{\inj[\tau]{\TagHole}{\Nothing}}
+  }
+
+  \inferrule[ICastSum]{
+    \tau = \sumtype{C_i(T_i)}_{C_i \in \C} \\
+    \tau' = \sumtype{C_i(T_i')}_{C_i \in \C} \\
+    \tau \neq \tau' \\
+    \indet{d}
+  }{
+    \indet{\cast{d}{\tau}{\tau'}}
+  }
+\end{mathpar}
+
+\vspace*{\baselineskip}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+\[
+  \arraycolsep=0pt  \arraycolsep=0pt
+  \begin{array}{l@{~~}c@{~~}c@{~~}l}
+    \EvalCtx & \E & {}\Coloneqq{} &
+      \ldots
+      \mid \inj[\tau]{C}{\E}
+    \\
+  \end{array}
+\]
+
+\noindent
+$\boxed{\eval{d}{\E}{d'}}$
+\quad $d$ is obtained by placing $d'$ at the mark in $\E$
+
+\begin{mathpar}
+  \inferrule[FHInj]{
+    \eval{d}{\E}{d'}
+  }{
+    \eval{\inj[\tau]{C}{d}}{\inj[\tau]{C}{\E}}{d'}
+  }
+\end{mathpar}
 
 \vspace*{\baselineskip}
 
