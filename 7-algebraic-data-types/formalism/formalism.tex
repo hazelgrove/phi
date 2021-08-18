@@ -150,25 +150,6 @@ $\boxed{\valid{\Gamma}{E}}$
 \vspace*{\baselineskip}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-%  Gamma |- e => tau
-
-\noindent
-$\boxed{\syn{\Gamma}{e}{\tau}}$
-\quad $e$ synthesizes type $\tau$
-%
-\begin{mathpar}
-  \inferrule[SInj]{
-    \valid{\Gamma}{E}
-  }{
-    \syn{\Gamma}{\hole[\inj{C}{E}]^u}{\hole}
-  }
-\end{mathpar}
-
-\textsc{SInj} = Injection in Synthetic Position or Analyzed Against Non-Sum
-
-\vspace*{\baselineskip}
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 % Gamma |- E <= T
 
 \noindent
@@ -192,6 +173,88 @@ $\boxed{\anaE{\Gamma}{E}{T}}$
 \vspace*{\baselineskip}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% Gamma |- E <= T_1 ~> D : T_2 -| Delta
+
+\noindent
+$\boxed{\anaelabE{\Gamma}{E}{T_1}{D}{T_2}{\Delta}}$
+\quad $E$ analyzes against optional type $T_1$ and elaborates to $D$ of consistent optional type $T_2$
+%
+\begin{mathpar}
+  \inferrule{
+    \anaelab{\Gamma}{e}{\tau_1}{d}{\tau_2}{\Delta}   
+  }{
+    \anaelabE{\Gamma}{e}{\tau_1}{d}{\tau_2}{\Delta}
+  }
+
+  \inferrule{
+    % 
+  }{
+    \anaelabE{\Gamma}{\Nothing}{\Nothing}{\Nothing}{\Nothing}{\emptyset}
+  }
+\end{mathpar}
+
+\vspace*{\baselineskip}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% Gamma |- D : T
+
+\noindent
+$\boxed{\assignD{\Delta}{\Gamma}{D}{T}}$
+\quad $D$ is assigned optional type $T$
+%
+\begin{mathpar}
+  \inferrule{
+    \assign{\Delta}{\Gamma}{d}{\tau}
+  }{
+    \assignD{\Delta}{\Gamma}{d}{\tau}
+  }
+
+  \inferrule{
+    % 
+  }{
+    \assign{\Delta}{\Gamma}{\Nothing}{\Nothing}
+  }
+\end{mathpar}
+
+\vspace*{\baselineskip}
+
+\noindent
+$\expand(\rectype{\alpha}{\tau}) \defeq \subst{\rectype{\alpha}{\tau}}{\alpha}{\tau}$
+
+\vspace*{\baselineskip}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+%  Gamma |- e => tau
+
+\noindent
+$\boxed{\syn{\Gamma}{e}{\tau}}$
+\quad $e$ synthesizes type $\tau$
+%
+\begin{mathpar}
+  \inferrule[SRoll]{
+    \valid{\Gamma}{e}
+  }{
+    \syn{\Gamma}{\hole[\roll{\rectype{\alpha}{\tau}}{e}]^u}{\hole}
+  }
+
+  \inferrule[SUnroll]{
+    \valid{\Gamma}{e}
+  }{
+    \syn{\Gamma}{\hole[\unroll{e}]^u}{\hole}
+  }
+
+  \inferrule[SInj]{
+    \valid{\Gamma}{E}
+  }{
+    \syn{\Gamma}{\hole[\inj{C}{E}]^u}{\hole}
+  }  
+\end{mathpar}
+
+\textsc{SInj} = Injection in Synthetic Position or Analyzed Against Non-Sum
+
+\vspace*{\baselineskip}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 %  Gamma |- e <= tau
 
 \noindent
@@ -199,38 +262,90 @@ $\boxed{\ana{\Gamma}{e}{\tau}}$
 \quad $e$ analyzes against type $\tau$
 %
 \begin{mathpar}
+  \inferrule[ARollHole]{
+    \valid{\Gamma}{e}
+  }{
+    \ana{\Gamma}{ \roll{\rectype{\alpha}{\tau}}{e} }{\hole}
+  }
+
+  \inferrule[ARoll]{
+    \ana{\Gamma}{ e }{\expand(\rectype{\alpha}{\tau})}
+  }{
+    \ana{\Gamma}{
+      \roll{\rectype{\alpha}{\tau}}{e}
+    }{\rectype{\alpha}{\tau}}
+  }
+
+  \inferrule[ARollBadType]{
+    \valid{\Gamma}{e}
+  }{
+    \ana{\Gamma}{
+      \hole[\roll{\rectype{\alpha}{\tau}}{e}]^u
+    }{\rectype{\alpha}{\tau}}
+  }
+\end{mathpar}
+%
+\begin{mathpar}
+  \inferrule[AUnrollHole]{
+    \valid{\Gamma}{e}
+  }{
+    \ana{\Gamma}{ \unroll{e} }{\hole}
+  }
+
+  \inferrule[AUnroll]{
+    \ana{\Gamma}{ e }{\rectype{\alpha}{\tau}}
+  }{
+    \ana{\Gamma}{ \unroll{e} }{\expand(\rectype{\alpha}{\tau})}
+  }
+
+  \inferrule[AUnrollBadType]{
+    \valid{\Gamma}{e}
+  }{
+    \ana{\Gamma}{ \hole[\unroll{e}]^u }{\expand(\rectype{\alpha}{\tau})}
+  }
+\end{mathpar}
+%
+\begin{mathpar}
   \inferrule[AInjHole]{
     \valid{\Gamma}{E}
   }{
-    \ana{\Gamma}{\inj{C}{E}}{\hole}
+    \ana{\Gamma}{ \inj{C}{E} }{\hole}
   }
 
   \inferrule[AInj]{
     C_j \in \C \\
     \anaE{\Gamma}{E}{T_j}
   }{
-    \ana{\Gamma}{\inj{C_j}{E}}{\sumtype{C_i(T_i)}_{C_i \in \C}}
+    \ana{\Gamma}{
+      \inj{C_j}{E}
+    }{\sumtype{C_i(T_i)}_{C_i \in \C}}
   }
 
   \inferrule[AInjUnexpectedBody]{
     C_j \in \C \\
     T_j = \Nothing
   }{
-    \ana{\Gamma}{\hole[\inj{C_j}{e}]^u}{\sumtype{C_i(T_i)}_{C_i \in \C}}
+    \ana{\Gamma}{
+      \hole[\inj{C_j}{e}]^u
+    }{\sumtype{C_i(T_i)}_{C_i \in \C}}
   }
 
   \inferrule[AInjExpectedBody]{
     C_j \in \C \\
     T_j = \tau
   }{
-    \ana{\Gamma}{\hole[\inj{C_j}{\Nothing}]^u}{\sumtype{C_i(T_i)}_{C_i \in \C}}
+    \ana{\Gamma}{
+      \hole[\inj{C_j}{\Nothing}]^u
+    }{\sumtype{C_i(T_i)}_{C_i \in \C}}
   }
 
   \inferrule[AInjBadTag]{
     C \notin \C \\
     \valid{\Gamma}{E}
   }{
-    \ana{\Gamma}{\hole[\inj{C}{E}]^u}{\sumtype{C_i(T_i)}_{C_i \in \C}}
+    \ana{\Gamma}{
+      \hole[\inj{C}{E}]^u
+    }{\sumtype{C_i(T_i)}_{C_i \in \C}}
   }
 \end{mathpar}
 
@@ -252,29 +367,6 @@ $\boxed{\synelab{\Gamma}{e}{\tau}{d}{\Delta}}$
     }{\hole}{
       \hole[{\inj[\hole]{C}{\cast{D}{T}{\hole}}}]_{\id(\Gamma)}^u
     }{\Delta, u :: \hole{}[\Gamma]}
-  }
-\end{mathpar}
-
-\vspace*{\baselineskip}
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% Gamma |- e <= tau_1 ~> d : tau_2 -| Delta
-
-\noindent
-$\boxed{\anaelabE{\Gamma}{E}{T_1}{D}{T_2}{\Delta}}$
-\quad $E$ analyzes against optional type $T_1$ and elaborates to $D$ of consistent optional type $T_2$
-%
-\begin{mathpar}
-  \inferrule{
-    \anaelab{\Gamma}{e}{\tau_1}{d}{\tau_2}{\Delta}   
-  }{
-    \anaelabE{\Gamma}{e}{\tau_1}{d}{\tau_2}{\Delta}
-  }
-
-  \inferrule{
-    % 
-  }{
-    \anaelabE{\Gamma}{\Nothing}{\Nothing}{\Nothing}{\Nothing}{\emptyset}
   }
 \end{mathpar}
 
@@ -358,33 +450,7 @@ $\boxed{\anaelab{\Gamma}{e}{\tau_1}{d}{\tau_2}{\Delta}}$
 \vspace*{\baselineskip}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% Gamma |- D : T
-
-\noindent
-$\boxed{\assignD{\Delta}{\Gamma}{D}{T}}$
-\quad $D$ is assigned optional type $T$
-%
-\begin{mathpar}
-  \inferrule{
-    \assign{\Delta}{\Gamma}{d}{\tau}
-  }{
-    \assignD{\Delta}{\Gamma}{d}{\tau}
-  }
-
-  \inferrule{
-    % 
-  }{
-    \assign{\Delta}{\Gamma}{\Nothing}{\Nothing}
-  }
-\end{mathpar}
-
-\vspace*{\baselineskip}
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 % Delta; Gamma |- d : tau
-
-% TODO: define elaboration judgments and write down the rules for them
-% TODO: connect DHExp to paper theorems (sec 3)
 
 \noindent
 $\boxed{\assign{\Delta}{\Gamma}{d}{\tau}}$
@@ -429,8 +495,6 @@ $\boxed{\assign{\Delta}{\Gamma}{d}{\tau}}$
     \assign{\Delta}a{\Gamma}{\case{d}{C_i(X_i){=}{d_i}}_{C_i \in \C}}{\tau}
   }
 \end{mathpar}
-
-$\expand(\rectype{\alpha}{\tau}) \defeq \subst{\rectype{\alpha}{\tau}}{\alpha}{\tau}$
 
 \vspace*{\baselineskip}
 
