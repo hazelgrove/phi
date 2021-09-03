@@ -141,7 +141,7 @@
                 \and
                 \rule[\MatchedPiKindOp\hyph SKHole]{\KindEquiv{\knd}{\SKind[\KHole]}}{\MatchedPiKind{\knd}[\DepFunKind[][\SKind[\KHole]][\SKind[\KHole][\TypeAp[\typ][\typvar]]]]}
                 \and
-                \rule[\MatchedPiKindOp\hyph \Pi]{\KindEquiv{\knd}{\DepFunKind}}{\MatchedPiKind{\knd}}
+                \rule[\MatchedPiKindOp\hyph \Pi]{\SNormal{\knd}{\DepFunKind}}{\MatchedPiKind{\knd}}
             \end{mathpar}
         \end{minipage}
     \subsection*{}
@@ -174,9 +174,9 @@
                 \and
                 \rule[KEquiv\hyph Trans]{\KindEquiv{\knd[1]}{\knd[3]} \\ \KindEquiv{\knd[3]}{\knd[2]}}{\KindEquiv{\knd[1]}{\knd[2]}}
                 \\
-                \rule[KEquiv\hyph SKind_{SKind}]{\WellFormedAtKind{\typ}[\SKind[\knd][\typ[1]]]}{\KindEquiv{\SKind[\SKind[\knd][\typ[1]]][\typ]}{\SKind[\knd][\typ[1]]}}
+                \rule[KEquiv\hyph SReduc]{\SReduce{\knd[1]}{\knd[2]}}{\KindEquiv{\knd[1]}{\knd[2]}}
                 \and
-                \rule[KEquiv\hyph SKind_{\Pi}]{\WellFormedAtKind{\typ}[\DepFunKind]}{\KindEquiv{\SKind[\DepFunKind][\typ]}{\DepFunKind[1][\knd[1]][\SKind[\subst{\typvar[1]}{\typvar}{\knd[2]}][\TypeAp[\typ][\typvar[1]]]]}}
+                \rule[KEquiv\hyph SNorm]{\SNormal{\knd[1]}{\knd[2]}}{\KindEquiv{\knd[1]}{\knd[2]}}
                 \and
                 \rule[KEquiv\hyph \Pi]{\KindEquiv{\knd[1]}{\knd[2]} \\ \KindEquiv[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\knd[3]}{\knd[4]}}{\KindEquiv{\DepFunKind[][\knd[1]][\knd[2]]}{\DepFunKind[][\knd[3]][\knd[4]]}}
                 \and
