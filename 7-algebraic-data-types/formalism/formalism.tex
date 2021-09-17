@@ -73,7 +73,6 @@
 
 % Helpers
 
-\DeclareMathOperator{\expand}{\text{expand}}
 \DeclareMathOperator{\id}{\text{id}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -96,7 +95,7 @@
     \IHExp & d & {}\Coloneqq{} &
       \ldots
       \mid \droll{\rectype{\alpha}{\tau}}{d}
-      \mid \unroll[\tau]{d}
+      \mid \unroll{d}
       \mid \dinj{\tau}{C}{D}
       \mid \case{d}{C_i(X_i){=}d_i}_{C_i \in \C}
     \\
@@ -126,9 +125,44 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Semantics}
+\section{Static Semantics}
 
-\subsection{Optional Expressions}
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+\noindent
+$\boxed{\consistent{\tau}{\tau'}}$
+
+\begin{mathpar}
+  \inferrule{
+    \consistent{\tau_i}{\tau_i'}
+  }{
+    \consistent{
+      \sumtype{C_i(\tau_i)}_{C_i \in \C}
+    }{
+      \sumtype{C_i(\tau_i')}_{C_i \in \C}
+    }
+  }
+\end{mathpar}
+
+\vspace*{\baselineskip}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+\noindent
+$\boxed{\join{\tau_1}{\tau_2} = \tau}$
+
+\begin{mathpar}
+  \join{
+    \sumtype{C_i(\tau_i)}_{C_i \in \C}
+  }{
+    \sumtype{C_i(\tau_i')}_{C_i \in \C}
+  }
+  = \sumtype{C_i(\join{\tau_i}{\tau_i'})}_{C_i \in \C}
+\end{mathpar}
+
+% \vspace*{\baselineskip}
+
+\subsection{Bidirectional Types}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 %  Gamma |- E valid
@@ -151,9 +185,7 @@ $\boxed{\valid{\Gamma}{E}}$
   }
 \end{mathpar}
 
-% \vspace*{\baselineskip}
-
-\subsection{Bidirectional Types}
+\vspace*{\baselineskip}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 %  Gamma |- e => tau
@@ -164,15 +196,15 @@ $\boxed{\syn{\Gamma}{e}{\tau}}$
 %
 \begin{mathpar}
   \inferrule[SRoll]{
-    \ana{\Gamma}{e}{\hole}
+    \syn{\Gamma}{ e }{ \subst{ \rectype{\alpha}{\tau} }{ \alpha }{ \tau }}
   }{
-    \syn{\Gamma}{\hole[\eroll{e}]^u}{\hole}
+    \syn{\Gamma}{ \eroll{e} }{ \rectype{\alpha}{\tau} }
   }
 
   \inferrule[SUnroll]{
-    \valid{\Gamma}{e}
+    \syn{\Gamma}{ e }{ \rectype{\alpha}{\tau} }
   }{
-    \syn{\Gamma}{\hole[\unroll{e}]^u}{\hole}
+    \syn{\Gamma}{ \unroll{e} }{ \subst{ \rectype{\alpha}{\tau} }{ \alpha }{ \tau }}
   }
 
   \inferrule[SInj]{
@@ -195,13 +227,13 @@ $\boxed{\ana{\Gamma}{e}{\tau}}$
 %
 \begin{mathpar}
   \inferrule[ARollHole]{
-    \valid{\Gamma}{e}
+    \ana{\Gamma}{e}{\hole}
   }{
     \ana{\Gamma}{ \eroll{e} }{\hole}
   }
 
   \inferrule[ARoll]{
-    \ana{\Gamma}{ e }{\expand(\rectype{\alpha}{\tau})}
+    \ana{\Gamma}{ e }{ \subst{\rectype{\alpha}{\tau}}{\alpha}{\tau} }
   }{
     \ana{\Gamma}{
       \eroll{e}
@@ -209,7 +241,7 @@ $\boxed{\ana{\Gamma}{e}{\tau}}$
   }
 
   \inferrule[ARollBadType]{
-    \valid{\Gamma}{e}
+    \ana{\Gamma}{e}{\hole}
   }{
     \ana{\Gamma}{
       \hole[\eroll{e}]^u
@@ -219,7 +251,7 @@ $\boxed{\ana{\Gamma}{e}{\tau}}$
 %
 \begin{mathpar}
   \inferrule[AUnrollHole]{
-    \valid{\Gamma}{e}
+    \ana{\Gamma}{e}{\hole}
   }{
     \ana{\Gamma}{ \unroll{e} }{\hole}
   }
@@ -227,13 +259,13 @@ $\boxed{\ana{\Gamma}{e}{\tau}}$
   \inferrule[AUnroll]{
     \ana{\Gamma}{ e }{\rectype{\alpha}{\tau}}
   }{
-    \ana{\Gamma}{ \unroll{e} }{\expand(\rectype{\alpha}{\tau})}
+    \ana{\Gamma}{ \unroll{e} }{ \subst{\rectype{\alpha}{\tau}}{\alpha}{\tau} }
   }
 
   \inferrule[AUnrollBadType]{
-    \valid{\Gamma}{e}
+    \ana{\Gamma}{e}{\hole}
   }{
-    \ana{\Gamma}{ \hole[\unroll{e}]^u }{\expand(\rectype{\alpha}{\tau})}
+    \ana{\Gamma}{ \hole[\unroll{e}]^u }{ \subst{\rectype{\alpha}{\tau}}{\alpha}{\tau} }
   }
 \end{mathpar}
 %
@@ -307,57 +339,6 @@ $\boxed{\anaE{\Gamma}{E}{T}}$
 % \vspace*{\baselineskip}
 
 \subsection{Typed Elaboration}
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% Gamma |- E <= T_1 ~> D : T_2 -| Delta
-
-\noindent
-$\boxed{\anaelabE{\Gamma}{E}{T_1}{D}{T_2}{\Delta}}$
-\quad $E$ analyzes against optional type $T_1$ and elaborates to $D$ of consistent optional type $T_2$
-%
-\begin{mathpar}
-  \inferrule{
-    \anaelab{\Gamma}{e}{\tau_1}{d}{\tau_2}{\Delta}   
-  }{
-    \anaelabE{\Gamma}{e}{\tau_1}{d}{\tau_2}{\Delta}
-  }
-
-  \inferrule{
-    % 
-  }{
-    \anaelabE{\Gamma}{\Nothing}{\Nothing}{\Nothing}{\Nothing}{\emptyset}
-  }
-\end{mathpar}
-
-\vspace*{\baselineskip}
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% Gamma |- D : T
-
-\noindent
-$\boxed{\assignD{\Delta}{\Gamma}{D}{T}}$
-\quad $D$ is assigned optional type $T$
-%
-\begin{mathpar}
-  \inferrule{
-    \assign{\Delta}{\Gamma}{d}{\tau}
-  }{
-    \assignD{\Delta}{\Gamma}{d}{\tau}
-  }
-
-  \inferrule{
-    % 
-  }{
-    \assign{\Delta}{\Gamma}{\Nothing}{\Nothing}
-  }
-\end{mathpar}
-
-\vspace*{\baselineskip}
-
-\noindent
-$\expand(\rectype{\alpha}{\tau}) \defeq \subst{\rectype{\alpha}{\tau}}{\alpha}{\tau}$
-
-\vspace*{\baselineskip}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 % Gamma |- e => tau ~> d -| Delta
@@ -458,6 +439,31 @@ $\boxed{\anaelab{\Gamma}{e}{\tau_1}{d}{\tau_2}{\Delta}}$
 \vspace*{\baselineskip}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% Gamma |- E <= T_1 ~> D : T_2 -| Delta
+
+\noindent
+$\boxed{\anaelabE{\Gamma}{E}{T_1}{D}{T_2}{\Delta}}$
+\quad $E$ analyzes against optional type $T_1$ and elaborates to $D$ of consistent optional type $T_2$
+%
+\begin{mathpar}
+  \inferrule{
+    \anaelab{\Gamma}{e}{\tau_1}{d}{\tau_2}{\Delta}   
+  }{
+    \anaelabE{\Gamma}{e}{\tau_1}{d}{\tau_2}{\Delta}
+  }
+
+  \inferrule{
+    % 
+  }{
+    \anaelabE{\Gamma}{\Nothing}{\Nothing}{\Nothing}{\Nothing}{\emptyset}
+  }
+\end{mathpar}
+
+% \vspace*{\baselineskip}
+
+\subsection{Type Assignment}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 % Delta; Gamma |- d : tau
 
 \noindent
@@ -466,15 +472,15 @@ $\boxed{\assign{\Delta}{\Gamma}{d}{\tau}}$
 %
 \begin{mathpar}
   \inferrule[TRoll]{
-    \assign{\Delta}{\Gamma}{d}{\expand(\tau)}
+    \assign{\Delta}{\Gamma}{d}{ \subst{\rectype{\alpha}{\tau}}{\alpha}{\tau} }
   }{
-    \assign{\Delta}{\Gamma}{\droll{\tau}{d}}{\tau}
+    \assign{\Delta}{\Gamma}{ \droll{\rectype{\alpha}{\tau}}{d} }{ \rectype{\alpha}{\tau} }
   }
 
   \inferrule[TUnroll]{
-    \assign{\Delta}{\Gamma}{d}{\tau}
+    \assign{\Delta}{\Gamma}{d}{ \rectype{\alpha}{\tau} }
   }{
-    \assign{\Delta}{\Gamma}{\unroll[\tau]{d}}{\expand(\tau)}
+    \assign{\Delta}{\Gamma}{\unroll{d}}{ \subst{\rectype{\alpha}{\tau}}{\alpha}{\tau} }
   }
 
   \inferrule[TInj]{
@@ -507,37 +513,30 @@ $\boxed{\assign{\Delta}{\Gamma}{d}{\tau}}$
 \vspace*{\baselineskip}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% Gamma |- D : T
 
 \noindent
-$\boxed{\consistent{\tau}{\tau'}}$
-
+$\boxed{\assignD{\Delta}{\Gamma}{D}{T}}$
+\quad $D$ is assigned optional type $T$
+%
 \begin{mathpar}
   \inferrule{
-    \consistent{\tau_i}{\tau_i'}
+    \assign{\Delta}{\Gamma}{d}{\tau}
   }{
-    \consistent{
-      \sumtype{C_i(\tau_i)}_{C_i \in \C}
-    }{
-      \sumtype{C_i(\tau_i')}_{C_i \in \C}
-    }
+    \assignD{\Delta}{\Gamma}{d}{\tau}
+  }
+
+  \inferrule{
+    % 
+  }{
+    \assign{\Delta}{\Gamma}{\Nothing}{\Nothing}
   }
 \end{mathpar}
 
 \vspace*{\baselineskip}
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-
-\noindent
-$\boxed{\join{\tau_1}{\tau_2} = \tau}$
-
-\begin{mathpar}
-  \join{
-    \sumtype{C_i(\tau_i)}_{C_i \in \C}
-  }{
-    \sumtype{C_i(\tau_i')}_{C_i \in \C}
-  }
-  = \sumtype{C_i(\join{\tau_i}{\tau_i'})}_{C_i \in \C}
-\end{mathpar}
+% \noindent
+% $\expand(\rectype{\alpha}{\tau}) \defeq \subst{\rectype{\alpha}{\tau}}{\alpha}{\tau}$
 
 \vspace*{\baselineskip}
 
