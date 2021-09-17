@@ -32,7 +32,7 @@
 
 % Expressions
 
-\newcommand{\roll}[2]{\mathtt{roll}^{#1}\mathopen{}\left(#2\right)\mathclose{}}
+\newcommand{\roll}[2][]{\mathtt{roll}^{#1}\mathopen{}\left(#2\right)\mathclose{}}
 \newcommand{\unroll}[2][]{\mathtt{unroll}^{#1}\mathopen{}\left(#2\right)\mathclose{}}
 \newcommand{\inj}[3][]{\mathtt{inj}_{#2}^{#1}\mathopen{}\left(#3\right)\mathclose{}}
 \newcommand{\case}[2]{\mathtt{case} \left(#1\right) \left\{#2\right\}}
@@ -93,14 +93,14 @@
   \begin{array}{l@{~~}c@{~~}c@{~~}l}
     \IHExp & d & {}\Coloneqq{} &
       \ldots
-      \mid \roll{\rectype{\alpha}{\tau}}{d}
+      \mid \roll[\rectype{\alpha}{\tau}]{d}
       \mid \unroll[\tau]{d}
       \mid \inj[\tau]{C}{D}
       \mid \case{d}{C_i(X_i){=}d_i}_{C_i \in \C}
     \\
     \HExp & e & {}\Coloneqq{} &
       \ldots
-      \mid \roll{\rectype{\alpha}{\tau}}{e}
+      \mid \roll{e}
       \mid \unroll{e}
       \mid \inj{C}{E}
       \mid \case{e}{C_i(X_i){=}e_i}_{C_i \in \C}
@@ -232,9 +232,9 @@ $\boxed{\syn{\Gamma}{e}{\tau}}$
 %
 \begin{mathpar}
   \inferrule[SRoll]{
-    \valid{\Gamma}{e}
+    \ana{\Gamma}{e}{\hole}
   }{
-    \syn{\Gamma}{\hole[\roll{\rectype{\alpha}{\tau}}{e}]^u}{\hole}
+    \syn{\Gamma}{\hole[\roll{e}]^u}{\hole}
   }
 
   \inferrule[SUnroll]{
@@ -265,14 +265,14 @@ $\boxed{\ana{\Gamma}{e}{\tau}}$
   \inferrule[ARollHole]{
     \valid{\Gamma}{e}
   }{
-    \ana{\Gamma}{ \roll{\rectype{\alpha}{\tau}}{e} }{\hole}
+    \ana{\Gamma}{ \roll{e} }{\hole}
   }
 
   \inferrule[ARoll]{
     \ana{\Gamma}{ e }{\expand(\rectype{\alpha}{\tau})}
   }{
     \ana{\Gamma}{
-      \roll{\rectype{\alpha}{\tau}}{e}
+      \roll{e}
     }{\rectype{\alpha}{\tau}}
   }
 
@@ -280,7 +280,7 @@ $\boxed{\ana{\Gamma}{e}{\tau}}$
     \valid{\Gamma}{e}
   }{
     \ana{\Gamma}{
-      \hole[\roll{\rectype{\alpha}{\tau}}{e}]^u
+      \hole[\roll{e}]^u
     }{\rectype{\alpha}{\tau}}
   }
 \end{mathpar}
@@ -460,7 +460,7 @@ $\boxed{\assign{\Delta}{\Gamma}{d}{\tau}}$
   \inferrule[TRoll]{
     \assign{\Delta}{\Gamma}{d}{\expand(\tau)}
   }{
-    \assign{\Delta}{\Gamma}{\roll{\tau}{d}}{\tau}
+    \assign{\Delta}{\Gamma}{\roll[\tau]{d}}{\tau}
   }
 
   \inferrule[TUnroll]{
