@@ -162,7 +162,52 @@ $\boxed{\join{\tau_1}{\tau_2} = \tau}$
 
 % \vspace*{\baselineskip}
 
-\subsection{Bidirectional Types}
+\subsection{Bidirectional Typing}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+%  Gamma |- e => tau
+
+\noindent
+$\boxed{\syn{\Gamma}{e}{\tau}}$
+\quad $e$ synthesizes type $\tau$
+%
+\begin{mathpar}
+  \inferrule[SRoll]{
+    \syn{\Gamma}{ e }{
+      \subst{\rectype{\alpha}{\tau}}{\alpha}{\tau}
+    }
+  }{
+    \syn{\Gamma}{ \eroll{e} }{ \rectype{\alpha}{\tau} }
+  }
+
+  \inferrule[SRollNotUnrolled]{
+    \ana{\Gamma}{ e }{ \hole }
+  }{
+    \syn{\Gamma}{ \hole[\eroll{e}]^u }{ \hole }
+  }
+
+  \inferrule[SUnroll]{
+    \syn{\Gamma}{ e }{ \rectype{\alpha}{\tau} }
+  }{
+    \syn{\Gamma}{ \unroll{e} }{ \subst{ \rectype{\alpha}{\tau} }{ \alpha }{ \tau }}
+  }
+
+  \inferrule[SUnrollNotRolled]{
+    \ana{\Gamma}{ e }{ \hole }
+  }{
+    \syn{\Gamma}{ \hole[\unroll{e}]^u }{ \hole }
+  }
+
+  \inferrule[SInj]{
+    \valid{\Gamma}{E}
+  }{
+    \syn{\Gamma}{\hole[\einj{C}{E}]^u}{\hole}
+  }  
+\end{mathpar}
+
+\textsc{SInj} = Injection in Synthetic Position or Analyzed Against Non-Sum
+
+\vspace*{\baselineskip}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 %  Gamma |- E valid
@@ -188,37 +233,6 @@ $\boxed{\valid{\Gamma}{E}}$
 \vspace*{\baselineskip}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-%  Gamma |- e => tau
-
-\noindent
-$\boxed{\syn{\Gamma}{e}{\tau}}$
-\quad $e$ synthesizes type $\tau$
-%
-\begin{mathpar}
-  \inferrule[SRoll]{
-    \syn{\Gamma}{ e }{ \subst{ \rectype{\alpha}{\tau} }{ \alpha }{ \tau }}
-  }{
-    \syn{\Gamma}{ \eroll{e} }{ \rectype{\alpha}{\tau} }
-  }
-
-  \inferrule[SUnroll]{
-    \syn{\Gamma}{ e }{ \rectype{\alpha}{\tau} }
-  }{
-    \syn{\Gamma}{ \unroll{e} }{ \subst{ \rectype{\alpha}{\tau} }{ \alpha }{ \tau }}
-  }
-
-  \inferrule[SInj]{
-    \valid{\Gamma}{E}
-  }{
-    \syn{\Gamma}{\hole[\einj{C}{E}]^u}{\hole}
-  }  
-\end{mathpar}
-
-\textsc{SInj} = Injection in Synthetic Position or Analyzed Against Non-Sum
-
-\vspace*{\baselineskip}
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 %  Gamma |- e <= tau
 
 \noindent
@@ -232,44 +246,12 @@ $\boxed{\ana{\Gamma}{e}{\tau}}$
     \ana{\Gamma}{ \eroll{e} }{\hole}
   }
 
-  \inferrule[ARoll]{
-    \ana{\Gamma}{ e }{ \subst{\rectype{\alpha}{\tau}}{\alpha}{\tau} }
-  }{
-    \ana{\Gamma}{
-      \eroll{e}
-    }{\rectype{\alpha}{\tau}}
-  }
-
-  \inferrule[ARollBadType]{
-    \ana{\Gamma}{e}{\hole}
-  }{
-    \ana{\Gamma}{
-      \hole[\eroll{e}]^u
-    }{\rectype{\alpha}{\tau}}
-  }
-\end{mathpar}
-%
-\begin{mathpar}
   \inferrule[AUnrollHole]{
     \ana{\Gamma}{e}{\hole}
   }{
     \ana{\Gamma}{ \unroll{e} }{\hole}
   }
 
-  \inferrule[AUnroll]{
-    \ana{\Gamma}{ e }{\rectype{\alpha}{\tau}}
-  }{
-    \ana{\Gamma}{ \unroll{e} }{ \subst{\rectype{\alpha}{\tau}}{\alpha}{\tau} }
-  }
-
-  \inferrule[AUnrollBadType]{
-    \ana{\Gamma}{e}{\hole}
-  }{
-    \ana{\Gamma}{ \hole[\unroll{e}]^u }{ \subst{\rectype{\alpha}{\tau}}{\alpha}{\tau} }
-  }
-\end{mathpar}
-%
-\begin{mathpar}
   \inferrule[AInjHole]{
     \valid{\Gamma}{E}
   }{
