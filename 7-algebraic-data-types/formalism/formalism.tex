@@ -7,7 +7,6 @@
 \newcommand{\SetOf}[1]{\left\{#1\right\}}
 
 % Sorts
-
 \newcommand{\IHExp}{\mathsf{IHExp}}
 \newcommand{\IHTagExp}{\mathsf{IHTagExp}}
 \newcommand{\HExp}{\mathsf{HExp}}
@@ -19,19 +18,16 @@
 \newcommand{\EvalCtx}{\mathsf{EvalCtx}}
 
 % Types
-
 \newcommand{\rectype}[2]{\mu #1.#2}
 \newcommand{\sumtype}[1]{+\mathopen{}\left\{#1\right\}}
 
 % Tags
-
 \newcommand{\C}{\mathcal{C}}
 \newcommand{\Tag}{\mathbf{C}}
 \newcommand{\TagHole}[1][u]{{?^{#1}}}
 \newcommand{\Nothing}{\varnothing}
 
 % Expressions
-
 \newcommand{\eroll}[1]{\mathtt{roll}\mathopen{}\left(#1\right)\mathclose{}}
 \newcommand{\droll}[2]{\mathtt{roll}^{#1}\mathopen{}\left(#2\right)\mathclose{}}
 \newcommand{\unroll}[1]{\mathtt{unroll}\mathopen{}\left(#1\right)\mathclose{}}
@@ -41,7 +37,6 @@
 \newcommand{\hole}[1][]{\llparenthesis#1\rrparenthesis}
 
 % Judgments
-
 \newcommand{\valid}[2]{#1 \vdash #2~\mathsf{valid}}
 \newcommand{\assign}[4]{#1; #2 \vdash #3 : #4}
 \newcommand{\syn}[3]{#1 \vdash #2 \Rightarrow #3}
@@ -66,13 +61,11 @@
 \newcommand{\E}{\mathcal{E}}
 
 % Operations
-
 \newcommand{\subst}[3]{[#1 / #2]#3}
 \newcommand{\defeq}{\stackrel{\text{def}}{=}}
 \newcommand{\cast}[3]{#1\langle#2\,{\Rightarrow}\,#3\rangle}
 
 % Helpers
-
 \DeclareMathOperator{\id}{\text{id}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -133,7 +126,7 @@
 $\boxed{\consistent{\tau}{\tau'}}$
 
 \begin{mathpar}
-  \inferrule{
+  \inferrule[TCSum]{
     \consistent{\tau_i}{\tau_i'}
   }{
     \consistent{
@@ -141,6 +134,22 @@ $\boxed{\consistent{\tau}{\tau'}}$
     }{
       \sumtype{C_i(\tau_i')}_{C_i \in \C}
     }
+  }
+
+  \inferrule[TCRec]{
+    \consistent{\tau_1}{\tau_2}
+  }{
+    \consistent{
+      \rectype{\alpha_1}{\tau_1}
+    }{
+      \rectype{\alpha_2}{\tau_2}
+     }
+  }
+
+  \inferrule[TCVar]{
+    % 
+  }{
+    \consistent{\alpha}{\tau}
   }
 \end{mathpar}
 
@@ -163,6 +172,11 @@ $\boxed{\join{\tau_1}{\tau_2} = \tau}$
 % \vspace*{\baselineskip}
 
 \subsection{Bidirectional Typing}
+
+We call $\subst{\rectype{\alpha}{\tau}}{\alpha}{\tau}$ the \emph{unrolling} of
+recursive type $\rectype{\alpha}{\tau}$.
+
+\vspace*{\baselineskip}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 %  Gamma |- e => tau
@@ -240,18 +254,18 @@ $\boxed{\ana{\Gamma}{e}{\tau}}$
 \quad $e$ analyzes against type $\tau$
 %
 \begin{mathpar}
-  \inferrule[ARollHole]{
-    \ana{\Gamma}{e}{\hole}
-  }{
-    \ana{\Gamma}{ \eroll{e} }{\hole}
-  }
+  % \inferrule[ARollHole]{
+  %   \ana{\Gamma}{e}{\hole}
+  % }{
+  %   \ana{\Gamma}{ \eroll{e} }{\hole}
+  % }
 
-  \inferrule[AUnrollHole]{
-    \ana{\Gamma}{e}{\hole}
-  }{
-    \ana{\Gamma}{ \unroll{e} }{\hole}
-  }
-
+  % \inferrule[AUnrollHole]{
+  %   \ana{\Gamma}{e}{\hole}
+  % }{
+  %   \ana{\Gamma}{ \unroll{e} }{\hole}
+  % }
+%
   \inferrule[AInjHole]{
     \valid{\Gamma}{E}
   }{
