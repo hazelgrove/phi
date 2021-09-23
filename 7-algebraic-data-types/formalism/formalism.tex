@@ -48,6 +48,7 @@
 \newcommand{\anaelabE}[6]{#1 \vdash_E #2 \Leftarrow #3 \leadsto #4 : #5 \dashv #6}
 \newcommand{\assignD}[4]{#1; #2 \vdash_D #3 : #4}
 \newcommand{\consistent}[2]{#1 \sim #2}
+\newcommand{\matchedRec}[2]{#1 \blacktriangleright_\mu #2}
 \newcommand{\join}[2]{\mathsf{join}\left(#1,#2\right)}
 \newcommand{\ground}[1]{#1~\mathsf{ground}}
 \newcommand{\matchedGround}[2]{#1 \blacktriangleright_{\mathsf{ground}} #2}
@@ -124,20 +125,11 @@
 
 \noindent
 $\boxed{\consistent{\tau}{\tau'}}$
-
+\quad $\tau$ and $\tau'$ are consistent
+%
 \begin{mathpar}
-  \inferrule[TCSum]{
-    \consistent{\tau_i}{\tau_i'}
-  }{
-    \consistent{
-      \sumtype{C_i(\tau_i)}_{C_i \in \C}
-    }{
-      \sumtype{C_i(\tau_i')}_{C_i \in \C}
-    }
-  }
-
   \inferrule[TCRec]{
-    \consistent{\tau_1}{\tau_2}
+    \consistent{\tau_1}{ \subst{\alpha_1}{\alpha_2}{\tau_2} }
   }{
     \consistent{
       \rectype{\alpha_1}{\tau_1}
@@ -149,7 +141,48 @@ $\boxed{\consistent{\tau}{\tau'}}$
   \inferrule[TCVar]{
     % 
   }{
-    \consistent{\alpha}{\tau}
+    \consistent{\alpha}{\alpha}
+  }
+
+  \inferrule[TCSum]{
+    \consistent{\tau_i}{\tau_i'}
+  }{
+    \consistent{
+      \sumtype{C_i(\tau_i)}_{C_i \in \C}
+    }{
+      \sumtype{C_i(\tau_i')}_{C_i \in \C}
+    }
+  }
+\end{mathpar}
+
+For \textsc{TCRec}, we choose to substitute $\alpha_1$ for $\alpha_2$ arbitrarily.
+Due to this asymmetry, recursive types are only consistent up to alpha renaming.
+
+\vspace*{\baselineskip}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+\noindent
+$\boxed{\matchedRec{\tau}{\rectype{\alpha}{\tau'}}}$
+\quad $\tau$ has matched recursive type $\rectype{\alpha}{\tau'}$
+%
+\begin{mathpar}
+  \inferrule[MRRec]{
+  }{
+    \matchedRec{
+      \rectype{\alpha}{\tau}
+    }{
+      \rectype{\alpha}{\tau}
+    }
+  }
+
+  \inferrule[MRHole]{
+  }{
+    \matchedRec{
+      \hole
+    }{
+      \rectype{\alpha}{\hole}
+    }
   }
 \end{mathpar}
 
@@ -159,7 +192,8 @@ $\boxed{\consistent{\tau}{\tau'}}$
 
 \noindent
 $\boxed{\join{\tau_1}{\tau_2} = \tau}$
-
+\quad $\tau_1$ and $\tau_2$ join consistently, forming type $\tau$
+%
 \begin{mathpar}
   \join{
     \sumtype{C_i(\tau_i)}_{C_i \in \C}
@@ -167,6 +201,13 @@ $\boxed{\join{\tau_1}{\tau_2} = \tau}$
     \sumtype{C_i(\tau_i')}_{C_i \in \C}
   }
   = \sumtype{C_i(\join{\tau_i}{\tau_i'})}_{C_i \in \C}
+
+  \join{
+    \rectype{\alpha_1}{\tau_1}
+  }{
+    \rectype{\alpha_2}{\tau_2}
+  }
+  = \rectype{\alpha_1}{\join{\tau_1}{ \subst{\alpha_1}{\alpha_2}{\tau_2} }}
 \end{mathpar}
 
 % \vspace*{\baselineskip}
@@ -186,30 +227,13 @@ $\boxed{\syn{\Gamma}{e}{\tau}}$
 \quad $e$ synthesizes type $\tau$
 %
 \begin{mathpar}
-  \inferrule[SRoll]{
-    \syn{\Gamma}{ e }{
-      \subst{\rectype{\alpha}{\tau}}{\alpha}{\tau}
-    }
-  }{
-    \syn{\Gamma}{ \eroll{e} }{ \rectype{\alpha}{\tau} }
-  }
-
-  \inferrule[SRollNotUnrolled]{
-    \ana{\Gamma}{ e }{ \hole }
-  }{
-    \syn{\Gamma}{ \hole[\eroll{e}]^u }{ \hole }
-  }
-
   \inferrule[SUnroll]{
-    \syn{\Gamma}{ e }{ \rectype{\alpha}{\tau} }
+    \syn{\Gamma}{e}{\tau'} \\
+    \matchedRec{ \tau' }{ \rectype{\alpha}{\tau} }
   }{
-    \syn{\Gamma}{ \unroll{e} }{ \subst{ \rectype{\alpha}{\tau} }{ \alpha }{ \tau }}
-  }
-
-  \inferrule[SUnrollNotRolled]{
-    \ana{\Gamma}{ e }{ \hole }
-  }{
-    \syn{\Gamma}{ \hole[\unroll{e}]^u }{ \hole }
+    \syn{\Gamma}{
+      \unroll{e}
+    }{ \subst{ \rectype{\alpha}{\tau} }{\alpha}{\tau} }
   }
 
   \inferrule[SInj]{
@@ -254,18 +278,13 @@ $\boxed{\ana{\Gamma}{e}{\tau}}$
 \quad $e$ analyzes against type $\tau$
 %
 \begin{mathpar}
-  % \inferrule[ARollHole]{
-  %   \ana{\Gamma}{e}{\hole}
-  % }{
-  %   \ana{\Gamma}{ \eroll{e} }{\hole}
-  % }
+  \inferrule[ARoll]{
+    \matchedRec{\tau}{\rectype{\alpha}{\tau'}} \\
+    \ana{\Gamma}{e}{\subst{ \rectype{\alpha}{\tau'} }{\alpha}{\tau'}}
+  }{
+    \ana{\Gamma}{\eroll{e}}{\tau}
+  }
 
-  % \inferrule[AUnrollHole]{
-  %   \ana{\Gamma}{e}{\hole}
-  % }{
-  %   \ana{\Gamma}{ \unroll{e} }{\hole}
-  % }
-%
   \inferrule[AInjHole]{
     \valid{\Gamma}{E}
   }{
@@ -344,6 +363,17 @@ $\boxed{\synelab{\Gamma}{e}{\tau}{d}{\Delta}}$
 \quad $e$ synthesizes type $\tau$ and elaborates to $d$
 %
 \begin{mathpar}
+  \inferrule[ESUnroll]{
+    \synelab{\Gamma}{e}{\tau'}{d}{\Delta} \\
+    \matchedRec{\tau'}{\rectype{\alpha}{\tau}}
+  }{
+    \synelab{\Gamma}{
+      \unroll{e}
+    }{ \subst{\rectype{\alpha}{\tau}}{\alpha}{\tau} }{
+      \unroll{d}
+    }{\Delta}
+  }
+
   \inferrule[ESInj]{
     \anaelabE{\Gamma}{E}{\hole}{D}{T}{\Delta}
   }{
@@ -368,15 +398,22 @@ $\boxed{\anaelab{\Gamma}{e}{\tau_1}{d}{\tau_2}{\Delta}}$
 \quad $e$ analyzes against type $\tau_1$ and elaborates to $d$ of consistent type $\tau_2$
 %
 \begin{mathpar}
-  \inferrule[EAInjHole]{
-    \anaelabE{\Gamma}{E}{\hole}{D}{T}{\Delta} \\
-    \tau = \sumtype{C(T)}
+  \inferrule[EARoll]{
+    \anaelab{\Gamma}{
+      e
+    }{\subst{ \rectype{\alpha}{\tau} }{\alpha}{\tau}}{
+      d
+    }{\tau'}{\Delta}
   }{
     \anaelab{\Gamma}{
-      \einj{C}{E}
-    }{\hole}{
-      \dinj{\tau}{C}{D}
-    }{\tau}{\Delta}
+      \eroll{e}
+    }{\rectype{\alpha}{\tau}}{
+      \droll{\rectype{\alpha}{\tau}}{
+        \cast{d}{\tau'}{ \subst{ \rectype{\alpha}{\tau} }{\alpha}{\tau} }
+      }
+    }{\rectype{\alpha}{\tau}}{
+      \Delta
+    }
   }
 
   \inferrule[EAInj]{
@@ -388,6 +425,17 @@ $\boxed{\anaelab{\Gamma}{e}{\tau_1}{d}{\tau_2}{\Delta}}$
       \einj{C_j}{E}
     }{\tau}{
       \dinj{\tau}{C_j}{\cast{D}{T_j'}{T_j}}
+    }{\tau}{\Delta}
+  }
+
+  \inferrule[EAInjHole]{
+    \anaelabE{\Gamma}{E}{\hole}{D}{T}{\Delta} \\
+    \tau = \sumtype{C(T)}
+  }{
+    \anaelab{\Gamma}{
+      \einj{C}{E}
+    }{\hole}{
+      \dinj{\tau}{C}{D}
     }{\tau}{\Delta}
   }
 
@@ -534,7 +582,11 @@ $\boxed{\assignD{\Delta}{\Gamma}{D}{T}}$
 % \noindent
 % $\expand(\rectype{\alpha}{\tau}) \defeq \subst{\rectype{\alpha}{\tau}}{\alpha}{\tau}$
 
-\vspace*{\baselineskip}
+% \vspace*{\baselineskip}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Dynamic Semantics}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
@@ -581,8 +633,20 @@ $\boxed{\val{d}}$
 \quad $d$ is a value
 
 \begin{mathpar}
+  \inferrule[VRoll]{
+    \val{d}
+  }{
+    \val{\droll{\rectype{\alpha}{\tau}}{d}}
+  }
+
+  \inferrule[VUnroll]{
+    \val{d}
+  }{
+    \val{\unroll{d}}
+  }
+
   \inferrule[VInj]{
-    \val{d  }
+    \val{d}
   }{
     \val{\dinj{\tau}{\Tag}{d}}
   }
@@ -602,6 +666,18 @@ $\boxed{\boxedval{d}}$
 \quad $d$ is a boxed value
 
 \begin{mathpar}
+  \inferrule[BVRoll]{
+    \boxedval{d}
+  }{
+    \boxedval{\droll{\rectype{\alpha}{\tau}}{d}}
+  }
+
+  \inferrule[BVUnroll]{
+    \boxedval{d}
+  }{
+    \boxedval{\unroll{d}}
+  }
+
   \inferrule[BVInj]{
     \boxedval{d}
   }{
