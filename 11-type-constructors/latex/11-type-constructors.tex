@@ -75,8 +75,8 @@
 \maketitle
 \section{notes}
     \subsection*{}
-    \noindent This is (sadly) the last version for summer 2021. \\
-    See markdown for a brief TODO list.
+    \noindent
+    Writing up the proof for unicity
 \section{syntax}
     \begin{longtable}{RCRL}
         \textrm{Kind} & \knd & ::=
@@ -148,20 +148,20 @@
         \begin{minipage}{\textwidth}
             \judgbox{\SReduce{\knd[1]}{\knd[2]}}{$\knd[1]$ singleton reduces to $\knd[2]$}
             \begin{mathpar}
-                \rule[KEquiv\hyph SKind_{SKind}]{\WellFormedAtKind{\typ}[\SKind[\knd][\typ[1]]]}{\SReduce{\SKind[\SKind[\knd][\typ[1]]][\typ]}{\SKind[\knd][\typ[1]]}}
+                \rule[\SReduceOp\hyph 1]{\KindWellFormed[\SKind[\SKind[\knd][\typ[1]]][\typ]]}{\SReduce{\SKind[\SKind[\knd][\typ[1]]][\typ]}{\SKind[\knd][\typ[1]]}}
                 \and
-                \rule[]{\SReduce{\knd[1]}{\knd[2]} \\ \SReduce{\knd[2]}{\knd[3]}}{\SReduce{\knd[1]}{\knd[3]}}
+                \rule[\SReduceOp\hyph Trans]{\SReduce{\knd[1]}{\knd[2]} \\ \SReduce{\knd[2]}{\knd[3]}}{\SReduce{\knd[1]}{\knd[3]}}
             \end{mathpar}
         \end{minipage}
     \subsection*{}
         \begin{minipage}{\textwidth}
             \judgbox{\SNormal{\knd[1]}{\knd[2]}}{$\knd[1]$ has singleton normal form $\knd[2]$}
             \begin{mathpar}
-                \rule[]{\SReduce{\knd}{\SKind[\Type]}}{\SNormal{\knd}{\SKind[\Type]}}
+                \rule[\SNormalOp\hyph Type]{\SReduce{\knd}{\SKind[\Type]}}{\SNormal{\knd}{\SKind[\Type]}}
                 \and
-                \rule[]{\SReduce{\knd}{\SKind[\KHole]}}{\SNormal{\knd}{\SKind[\KHole]}}
+                \rule[\SNormalOp\hyph KHole]{\SReduce{\knd}{\SKind[\KHole]}}{\SNormal{\knd}{\SKind[\KHole]}}
                 \and
-                \rule[]{\SReduce{\knd}{\SKind[\DepFunKind][\typ]}}{\SNormal{\knd}{\DepFunKind[1][\knd[1]][\SKind[\subst{\typvar[1]}{\typvar}{\knd[2]}][\TypeAp[\typ][\typvar[1]]]]}}
+                \rule[\SNormalOp\hyph \Pi]{\SReduce{\knd}{\SKind[\DepFunKind][\typ]}}{\SNormal{\knd}{\DepFunKind[1][\knd[1]][\SKind[\subst{\typvar[1]}{\typvar}{\knd[2]}][\TypeAp[\typ][\typvar[1]]]]}}
             \end{mathpar}
         \end{minipage}
     \subsection*{}
