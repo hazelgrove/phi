@@ -139,7 +139,7 @@
             \begin{mathpar}
                 \rule[\MatchedPiKindOp\hyph KHole]{\ContextWellFormed}{\MatchedPiKind{\KHole}[\DepFunKind[][\KHole][\KHole]]}
                 \and
-                \rule[\MatchedPiKindOp\hyph SKHole]{\KindEquiv{\knd}{\SKind[\KHole]}}{\MatchedPiKind{\knd}[\DepFunKind[][\SKind[\KHole]][\SKind[\KHole][\TypeAp[\typ][\typvar]]]]}
+                \rule[\MatchedPiKindOp\hyph SKHole]{\SNormal{\knd}{\SKind[\KHole]}}{\MatchedPiKind{\knd}[\DepFunKind[][\SKind[\KHole]][\SKind[\KHole][\TypeAp[\typ][\typvar]]]]}
                 \and
                 \rule[\MatchedPiKindOp\hyph \Pi]{\SNormal{\knd}{\DepFunKind}}{\MatchedPiKind{\knd}}
             \end{mathpar}
@@ -531,16 +531,39 @@
     \KOMAoptions{paper=A4,paper=portrait}
     \recalctypearea
     \vphantom{.}
-    \begin{theorem}[PK-Unicity]
-        If $\PrincipalKind{\typ[L]}[\knd[L1]]$ and $\PrincipalKind{\typ[L]}[\knd[L2]]$ then ${\knd[L1]} = {\knd[L2]}$
+    \begin{theorem}[$\SReduceOp$-$n$-nicity]
+        If $\SReduce{\knd[L]}{\knd[L1]}$ and $\SReduce{\knd[L]}{\knd[L2]}$ where $SSize(\knd[L]) = m$ and $SSize(\knd[L1]) = SSize(\knd[L2]) = n$, then ${\knd[L1]} = {\knd[L2]}$
     \end{theorem}
     \begin{proof}
-        \red{There's actually a slight problem here. In PK-Ap, $\MatchedPiKindOp$ doesn't have unicity since $\MatchedPiKindOp\hyph\Pi$ uses $\KindEquiv{\knd[1]}{\knd[2]}$, where ``the same left side can have mutliple right sides" (transitivity), causing unicity to fail for PK}. \\
-        Only thought about this quickly but we might need a seperate HO singleton normalization scheme that is essentially the KEquiv-$\mathrm{SKind_{SKind}}$, KEquiv-$\mathrm{SKind_{\Pi}}$ fragment of kind equality, and have the HO singleton normalization judgment have unicity. \\
-        Kind of gross but... \\
-        (and add other HO kinds, namely $\Sigma$, when they get here) \\
-        And as cleanup, we can remove the normalization fragment from kind equality and add a single rule (yay more sim judgments!) \\
-        Also we need some unicity lemmas for contexts like for PK-EHole and co. \\
+        \red{somewhat nontrivial; I'll sleep on it} \\
+        Haven't quite thought out how this induction should work
+    \end{proof}
+    \begin{theorem}[$\SNormalOp$-Unicity]
+        If $\SNormal{\knd[L]}{\knd[L1]}$ and $\SNormal{\knd[L]}{\knd[L2]}$, then ${\knd[L1]} = {\knd[L2]}$
+    \end{theorem}
+    \begin{proof}
+        \red{(this is a really quick sketch)} \\
+        $\SReduceOp$ obviously doesn't have unicity (due to transitivity),
+        but the rhs of $\SReduceOp$ always has a strictly lower singleton depth than the lhs.
+        The premiss of $\SNormalOp$ always has rhs singleton depth 1.
+        By lemma above, where $n = 1$.
+    \end{proof}
+    \begin{theorem}[$\MatchedPiKindOp$-Unicity]
+        If $\MatchedPiKind{\typ[L]}[\knd[L1]]$ and $\MatchedPiKind{\typ[L]}[\knd[L2]]$, then ${\knd[L1]} = {\knd[L2]}$
+    \end{theorem}
+    \begin{proof}
+        \red{(this is a really quick sketch)} \\
+        By unicity of $\SNormalOp$.
+    \end{proof}
+    \begin{theorem}[PK-Unicity]
+        If $\PrincipalKind{\typ[L]}[\knd[L1]]$ and $\PrincipalKind{\typ[L]}[\knd[L2]]$, then ${\knd[L1]} = {\knd[L2]}$
+    \end{theorem}
+    \begin{proof}
+        \red{(this is a really quick sketch)} \\
+        As PK is syntax directed, proof is by inspection for all rules except PK-$\lambda$
+        (variables in contexts are unique-- see context rules),
+        which is by induction on derivations,
+        and PK-Ap, which requires of unicity of $\MatchedPiKindOp$ (above theorem).
     \end{proof}
     \noindent\hrulefill
     \begin{theorem}[PK-Principality]
