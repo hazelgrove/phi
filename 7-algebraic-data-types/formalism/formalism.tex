@@ -703,6 +703,18 @@ $\boxed{\indet{d}}$
 \quad $d$ is indeterminate
 
 \begin{mathpar}
+  \inferrule[IRoll]{
+    \indet{d}
+  }{
+    \indet{\droll{\rectype{\alpha}{\tau}}{d}}
+  }
+
+  \inferrule[IUnroll]{
+    \indet{d}
+  }{
+    \indet{\unroll{d}}
+  }
+
   \inferrule[IInj]{
     \indet{d}
   }{
@@ -739,6 +751,7 @@ $\boxed{\indet{d}}$
   \begin{array}{l@{~~}c@{~~}c@{~~}l}
     \EvalCtx & \E & {}\Coloneqq{} &
       \ldots
+      \mid \droll{\rectype{\alpha}{\tau}}{\E}
       \mid \dinj{\tau}{C}{\E}
     \\
   \end{array}
@@ -749,10 +762,31 @@ $\boxed{\eval{d}{\E}{d'}}$
 \quad $d$ is obtained by placing $d'$ at the mark in $\E$
 
 \begin{mathpar}
+  \inferrule[FHRoll]{
+    \eval{d}{\E}{d'}
+  }{
+    \eval{
+      \droll{\rectype{\alpha}{\tau}}{d}
+    }{\droll{\rectype{\alpha}{\tau}}{\E}
+    }{d'}
+  }
+
+  \inferrule[FHUnroll]{
+    \eval{d}{\E}{d'}
+  }{
+    \eval{
+      \unroll{d}
+    }{\unroll{\E}
+    }{d'}
+  }
+
   \inferrule[FHInj]{
     \eval{d}{\E}{d'}
   }{
-    \eval{\dinj{\tau}{C}{d}}{\dinj{\tau}{C}{\E}}{d'}
+    \eval{
+      \dinj{\tau}{C}{d}
+    }{\dinj{\tau}{C}{\E}
+    }{d'}
   }
 \end{mathpar}
 
