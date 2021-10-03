@@ -531,22 +531,61 @@
     \KOMAoptions{paper=A4,paper=portrait}
     \recalctypearea
     \vphantom{.}
-    \begin{theorem}[$\SReduceOp$-$n$-nicity]
-        If $\SReduce{\knd[L]}{\knd[L1]}$ and $\SReduce{\knd[L]}{\knd[L2]}$ where $SSize(\knd[L]) = m$ and $SSize(\knd[L1]) = SSize(\knd[L2]) = n$, then ${\knd[L1]} = {\knd[L2]}$
-    \end{theorem}
+    \begin{definition}[Singleton Depth]
+        \[
+            SSize : ``\{\knd\}"\rightarrow\mathbb{N}
+        \]
+        \[
+            SSize(\knd[x]) =
+            \begin{cases}
+                SSize(\knd) + 1 & \textup{if}~\knd[x] = \SKind[\knd][\typ] \\
+                0 & \textup{otherwise}
+            \end{cases}
+        \]
+    \end{definition}
+    \begin{lemma}[$\SReduceOp$-diminution]
+        If $\SReduce{\knd[L]}{\knd[L1]}$, then $SSize(\knd[L]) > SSize(\knd[L1])$
+    \end{lemma}
     \begin{proof}
-        \red{somewhat nontrivial; I'll sleep on it} \\
-        Haven't quite thought out how this induction should work
+        By induction on derivations
+        (and transitivity of $>$ on $\mathbb{N}$)
+    \end{proof}
+    \begin{lemma}[$\SReduceOp$-$n+1$-nicity]
+        If $\SReduce{\knd[L]}{\knd[L1]}$ and $\SReduce{\knd[L]}{\knd[L2]}$ where $SSize(\knd[L]) = n + 1$ and $SSize(\knd[L1]) = SSize(\knd[L2]) = n$, then ${\knd[L1]} = {\knd[L2]}$
+    \end{lemma}
+    \begin{proof}
+        By $\SReduceOp$-diminution, $\SReduceOp$-Trans cannot be the last inference
+        of a derivation of $\SReduce{\knd[L]}{\knd[L1]}$
+        since $SSize(\knd[1]) \ge SSize(\knd[3]) + 2$ (in $\SReduceOp$-Trans).
+        Thus, $\SReduceOp$-1 must have been the last inference.
+        Similarly for $\SReduce{\knd[L]}{\knd[L2]}$,
+        thus ${\knd[L1]} = {\knd[L2]}$
+    \end{proof}
+    \begin{lemma}[$\SReduceOp$-stepwise]
+        If $\SReduce{\knd[L]}{\knd[L1]}$ where $SSize(\knd[L]) = m$ and $SSize(\knd[L1]) = n$ and $m > n + 1$, then the derivation must contain subderivations of each singleton depth inbetween
+    \end{lemma}
+    \begin{proof}
+        More precisely this says, where $m > n$ by $\SReduceOp$-diminution, the derivation must contain subderivations of each \\
+        $\SReduce{\knd[i]}{\knd[j]}$ where $m \ge i > j \ge n$, $SSize(\knd[k]) = k$ when $m \ge k \ge n$, $\knd[m] = \knd[L]$, $\knd[n] = \knd[L1]$. \\
+        By induction on derivations
+        (base case is where $m = n + 2$, which necessitates a last inference of $\SReduceOp$-Trans.
+        Each premiss must have SSize difference of 1, fulfilling hypothesis)
+    \end{proof}
+    \begin{lemma}[$\SReduceOp$-$m+n$-nicity]
+        If $\SReduce{\knd[L]}{\knd[L1]}$ and $\SReduce{\knd[L]}{\knd[L2]}$ where $SSize(\knd[L]) = m + n$ and $SSize(\knd[L1]) = SSize(\knd[L2]) = n$, then ${\knd[L1]} = {\knd[L2]}$
+    \end{lemma}
+    \begin{proof}
+        By $\SReduceOp$-stepwise and $\SReduceOp$-$n+1$-nicity when $m > n + 1$. \\
+        By $\SReduceOp$-$n+1$-nicity when $m = n + 1$. \\
+        No other cases by $\SReduceOp$-diminution.
     \end{proof}
     \begin{theorem}[$\SNormalOp$-Unicity]
         If $\SNormal{\knd[L]}{\knd[L1]}$ and $\SNormal{\knd[L]}{\knd[L2]}$, then ${\knd[L1]} = {\knd[L2]}$
     \end{theorem}
     \begin{proof}
         \red{(this is a really quick sketch)} \\
-        $\SReduceOp$ obviously doesn't have unicity (due to transitivity),
-        but the rhs of $\SReduceOp$ always has a strictly lower singleton depth than the lhs.
-        The premiss of $\SNormalOp$ always has rhs singleton depth 1.
-        By lemma above, where $n = 1$.
+        All $\SNormalOp$ rules have $\SReduceOp$ premiss with rhs singleton depth 1.
+        By $\SReduceOp$-$m+n$-nicity, where $n = 1$.
     \end{proof}
     \begin{theorem}[$\MatchedPiKindOp$-Unicity]
         If $\MatchedPiKind{\typ[L]}[\knd[L1]]$ and $\MatchedPiKind{\typ[L]}[\knd[L2]]$, then ${\knd[L1]} = {\knd[L2]}$
