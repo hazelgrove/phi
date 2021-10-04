@@ -45,16 +45,28 @@ type typ =
   | Num
   | Product(list(typ));
 
-type exp =
+// External Expressions
+type exter_exp =
   | Var(string)
-  | Fun(string, exp)
-  | Ap(exp, exp)
+  | Fun(string, exter_exp)
+  | Ap(exter_exp, exter_exp)
   | Num(int)
-  | Add(exp, exp)
-  | Ann(exp, typ)
-  | Tuple(list(exp))
-  | Proj(exp, int)
+  | Add(exter_exp, exter_exp)
+  | Ann(exter_exp, typ)
+  | Tuple(list(exter_exp))
+  | Proj(exter_exp, int)
   | Deferral;
+
+// Internal Expressions
+type inter_exp =
+  | Var(string)
+  | Fun(string, inter_exp)
+  | Ap(inter_exp, inter_exp)
+  | Num(int)
+  | Add(inter_exp, inter_exp)
+  | Ann(inter_exp, typ)
+  | Tuple(list(inter_exp))
+  | Proj(inter_exp, int);
 
 module TypCtx = Map.Make(String);
 type typctx = TypCtx.t(typ);
@@ -65,7 +77,7 @@ let matched_arrow_type = (t: option(typ)): option(typ) => t;
 let matched_product_type = (t: option(typ)): option(typ) => t;
 let consistent = (t1: typ, t2: typ): bool => t1 == t2;
 
-let rec syn = (ctx: typctx, e: exp): option(typ) =>
+let rec syn = (ctx: typctx, e: exter_exp): option(typ) =>
   switch (e) {
   | Var(x) =>
     try(Some(TypCtx.find(x, ctx))) {
@@ -85,7 +97,7 @@ let rec syn = (ctx: typctx, e: exp): option(typ) =>
         // If it is, this is an instance of partial application
         switch (e2, t1) {
         | (Tuple(es), Product(ts)) =>
-          let get_deferred_typ = (e: exp, t: typ): option(option(typ)) =>
+          let get_deferred_typ = (e: exter_exp, t: typ): option(option(typ)) =>
             switch (e, ana(ctx, e, t)) {
             | (Deferral, _) => Some(Some(t)) // Item was deferred, include it in `deferred_inputs` below
             | (_, true) => Some(None) // Item was not deferred, exclude it from `deferred_inputs` below
@@ -139,7 +151,7 @@ let rec syn = (ctx: typctx, e: exp): option(typ) =>
   | Deferral => None
   }
 
-and ana = (ctx: typctx, e: exp, t: typ): bool =>
+and ana = (ctx: typctx, e: exter_exp, t: typ): bool =>
   switch (e) {
   | Fun(x, e1) =>
     switch (matched_arrow_type(Some(t))) {
@@ -164,7 +176,7 @@ and ana = (ctx: typctx, e: exp, t: typ): bool =>
   };
 
 // Unfinished (still produces incorrect results)
-let rec elaborate: exp => option(exp) =
+let rec elaborate: exter_exp => option(inter_exp) =
   fun
   | Var(x) => Some(Var(x))
 
@@ -173,14 +185,14 @@ let rec elaborate: exp => option(exp) =
       Fun(x, e1);
     }
 
-  | Ap(_, Tuple(es)) =>
-    Some(
-      if (List.mem(Deferral, es)) {
-        Deferral;
-      } else {
-        Deferral;
-      },
-    )
+  | Ap(e1, Tuple(es) as es_tuple) =>
+    if (List.mem(Deferral, es)) {
+      None;
+    } else {
+      let* e1 = elaborate(e1);
+      let+ es_tuple = elaborate(es_tuple);
+      Ap(e1, es_tuple);
+    }
 
   | Ap(e1, e2) => {
       let* e1 = elaborate(e1);
