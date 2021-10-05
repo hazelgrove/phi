@@ -11,6 +11,7 @@
 \newcommand{\IHTagExp}{\mathsf{IHTagExp}}
 \newcommand{\HExp}{\mathsf{HExp}}
 \newcommand{\HTyp}{\mathsf{HTyp}}
+\newcommand{\HTypPat}{\mathsf{HTypPat}}
 \newcommand{\HTag}{\mathsf{HTag}}
 \newcommand{\HTagExp}{\mathsf{HTagExp}}
 \newcommand{\HTagTyp}{\mathsf{HTagTyp}}
@@ -102,9 +103,13 @@
     \\
     \HTyp & \tau & {}\Coloneqq{} &
       \ldots
-      \mid (\rectype{\alpha}{\tau})
+      \mid (\rectype{\pi}{\tau})
       \mid \alpha
       \mid \sumtype{C_i(T_i)}_{C_i \in \C}
+    \\
+    \HTypPat & \pi & {}\Coloneqq{} &
+      \alpha
+      \mid \hole
     \\
     \HTag & C & {}\Coloneqq{} &
       \Tag
@@ -128,7 +133,7 @@ $\boxed{\consistent{\tau}{\tau'}}$
 \quad $\tau$ and $\tau'$ are consistent
 %
 \begin{mathpar}
-  \inferrule[TCRec]{
+  \inferrule[TCRecVar]{
     \consistent{\tau_1}{ \subst{\alpha_1}{\alpha_2}{\tau_2} }
   }{
     \consistent{
@@ -138,10 +143,34 @@ $\boxed{\consistent{\tau}{\tau'}}$
      }
   }
 
-  \inferrule[TCVar]{
-    % 
+  \inferrule[TCRecVarHole]{
+    \consistent{\tau_1}{\tau_2}
   }{
-    \consistent{\alpha}{\alpha}
+    \consistent{
+      \rectype{\alpha_1}{\tau_1}
+    }{
+      \rectype{\hole}{\tau_2}
+     }
+  }
+
+  \inferrule[TCRecHoleVar]{
+    \consistent{\tau_1}{\tau_2}
+  }{
+    \consistent{
+      \rectype{\hole}{\tau_1}
+    }{
+      \rectype{\alpha_2}{\tau_2}
+     }
+  }
+
+  \inferrule[TCRecHole]{
+    \consistent{\tau_1}{\tau_2}
+  }{
+    \consistent{
+      \rectype{\hole}{\tau_1}
+    }{
+      \rectype{\hole}{\tau_2}
+     }
   }
 
   \inferrule[TCSum]{
@@ -155,7 +184,7 @@ $\boxed{\consistent{\tau}{\tau'}}$
   }
 \end{mathpar}
 
-For \textsc{TCRec}, we choose to substitute $\alpha_1$ for $\alpha_2$ arbitrarily.
+For \textsc{TCRecVar}, we choose to substitute $\alpha_1$ for $\alpha_2$ arbitrarily.
 Due to this asymmetry, recursive types are only consistent up to alpha renaming.
 
 \vspace*{\baselineskip}
@@ -170,9 +199,9 @@ $\boxed{\matchedRec{\tau}{\rectype{\alpha}{\tau'}}}$
   \inferrule[MRRec]{
   }{
     \matchedRec{
-      \rectype{\alpha}{\tau}
+      \rectype{\pi}{\tau}
     }{
-      \rectype{\alpha}{\tau}
+      \rectype{\pi}{\tau}
     }
   }
 
@@ -181,7 +210,7 @@ $\boxed{\matchedRec{\tau}{\rectype{\alpha}{\tau'}}}$
     \matchedRec{
       \hole
     }{
-      \rectype{\alpha}{\hole}
+      \rectype{\hole}{\hole}
     }
   }
 \end{mathpar}
@@ -208,13 +237,6 @@ $\boxed{\join{\tau_1}{\tau_2} = \tau}$
     \rectype{\alpha_2}{\tau_2}
   }
   = \rectype{\alpha_1}{\join{\tau_1}{ \subst{\alpha_1}{\alpha_2}{\tau_2} }}
-
-  \join{
-    \alpha
-  }{
-    \alpha
-  }
-  = \alpha
 \end{mathpar}
 
 % \vspace*{\baselineskip}
