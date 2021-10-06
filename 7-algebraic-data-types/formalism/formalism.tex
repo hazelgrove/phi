@@ -9,6 +9,16 @@
 \renewcommand{\left}{\mathopen{}\mathclose\bgroup\originalleft}
 \renewcommand{\right}{\aftergroup\egroup\originalright}
 
+% Theorems and Proofs
+
+\usepackage{amsthm}
+\newtheorem{Theorem}{Theorem}
+\newtheorem{Lemma}[Theorem]{Lemma}
+
+\usepackage{pfsteps}
+\renewcommand\byCasesEveryCase{}
+\setlength{\proofrightwidth}{0.4\linewidth}
+
 % Sets
 
 \newcommand{\Set}[1]{\left\{#1\right\}}
@@ -89,6 +99,7 @@
 % Helpers
 
 \newcommand\consistent[2]{{#1}\sim{#2}}
+\newcommand\notconsistent[2]{{#1}\nsim{#2}}
 \newcommand\ValidTyp[2]{{#1}\vdash{#2}\,\helper{valid}}
 \newcommand\ValidTypT[2]{{#1}\vdash_T{#2}\,\helper{valid}}
 \newcommand\ValidExp[3]{{#1};{#2}\vdash{#3}\,\helper{valid}}
@@ -96,6 +107,7 @@
 % Matched Types
 
 \newcommand\MatchedArrowTyp[3]{{#1}\blacktriangleright_\rightarrow{#2}\rightarrow{#3}}
+\newcommand\MatchedSumTyp[2]{{#1}\blacktriangleright_{+}\Tsum{#2}}
 \newcommand\MatchedRecTyp[3]{{#1}\blacktriangleright_\mu\Trec{#2}{#3}}
 
 % Substitution
@@ -177,7 +189,7 @@
     \HTagVar & X & \Coloneqq & x \mid \hole{} \\
     \IHExp & d & \Coloneqq &
       x
-      \mid \Dfun{\pi}{\tau}{d}
+      \mid \Dfun{x}{\tau}{d}
       \mid \Dapp{d}{d}
       \mid \Dinj{C}{\tau}{D}
       \mid \Dcase{d}{C_i(X_i)}_{C_u \in \TagSet}
@@ -345,13 +357,16 @@
   }
 
   \inferrule[TVRec]{
-    \ValidTyp{\Theta,\alpha}{\tau}
+    (\pi = \hole{} \wedge \ValidTyp{\Theta}{\tau}) \vee (\pi = \alpha \wedge \ValidTyp{\Theta,\alpha}{\tau})
   }{
-    \ValidTyp{\Theta}{ \Trec{\alpha}{\tau} }
+    \ValidTyp{\Theta}{ \Trec{\pi}{\tau} }
   }
 
   \inferrule[TVSum]{
-    \Set{ T_i = \Missing \vee \ValidTypT{\Theta}{T_i} }_{C_i \in \TagSet}
+    \Set{
+      T_i = \Missing \vee \left(
+      T_i = \tau_i \wedge \ValidTyp{\Theta}{\tau_i}
+    \right)}_{C_i \in \TagSet}
   }{
     \ValidTyp{\Theta}{ \Tsum{ C_i(T_i) }_{C_i \in \TagSet} }
   }
@@ -374,29 +389,37 @@
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 %  Theta |- T valid
 
-\Judgment{
-  \ValidTyp{\Theta}{T}
-}{
-  $T$ is a valid optional type
-}
+% \Judgment{
+%   \ValidTyp{\Theta}{T}
+% }{
+%   $T$ is a valid optional type
+% }
 
-\begin{mathpar}
-  \inferrule[TVOpt1]{
-    \ValidTyp{\Theta}{\tau}
-  }{
-    \ValidTypT{\Theta}{\tau}
-  }
+% \begin{mathpar}
+%   \inferrule[TVOpt1]{
+%     \ValidTyp{\Theta}{\tau}
+%   }{
+%     \ValidTypT{\Theta}{\tau}
+%   }
 
-  \inferrule[TVOpt2]{
-    \ValidTyp{\Theta}{\tau}
-  }{
-    \ValidTypT{\Theta}{\tau}
-  }
-\end{mathpar}
+%   \inferrule[TVOpt2]{
+%     \ValidTyp{\Theta}{\tau}
+%   }{
+%     \ValidTypT{\Theta}{\tau}
+%   }
+% \end{mathpar}
 
 \subsection{Bidirectional Typing}
 
 We call $\subst{\Trec{\alpha}{\tau}}{\alpha}{\tau}$ the \emph{unrolling} of recursive type $\Trec{\alpha}{\tau}$.
+
+\begin{Theorem}[Type Validity]
+  \hfill
+  \begin{enumerate}
+    \item If $\syn{\Theta}{\Gamma}{e}{\tau}$ then $\ValidTyp{\Theta}{\tau}$.
+    \item If $\ana{\Theta}{\Gamma}{e}{\tau}$ then $\ValidTyp{\Theta}{\tau}$.
+  \end{enumerate}
+\end{Theorem}
 
 \vspace*{\baselineskip}
 
@@ -436,29 +459,20 @@ We call $\subst{\Trec{\alpha}{\tau}}{\alpha}{\tau}$ the \emph{unrolling} of recu
 
 \begin{mathpar}
   \inferrule[SVar]{
-    \asc{x}{\tau} \in \Gamma \\
-    \ValidTyp{\Theta}{\tau}
+    \asc{x}{\tau} \in \Gamma
   }{
     \syn{\Theta}{\Gamma}{x}{\tau}
   }
 
-  \inferrule[SVarUnknownTyp]{
+  \inferrule[SVarFree]{
     \asc{x}{\tau} \notin \Gamma
-  }{
-    \syn{\Theta}{\Gamma}{ \hole[x]{u} }{\hole{}}
-  }
-
-  \inferrule[SVarInvalidTyp]{
-    \asc{x}{\tau} \in \Gamma \\
-    \neg\left( \ValidTyp{\Theta}{\tau} \right)
   }{
     \syn{\Theta}{\Gamma}{ \hole[x]{u} }{\hole{}}
   }
 
   \inferrule[SLam]{
     \ValidTyp{\Theta}{\tau} \\
-    \syn{\Theta}{\Gamma,\asc{x}{\tau}}{e}{\tau'} \\
-    \ValidTyp{\Theta}{\tau'}
+    \syn{\Theta}{\Gamma,\asc{x}{\tau}}{e}{\tau'}
   }{
     \syn{\Theta}{\Gamma}{ \Efun{x}{\tau}{e} }{\Tarrow{\tau}{\tau'}}
   }
@@ -476,29 +490,12 @@ We call $\subst{\Trec{\alpha}{\tau}}{\alpha}{\tau}$ the \emph{unrolling} of recu
     \syn{\Theta}{\Gamma}{ \hole[ \Efun{x}{\tau}{e} ]{u} }{\hole{}}
   }
 
-  \inferrule[SLamInvalidBodyTyp]{
-    \ValidTyp{\Theta}{\tau} \\
-    \ana{\Theta}{\Gamma}{e}{\tau'} \\
-    \neg\left( \ValidTyp{\Theta}{\tau'} \right)
-  }{
-    \syn{\Theta}{\Gamma}{ \hole[ \Efun{x}{\tau}{e} ]{u} }{\hole{}}
-  }
-
   \inferrule[SApp]{
     \syn{\Theta}{\Gamma}{e_1}{\tau_1} \\
-    \ValidTyp{\Theta}{\tau_1} \\
     \MatchedArrowTyp{\tau_1}{\tau_2}{\tau} \\
-    \tau_2 \neq \hole{} \\
     \ana{\Theta}{\Gamma}{e_2}{\tau_2}
   }{
     \syn{\Theta}{\Gamma}{ \Eapp{e_1}{e_2} }{\tau}
-  }
-
-  \inferrule[SAppInvalidFunTyp]{
-    \syn{\Theta}{\Gamma}{e_1}{\tau_1} \\
-    \neg\left( \ValidTyp{\Theta}{\tau_1} \right)
-  }{
-    \syn{\Theta}{\Gamma}{ \hole[ \Eapp{e_1}{e_2} ]{u} }{\hole{}}
   }
 
   \inferrule[SAppFunNotSyn]{
@@ -509,44 +506,36 @@ We call $\subst{\Trec{\alpha}{\tau}}{\alpha}{\tau}$ the \emph{unrolling} of recu
 
   \inferrule[SAppFunNotArr]{
     \syn{\Theta}{\Gamma}{e_1}{\tau_1} \\
-    \ValidTyp{\Theta}{\tau_1} \\
-    \neg\left( \MatchedArrowTyp{\tau_1}{\tau_2}{\tau} \right)
+    \notconsistent{\tau_1}{\Tarrow{\hole{}}{\hole{}}}
   }{
     \syn{\Theta}{\Gamma}{ \hole[ \Eapp{e_1}{e_2} ]{u} }{\hole{}}
   }
 
   \inferrule[SAppArgNotSyn]{
     \syn{\Theta}{\Gamma}{e_1}{\tau_1} \\
-    \ValidTyp{\Theta}{\tau_1} \\
     \MatchedArrowTyp{\tau_1}{\tau_2}{\tau} \\
+    \tau_2 \neq \hole{} \\
     \ana{\Theta}{\Gamma}{e_2}{\hole{}}
   }{
     \syn{\Theta}{\Gamma}{ \hole[ \Eapp{e_1}{e_2} ]{u} }{\hole{}}
   }
 
   \inferrule[SAsc]{
-    \ValidTyp{\Theta}{\tau} \\
-    \tau \neq \hole{} \\
     \ana{\Theta}{\Gamma}{e}{\tau}
   }{
     \syn{\Theta}{\Gamma}{ \asc{e}{\tau} }{\tau}
   }
 
-  \inferrule[SAscInvalidTyp]{
-    \neg\left( \ValidTyp{\Theta}{\tau} \right)
-  }{
-    \syn{\Theta}{\Gamma}{ \hole[ \asc{e}{\tau} ]{u} }{\hole{}}
-  }
-
   \inferrule[SAscExpNotSyn]{
     \ValidTyp{\Theta}{\tau} \\
+    \tau \neq \hole{} \\
     \ana{\Theta}{\Gamma}{e}{\hole{}}
   }{
     \syn{\Theta}{\Gamma}{ \hole[ \asc{e}{\tau} ]{u} }{\hole{}}
   }
 
   \inferrule[SInjError]{
-    \ValidExp{\Theta}{\Gamma}{E}
+    E = \Missing \vee (E = e \wedge \ana{\Theta}{\Gamma}{e}{\hole{}})
   }{
     \syn{\Theta}{\Gamma}{ \hole[ \Einj{C}{E} ]{u} }{\hole{}}
   }
@@ -565,29 +554,22 @@ We call $\subst{\Trec{\alpha}{\tau}}{\alpha}{\tau}$ the \emph{unrolling} of recu
   }
 
   \inferrule[SUnroll]{
-    \syn{\Theta}{\Gamma}{e}{ \Trec{\alpha}{\tau} } \\
-    \ValidTyp{\Theta}{\Trec{\alpha}{\tau}}
+    \syn{\Theta}{\Gamma}{e}{ \tau } \\
+    \MatchedRecTyp{\tau}{\alpha}{\tau'}
   }{
-    \syn{\Theta}{\Gamma}{ \Eunroll{e} }{\subst{ \Trec{\alpha}{\tau} }{\alpha}{\tau}}
+    \syn{\Theta}{\Gamma}{ \Eunroll{e} }{\subst{ \Trec{\alpha}{\tau'} }{\alpha}{\tau'}}
   }
-  %
-  % \inferrule[SUnrollHole]{
-  %   \syn{\Theta}{\Gamma}{e}{\hole{}}
-  % }{
-  %   \syn{\Theta}{\Gamma}{ \Eunroll{e} }{\hole{}}
-  % }
+
+  \inferrule[SUnrollNoVar]{
+    \syn{\Theta}{\Gamma}{e}{ \tau } \\
+    \MatchedRecTyp{\tau}{\hole{}}{\tau'}
+  }{
+    \syn{\Theta}{\Gamma}{ \Eunroll{e} }{\tau'}
+  }
 
   \inferrule[SUnrollNotRec]{
     \syn{\Theta}{\Gamma}{e}{\tau} \\
-    \ValidTyp{\Theta}{\tau} \\
-    \tau \neq \Trec{\alpha}{\tau}
-  }{
-    \syn{\Theta}{\Gamma}{ \hole[ \Eunroll{e} ]{u} }{\hole{}}
-  }
-
-  \inferrule[SUnrollInvalidTyp]{
-    \syn{\Theta}{\Gamma}{e}{\tau} \\
-    \neg\left( \ValidTyp{\Theta}{\tau} \right)
+    \notconsistent{\tau}{\Trec{\hole{}}{\hole{}}}
   }{
     \syn{\Theta}{\Gamma}{ \hole[ \Eunroll{e} ]{u} }{\hole{}}
   }
@@ -605,21 +587,13 @@ We call $\subst{\Trec{\alpha}{\tau}}{\alpha}{\tau}$ the \emph{unrolling} of recu
   }
 
   \inferrule[SNEHole]{
-    \syn{\Theta}{\Gamma}{e}{\tau} \\
-    \ValidTyp{\Theta}{\tau}
-  }{
-    \syn{\Theta}{\Gamma}{ \hole[e]{u} }{\hole{}}
-  }
-
-  \inferrule[SNEHoleInvalid]{
-    \syn{\Theta}{\Gamma}{e}{\tau} \\
-    \neg\left( \ValidTyp{\Theta}{\tau} \right)
+    \syn{\Theta}{\Gamma}{e}{\tau}
   }{
     \syn{\Theta}{\Gamma}{ \hole[e]{u} }{\hole{}}
   }
 
   \inferrule[SNEHoleNotSyn]{
-    \ana{\Theta}{\Gamma}{e}{\tau}
+    \ana{\Theta}{\Gamma}{e}{\hole{}}
   }{
     \syn{\Theta}{\Gamma}{ \hole[e]{u} }{\hole{}}
   }
@@ -630,36 +604,59 @@ We call $\subst{\Trec{\alpha}{\tau}}{\alpha}{\tau}$ the \emph{unrolling} of recu
 \vspace*{\baselineskip}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-%  Theta, Gamma |- E valid
+%  Theta, Gamma |- e <= tau
 
 \Judgment{
-  \ValidExp{\Theta}{\Gamma}{E}
+  \ana{\Theta}{\Gamma}{e}{\tau}
 }{
-  $E$ is a valid optional expression
+  $e$ analyzes against type $\tau$
 }
 
 \begin{mathpar}
-  \inferrule[]{
-    \ana{\Theta}{\Gamma}{e}{\hole{}}
+  \inferrule[AInj]{
+    \MatchedSumTyp{\tau}{C_i(T_i)}_{C_i \in \TagSet} \\
+    C_j \in \TagSet \\
+    (E = \Missing \wedge T_j = \Missing) \vee (E = e \wedge T_j = \tau_j \wedge \ana{\Theta}{\Gamma}{e}{\tau_j})
   }{
-    \ValidExp{\Theta}{\Gamma}{e}
+    \ana{\Theta}{\Gamma}{ \Einj{C_j}{E} }{\tau}
   }
 
-  \inferrule[]{
-    % 
+  \inferrule[AInjNotSum]{
+    \notconsistent{\tau}{\Tsum{C_i(T_i)}_{C_i \in \TagSet}}
   }{
-    \ValidExp{\Theta}{\Gamma}{\Missing}
+    \ana{\Theta}{\Gamma}{ \hole[ \Einj{C}{E} ]{u} }{\tau}
+  }
+
+  \inferrule[AInjBadTag]{
+    \MatchedSumTyp{\tau}{C_i(T_i)}_{C_i \in \TagSet} \\
+    C \notin \TagSet \\
+  }{
+    \ana{\Theta}{\Gamma}{ \hole[ \Einj{C}{E} ]{u} }{\tau}
+  }
+
+  \inferrule[AInjMissingArg]{
+    \MatchedSumTyp{\tau}{C_i(T_i)}_{C_i \in \TagSet} \\
+    C_j \in \TagSet \\
+    T_j \neq \Missing
+  }{
+    \ana{\Theta}{\Gamma}{ \Einj{C_j}{\Missing} }{\tau}
+  }
+
+  \inferrule[AInjUnexpectedArg]{
+    \MatchedSumTyp{\tau}{C_i(T_i)}_{C_i \in \TagSet} \\
+    C_j \in \TagSet \\
+    T_j = \Missing
+  }{
+    \ana{\Theta}{\Gamma}{ \Einj{C_j}{e} }{\tau}
+  }
+
+  \inferrule[ASubsume]{
+    \syn{\Theta}{\Gamma}{e}{\tau} \\
+    \consistent{\tau}{\tau'}
+  }{
+    \ana{\Theta}{\Gamma}{e}{\tau'}
   }
 \end{mathpar}
-
-\vspace*{\baselineskip}
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-%  Gamma |- e <= tau
-
-% \noindent
-% $\boxed{\ana{\Gamma}{e}{\tau}}$
-% \quad $e$ analyzes against type $\tau$
 
 % \begin{mathpar}
 %   \inferrule[ARoll]{
