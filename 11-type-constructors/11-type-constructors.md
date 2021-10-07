@@ -1,25 +1,22 @@
-11-type-constructors
-====================
+# 11-type-constructors
 
-Introduction
-------------
+## Introduction
 
 see my SURE poster for a motivating example.  
 (fill in) a slightly misleading title, the “intended" application is
 parameterized types
 
-TODO
-----
+## TODO
 
 -   clean derivations w/ abbreviations (looking at you A0 page)
 
--   PK unicity doesn’t actually hold rn (see red markup)
+-   OK\* proofs
 
 -   Sigma kinds
 
--   some other stuff in my notebook that’s in a box
+-   some other stuff in my notebook <s>that’s in a box</s> I need to
+    look through
 
-Notes
------
+## Notes
 
 -   elaboration rules should be straightforward from bkase’s phi
