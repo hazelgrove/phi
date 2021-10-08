@@ -185,13 +185,25 @@ let rec elaborate: exter_exp => option(inter_exp) =
       Fun(x, e1);
     }
 
-  | Ap(e1, Tuple(es) as es_tuple) =>
+  | Ap(e1, Tuple(es) as e2) =>
     if (List.mem(Deferral, es)) {
-      None;
+      let+ e1 = elaborate(e1);
+
+      let deferral_var_name = "~0";
+
+      let f =
+          ((_, _): (list(inter_exp), int), _: exter_exp)
+          : (list(inter_exp), int) => {
+        ([], 0);
+      };
+
+      let (es_new, _) = List.fold_left(f, ([], 0), es);
+
+      Fun(deferral_var_name, Ap(e1, Tuple(es_new)));
     } else {
       let* e1 = elaborate(e1);
-      let+ es_tuple = elaborate(es_tuple);
-      Ap(e1, es_tuple);
+      let+ e2 = elaborate(e2);
+      Ap(e1, e2);
     }
 
   | Ap(e1, e2) => {
