@@ -177,21 +177,22 @@
       \mid \Eapp{e}{e}
       \mid \asc{e}{\tau}
       \mid \Einj{C}{E}
-      \mid \Ecase{e}{C_i(X_i){=}e_i}_{C_i \in \TagSet}
+      % \mid \Ecase{e}{C_i(X_i){=}e_i}_{C_i \in \TagSet}
       \mid \Eroll{e}
       \mid \Eunroll{e}
       \\ & & &
       \mid \hole{u}
       \mid \hole[e]{u}
       \\
-    \HTagArg & E & \Coloneqq & e \mid \hole{} \\
-    \HTagVar & X & \Coloneqq & x \mid \hole{} \\
+    \HTagTyp & T & \Coloneqq & \tau \mid \Missing \\
+    \HTagArg & E & \Coloneqq & e \mid \Missing \\
+    % \HTagVar & X & \Coloneqq & x \mid \Missing \\
     \IHExp & d & \Coloneqq &
       x
       \mid \Dfun{x}{\tau}{d}
       \mid \Dapp{d}{d}
       \mid \Dinj{C}{\tau}{D}
-      \mid \Dcase{d}{C_i(X_i)}_{C_u \in \TagSet}
+      % \mid \Dcase{d}{C_i(X_i)}_{C_u \in \TagSet}
       \mid \Droll{\alpha}{\tau}{d}
       \mid \Dunroll{d}
       \\ & & &
@@ -217,7 +218,16 @@ We write $\Gamma, \asc{X}{T}$ to denote the extension of typing context $\Gamma$
 \[
   \Gamma, \asc{X}{T} = \begin{cases}
     \Gamma, \asc{x}{\tau} & X = x \wedge T = \tau \\
-    \Gamma & X = \Missing \wedge T = \Missing \\
+    \Gamma, \asc{x}{\hole{}} & X = x \wedge T = \Missing \\
+    \Gamma & X = \Missing \\
+  \end{cases}
+\]
+
+We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$ with optional type variable name $\pi$.
+\[
+  \Theta, \pi = \begin{cases}
+    \Theta, \alpha & \pi = \alpha \\
+    \Theta & \pi = \hole{} \\
   \end{cases}
 \]
 
@@ -250,7 +260,8 @@ We write $\Gamma, \asc{X}{T}$ to denote the extension of typing context $\Gamma$
     \subst{\tau}{\alpha}{ \Tsum{C_i(T_i)}_{C_i \in \TagSet} }
       & \Tsum{C_i( \subst{\tau}{\alpha}{T_i} )}_{C_i \in \TagSet} \\
     \subst{\tau}{\alpha}{ \hole{} } & \hole{} \\
-    \subst{\tau}{\alpha}{ \hole[\alpha_1]{u} } & \hole[ \subst{\tau}{\alpha}{\alpha_1} ]{u} \\
+    \subst{\alpha'}{\alpha}{ \hole[\alpha]{u} } & \hole[\alpha']{u} \\
+    \subst{\alpha'}{\alpha}{ \hole[\alpha_1]{u} } & \hole[\alpha_1]{u} & \text{ when } \alpha \neq \alpha_1 \\
   \end{array}
 \]
 
@@ -321,16 +332,10 @@ We write $\Gamma, \asc{X}{T}$ to denote the extension of typing context $\Gamma$
     \valid{\Theta}{ \alpha }
   }
 
-  \inferrule[TVRecVar]{
-    \valid{\Theta,\alpha}{\tau}
+  \inferrule[TVRec]{
+    \valid{\Theta,\pi}{\tau}
   }{
-    \valid{\Theta}{ \Trec{\alpha}{\tau} }
-  }
-
-  \inferrule[TVRecHole]{
-    \valid{\Theta}{\tau}
-  }{
-    \valid{\Theta}{ \Trec{\hole{}}{\tau} }
+    \valid{\Theta}{ \Trec{\pi}{\tau} }
   }
 
   \inferrule[TVSum]{
@@ -415,23 +420,36 @@ We write $\Gamma, \asc{X}{T}$ to denote the extension of typing context $\Gamma$
     \consistent{\Tarrow{\tau_1}{\tau_2}}{\Tarrow{\tau_1'}{\tau_2'}}
   }
 
-  \inferrule[TCRecVar]{
-    \consistent{\tau_1}{ \subst{\alpha_1}{\pi_2}{\tau_2} }
+  \inferrule[TCRec]{
+    \pi_1 = \pi_1' \\
+    \consistent{\tau_2}{\tau_2'}
   }{
     \consistent{
-      \Trec{\alpha_1}{\tau_1}
+      \Trec{\pi_1}{\tau_2}
     }{
-      \Trec{\pi_2}{\tau_2}
+      \Trec{\pi_1'}{\tau_2'}
      }
   }
 
-  \inferrule[TCRecHole]{
-    \consistent{\tau_1}{\tau_2}
+  \inferrule[TCRecHole1]{
+    \alpha \notin \FV{\tau} \\
+    \consistent{\tau}{\tau'}
   }{
     \consistent{
-      \Trec{\hole{}}{\tau_1}
+      \Trec{\hole{}}{\tau}
     }{
-      \Trec{\pi_2}{\tau_2}
+      \Trec{\alpha}{\tau'}
+     }
+  }
+
+  \inferrule[TCRecHole2]{
+    \alpha \notin \FV{\tau} \\
+    \consistent{\tau}{\tau'}
+  }{
+    \consistent{
+        \Trec{\alpha}{\tau}
+      }{
+        \Trec{\hole{}}{\tau'}
      }
   }
 
@@ -537,20 +555,6 @@ We call $\subst{\Trec{\alpha}{\tau}}{\alpha}{\tau}$ the \emph{unrolling} of recu
     \syn{\Gamma}{ \Efun{x}{\tau}{e} }{\Tarrow{\tau}{\tau'}}
   }
 
-  \inferrule[SLamBodyNotSyn]{
-    \valid{\emptyset}{\tau} \\
-    \ana{\Gamma, \asc{x}{\tau}}{e}{\hole{}}
-  }{
-    \syn{\Gamma}{ \hole[ \Efun{x}{\tau}{e} ]{u} }{\hole{}}
-    }
-
-  \inferrule[SLamInvalidTyp]{
-    \neg\left( \valid{\emptyset}{\tau} \right) \\
-    \ana{\Gamma,\asc{x}{\hole{}}}{ e }{\hole{}}
-  }{
-    \syn{\Gamma}{ \hole[ \Efun{x}{\tau}{e} ]{u} }{\hole{}}
-  }
-
   \inferrule[SApp]{
     \syn{\Gamma}{e_1}{\tau_1} \\
     \MatchedArrowTyp{\tau_1}{\tau_2}{\tau} \\
@@ -567,13 +571,6 @@ We call $\subst{\Trec{\alpha}{\tau}}{\alpha}{\tau}$ the \emph{unrolling} of recu
     \syn{\Gamma}{ \hole[ \Eapp{e_1}{e_2} ]{u} }{\hole{}}
   }
 
-  \inferrule[SAppFunNotSyn]{
-    \ana{\Gamma}{e_1}{\hole{}} \\
-    \ana{\Gamma}{e_2}{\hole{}}
-  }{
-    \syn{\Gamma}{ \hole[ \Eapp{e_1}{e_2} ]{u} }{\hole{}}
-  }
-
   \inferrule[SAsc]{
     \valid{\emptyset}{\tau} \\
     \ana{\Gamma}{e}{\tau}
@@ -584,7 +581,7 @@ We call $\subst{\Trec{\alpha}{\tau}}{\alpha}{\tau}$ the \emph{unrolling} of recu
   \inferrule[SRollError]{
     \ana{\Gamma}{e}{\hole{}}
   }{
-    \syn{\Gamma}{ \hole[ \Eroll{e} ]{u} }{\hole{}}
+    \syn{\Gamma}{ \hole[ \Eroll{e} ]{u} }{ \Trec{\hole{}}{\hole{}} }
   }
 
   \inferrule[SUnroll]{
@@ -607,12 +604,12 @@ We call $\subst{\Trec{\alpha}{\tau}}{\alpha}{\tau}$ the \emph{unrolling} of recu
     \syn{\Gamma}{ \hole[ \Einj{C}{E} ]{u} }{\hole{}}
   }
 
-  \inferrule[SCaseError]{
-    \ana{\Gamma}{e}{\hole{}} \\
-    \Set{ \ana{\Gamma,\asc{X_i}{\hole{}}}{e_i}{\hole{}} }_{C_i \in \TagSet}
-  }{
-    \syn{\Gamma}{ \hole[ \Ecase{e}{ C_i(X_i){=}e_i} ]{u} }{\hole{}}
-  }
+  % \inferrule[SCaseError]{
+  %   \ana{\Gamma}{e}{\hole{}} \\
+  %   \Set{ \ana{\Gamma,\asc{X_i}{\hole{}}}{e_i}{\hole{}} }_{C_i \in \TagSet}
+  % }{
+  %   \syn{\Gamma}{ \hole[ \Ecase{e}{ C_i(X_i){=}e_i} ]{u} }{\hole{}}
+  % }
 
   \inferrule[SEHole]{
     %
@@ -667,7 +664,6 @@ We call $\subst{\Trec{\alpha}{\tau}}{\alpha}{\tau}$ the \emph{unrolling} of recu
 
 \begin{mathpar}
   \inferrule[ARoll]{
-    \valid{\emptyset}{\tau} \\
     \MatchedRecTyp{\tau}{\pi}{\tau'} \\
     \ana{\Gamma}{e}{ \subst{\tau}{\pi}{\tau'} }
   }{
@@ -675,14 +671,7 @@ We call $\subst{\Trec{\alpha}{\tau}}{\alpha}{\tau}$ the \emph{unrolling} of recu
   }
 
   \inferrule[ARollNotRec]{
-    \valid{\emptyset}{\tau} \\
     \notconsistent{\tau}{\Trec{\hole{}}{\hole{}}}
-  }{
-    \ana{\Gamma}{ \hole[\Eroll{e}]{u} }{\tau}
-  }
-
-  \inferrule[ARollInvalidTyp]{
-    \neg(\valid{\emptyset}{\tau})
   }{
     \ana{\Gamma}{ \hole[\Eroll{e}]{u} }{\tau}
   }
@@ -695,18 +684,9 @@ We call $\subst{\Trec{\alpha}{\tau}}{\alpha}{\tau}$ the \emph{unrolling} of recu
 
   \inferrule[AInj]{
     C_j \in \TagSet \\
-    \valid{\emptyset}{T_j} \\
     \ana{\Gamma}{E}{T_j}
   }{
     \ana{\Gamma}{ \Einj{C_j}{E} }{\Tsum{C_i(T_i)}_{C_i \in \TagSet}}
-  }
-
-  \inferrule[AInjInvalidTyp]{
-    C_j \in \TagSet \\
-    \neg(\valid{\emptyset}{T_j}) \\
-    \valid{\Gamma}{E}
-  }{
-    \ana{\Gamma}{ \hole[\Einj{C_j}{E}]{u} }{\Tsum{C_i(T_i)}_{C_i \in \TagSet}}
   }
 
   \inferrule[AInjUnexpectedBody]{
@@ -719,8 +699,7 @@ We call $\subst{\Trec{\alpha}{\tau}}{\alpha}{\tau}$ the \emph{unrolling} of recu
 
   \inferrule[AInjExpectedBody]{
     C_j \in \TagSet \\
-    T_j = \tau \\
-    \valid{\emptyset}{\tau}
+    T_j = \tau
   }{
     \ana{\Gamma}{ \hole[\Einj{C_j}{\Missing}]{u} }{\Tsum{C_i(T_i)}_{C_i \in \TagSet}}
   }
@@ -735,10 +714,10 @@ We call $\subst{\Trec{\alpha}{\tau}}{\alpha}{\tau}$ the \emph{unrolling} of recu
   }
 
   \inferrule[ASubsume]{
-    \syn{\Gamma}{e}{\tau} \\
-    \consistent{\tau}{\tau'}
+    \syn{\Gamma}{e}{\tau'} \\
+    \consistent{\tau'}{\tau}
   }{
-    \ana{\Gamma}{e}{\tau'}
+    \ana{\Gamma}{e}{\tau}
   }
 \end{mathpar}
 
