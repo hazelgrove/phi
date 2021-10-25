@@ -40,6 +40,7 @@ let rec filter: list(option('a)) => list('a) =
   | [None, ...tl] => filter(tl)
   | [] => [];
 
+// Types
 type typ =
   | Arrow(typ, typ)
   | Num
@@ -70,8 +71,6 @@ type inter_exp =
 
 module TypCtx = Map.Make(String);
 type typctx = TypCtx.t(typ);
-
-module UsedCtx = Set.Make(String);
 
 let matched_arrow_type = (t: option(typ)): option(typ) => t;
 let matched_product_type = (t: option(typ)): option(typ) => t;
