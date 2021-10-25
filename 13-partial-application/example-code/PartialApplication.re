@@ -185,21 +185,54 @@ let rec elaborate: exter_exp => option(inter_exp) =
       Fun(x, e1);
     }
 
-  | Ap(e1, Tuple(es) as e2) =>
+  | Ap(e1, Tuple(es) as e2) as e =>
     if (List.mem(Deferral, es)) {
-      let+ e1 = elaborate(e1);
+      let ctx = TypCtx.empty; // TODO: Make this the actual context
 
-      let deferral_var_name = "~0";
+      let deferral_var_name = "~";
 
-      let f =
-          ((_, _): (list(inter_exp), int), _: exter_exp)
-          : (list(inter_exp), int) => {
-        ([], 0);
+      let* e1 = elaborate(e1);
+
+      let* es_deferred = {
+        let deferral_replacement = {
+          let multiple_deferrals =
+            es
+            |> List.filter((e: exter_exp) => e == Deferral)
+            |> List.length > 1;
+
+          (
+            (index: int) =>
+              if (multiple_deferrals) {
+                Proj(Var(deferral_var_name), index);
+              } else {
+                Var(deferral_var_name);
+              }
+          );
+        };
+
+        let f =
+            (acc: option((list(inter_exp), int)), e: exter_exp)
+            : option((list(inter_exp), int)) => {
+          let* (acc_list, index) = acc;
+          let+ (new_hd, new_index) =
+            switch (e) {
+            | Deferral => Some((deferral_replacement(index), index + 1))
+            | _ =>
+              let+ e = elaborate(e);
+              (e, index);
+            };
+
+          ([new_hd, ...acc_list], new_index);
+        };
+
+        let+ (es_deferred_backwards, _) =
+          es |> List.fold_left(f, Some(([], 0)));
+        List.rev(es_deferred_backwards);
       };
 
-      let (es_new, _) = List.fold_left(f, ([], 0), es);
+      let+ t = syn(ctx, e);
 
-      Fun(deferral_var_name, Ap(e1, Tuple(es_new)));
+      Ann(Fun(deferral_var_name, Ap(e1, Tuple(es_deferred))), t);
     } else {
       let* e1 = elaborate(e1);
       let+ e2 = elaborate(e2);
