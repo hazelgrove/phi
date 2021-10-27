@@ -37,11 +37,12 @@
 \newcommand\HTagVar{\Sort{HTagVar}}
 \newcommand\HTyp{\Sort{HTyp}}
 \newcommand\HTypPat{\Sort{HTypPat}}
+\newcommand\EvalCtx{\Sort{EvalCtx}}
 
 % Holes
 
 \newcommand\hole[2][]{\llparenthesis#1\rrparenthesis^{#2}}
-\newcommand\Dhole[3][]{\llparenthesis#1\rrparenthesis_{#2}^{#3}}
+\newcommand\dhole[3][]{\llparenthesis#1\rrparenthesis_{#2}^{#3}}
 
 % Types
 
@@ -52,12 +53,11 @@
 % Tags
 
 \newcommand\Tag{\mathbf{C}}
-\newcommand\TagHole[2][]{\llparenthesis#1\rrparenthesis^{#2}}
 \newcommand\TagSet{\mathcal{C}}
 
 % Optional Tag Arguments
 
-\newcommand\Missing{\varnothing}
+\newcommand\Absent{\varnothing}
 
 % Token Literals
 
@@ -86,64 +86,55 @@
 \newcommand\Dunroll[1]{\literal{unroll}\left(#1\right)}
 \newcommand\cast[3]{{#1}\langle{#2}\Rightarrow{#3}\rangle}
 \newcommand\casts[4]{{#1}\langle{#2}\Rightarrow{#3}\Rightarrow{#4}\rangle}
-\newcommand\castfail[3]{{#1}\langle{#2}\Rightarrow{\llparenthesis\rrparenthesis}\nRightarrow{#3}\rangle}
+\newcommand\failedcast[3]{{#1}\langle{#2}\Rightarrow{\llparenthesis\rrparenthesis}\nRightarrow{#3}\rangle}
 
 % Judgments
 
 \newcommand\Judgment[2]{\noindent{}$\boxed{#1}$\quad{#2}}
-\newcommand\helper[1]{\mathsf{#1}}
+\newcommand\judgment[1]{\mathrm{#1}}
 
 \newcommand\syn[3]{{#1}\vdash{#2}\Rightarrow{#3}}
 \newcommand\ana[3]{{#1}\vdash{#2}\Leftarrow{#3}}
 
+\newcommand\synelab[5]{#1 \vdash #2 \Rightarrow #3 \leadsto #4 \dashv #5}
+\newcommand\anaelab[6]{#1 \vdash #2 \Leftarrow #3 \leadsto #4 : #5 \dashv #6}
+
+\newcommand\assign[4]{#1; #2 \vdash #3 : #4}
+\newcommand\ground[1]{#1~\judgment{ground}}
+\newcommand\join[2]{\mathsf{join}\left(#1,#2\right)}
+\newcommand\val[1]{#1~\judgment{val}}
+\newcommand\boxedval[1]{#1~\judgment{boxedval}}
+\newcommand\indet[1]{#1~\judgment{indet}}
+\newcommand\final[1]{#1~\judgment{final}}
+\newcommand\eval[3]{#1 = #2\left\{#3\right\}}
+
 % Helpers
+
+\newcommand\helper[1]{\mathsf{#1}}
 
 \newcommand\consistent[2]{{#1}\sim{#2}}
 \newcommand\notconsistent[2]{{#1}\nsim{#2}}
 \newcommand\valid[2]{{#1}\vdash{#2}\,\helper{valid}}
 % \newcommand\ValidExp[3]{{#1};{#2}\vdash{#3}\,\helper{valid}}
-\newcommand\FV[1]{\mathsf{FV\left(#1\right)}}
+\newcommand\FV[1]{\helper{FV}\left(#1\right)}
+\newcommand\id[1]{\helper{id}\left(#1\right)}
 
 % Matched Types
 
 \newcommand\MatchedArrowTyp[3]{{#1}\blacktriangleright_\rightarrow{#2}\rightarrow{#3}}
 \newcommand\MatchedRecTyp[3]{{#1}\blacktriangleright_\mu\Trec{#2}{#3}}
+\newcommand{\MatchedGroundTyp}[2]{#1 \blacktriangleright_{\helper{ground}} #2}
 
 % Substitution
 
 \newcommand\subst[3]{\left[{#1}/{#2}\right]{#3}}
 
+% Evaluation
 
-% \newcommand{\valid}[2]{#1 \vdash #2~\mathsf{valid}}
-% \newcommand{\assign}[4]{#1; #2 \vdash #3 : #4}
-% \newcommand{\ana}[3]{#1 \vdash #2 \Leftarrow #3}
-% \newcommand{\synelab}[5]{#1 \vdash #2 \Rightarrow #3 \leadsto #4 \dashv #5}
-% \newcommand{\anaelab}[6]{#1 \vdash #2 \Leftarrow #3 \leadsto #4 : #5 \dashv #6}
-% \newcommand{\anaE}[3]{#1 \vdash_E #2 \Leftarrow #3}
-% \newcommand{\synelabE}[5]{#1 \vdash_E #2 \Rightarrow #3 \leadsto #4 \dashv #5}
-% \newcommand{\anaelabE}[6]{#1 \vdash_E #2 \Leftarrow #3 \leadsto #4 : #5 \dashv #6}
-% \newcommand{\assignD}[4]{#1; #2 \vdash_D #3 : #4}
-% \newcommand{\consistent}[2]{#1 \sim #2}
-% \newcommand{\matchedRec}[2]{#1 \blacktriangleright_\mu #2}
-% \newcommand{\join}[2]{\mathsf{join}\left(#1,#2\right)}
-% \newcommand{\ground}[1]{#1~\mathsf{ground}}
-% \newcommand{\matchedGround}[2]{#1 \blacktriangleright_{\mathsf{ground}} #2}
-% \newcommand{\val}[1]{#1~\mathsf{val}}
-% \newcommand{\boxedval}[1]{#1~\mathsf{boxedval}}
-% \newcommand{\indet}[1]{#1~\mathsf{indet}}
-% \newcommand{\final}[1]{#1~\mathsf{final}}
-% \newcommand{\eval}[3]{#1 = #2\mathopen{}\left\{#3\right\}\mathclose{}}
-
-% Evaluation Contexts
-% \newcommand{\E}{\mathcal{E}}
+\newcommand\E{\mathcal{E}}
 
 % Operations
-% \newcommand{\subst}[3]{[#1 / #2]#3}0
 % \newcommand{\defeq}{\stackrel{\text{def}}{=}}
-% \newcommand{\cast}[3]{#1\langle#2\,{\Rightarrow}\,#3\rangle}
-
-% Helpers
-% \DeclareMathOperator{\id}{\text{id}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -184,9 +175,9 @@
       \mid \hole{u}
       \mid \hole[e]{u}
       \\
-    \HTagTyp & T & \Coloneqq & \tau \mid \Missing \\
-    \HTagArg & E & \Coloneqq & e \mid \Missing \\
-    % \HTagVar & X & \Coloneqq & x \mid \Missing \\
+    \HTagTyp & T & \Coloneqq & \tau \mid \Absent \\
+    \HTagArg & E & \Coloneqq & e \mid \Absent \\
+    % \HTagVar & X & \Coloneqq & x \mid \Absent \\
     \IHExp & d & \Coloneqq &
       x
       \mid \Dfun{x}{\tau}{d}
@@ -197,14 +188,14 @@
       \mid \Dunroll{d}
       \\ & & &
       \mid \cast{d}{\tau}{\tau}
-      \mid \castfail{d}{\tau}{\tau}
-      \mid \Dhole{\sigma}{u}
-      \mid \Dhole[d]{\sigma}{u}
+      \mid \failedcast{d}{\tau}{\tau}
+      \mid \dhole{\sigma}{u}
+      \mid \dhole[d]{\sigma}{u}
       \\
     \IHTagArg & D & \Coloneqq &
       d
       \mid \cast{D}{\tau}{\tau}
-      \mid \castfail{D}{\tau}{\tau}
+      \mid \failedcast{D}{\tau}{\tau}
       \mid \hole{}
       \\
   \end{array}
@@ -218,8 +209,8 @@ We write $\Gamma, \asc{X}{T}$ to denote the extension of typing context $\Gamma$
 \[
   \Gamma, \asc{X}{T} = \begin{cases}
     \Gamma, \asc{x}{\tau} & X = x \wedge T = \tau \\
-    \Gamma, \asc{x}{\hole{}} & X = x \wedge T = \Missing \\
-    \Gamma & X = \Missing \\
+    \Gamma, \asc{x}{\hole{}} & X = x \wedge T = \Absent \\
+    \Gamma & X = \Absent \\
   \end{cases}
 \]
 
@@ -277,7 +268,7 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
 \[
   \subst{\tau}{\pi}{T} = \begin{cases}
     \subst{\tau}{\pi}{\tau'} & \text{when } T = \tau' \\
-    \Missing & \text{when } T = \Missing \\
+    \Absent & \text{when } T = \Absent \\
   \end{cases}
 \]
 
@@ -285,27 +276,32 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
-% \noindent
-% $\boxed{\join{\tau_1}{\tau_2} = \tau}$
-% \quad $\tau_1$ and $\tau_2$ join consistently, forming type $\tau$
+\Judgment{
+  \join{\tau_1}{\tau_2} = \tau
+}{
+  $\tau_1$ and $\tau_2$ join consistently, forming type $\tau$
+}
 
-% \begin{mathpar}
-%   \join{
-%     \sumtype{C_i(\tau_i)}_{C_i \in \C}
-%   }{
-%     \sumtype{C_i(\tau_i')}_{C_i \in \C}
-%   }
-%   = \sumtype{C_i(\join{\tau_i}{\tau_i'})}_{C_i \in \C}
 
-%   \join{
-%     \rectype{\alpha_1}{\tau_1}
-%   }{
-%     \rectype{\alpha_2}{\tau_2}
-%   }
-%   = \rectype{\alpha_1}{\join{\tau_1}{ \subst{\alpha_1}{\alpha_2}{\tau_2} }}
-% \end{mathpar}
-
-% \vspace*{\baselineskip}
+\[
+  \arraycolsep=0pt
+  \begin{array}{l@{\quad=\quad}l@{\quad}l}
+    \join{
+      \Tsum{C_i(T_i)}_{C_i \in \TagSet}
+    }{
+      \Tsum{C_i(T_i')}_{C_i \in \TagSet}
+    }
+    & \Tsum{C_i(\join{T_i}{T_i'})}_{C_i \in \TagSet}
+    \\
+    \join{
+      \Trec{\pi_1}{T_1}
+    }{
+      \Trec{\pi_2}{T_2}
+    }
+    & \Trec{\join{\pi_1}{\pi_2}}{\join{T_1}{ \subst{\pi_1}{\pi_2}{T_2} }}
+    \\
+  \end{array}
+\]
 
 \vspace*{\baselineskip}
 
@@ -376,10 +372,10 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
     \valid{\Theta}{T}
   }
 
-  \inferrule[TVNotPresent]{
+  \inferrule[TVAbsent]{
     %
   }{
-    \valid{\Theta}{\Missing}
+    \valid{\Theta}{\Absent}
   }
 \end{mathpar}
 
@@ -469,7 +465,7 @@ Due to this asymmetry, recursive types are only consistent up to alpha renaming.
 
 \subsection{Bidirectional Typing}
 
-We call $\subst{\Trec{\alpha}{\tau}}{\alpha}{\tau}$ the \emph{unrolling} of recursive type $\Trec{\alpha}{\tau}$.
+We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive type $\Trec{\pi}{\tau}$.
 
 \begin{Theorem}[Synthetic Type Validity]
     If $\syn{\Gamma}{e}{\tau}$ then $\valid{\emptyset}{\tau}$.
@@ -644,10 +640,10 @@ We call $\subst{\Trec{\alpha}{\tau}}{\alpha}{\tau}$ the \emph{unrolling} of recu
     \valid{\Gamma}{e}
   }
 
-  \inferrule[EVNotPresent]{
+  \inferrule[EVAbsent]{
     %
   }{
-    \valid{\Gamma}{\Missing}
+    \valid{\Gamma}{\Absent}
   }
 \end{mathpar}
 
@@ -691,7 +687,7 @@ We call $\subst{\Trec{\alpha}{\tau}}{\alpha}{\tau}$ the \emph{unrolling} of recu
 
   \inferrule[AInjUnexpectedBody]{
     C_j \in \TagSet \\
-    T_j = \Missing \\
+    T_j = \Absent \\
     \ana{\Gamma}{e}{\hole{}}
   }{
     \ana{\Gamma}{ \hole[\Einj{C_j}{e}]{u} }{\Tsum{C_i(T_i)}_{C_i \in \TagSet}}
@@ -701,7 +697,7 @@ We call $\subst{\Trec{\alpha}{\tau}}{\alpha}{\tau}$ the \emph{unrolling} of recu
     C_j \in \TagSet \\
     T_j = \tau
   }{
-    \ana{\Gamma}{ \hole[\Einj{C_j}{\Missing}]{u} }{\Tsum{C_i(T_i)}_{C_i \in \TagSet}}
+    \ana{\Gamma}{ \hole[\Einj{C_j}{\Absent}]{u} }{\Tsum{C_i(T_i)}_{C_i \in \TagSet}}
   }
 
   \inferrule[AInjBadTag]{
@@ -721,79 +717,7 @@ We call $\subst{\Trec{\alpha}{\tau}}{\alpha}{\tau}$ the \emph{unrolling} of recu
   }
 \end{mathpar}
 
-% \begin{mathpar}
-%   \inferrule[ARoll]{
-%     \matchedRec{\tau}{\rectype{\alpha}{\tau'}} \\
-%     \ana{\Gamma}{e}{\subst{ \rectype{\alpha}{\tau'} }{\alpha}{\tau'}}
-%   }{
-%     \ana{\Gamma}{\eroll{e}}{\tau}
-%   }
-
-%   \inferrule[AInjHole]{
-%     \valid{\Gamma}{E}
-%   }{
-%     \ana{\Gamma}{ \einj{C}{E} }{\hole}
-%   }
-
-%   \inferrule[AInj]{
-%     C_j \in \C \\
-%     \anaE{\Gamma}{E}{T_j}
-%   }{
-%     \ana{\Gamma}{
-%       \einj{C_j}{E}
-%     }{\sumtype{C_i(T_i)}_{C_i \in \C}}
-%   }
-
-%   \inferrule[AInjUnexpectedBody]{
-%     C_j \in \C \\
-%     T_j = \Nothing
-%   }{
-%     \ana{\Gamma}{
-%       \hole[\einj{C_j}{e}]^u
-%     }{\sumtype{C_i(T_i)}_{C_i \in \C}}
-%   }
-
-%   \inferrule[AInjExpectedBody]{
-%     C_j \in \C \\
-%     T_j = \tau
-%   }{
-%     \ana{\Gamma}{
-%       \hole[\einj{C_j}{\Nothing}]^u
-%     }{\sumtype{C_i(T_i)}_{C_i \in \C}}
-%   }
-
-%   \inferrule[AInjBadTag]{
-%     C \notin \C \\
-%     \valid{\Gamma}{E}
-%   }{
-%     \ana{\Gamma}{
-%       \hole[\einj{C}{E}]^u
-%     }{\sumtype{C_i(T_i)}_{C_i \in \C}}
-%   }
-% \end{mathpar}
-
 \vspace*{\baselineskip}
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% Gamma |- E <= T
-
-% \noindent
-% $\boxed{\anaE{\Gamma}{E}{T}}$
-% \quad $E$ analyzes against optional type $T$
-
-% \begin{mathpar}
-%   \inferrule[]{
-%     \ana{\Gamma}{e}{\tau}
-%   }{
-%     \anaE{\Gamma}{e}{\tau}
-%   }
-
-%   \inferrule[]{
-%     % 
-%   }{
-%     \anaE{\Gamma}{\Nothing}{\Nothing}
-%   }
-% \end{mathpar}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 %  Gamma |- E <= T
@@ -813,10 +737,10 @@ We call $\subst{\Trec{\alpha}{\tau}}{\alpha}{\tau}$ the \emph{unrolling} of recu
     \ana{\Gamma}{E}{T}
   }
 
-  \inferrule[ANotPresent]{
+  \inferrule[AAbsent]{
     %
   }{
-    \ana{\Gamma}{\Missing}{\Missing}
+    \ana{\Gamma}{\Absent}{\Absent}
   }
 \end{mathpar}
 
@@ -825,188 +749,243 @@ We call $\subst{\Trec{\alpha}{\tau}}{\alpha}{\tau}$ the \emph{unrolling} of recu
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 % Gamma |- e => tau ~> d -| Delta
 
-% \noindent
-% $\boxed{\synelab{\Gamma}{e}{\tau}{d}{\Delta}}$
-% \quad $e$ synthesizes type $\tau$ and elaborates to $d$
+\Judgment{
+  \synelab{\Gamma}{e}{\tau}{d}{\Delta}
+}{
+  $e$ synthesizes type $\tau$ and elaborates to $d$
+}
 
-% \begin{mathpar}
-%   \inferrule[ESUnroll]{
-%     \synelab{\Gamma}{e}{\tau'}{d}{\Delta} \\
-%     \matchedRec{\tau'}{\rectype{\alpha}{\tau}}
-%   }{
-%     \synelab{\Gamma}{
-%       \unroll{e}
-%     }{ \subst{\rectype{\alpha}{\tau}}{\alpha}{\tau} }{
-%       \unroll{d}
-%     }{\Delta}
-%   }
+\begin{mathpar}
+  \inferrule[ESUnroll]{
+    \synelab{\Gamma}{e}{\tau'}{d}{\Delta} \\
+    \MatchedRecTyp{\tau'}{\pi}{\tau}
+  }{
+    \synelab{\Gamma}{
+      \Eunroll{e}
+    }{ \subst{\Trec{\pi}{\tau}}{\pi}{\tau} }{
+      \Dunroll{d}
+    }{\Delta}
+  }
 
-%   \inferrule[ESInj]{
-%     \anaelabE{\Gamma}{E}{\hole}{D}{T}{\Delta}
-%   }{
-%     \synelab{\Gamma}{
-%       \hole[\einj{C}{E}]^u
-%     }{\hole}{
-%       \hole[{\dinj{\hole}{C}{\cast{D}{T}{\hole}}}]_{\id(\Gamma)}^u
-%     }{\Delta, u :: \hole{}[\Gamma]}
-%   }
-% \end{mathpar}
+  \inferrule[ESInj]{
+    \anaelab{\Gamma}{E}{ \hole{} }{D}{T}{\Delta}
+  }{
+    \synelab{\Gamma}{
+      \hole[ \Einj{C}{E} ]{u}
+    }{ \hole{} }{
+      \hole[
+        \Dinj{ \hole{} }{C}{ \cast{D}{T}{ \hole{} } }
+      ]{u}_{ \id{\Gamma} }
+    }{\Delta, u :: \hole{}[\Gamma]}
+  }
+\end{mathpar}
 
-% \vspace*{\baselineskip}
+% TODO: define D<T => T>
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 % Gamma |- e <= tau_1 ~> d : tau_2 -| Delta
 
-% TODO: define D<T => T>
-% TODO: add u as hole macro param
+\Judgment{
+  \anaelab{\Gamma}{e}{\tau_1}{d}{\tau_2}{\Delta}
+}{
+  $e$ analyzes against type $\tau_1$ and elaborates to $d$ of consistent type $\tau_2$
+}
 
-% \noindent
-% $\boxed{\anaelab{\Gamma}{e}{\tau_1}{d}{\tau_2}{\Delta}}$
-% \quad $e$ analyzes against type $\tau_1$ and elaborates to $d$ of consistent type $\tau_2$
+\begin{mathpar}
+  \inferrule[EARoll]{
+    \anaelab{\Gamma}{
+      e
+    }{\subst{ \Trec{\pi}{\tau} }{\pi}{\tau}}{
+      d
+    }{\tau'}{\Delta}
+  }{
+    \anaelab{\Gamma}{
+      \Eroll{e}
+    }{ \Trec{\pi}{\tau} }{
+      \Droll{\pi}{\tau}{
+        \cast{d}{\tau'}{ \subst{ \Trec{\pi}{\tau} }{\pi}{\tau} }
+      }
+    }{\Trec{\pi}{\tau}}{
+      \Delta
+    }
+  }
 
-% \begin{mathpar}
-%   \inferrule[EARoll]{
-%     \anaelab{\Gamma}{
-%       e
-%     }{\subst{ \rectype{\alpha}{\tau} }{\alpha}{\tau}}{
-%       d
-%     }{\tau'}{\Delta}
-%   }{
-%     \anaelab{\Gamma}{
-%       \eroll{e}
-%     }{\rectype{\alpha}{\tau}}{
-%       \droll{\rectype{\alpha}{\tau}}{
-%         \cast{d}{\tau'}{ \subst{ \rectype{\alpha}{\tau} }{\alpha}{\tau} }
-%       }
-%     }{\rectype{\alpha}{\tau}}{
-%       \Delta
-%     }
-%   }
+  \inferrule[EAInj]{
+    \tau = \Tsum{C_i(T_i)}_{C_i \in \TagSet} \\
+    C_j \in \TagSet \\
+    \anaelab{\Gamma}{E}{T_j}{D}{T_j'}{\Delta}
+  }{
+    \anaelab{\Gamma}{
+      \Einj{C_j}{E}
+    }{\tau}{
+      \Dinj{\tau}{C_j}{ \cast{D}{T_j'}{T_j} }
+    }{\tau}{\Delta}
+  }
 
-%   \inferrule[EAInj]{
-%     \tau = \sumtype{C_i(T_i)}_{C_i \in \C} \\
-%     C_j \in \C \\
-%     \anaelab{\Gamma}{E}{T_j}{D}{T_j'}{\Delta}
-%   }{
-%     \anaelab{\Gamma}{
-%       \einj{C_j}{E}
-%     }{\tau}{
-%       \dinj{\tau}{C_j}{\cast{D}{T_j'}{T_j}}
-%     }{\tau}{\Delta}
-%   }
+  \inferrule[EAInjHole]{
+    \anaelab{\Gamma}{E}{ \hole{} }{D}{T}{\Delta} \\
+    \tau = \Tsum{C(T)}
+  }{
+    \anaelab{\Gamma}{
+      \Einj{C}{E}
+    }{ \hole{} }{
+      \Dinj{\tau}{C}{D}
+    }{\tau}{\Delta}
+  }
 
-%   \inferrule[EAInjHole]{
-%     \anaelabE{\Gamma}{E}{\hole}{D}{T}{\Delta} \\
-%     \tau = \sumtype{C(T)}
-%   }{
-%     \anaelab{\Gamma}{
-%       \einj{C}{E}
-%     }{\hole}{
-%       \dinj{\tau}{C}{D}
-%     }{\tau}{\Delta}
-%   }
+  \inferrule[EAInjUnexpectedBody]{
+    \tau = \Tsum{C_i(T_i)}_{C_i \in \TagSet} \\
+    C_j \in \TagSet \\
+    T_j = \Absent \\
+    \anaelab{\Gamma}{e}{ \hole{} }{d}{\tau_j}{\Delta} \\
+    \tau' = \tau \uplus \Tsum{C_j(\tau_j)}
+  }{
+    \anaelab{\Gamma}{
+      \hole[ \Einj{C_j}{e} ]{u}
+    }{\tau}{
+      \hole[ \Dinj{\tau'}{C_j}{d} ]{u}_{\id{\Gamma}}
+    }{\tau}{\Delta, u :: \tau[\Gamma]}
+  }
 
-%   \inferrule[EAInjUnexpectedBody]{
-%     \tau = \sumtype{C_i(T_i)}_{C_i \in \C} \\
-%     C_j \in \C \\
-%     T_j = \Nothing \\
-%     \anaelab{\Gamma}{e}{\hole}{d}{\tau_j}{\Delta} \\
-%     \tau' = \tau \uplus \sumtype{C_j(\tau_j)}
-%   }{
-%     \anaelab{\Gamma}{
-%       \hole[\einj{C_j}{e}]^u
-%     }{\tau}{
-%       \hole[{\dinj{\tau'}{C_j}{d}}]_{\id(\Gamma)}^u
-%     }{\tau}{\Delta, u :: \tau[\Gamma]}
-%   }
+  \inferrule[EAInjExpectedBody]{
+    \tau = \Tsum{C_i(T_i)}_{C_i \in \TagSet} \\
+    C_j \in \TagSet \\
+    T_j = \tau_j \\
+    \tau' = \tau \uplus \Tsum{C_j(\Absent)}
+  }{
+    \anaelab{\Gamma}{
+      \hole[ \Einj{C_j}{\Absent} ]{u}
+    }{\tau}{
+      \hole[ \Dinj{\tau'}{C_j}{\Absent} ]{u}_{\id{\Gamma}}
+    }{\tau}{\Delta, u :: \tau[\Gamma]}
+  }
 
-%   \inferrule[EAInjExpectedBody]{
-%     \tau = \sumtype{C_i(T_i)}_{C_i \in \C} \\
-%     C_j \in \C \\
-%     T_j = \tau_j \\
-%     \tau' = \tau \uplus \sumtype{C_j(\Nothing)}
-%   }{
-%     \anaelab{\Gamma}{
-%       \hole[\einj{C_j}{\Nothing}]^u
-%     }{\tau}{
-%       \hole[{\dinj{\tau'}{C_j}{\Nothing}}]_{\id(\Gamma)}^u
-%     }{\tau}{\Delta, u :: \tau[\Gamma]}
-%   }
-
-%   \inferrule[EAInjBadTag]{
-%     \tau = \sumtype{C_i(T_i)}_{C_i \in \C} \\
-%     C \notin \C \\
-%     \anaelabE{\Gamma}{E}{\hole}{D}{T}{\Delta} \\
-%     \tau' = \tau \uplus \sumtype{C(T)}
-%   }{
-%     \anaelab{\Gamma}{
-%       \hole[\einj{C}{E}]^u
-%     }{\tau}{
-%       \hole[{\dinj{\tau'}{C}{D}}]_{\id(\Gamma)}^u
-%     }{\tau}{\Delta, u :: \tau[\Gamma]}
-%   }
-% \end{mathpar}
-
-% \vspace*{\baselineskip}
+  \inferrule[EAInjBadTag]{
+    \tau = \Tsum{C_i(T_i)}_{C_i \in \TagSet} \\
+    C \notin \TagSet \\
+    \anaelab{\Gamma}{E}{ \hole{} }{D}{T}{\Delta} \\
+    \tau' = \tau \uplus \Tsum{C(T)}
+  }{
+    \anaelab{\Gamma}{
+      \hole[ \Einj{C}{E} ]{u}
+    }{\tau}{
+      \hole[ \Dinj{\tau'}{C}{D} ]{u}_{\id{\Gamma}}
+    }{\tau}{\Delta, u :: \tau[\Gamma]}
+  }
+\end{mathpar}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 % Gamma |- E <= T_1 ~> D : T_2 -| Delta
 
-% \noindent
-% $\boxed{\anaelabE{\Gamma}{E}{T_1}{D}{T_2}{\Delta}}$
-% \quad $E$ analyzes against optional type $T_1$ and elaborates to $D$ of consistent optional type $T_2$
+\Judgment{
+  \anaelab{\Gamma}{E}{T_1}{D}{T_2}{\Delta}
+}{
+  $E$ analyzes against optional type $T_1$ and elaborates to $D$ of consistent optional type $T_2$
+}
 
-% \begin{mathpar}
-%   \inferrule{
-%     \anaelab{\Gamma}{e}{\tau_1}{d}{\tau_2}{\Delta}   
-%   }{
-%     \anaelabE{\Gamma}{e}{\tau_1}{d}{\tau_2}{\Delta}
-%   }
+\begin{mathpar}
+  \inferrule[EAPresent]{
+    \anaelab{\Gamma}{e}{\tau_1}{d}{\tau_2}{\Delta}   
+  }{
+    \anaelab{\Gamma}{e}{\tau_1}{d}{\tau_2}{\Delta}
+  }
 
-%   \inferrule{
-%     % 
-%   }{
-%     \anaelabE{\Gamma}{\Nothing}{\Nothing}{\Nothing}{\Nothing}{\emptyset}
-%   }
-% \end{mathpar}
+  \inferrule[EAAbsent]{
+    % 
+  }{
+    \anaelab{\Gamma}{\Absent}{\Absent}{\Absent}{\Absent}{\emptyset}
+  }
+\end{mathpar}
 
 \subsection{Type Assignment}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 % Delta; Gamma |- d : tau
 
-% \noindent
-% $\boxed{\assign{\Delta}{\Gamma}{d}{\tau}}$
-% \quad $d$ is assigned type $\tau$
+\Judgment{
+  \assign{\Delta}{\Gamma}{d}{\tau}
+}{
+  $d$ is assigned type $\tau$
+}
 
-% \begin{mathpar}
+\begin{mathpar}
+  \inferrule[TAVar]{
+    \asc{x}{\tau} \in \Gamma
+  }{
+    \assign{\Delta}{\Gamma}{ x }{ \tau }
+  }
+
+  \inferrule[TALam]{
+    \assign{\Delta}{\Gamma, \asc{x}{\tau_1}}{ d }{ \tau_2 }
+  }{
+    \assign{\Delta}{\Gamma}{ \Dfun{x}{\tau_1}{d} }{ \tau_1 \to \tau_2 }
+  }
+
+  \inferrule[TAApp]{
+    \assign{\Delta}{\Gamma}{ d_1 }{ \Tarrow{\tau_2}{\tau} } \\
+    \assign{\Delta}{\Gamma}{ d_2 }{ \tau_2 }
+  }{
+    \assign{\Delta}{\Gamma}{ \Dapp{d_1}{d_2} }{ \tau }
+  }
+
+  \inferrule[TAEHole]{
+    u :: \tau[\Gamma'] \in \Delta \\
+    \assign{\Delta}{\Gamma}{ \sigma }{ \Gamma' }
+  }{
+    \assign{\Delta}{\Gamma}{ \dhole{\sigma}{u} }{ \tau }
+  }
+
+  \inferrule[TANEHole]{
+    \assign{\Delta}{\Gamma}{ d }{ \tau' } \\
+    u :: \tau[\Gamma'] \in \Delta \\
+    \assign{\Delta}{\Gamma}{ \sigma }{ \Gamma' }
+  }{
+    \assign{\Delta}{\Gamma}{ \dhole{\sigma}{u} }{ \tau }
+  }
+
+  \inferrule[TACast]{
+    \assign{\Delta}{\Gamma}{ d }{ \tau_1 } \\
+    \consistent{\tau_1}{\tau_2}
+  }{
+    \assign{\Delta}{\Gamma}{ \cast{d}{\tau_1}{\tau_2} }{ \tau_2 }
+  }
+
+  \inferrule[TAFailedCast]{
+    \assign{\Delta}{\Gamma}{ d }{ \tau_1 } \\
+    \ground{\tau_1} \\
+    \ground{\tau_2} \\
+    \tau_1 \neq \tau_2
+  }{
+    \assign{\Delta}{\Gamma}{ \failedcast{d}{\tau_1}{\tau_2} }{ \tau_2 }
+  }
+
 %   \inferrule[TRoll]{
-%     \assign{\Delta}{\Gamma}{d}{ \subst{\rectype{\alpha}{\tau}}{\alpha}{\tau} }
+%     \assign{\Delta}{\Gamma}{d}{ \subst{\Trec{\alpha}{\tau}}{\alpha}{\tau} }
 %   }{
-%     \assign{\Delta}{\Gamma}{ \droll{\rectype{\alpha}{\tau}}{d} }{ \rectype{\alpha}{\tau} }
+%     \assign{\Delta}{\Gamma}{ \Droll{\Trec{\alpha}{\tau}}{d} }{ \Trec{\alpha}{\tau} }
 %   }
 
 %   \inferrule[TUnroll]{
-%     \assign{\Delta}{\Gamma}{d}{ \rectype{\alpha}{\tau} }
+%     \assign{\Delta}{\Gamma}{d}{ \Trec{\alpha}{\tau} }
 %   }{
-%     \assign{\Delta}{\Gamma}{\unroll{d}}{ \subst{\rectype{\alpha}{\tau}}{\alpha}{\tau} }
+%     \assign{\Delta}{\Gamma}{\unroll{d}}{ \subst{\Trec{\alpha}{\tau}}{\alpha}{\tau} }
 %   }
 
 %   \inferrule[TInj]{
-%     \tau = \sumtype{C_i(T_i)}_{C_i \in \C} \\
-%     C_j \in \C \\
+%     \tau = \Tsum{C_i(T_i)}_{C_i \in \TagSet} \\
+%     C_j \in \TagSet \\
 %     \assign{\Delta}{\Gamma}{D}{T_j}
 %   }{
-%     \assign{\Delta}{\Gamma}{\dinj{\tau}{C_j}{D}}{\tau}
+%     \assign{\Delta}{\Gamma}{\Dinj{\tau}{C_j}{D}}{\tau}
 %   }
 
 %   \inferrule[TCase]{
-%     \assign{\Delta}{\Gamma}{d}{\sumtype{C_i(T_i)}_{C_i \in \C}} \\
+%     \assign{\Delta}{\Gamma}{d}{\Tsum{C_i(T_i)}_{C_i \in \TagSet}} \\
 %     \assign{\Delta}{\Gamma, X_i : T_i}{d_i}{\tau} \\
 %     i = 1, \ldots, N
 %   }{
 %     \assign{\Delta}{\Gamma}{
-%       \case{d}{C_i(X_i){=}d_i}_{C_i \in \C}
+%       \case{d}{C_i(X_i){=}d_i}_{C_i \in \TagSet}
 %     }{\tau}
 %   }
 
@@ -1015,9 +994,9 @@ We call $\subst{\Trec{\alpha}{\tau}}{\alpha}{\tau}$ the \emph{unrolling} of recu
 %     \assign{\Delta}{\Gamma, X_i : \hole}{d_i}{\tau} \\
 %     i = 1, \ldots, N
 %   }{
-%     \assign{\Delta}a{\Gamma}{\case{d}{C_i(X_i){=}{d_i}}_{C_i \in \C}}{\tau}
+%     \assign{\Delta}a{\Gamma}{\case{d}{C_i(X_i){=}{d_i}}_{C_i \in \TagSet}}{\tau}
 %   }
-% \end{mathpar}
+\end{mathpar}
 
 % \vspace*{\baselineskip}
 
@@ -1038,7 +1017,7 @@ We call $\subst{\Trec{\alpha}{\tau}}{\alpha}{\tau}$ the \emph{unrolling} of recu
 %   \inferrule{
 %     % 
 %   }{
-%     \assign{\Delta}{\Gamma}{\Nothing}{\Nothing}
+%     \assign{\Delta}{\Gamma}{\Absent}{\Absent}
 %   }
 % \end{mathpar}
 
@@ -1047,208 +1026,229 @@ We call $\subst{\Trec{\alpha}{\tau}}{\alpha}{\tau}$ the \emph{unrolling} of recu
 \section{Dynamic Semantics}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% tau ground
 
-% \noindent
-% $\boxed{\ground{\tau}}$
-% \quad $\tau$ is a ground type
+\Judgment{
+  \ground{\tau}
+}{
+  $\tau$ is a ground type
+}
 
-% \begin{mathpar}
-%   \inferrule[GSum]{
-%     \SetOf{T_i = \hole \vee T_i = \Nothing}_i
-%   }{
-%     \ground{\sumtype{C_i(T_i)}_{C_i \in \C}}
-%   }
-% \end{mathpar}
+\begin{mathpar}
+  \inferrule[GArr]{
+  }{
+    \ground{ \Tarrow{\hole{}}{\hole{}} }
+  }
 
-% \vspace*{\baselineskip}
+  \inferrule[GRec]{
+  }{
+    \ground{ \Trec{\hole{}}{\hole{}} }
+  }
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+  \inferrule[GSum]{
+    \Set{T_i = \hole{} \vee T_i = \Absent}_{C_i \in \TagSet}
+  }{
+    \ground{ \Tsum{C_i(T_i)}_{C_i \in \TagSet} }
+  }
+\end{mathpar}
 
-% \noindent
-% $\boxed{\matchedGround{\tau}{\tau'}}$
-% \quad $\tau$ has matched ground type $\tau'$
-
-% \begin{mathpar}
-%   \inferrule[MGSum]{
-%     \tau = \sumtype{C_i(T_i)}_{C_i \in \C} \\
-%     \tau' = \sumtype{C_i(T_i')}_{C_i \in \C} \\
-%     \tau \neq \tau' \\
-%     \SetOf{
-%       T_i =   \tau_i \implies T_i' = \hole \wedge
-%       T_i = \Nothing \implies T_i' = \Nothing
-%     }_i
-%   }{
-%     \matchedGround{\tau}{\tau'}
-%   }
-% \end{mathpar}
-
-% \vspace*{\baselineskip}
+\vspace*{\baselineskip}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
-% \noindent
-% $\boxed{\val{d}}$
-% \quad $d$ is a value
+\Judgment{
+  \MatchedGroundTyp{\tau}{\tau'}
+}{
+  $\tau$ has matched ground type $\tau'$
+}
 
-% \begin{mathpar}
-%   \inferrule[VRoll]{
-%     \val{d}
-%   }{
-%     \val{\droll{\rectype{\alpha}{\tau}}{d}}
-%   }
+\begin{mathpar}
+  \inferrule[MGSum]{
+    \tau = \Tsum{C_i(T_i)}_{C_i \in \TagSet} \\
+    \tau' = \Tsum{C_i(T_i')}_{C_i \in \TagSet} \\
+    \tau \neq \tau' \\
+    \Set{
+      T_i =   \tau_i \implies T_i' = \hole \wedge
+      T_i = \Absent \implies T_i' = \Absent
+    }_i
+  }{
+    \MatchedGroundTyp{\tau}{\tau'}
+  }
+\end{mathpar}
 
-%   \inferrule[VUnroll]{
-%     \val{d}
-%   }{
-%     \val{\unroll{d}}
-%   }
-
-%   \inferrule[VInj]{
-%     \val{d}
-%   }{
-%     \val{\dinj{\tau}{\Tag}{d}}
-%   }
-
-%   \inferrule[VInjNull]{
-%   }{
-%     \val{\dinj{\tau}{\Tag}{\Nothing}}
-%   }
-% \end{mathpar}
-
-% \vspace*{\baselineskip}
+\vspace*{\baselineskip}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
-% \noindent
-% $\boxed{\boxedval{d}}$
-% \quad $d$ is a boxed value
+\Judgment{
+  \value{d}
+}{
+  $d$ is a value
+}
 
-% \begin{mathpar}
-%   \inferrule[BVRoll]{
-%     \boxedval{d}
-%   }{
-%     \boxedval{\droll{\rectype{\alpha}{\tau}}{d}}
-%   }
+\begin{mathpar}
+  \inferrule[VRoll]{
+    \val{d}
+  }{
+    \val{ \Droll{\pi}{\tau}{d} }
+  }
 
-%   \inferrule[BVUnroll]{
-%     \boxedval{d}
-%   }{
-%     \boxedval{\unroll{d}}
-%   }
+  \inferrule[VUnroll]{
+    \val{d}
+  }{
+    \val{\Dunroll{d}}
+  }
 
-%   \inferrule[BVInj]{
-%     \boxedval{d}
-%   }{
-%     \boxedval{\dinj{\tau}{\Tag}{d}}
-%   }
+  \inferrule[VInj]{
+    \val{d}
+  }{
+    \val{ \Dinj{\tau}{\Tag}{d} }
+  }
 
-%   \inferrule[BVSumCast]{
-%     \tau = \sumtype{C_i(T_i)}_{C_i \in \C} \\
-%     \tau' = \sumtype{C_i(T_i')}_{C_i \in \C} \\
-%     \tau \neq \tau' \\
-%     \boxedval{d}
-%   }{
-%     \boxedval{\cast{d}{\tau}{\tau'}}
-%   }
-% \end{mathpar}
+  \inferrule[VInjNull]{
+  }{
+    \val{ \Dinj{\tau}{\Tag}{\Absent} }
+  }
+\end{mathpar}
 
-% \vspace*{\baselineskip}
+\vspace*{\baselineskip}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
-% \noindent
-% $\boxed{\indet{d}}$
-% \quad $d$ is indeterminate
+\Judgment{
+  \boxedval{d}
+}{
+  $d$ is a boxed value
+}
 
-% \begin{mathpar}
-%   \inferrule[IRoll]{
-%     \indet{d}
-%   }{
-%     \indet{\droll{\rectype{\alpha}{\tau}}{d}}
-%   }
+\begin{mathpar}
+  \inferrule[BVRoll]{
+    \boxedval{d}
+  }{
+    \boxedval{\Droll{\pi}{\tau}{d}}
+  }
 
-%   \inferrule[IUnroll]{
-%     \indet{d}
-%   }{
-%     \indet{\unroll{d}}
-%   }
+  \inferrule[BVUnroll]{
+    \boxedval{d}
+  }{
+    \boxedval{\Dunroll{d}}
+  }
 
-%   \inferrule[IInj]{
-%     \indet{d}
-%   }{
-%     \indet{\dinj{\tau}{\Tag}{d}}
-%   }
+  \inferrule[BVInj]{
+    \boxedval{d}
+  }{
+    \boxedval{\Dinj{\tau}{\Tag}{d}}
+  }
 
-%   \inferrule[IInjTag]{
-%     \final{d}
-%   }{
-%     \indet{\dinj{\tau}{\TagHole}{d}}
-%   }
+  \inferrule[BVSumCast]{
+    \tau = \Tsum{C_i(T_i)}_{C_i \in \TagSet} \\
+    \tau' = \Tsum{C_i(T_i')}_{C_i \in \TagSet} \\
+    \tau \neq \tau' \\
+    \boxedval{d}
+  }{
+    \boxedval{\cast{d}{\tau}{\tau'}}
+  }
+\end{mathpar}
 
-%   \inferrule[IInjNull]{
-%   }{
-%     \indet{\dinj{\tau}{\TagHole}{\Nothing}}
-%   }
-
-%   \inferrule[ICastSum]{
-%     \tau = \sumtype{C_i(T_i)}_{C_i \in \C} \\
-%     \tau' = \sumtype{C_i(T_i')}_{C_i \in \C} \\
-%     \tau \neq \tau' \\
-%     \indet{d}
-%   }{
-%     \indet{\cast{d}{\tau}{\tau'}}
-%   }
-% \end{mathpar}
-
-% \vspace*{\baselineskip}
+\vspace*{\baselineskip}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
-% \[
-%   \arraycolsep=0pt  \arraycolsep=0pt
-%   \begin{array}{l@{~~}c@{~~}c@{~~}l}
-%     \EvalCtx & \E & {}\Coloneqq{} &
-%       \ldots
-%       \mid \droll{\rectype{\alpha}{\tau}}{\E}
-%       \mid \dinj{\tau}{C}{\E}
-%     \\
-%   \end{array}
-% \]
+\Judgment{
+  \indet{d}
+}{
+  $d$ is indeterminate
+}
 
-% \noindent
-% $\boxed{\eval{d}{\E}{d'}}$
-% \quad $d$ is obtained by placing $d'$ at the mark in $\E$
+\begin{mathpar}
+  \inferrule[IRoll]{
+    \indet{d}
+  }{
+    \indet{\Droll{\Trec{\alpha}{\tau}}{d}}
+  }
 
-% \begin{mathpar}
-%   \inferrule[FHRoll]{
-%     \eval{d}{\E}{d'}
-%   }{
-%     \eval{
-%       \droll{\rectype{\alpha}{\tau}}{d}
-%     }{\droll{\rectype{\alpha}{\tau}}{\E}
-%     }{d'}
-%   }
+  \inferrule[IUnroll]{
+    \indet{d}
+  }{
+    \indet{\Dunroll{d}}
+  }
 
-%   \inferrule[FHUnroll]{
-%     \eval{d}{\E}{d'}
-%   }{
-%     \eval{
-%       \unroll{d}
-%     }{\unroll{\E}
-%     }{d'}
-%   }
+  \inferrule[IInj]{
+    \indet{d}
+  }{
+    \indet{\Dinj{\tau}{\Tag}{d}}
+  }
 
-%   \inferrule[FHInj]{
-%     \eval{d}{\E}{d'}
-%   }{
-%     \eval{
-%       \dinj{\tau}{C}{d}
-%     }{\dinj{\tau}{C}{\E}
-%     }{d'}
-%   }
-% \end{mathpar}
+  \inferrule[IInjTag]{
+    \final{d}
+  }{
+    \indet{\Dinj{\tau}{ \hole{} }{d}}
+  }
 
-% \vspace*{\baselineskip}
+  \inferrule[IInjNull]{
+  }{
+    \indet{\Dinj{\tau}{ \hole{} }{\Absent}}
+  }
+
+  \inferrule[ICastSum]{
+    \tau = \Tsum{C_i(T_i)}_{C_i \in \TagSet} \\
+    \tau' = \Tsum{C_i(T_i')}_{C_i \in \TagSet} \\
+    \tau \neq \tau' \\
+    \indet{d}
+  }{
+    \indet{\cast{d}{\tau}{\tau'}}
+  }
+\end{mathpar}
+
+\vspace*{\baselineskip}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+\[
+  \arraycolsep=0pt  \arraycolsep=0pt
+  \begin{array}{l@{~~}c@{~~}c@{~~}l}
+    \EvalCtx & \E & {}\Coloneqq{} &
+      \ldots
+      \mid \Droll{\pi}{\tau}{\E}
+      \mid \Dinj{\tau}{C}{\E}
+    \\
+  \end{array}
+\]
+
+\Judgment{
+  \eval{d}{\E}{d'}
+}{
+  $d$ is obtained by placing $d'$ at the mark in $\E$
+}
+
+\begin{mathpar}
+  \inferrule[FHRoll]{
+    \eval{d}{\E}{d'}
+  }{
+    \eval{
+      \Droll{\pi}{\tau}{d}
+    }{\Droll{\pi}{\tau}{\E}
+    }{d'}
+  }
+
+  \inferrule[FHUnroll]{
+    \eval{d}{\E}{d'}
+  }{
+    \eval{
+      \Dunroll{d}
+    }{\Dunroll{\E}
+    }{d'}
+  }
+
+  \inferrule[FHInj]{
+    \eval{d}{\E}{d'}
+  }{
+    \eval{
+      \Dinj{\tau}{C}{d}
+    }{\Dinj{\tau}{C}{\E}
+    }{d'}
+  }
+\end{mathpar}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
