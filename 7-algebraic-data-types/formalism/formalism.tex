@@ -57,7 +57,7 @@
 
 % Optional Tag Arguments
 
-\newcommand\Absent{\varnothing}
+\newcommand\None{\varnothing}
 
 % Token Literals
 
@@ -175,9 +175,9 @@
       \mid \hole{u}
       \mid \hole[e]{u}
       \\
-    \HTagTyp & T & \Coloneqq & \tau \mid \Absent \\
-    \HTagArg & E & \Coloneqq & e \mid \Absent \\
-    % \HTagVar & X & \Coloneqq & x \mid \Absent \\
+    \HTagTyp & T & \Coloneqq & \tau \mid \None \\
+    \HTagArg & E & \Coloneqq & e \mid \None \\
+    % \HTagVar & X & \Coloneqq & x \mid \None \\
     \IHExp & d & \Coloneqq &
       x
       \mid \Dfun{x}{\tau}{d}
@@ -209,11 +209,11 @@ We write $\Gamma, \asc{X}{T}$ to denote the extension of typing context $\Gamma$
 \[
   \Gamma, \asc{X}{T} = \begin{cases}
     \Gamma, \asc{x}{\tau} & X = x \wedge T = \tau \\
-    \Gamma, \asc{x}{\hole{}} & X = x \wedge T = \Absent \\
-    \Gamma & X = \Absent \\
+    \Gamma, \asc{x}{\hole{}} & X = x \wedge T = \None \\
+    \Gamma & X = \None \\
   \end{cases}
 \]
-
+%
 We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$ with optional type variable name $\pi$.
 \[
   \Theta, \pi = \begin{cases}
@@ -268,27 +268,8 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
 \[
   \subst{\tau}{\pi}{T} = \begin{cases}
     \subst{\tau}{\pi}{\tau'} & \text{when } T = \tau' \\
-    \Absent & \text{when } T = \Absent \\
+    \None & \text{when } T = \None \\
   \end{cases}
-\]
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% join(tau1, tau2) = tau
-
-\Judgment{
-  \join{\pi_1}{\pi_2} = \pi
-}{
-  $\pi_1$ and $\pi_2$ join consistently, forming type pattern $\pi$
-}
-
-\[
-  \arraycolsep=0pt
-  \begin{array}{l@{\quad=\quad}l@{\quad}l}
-    \join{ \alpha }{ \alpha } & \alpha \\
-    \join{ \alpha }{ \hole{} } & \alpha \\
-    \join{ \hole{} }{ \alpha } & \alpha \\
-    \join{ \hole{} }{ \hole{} } & \hole{} \\
-  \end{array}
 \]
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
@@ -303,12 +284,15 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
 \[
   \arraycolsep=0pt
   \begin{array}{l@{\quad=\quad}l@{\quad}l}
+    \join{ \tau }{ \tau } & \tau \\
+    \join{ \hole{} }{ \tau } & \tau \\
+    \join{ \tau }{ \hole{} } & \tau \\
     \join{
-      \Tsum{C_i(T_i)}_{C_i \in \TagSet}
+      \Tarrow{\tau_1}{\tau_2}
     }{
-      \Tsum{C_i(T_i')}_{C_i \in \TagSet}
+      \Tarrow{\tau_1}{\tau_2}
     }
-    & \Tsum{C_i(\join{T_i}{T_i'})}_{C_i \in \TagSet}
+    & \Tarrow{ \join{\tau_1}{\tau_2} }{ \join{\tau_1}{\tau_2} }
     \\
     \join{
       \Trec{\pi_1}{T_1}
@@ -317,10 +301,51 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
     }
     & \Trec{\join{\pi_1}{\pi_2}}{\join{T_1}{ \subst{\pi_1}{\pi_2}{T_2} }}
     \\
+    \join{
+      \Tsum{C_i(T_i)}_{C_i \in \TagSet}
+    }{
+      \Tsum{C_i(T_i')}_{C_i \in \TagSet}
+    }
+    & \Tsum{C_i(\join{T_i}{T_i'})}_{C_i \in \TagSet}
+    \\
   \end{array}
 \]
 
-\vspace*{\baselineskip}
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% join(T1, T2) = T
+
+\Judgment{
+  \join{T_1}{T_2} = T
+}{
+  $T_1$ and $T_2$ join consistently, forming optional type $T$
+}
+
+\[
+  \join{T_1}{T_2} = \begin{cases}
+    \join{\tau_1}{\tau_2} & \text{when } T_1 = \tau_1 \wedge T_2 = \tau_2 \\
+    \None & \text{when } T_1 = T_2 = \None \\
+  \end{cases}
+\]
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% join(pi1, pi2) = pi
+
+% TODO: (eric) how to handle alpha-equivalence? (i.e. alpha1 != alpha2)
+
+\Judgment{
+  \join{\pi_1}{\pi_2} = \pi
+}{
+  $\pi_1$ and $\pi_2$ join consistently, forming type pattern $\pi$
+}
+
+\[
+  \arraycolsep=0pt
+  \begin{array}{l@{\quad=\quad}l@{\quad}l}
+    \join{ \alpha }{ \alpha } & \alpha \\
+    \join{ \hole{} }{ \alpha } & \alpha \\
+    \join{ \alpha }{ \hole{} } & \alpha \\
+  \end{array}
+\]
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 %  Theta |- tau valid
@@ -382,17 +407,17 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
 }
 
 \begin{mathpar}
-  \inferrule[TVPresent]{
+  \inferrule[TVSome]{
     T = \tau \\
     \valid{\Theta}{\tau}
   }{
     \valid{\Theta}{T}
   }
 
-  \inferrule[TVAbsent]{
+  \inferrule[TVNone]{
     %
   }{
-    \valid{\Theta}{\Absent}
+    \valid{\Theta}{\None}
   }
 \end{mathpar}
 
@@ -477,8 +502,8 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
   }
 \end{mathpar}
 
-For \textsc{TCRecVar}, we choose to substitute $\alpha_1$ for $\alpha_2$ arbitrarily.
-Due to this asymmetry, recursive types are only consistent up to alpha renaming.
+% For \textsc{TCRecVar}, we choose to substitute $\alpha_1$ for $\alpha_2$ arbitrarily.
+% Due to this asymmetry, recursive types are only consistent up to alpha renaming.
 
 \subsection{Bidirectional Typing}
 
@@ -651,16 +676,16 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 }
 
 \begin{mathpar}
-  \inferrule[EVPresent]{
+  \inferrule[EVSome]{
     \ana{\Gamma}{e}{\hole{}}
   }{
     \valid{\Gamma}{e}
   }
 
-  \inferrule[EVAbsent]{
+  \inferrule[EVNone]{
     %
   }{
-    \valid{\Gamma}{\Absent}
+    \valid{\Gamma}{\None}
   }
 \end{mathpar}
 
@@ -704,7 +729,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 
   \inferrule[AInjUnexpectedBody]{
     C_j \in \TagSet \\
-    T_j = \Absent \\
+    T_j = \None \\
     \ana{\Gamma}{e}{\hole{}}
   }{
     \ana{\Gamma}{ \hole[\Einj{C_j}{e}]{u} }{\Tsum{C_i(T_i)}_{C_i \in \TagSet}}
@@ -714,7 +739,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     C_j \in \TagSet \\
     T_j = \tau
   }{
-    \ana{\Gamma}{ \hole[\Einj{C_j}{\Absent}]{u} }{\Tsum{C_i(T_i)}_{C_i \in \TagSet}}
+    \ana{\Gamma}{ \hole[\Einj{C_j}{\None}]{u} }{\Tsum{C_i(T_i)}_{C_i \in \TagSet}}
   }
 
   \inferrule[AInjBadTag]{
@@ -746,7 +771,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 }
 
 \begin{mathpar}
-  \inferrule[APresent]{
+  \inferrule[ASome]{
     E = e \\
     T = \tau \\
     \ana{\Gamma}{e}{\tau}
@@ -754,10 +779,10 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \ana{\Gamma}{E}{T}
   }
 
-  \inferrule[AAbsent]{
+  \inferrule[ANone]{
     %
   }{
-    \ana{\Gamma}{\Absent}{\Absent}
+    \ana{\Gamma}{\None}{\None}
   }
 \end{mathpar}
 
@@ -853,7 +878,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   \inferrule[EAInjUnexpectedBody]{
     \tau = \Tsum{C_i(T_i)}_{C_i \in \TagSet} \\
     C_j \in \TagSet \\
-    T_j = \Absent \\
+    T_j = \None \\
     \anaelab{\Gamma}{e}{ \hole{} }{d}{\tau_j}{\Delta} \\
     \tau' = \tau \uplus \Tsum{C_j(\tau_j)}
   }{
@@ -868,12 +893,12 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \tau = \Tsum{C_i(T_i)}_{C_i \in \TagSet} \\
     C_j \in \TagSet \\
     T_j = \tau_j \\
-    \tau' = \tau \uplus \Tsum{C_j(\Absent)}
+    \tau' = \tau \uplus \Tsum{C_j(\None)}
   }{
     \anaelab{\Gamma}{
-      \hole[ \Einj{C_j}{\Absent} ]{u}
+      \hole[ \Einj{C_j}{\None} ]{u}
     }{\tau}{
-      \hole[ \Dinj{\tau'}{C_j}{\Absent} ]{u}_{\id{\Gamma}}
+      \hole[ \Dinj{\tau'}{C_j}{\None} ]{u}_{\id{\Gamma}}
     }{\tau}{\Delta, u :: \tau[\Gamma]}
   }
 
@@ -901,16 +926,16 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 }
 
 \begin{mathpar}
-  \inferrule[EAPresent]{
+  \inferrule[EASome]{
     \anaelab{\Gamma}{e}{\tau_1}{d}{\tau_2}{\Delta}   
   }{
     \anaelab{\Gamma}{e}{\tau_1}{d}{\tau_2}{\Delta}
   }
 
-  \inferrule[EAAbsent]{
+  \inferrule[EANone]{
     % 
   }{
-    \anaelab{\Gamma}{\Absent}{\Absent}{\Absent}{\Absent}{\emptyset}
+    \anaelab{\Gamma}{\None}{\None}{\None}{\None}{\emptyset}
   }
 \end{mathpar}
 
@@ -1034,7 +1059,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 %   \inferrule{
 %     % 
 %   }{
-%     \assign{\Delta}{\Gamma}{\Absent}{\Absent}
+%     \assign{\Delta}{\Gamma}{\None}{\None}
 %   }
 % \end{mathpar}
 
@@ -1063,7 +1088,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[GSum]{
-    \Set{T_i = \hole{} \vee T_i = \Absent}_{C_i \in \TagSet}
+    \Set{T_i = \hole{} \vee T_i = \None}_{C_i \in \TagSet}
   }{
     \ground{ \Tsum{C_i(T_i)}_{C_i \in \TagSet} }
   }
@@ -1086,7 +1111,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \tau \neq \tau' \\
     \Set{
       T_i =   \tau_i \implies T_i' = \hole \wedge
-      T_i = \Absent \implies T_i' = \Absent
+      T_i = \None \implies T_i' = \None
     }_i
   }{
     \MatchedGroundTyp{\tau}{\tau'}
@@ -1124,7 +1149,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 
   \inferrule[VInjNull]{
   }{
-    \val{ \Dinj{\tau}{\Tag}{\Absent} }
+    \val{ \Dinj{\tau}{\Tag}{\None} }
   }
 \end{mathpar}
 
@@ -1204,7 +1229,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 
   \inferrule[IInjNull]{
   }{
-    \indet{\Dinj{\tau}{ \hole{} }{\Absent}}
+    \indet{\Dinj{\tau}{ \hole{} }{\None}}
   }
 
   \inferrule[ICastSum]{
