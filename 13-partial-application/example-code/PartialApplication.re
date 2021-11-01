@@ -174,97 +174,117 @@ and ana = (ctx: typctx, e: exter_exp, t: typ): bool =>
     }
   };
 
-// Unfinished (still produces incorrect results)
-let rec elaborate: exter_exp => option(inter_exp) =
-  fun
-  | Var(x) => Some(Var(x))
+let elaborate: exter_exp => option(inter_exp) = {
+  let rec syn_elaborate = (ctx: typctx, e: exter_exp): option(inter_exp) =>
+    switch (e) {
+    | Var(x) => Some(Var(x))
 
-  | Fun(x, e1) => {
-      let+ e1 = elaborate(e1);
-      Fun(x, e1);
-    }
+    | Fun(_) => None
 
-  | Ap(e1, Tuple(es) as e2) as e =>
-    if (List.mem(Deferral, es)) {
-      let ctx = TypCtx.empty; // TODO: Make this the actual context
+    | Ap(e1, Tuple(es) as e2) as e =>
+      if (List.mem(Deferral, es)) {
+        let deferral_var_name = "~";
 
-      let deferral_var_name = "~";
+        let* e1 = syn_elaborate(ctx, e1);
 
-      let* e1 = elaborate(e1);
+        let* es_deferred = {
+          let deferral_replacement = {
+            let multiple_deferrals =
+              es
+              |> List.filter((e: exter_exp) => e == Deferral)
+              |> List.length > 1;
 
-      let* es_deferred = {
-        let deferral_replacement = {
-          let multiple_deferrals =
-            es
-            |> List.filter((e: exter_exp) => e == Deferral)
-            |> List.length > 1;
+            (
+              (index: int) =>
+                if (multiple_deferrals) {
+                  Proj(Var(deferral_var_name), index);
+                } else {
+                  Var(deferral_var_name);
+                }
+            );
+          };
 
-          (
-            (index: int) =>
-              if (multiple_deferrals) {
-                Proj(Var(deferral_var_name), index);
-              } else {
-                Var(deferral_var_name);
-              }
-          );
+          let f =
+              (acc: option((list(inter_exp), int)), e: exter_exp)
+              : option((list(inter_exp), int)) => {
+            let* (acc_list, index) = acc;
+            let+ (new_hd, new_index) =
+              switch (e) {
+              | Deferral => Some((deferral_replacement(index), index + 1))
+              | _ =>
+                let+ e = syn_elaborate(ctx, e);
+                (e, index);
+              };
+
+            ([new_hd, ...acc_list], new_index);
+          };
+
+          let+ (es_deferred_backwards, _) =
+            es |> List.fold_left(f, Some(([], 0)));
+          List.rev(es_deferred_backwards);
         };
 
-        let f =
-            (acc: option((list(inter_exp), int)), e: exter_exp)
-            : option((list(inter_exp), int)) => {
-          let* (acc_list, index) = acc;
-          let+ (new_hd, new_index) =
-            switch (e) {
-            | Deferral => Some((deferral_replacement(index), index + 1))
-            | _ =>
-              let+ e = elaborate(e);
-              (e, index);
-            };
+        let+ t = syn(ctx, e);
 
-          ([new_hd, ...acc_list], new_index);
-        };
+        Ann(Fun(deferral_var_name, Ap(e1, Tuple(es_deferred))), t);
+      } else {
+        let* e1 = syn_elaborate(ctx, e1);
+        let+ e2 = syn_elaborate(ctx, e2);
+        Ap(e1, e2);
+      }
 
-        let+ (es_deferred_backwards, _) =
-          es |> List.fold_left(f, Some(([], 0)));
-        List.rev(es_deferred_backwards);
-      };
-
-      let+ t = syn(ctx, e);
-
-      Ann(Fun(deferral_var_name, Ap(e1, Tuple(es_deferred))), t);
-    } else {
-      let* e1 = elaborate(e1);
-      let+ e2 = elaborate(e2);
+    | Ap(e1, e2) =>
+      let* e1 = syn_elaborate(ctx, e1);
+      let+ e2 = syn_elaborate(ctx, e2);
       Ap(e1, e2);
-    }
 
-  | Ap(e1, e2) => {
-      let* e1 = elaborate(e1);
-      let+ e2 = elaborate(e2);
-      Ap(e1, e2);
-    }
+    | Num(n) => Some(Num(n))
 
-  | Num(n) => Some(Num(n))
-
-  | Add(e1, e2) => {
-      let* e1 = elaborate(e1);
-      let+ e2 = elaborate(e2);
+    | Add(e1, e2) =>
+      let* e1 = syn_elaborate(ctx, e1);
+      let+ e2 = syn_elaborate(ctx, e2);
       Add(e1, e2);
-    }
 
-  | Ann(e1, t) => {
-      let+ e1 = elaborate(e1);
+    | Ann(e1, t) =>
+      let+ e1 = ana_elaborate(ctx, e1, t);
       Ann(e1, t);
-    }
 
-  | Tuple(es) => {
-      let+$ es = List.map(elaborate, es);
+    | Tuple(es) =>
+      let+$ es = List.map(syn_elaborate(ctx), es);
       Tuple(es);
-    }
 
-  | Proj(e1, n) => {
-      let+ e1 = elaborate(e1);
+    | Proj(e1, n) =>
+      let+ e1 = syn_elaborate(ctx, e1);
       Proj(e1, n);
+
+    | Deferral => None
     }
 
-  | Deferral => None;
+  and ana_elaborate = (ctx: typctx, e: exter_exp, t: typ): option(inter_exp) => {
+    switch (e) {
+    | Fun(x, e1) =>
+      switch (matched_arrow_type(Some(t))) {
+      | Some(Arrow(t1, _)) =>
+        let+ e1 = syn_elaborate(TypCtx.add(x, t1, ctx), e1);
+        Fun(x, e1);
+      | _ => None
+      }
+
+    | Tuple(es) =>
+      switch (matched_product_type(Some(t))) {
+      | Some(Product(ts)) =>
+        let* es =
+          try(Some(List.map2(ana_elaborate(ctx), es, ts))) {
+          | Invalid_argument(_) => None
+          };
+        let+$ es = es;
+        Tuple(es);
+      | _ => None
+      }
+
+    | _ => syn_elaborate(ctx, e)
+    };
+  };
+
+  syn_elaborate(TypCtx.empty);
+};
