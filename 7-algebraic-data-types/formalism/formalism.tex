@@ -272,16 +272,33 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
   \end{cases}
 \]
 
-% \vspace*{\baselineskip}
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% join(tau1, tau2) = tau
+
+\Judgment{
+  \join{\pi_1}{\pi_2} = \pi
+}{
+  $\pi_1$ and $\pi_2$ join consistently, forming type pattern $\pi$
+}
+
+\[
+  \arraycolsep=0pt
+  \begin{array}{l@{\quad=\quad}l@{\quad}l}
+    \join{ \alpha }{ \alpha } & \alpha \\
+    \join{ \alpha }{ \hole{} } & \alpha \\
+    \join{ \hole{} }{ \alpha } & \alpha \\
+    \join{ \hole{} }{ \hole{} } & \hole{} \\
+  \end{array}
+\]
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% join(tau1, tau2) = tau
 
 \Judgment{
   \join{\tau_1}{\tau_2} = \tau
 }{
   $\tau_1$ and $\tau_2$ join consistently, forming type $\tau$
 }
-
 
 \[
   \arraycolsep=0pt
