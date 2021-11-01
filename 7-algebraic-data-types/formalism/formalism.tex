@@ -118,6 +118,7 @@
 % \newcommand\ValidExp[3]{{#1};{#2}\vdash{#3}\,\helper{valid}}
 \newcommand\FV[1]{\helper{FV}\left(#1\right)}
 \newcommand\id[1]{\helper{id}\left(#1\right)}
+\newcommand\dom[1]{\helper{dom}{\left(#1\right)}}
 
 % Matched Types
 
@@ -459,13 +460,12 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
   }
 
   \inferrule[TCRec]{
-    \pi_1 = \pi_1' \\
-    \consistent{\tau_2}{\tau_2'}
+    \consistent{\tau}{\tau'}
   }{
     \consistent{
-      \Trec{\pi_1}{\tau_2}
+      \Trec{\pi}{\tau}
     }{
-      \Trec{\pi_1'}{\tau_2'}
+      \Trec{\pi}{\tau'}
      }
   }
 
@@ -492,18 +492,45 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
   }
 
   \inferrule[TCSum]{
-    \consistent{\tau_i}{\tau_i'}
+    \consistent{T_i}{T_i'}
   }{
     \consistent{
-      \Tsum{C_i(\tau_i)}_{C_i \in \TagSet}
+      \Tsum{C_i(T_i)}_{C_i \in \TagSet}
     }{
-      \Tsum{C_i(\tau_i')}_{C_i \in \TagSet}
+      \Tsum{C_i(T_i')}_{C_i \in \TagSet}
     }
   }
 \end{mathpar}
 
 % For \textsc{TCRecVar}, we choose to substitute $\alpha_1$ for $\alpha_2$ arbitrarily.
 % Due to this asymmetry, recursive types are only consistent up to alpha renaming.
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+% T ~ T'
+
+\Judgment{
+  \consistent{T}{T'}
+}{
+  $T$ and $T'$ are consistent
+}
+
+\begin{mathpar}
+  \inferrule[TCSome]{
+    T = \tau \\
+    T' = \tau' \\
+    \consistent{\tau}{\tau'}
+  }{
+    \consistent{T}{T'}
+  }
+
+  \inferrule[TCNone]{
+    %
+  }{
+    \consistent{\None}{\None}
+  }
+\end{mathpar}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Bidirectional Typing}
 
@@ -581,7 +608,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[SVarFree]{
-    \asc{x}{\tau} \notin \Gamma
+    x \notin \dom{\Gamma}
   }{
     \syn{\Gamma}{ \hole[x]{u} }{\hole{}}
   }
@@ -648,7 +675,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   % }{
   %   \syn{\Gamma}{ \hole[ \Ecase{e}{ C_i(X_i){=}e_i} ]{u} }{\hole{}}
   % }
-
+  %
   \inferrule[SEHole]{
     %
   }{
