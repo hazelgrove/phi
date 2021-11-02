@@ -108,6 +108,10 @@
 \newcommand\final[1]{#1~\judgment{final}}
 \newcommand\eval[3]{#1 = #2\left\{#3\right\}}
 
+% Inference Rule Names
+
+\newcommand\Rule[1]{\textsc{#1}}
+
 % Helpers
 
 \newcommand\helper[1]{\mathsf{#1}}
@@ -115,7 +119,6 @@
 \newcommand\consistent[2]{{#1}\sim{#2}}
 \newcommand\notconsistent[2]{{#1}\nsim{#2}}
 \newcommand\valid[2]{{#1}\vdash{#2}\,\helper{valid}}
-% \newcommand\ValidExp[3]{{#1};{#2}\vdash{#3}\,\helper{valid}}
 \newcommand\FV[1]{\helper{FV}\left(#1\right)}
 \newcommand\id[1]{\helper{id}\left(#1\right)}
 \newcommand\dom[1]{\helper{dom}{\left(#1\right)}}
@@ -134,7 +137,8 @@
 
 \newcommand\E{\mathcal{E}}
 
-% Operations
+% Other Notation
+
 % \newcommand{\defeq}{\stackrel{\text{def}}{=}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -195,9 +199,7 @@
       \\
     \IHTagArg & D & \Coloneqq &
       d
-      \mid \cast{D}{\tau}{\tau}
-      \mid \failedcast{D}{\tau}{\tau}
-      \mid \hole{}
+      \mid \None
       \\
   \end{array}
 \]
@@ -383,7 +385,7 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
     \valid{\Theta}{ \Tsum{ C_i(T_i) }_{C_i \in \TagSet} }
   }
 
-  \inferrule[TVHole]{
+  \inferrule[TVEHole]{
     %
   }{
     \valid{\Theta}{\hole{}}
@@ -492,7 +494,7 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
   }
 
   \inferrule[TCSum]{
-    \consistent{T_i}{T_i'}
+    \Set{ \consistent{T_i}{T_i'} }_{C_i \in \TagSet}
   }{
     \consistent{
       \Tsum{C_i(T_i)}_{C_i \in \TagSet}
@@ -537,8 +539,20 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
 We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive type $\Trec{\pi}{\tau}$.
 
 \begin{Theorem}[Synthetic Type Validity]
-    If $\syn{\Gamma}{e}{\tau}$ then $\valid{\emptyset}{\tau}$.
+  \label{thm:synthetic-type-validity}
+  If $\syn{\Gamma}{e}{\tau}$ then $\valid{\emptyset}{\tau}$.
 \end{Theorem}
+
+\begin{Theorem}
+  \label{thm:valid-consistent-transitivity}
+  If $\valid{\Theta}{\tau}$
+  and $\consistent{\tau}{\tau'}$
+  then $\valid{\Theta}{\tau'}$.
+\end{Theorem}
+
+By Theorem~\ref{thm:synthetic-type-validity}
+and Theorem~\ref{thm:valid-consistent-transitivity},
+\Rule{ASubsume} does not need to check that $\tau$ is valid.
 
 \vspace*{\baselineskip}
 
@@ -813,6 +827,8 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 \end{mathpar}
 
+\newpage
+
 \subsection{Typed Elaboration}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
@@ -825,6 +841,94 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 }
 
 \begin{mathpar}
+  \inferrule[ESVar]{
+    \asc{x}{\tau} \in \Gamma
+  }{
+    \synelab{\Gamma}{x}{\tau}{x}{\emptyset}
+  }
+
+  \inferrule[ESVarFree]{
+    x \notin \dom{\Gamma}
+  }{
+    \synelab{\Gamma}{
+      \hole[x]{u}
+    }{ \hole{} }{
+      \hole[x]{u}_{\id{\Gamma}}
+    }{u :: \hole{}[\Gamma]}
+  }
+
+  \inferrule[ESLam]{
+    \valid{\emptyset}{\tau_1} \\
+    \synelab{\Gamma, \asc{x}{\tau_1}}{e}{\tau_2}{d}{\Delta}
+  }{
+    \synelab{\Gamma}{
+      \Efun{x}{\tau_1}{e}
+    }{ \Tarrow{\tau_1}{\tau_2} }{
+      \Dfun{x}{\tau_1}{d}
+    }{\Delta}
+  }
+
+  \inferrule[ESApp]{
+    \syn{\Gamma}{e_1}{\tau_1} \\
+    \MatchedArrowTyp{\tau_1}{\tau_2}{\tau} \\
+    \anaelab{\Gamma}{e_1}{ \Tarrow{\tau_2}{\tau} }{d_1}{\tau_1'}{\Delta_1} \\
+    \anaelab{\Gamma}{e_2}{ \tau_2 }{ d_2 }{\tau_2'}{\Delta_2}
+  }{
+    \synelab{\Gamma}{
+      \Eapp{e_1}{e_2}
+    }{ \tau }{
+      \Dapp{
+        \left( \cast{d_1}{\tau_1'}{\Tarrow{\tau_2}{\tau}} \right)
+      }{
+        \cast{d_2}{\tau_2'}{\tau_2}
+      }
+    }{ \Delta_1 \cup \Delta_2 }
+  }
+
+  \inferrule[ESAppNotArr]{
+    \syn{\Gamma}{e_1}{\tau_1} \\
+    \notconsistent{\tau_1}{\Tarrow{ \hole{} }{ \hole{} }} \\
+    \anaelab{\Gamma}{e_1}{ \hole{} }{d_1}{\tau_1'}{\Delta_1} \\
+    \anaelab{\Gamma}{e_2}{ \hole{} }{ d_2 }{\tau_2'}{\Delta_2}
+  }{
+    \synelab{\Gamma}{
+      \hole[ \Eapp{e_1}{e_2} ]{u}
+    }{ \hole{} }{
+      \hole[
+        \Dapp{
+          \left( \cast{d_1}{\tau_1'}{\Tarrow{ \hole{} }{ \hole{} }} \right)
+        }{
+          \cast{d_2}{\tau_2'}{ \hole{} }
+        }
+      ]{u}_{\id{\Gamma}}
+    }{ \Delta_1 \cup \Delta_2, u :: \hole{} [\Gamma]}
+  }
+
+  \inferrule[ESAsc]{
+    \valid{\emptyset}{\tau} \\
+    \anaelab{\Gamma}{e}{\tau}{d}{\tau'}{\Delta}
+  }{
+    \synelab{\Gamma}{
+      \asc{e}{\tau}
+    }{ \tau }{
+      \cast{d}{\tau'}{\tau}
+    }{\Delta}
+  }
+
+  \inferrule[ESRollError]{
+    \anaelab{\Gamma}{
+      e
+    }{ \hole{}}{
+      d
+    }{ \tau }{\Delta}
+  }{
+    \synelab{\Gamma}{
+      \hole[ \Eroll{e} ]{u}
+    }{ \Trec{ \hole{} }{ \hole{} }}{
+      \hole[ \Droll{ \hole{} }{ \hole{} }{ \cast{d}{\tau}{\hole{}} } ]{u}_{\id{\Gamma}}
+    }{\Delta, u :: \Trec{ \hole{} }{ \hole{} }[\Gamma]}
+  }
+
   \inferrule[ESUnroll]{
     \synelab{\Gamma}{e}{\tau'}{d}{\Delta} \\
     \MatchedRecTyp{\tau'}{\pi}{\tau}
@@ -836,7 +940,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     }{\Delta}
   }
 
-  \inferrule[ESInj]{
+  \inferrule[ESInjError]{
     \anaelab{\Gamma}{E}{ \hole{} }{D}{T}{\Delta}
   }{
     \synelab{\Gamma}{
