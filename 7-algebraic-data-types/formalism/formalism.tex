@@ -44,6 +44,8 @@
 
 \newcommand\hole[2][]{\llparenthesis#1\rrparenthesis^{#2}}
 \newcommand\dhole[3][]{\llparenthesis#1\rrparenthesis_{#2}^{#3}}
+\newcommand\mhole[2][]{\llparenthesis#1\rrparenthesis^{#2 \blacktriangleright}}
+% \newcommand\newhole[2][]{\langle\langle#1\rangle\rangle_{#2}}
 
 % Types
 
@@ -288,77 +290,77 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 % join(tau1, tau2) = tau
 
-\Judgment{
-  \join{\tau_1}{\tau_2} = \tau
-}{
-  $\tau_1$ and $\tau_2$ join consistently, forming type $\tau$
-}
+% \Judgment{
+%   \join{\tau_1}{\tau_2} = \tau
+% }{
+%   $\tau_1$ and $\tau_2$ join consistently, forming type $\tau$
+% }
 
-\[
-  \arraycolsep=0pt
-  \begin{array}{l@{\quad=\quad}l@{\quad}l}
-    \join{ \tau }{ \tau } & \tau \\
-    \join{ \hole{} }{ \tau } & \tau \\
-    \join{ \tau }{ \hole{} } & \tau \\
-    \join{
-      \Tarrow{\tau_1}{\tau_2}
-    }{
-      \Tarrow{\tau_1}{\tau_2}
-    }
-    & \Tarrow{ \join{\tau_1}{\tau_2} }{ \join{\tau_1}{\tau_2} }
-    \\
-    \join{
-      \Trec{\pi_1}{T_1}
-    }{
-      \Trec{\pi_2}{T_2}
-    }
-    & \Trec{\join{\pi_1}{\pi_2}}{\join{T_1}{ \subst{\pi_1}{\pi_2}{T_2} }}
-    \\
-    \join{
-      \Tsum{C_i(T_i)}_{C_i \in \TagSet}
-    }{
-      \Tsum{C_i(T_i')}_{C_i \in \TagSet}
-    }
-    & \Tsum{C_i(\join{T_i}{T_i'})}_{C_i \in \TagSet}
-    \\
-  \end{array}
-\]
+% \[
+%   \arraycolsep=0pt
+%   \begin{array}{l@{\quad=\quad}l@{\quad}l}
+%     \join{ \tau }{ \tau } & \tau \\
+%     \join{ \hole{} }{ \tau } & \tau \\
+%     \join{ \tau }{ \hole{} } & \tau \\
+%     \join{
+%       \Tarrow{\tau_1}{\tau_2}
+%     }{
+%       \Tarrow{\tau_1'}{\tau_2'}
+%     }
+%     & \Tarrow{ \join{\tau_1}{\tau_2} }{ \join{\tau_1'}{\tau_2'} }
+%     \\
+%     \join{
+%       \Trec{\pi_1}{\tau_1}
+%     }{
+%       \Trec{\pi_2}{\tau_2}
+%     }
+%     & \Trec{\join{\pi_1}{\pi_2}}{\join{\tau_1}{ \subst{\pi_1}{\pi_2}\tau_2} }}
+%     \\
+%     \join{
+%       \Tsum{C_i(T_i)}_{C_i \in \TagSet}
+%     }{
+%       \Tsum{C_i(T_i')}_{C_i \in \TagSet}
+%     }
+%     & \Tsum{C_i(\join{T_i}{T_i'})}_{C_i \in \TagSet}
+%     \\
+%   \end{array}
+% \]
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 % join(T1, T2) = T
 
-\Judgment{
-  \join{T_1}{T_2} = T
-}{
-  $T_1$ and $T_2$ join consistently, forming optional type $T$
-}
+% \Judgment{
+%   \join{T_1}{T_2} = T
+% }{
+%   $T_1$ and $T_2$ join consistently, forming optional type $T$
+% }
 
-\[
-  \join{T_1}{T_2} = \begin{cases}
-    \join{\tau_1}{\tau_2} & \text{when } T_1 = \tau_1 \wedge T_2 = \tau_2 \\
-    \None & \text{when } T_1 = T_2 = \None \\
-  \end{cases}
-\]
+% \[
+%   \join{T_1}{T_2} = \begin{cases}
+%     \join{\tau_1}{\tau_2} & \text{when } T_1 = \tau_1 \wedge T_2 = \tau_2 \\
+%     \None & \text{when } T_1 = T_2 = \None \\
+%   \end{cases}
+% \]
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 % join(pi1, pi2) = pi
 
 % TODO: (eric) how to handle alpha-equivalence? (i.e. alpha1 != alpha2)
 
-\Judgment{
-  \join{\pi_1}{\pi_2} = \pi
-}{
-  $\pi_1$ and $\pi_2$ join consistently, forming type pattern $\pi$
-}
+% \Judgment{
+%   \join{\pi_1}{\pi_2} = \pi
+% }{
+%   $\pi_1$ and $\pi_2$ join consistently, forming type pattern $\pi$
+% }
 
-\[
-  \arraycolsep=0pt
-  \begin{array}{l@{\quad=\quad}l@{\quad}l}
-    \join{ \alpha }{ \alpha } & \alpha \\
-    \join{ \hole{} }{ \alpha } & \alpha \\
-    \join{ \alpha }{ \hole{} } & \alpha \\
-  \end{array}
-\]
+% \[
+%   \arraycolsep=0pt
+%   \begin{array}{l@{\quad=\quad}l@{\quad}l}
+%     \join{ \alpha }{ \alpha } & \alpha \\
+%     \join{ \hole{} }{ \alpha } & \alpha \\
+%     \join{ \alpha }{ \hole{} } & \alpha \\
+%   \end{array}
+% \]
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 %  Theta |- tau valid
@@ -551,7 +553,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   If $\syn{\Gamma}{e}{\tau}$ then $\valid{\emptyset}{\tau}$.
 \end{Theorem}
 
-\begin{Theorem}[Type Validity Transitivity]
+\begin{Theorem}[Consistency Preserves Validity]
   \label{thm:valid-consistent-transitivity}
   If $\valid{\Theta}{\tau}$
   and $\consistent{\tau}{\tau'}$
@@ -739,7 +741,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 
 \begin{mathpar}
   \inferrule[ARoll]{
-    \valid{\emptyset}{\tau} \\
+    % \valid{\emptyset}{\tau} \\
     \MatchedRecTyp{\tau}{\pi}{\tau'} \\
     \ana{\Gamma}{e}{ \subst{ \Trec{\pi}{\tau'} }{\pi}{\tau'} }
   }{
@@ -747,7 +749,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[ARollNotRec]{
-    \valid{\emptyset}{\tau} \\
+    % \valid{\emptyset}{\tau} \\
     \notconsistent{\tau}{\Trec{\hole{}}{\hole{}}}
   }{
     \ana{\Gamma}{ \hole[\Eroll{e}]{u} }{\tau}
@@ -760,7 +762,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[AInj]{
-    \valid{\emptyset}{ \Tsum{C_i(T_i)}_{C_i \in \TagSet} } \\
+    % \valid{\emptyset}{ \Tsum{C_i(T_i)}_{C_i \in \TagSet} } \\
     C_j \in \TagSet \\
     \ana{\Gamma}{E}{T_j}
   }{
@@ -768,7 +770,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[AInjUnexpectedBody]{
-    \valid{\emptyset}{ \Tsum{C_i(T_i)}_{C_i \in \TagSet} } \\
+    % \valid{\emptyset}{ \Tsum{C_i(T_i)}_{C_i \in \TagSet} } \\
     C_j \in \TagSet \\
     T_j = \None \\
     \ana{\Gamma}{e}{\hole{}}
@@ -777,7 +779,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[AInjExpectedBody]{
-    \valid{\emptyset}{ \Tsum{C_i(T_i)}_{C_i \in \TagSet} } \\
+    % \valid{\emptyset}{ \Tsum{C_i(T_i)}_{C_i \in \TagSet} } \\
     C_j \in \TagSet \\
     T_j = \tau
   }{
@@ -785,7 +787,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[AInjBadTag]{
-    \valid{\emptyset}{ \Tsum{C_i(T_i)}_{C_i \in \TagSet} } \\
+    % \valid{\emptyset}{ \Tsum{C_i(T_i)}_{C_i \in \TagSet} } \\
     C \notin \TagSet \\
     \valid{\Gamma}{E}
   }{
@@ -861,13 +863,13 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[ESLam]{
-    \valid{\emptyset}{\tau_1} \\
-    \synelab{\Gamma, \asc{x}{\tau_1}}{e}{\tau_2}{d}{\Delta}
+    \valid{\emptyset}{\tau} \\
+    \synelab{\Gamma, \asc{x}{\tau}}{e}{\tau'}{d}{\Delta}
   }{
     \synelab{\Gamma}{
-      \Efun{x}{\tau_1}{e}
-    }{ \Tarrow{\tau_1}{\tau_2} }{
-      \Dfun{x}{\tau_1}{d}
+      \Efun{x}{\tau}{e}
+    }{ \Tarrow{\tau}{\tau'} }{
+      \Dfun{x}{\tau}{d}
     }{\Delta}
   }
 
@@ -889,22 +891,19 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[ESAppNotArr]{
-    \syn{\Gamma}{e_1}{\tau_1} \\
+    \synelab{\Gamma}{e_1}{\tau_1}{d_1}{\Delta_1} \\
     \notconsistent{\tau_1}{\Tarrow{ \hole{} }{ \hole{} }} \\
-    \anaelab{\Gamma}{e_1}{ \hole{} }{d_1}{\tau_1'}{\Delta_1} \\
     \anaelab{\Gamma}{e_2}{ \hole{} }{ d_2 }{\tau_2'}{\Delta_2}
   }{
     \synelab{\Gamma}{
-      \hole[ \Eapp{e_1}{e_2} ]{u}
+      \Eapp{ \mhole[e_1]{u} }{e_2}
     }{ \hole{} }{
-      \hole[
-        \Dapp{
-          \left( \cast{d_1}{\tau_1'}{\Tarrow{ \hole{} }{ \hole{} }} \right)
-        }{
-          \cast{d_2}{\tau_2'}{ \hole{} }
-        }
-      ]{u}_{\id{\Gamma}}
-    }{ \Delta_1 \cup \Delta_2, u :: \hole{} [\Gamma]}
+      \Dapp{
+        \mhole[d_1]{u}_{\id{\Gamma}}
+      }{
+        \cast{d_2}{\tau_2'}{ \hole{} }
+      }
+    }{ \Delta_1 \cup \Delta_2, u :: \Tarrow{ \hole{} }{ \hole{} } [\Gamma]}
   }
 
   \inferrule[ESAsc]{
@@ -939,7 +938,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \synelab{\Gamma}{
       \Eunroll{e}
     }{ \subst{\Trec{\pi}{\tau'}}{\pi}{\tau'} }{
-      \Dunroll{d}
+      \Dunroll{ \cast{d}{\tau}{\Trec{\pi}{\tau'}} }
     }{\Delta}
   }
 
@@ -948,22 +947,23 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \notconsistent{\tau}{\Trec{ \hole{} } { \hole{} }}
   }{
     \synelab{\Gamma}{
-      \hole[ \Eunroll{e} ]{u}
+      \Eunroll{ \mhole[e]{u} }
     }{ \hole{} }{
-      \hole[ \Dunroll{d} ]{u}_{\id{\Gamma}}
-    }{\Delta, u :: \hole{}[\Gamma]}
+      \Dunroll{ \mhole[d]{u}_{\id{\Gamma}} }
+    }{\Delta, u :: \Trec{\hole{}}{\hole{}}[\Gamma]}
   }
 
   \inferrule[ESInjError]{
-    \anaelab{\Gamma}{E}{ \hole{} }{D}{T}{\Delta}
+    \anaelab{\Gamma}{E}{ \hole{} }{D}{T}{\Delta} \\
+    T = frob(E)
   }{
     \synelab{\Gamma}{
       \hole[ \Einj{C}{E} ]{u}
-    }{ \hole{} }{
+    }{ \Tsum{C(T)} }{
       \hole[
-        \Dinj{C}{ \hole{} }{ \cast{D}{T}{ \hole{} } }
+        \Dinj{C}{ \Tsum{C(T)} }{ \cast{D}{T}{ \hole{} } }
       ]{u}_{ \id{\Gamma} }
-    }{\Delta, u :: \hole{}[\Gamma]}
+    }{\Delta, u :: \Tsum{C(T)}[\Gamma]}
   }
 
   \inferrule[ESEHole]{
@@ -1002,7 +1002,6 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 
 \begin{mathpar}
   \inferrule[EARoll]{
-    \valid{\emptyset}{\tau} \\
     \MatchedRecTyp{\tau}{\pi}{\tau'} \\
     \anaelab{\Gamma}{
       e
@@ -1020,13 +1019,13 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[EARollNotRec]{
-    \valid{\emptyset}{\tau} \\
+    \anaelab{\Gamma}{e}{\hole{}}{d}{\tau'}{\Delta} \\
     \notconsistent{\tau}{\Trec{\hole{}}{\hole{}}}
   }{
     \anaelab{\Gamma}{
       \hole[ \Eroll{e} ]{u}
     }{\tau}{
-      \hole[ \Droll{\hole{}}{\hole{}}{d} ]{u}_{\id{\Gamma}}
+      \hole[ \Droll{\hole{}}{\hole{}}{ \cast{d}{\tau'}{ \hole{} } } ]{u}_{\id{\Gamma}}
     }{ \Trec{\hole{}}{\hole{}} }{ \Delta, u :: \Trec{\hole{}}{\hole{}}[\Gamma] }
   }
 
@@ -1043,7 +1042,6 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 
   \inferrule[EAInj]{
     \tau = \Tsum{C_i(T_i)}_{C_i \in \TagSet} \\
-    \valid{\emptyset}{\tau} \\
     C_j \in \TagSet \\
     \anaelab{\Gamma}{E}{T_j}{D}{T_j'}{\Delta}
   }{
@@ -1056,11 +1054,10 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 
   \inferrule[EAInjUnexpectedBody]{
     \tau = \Tsum{C_i(T_i)}_{C_i \in \TagSet} \\
-    \valid{\emptyset}{\tau} \\
     C_j \in \TagSet \\
     T_j = \None \\
     \anaelab{\Gamma}{e}{ \hole{} }{ d }{ \tau_j }{\Delta} \\
-    \tau' = \tau \uplus \Tsum{C_j(\tau_j)}
+    \tau' = \Tsum{\Set{C_i(T_i)}_{C_i \in \TagSet \setminus C_j} \cup \Set{C_j(\tau_j)}}
   }{
     \anaelab{\Gamma}{
       \hole[ \Einj{C_j}{e} ]{u}
@@ -1071,10 +1068,9 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 
   \inferrule[EAInjExpectedBody]{
     \tau = \Tsum{C_i(T_i)}_{C_i \in \TagSet} \\
-    \valid{\emptyset}{\tau} \\
     C_j \in \TagSet \\
     T_j = \tau_j \\
-    \tau' = \tau \uplus \Tsum{C_j(\None)}
+    \tau' = \Tsum{\Set{C_i(T_i)}_{C_i \in \TagSet \setminus C_j} \cup \Set{C_j(\None)}}
   }{
     \anaelab{\Gamma}{
       \hole[ \Einj{C_j}{\None} ]{u}
@@ -1085,10 +1081,10 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 
   \inferrule[EAInjBadTag]{
     \tau = \Tsum{C_i(T_i)}_{C_i \in \TagSet} \\
-    \valid{\emptyset}{\tau} \\
     C \notin \TagSet \\
     \anaelab{\Gamma}{E}{ \hole{} }{D}{T}{\Delta} \\
-    \tau' = \tau \uplus \Tsum{C(T)}
+    \tau' = \Tsum{\Set{C_i(T_i)}_{C_i \in \TagSet} \cup \Set{C(T)}}
+    % \tau' = \tau \uplus \Tsum{C(T)}
   }{
     \anaelab{\Gamma}{
       \hole[ \Einj{C}{E} ]{u}
@@ -1107,7 +1103,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[EAEHole]{
-    \valid{\emptyset}{\tau}
+    %
   }{
     \anaelab{\Gamma}{
       \hole{u}
@@ -1117,7 +1113,6 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[EANEHole]{
-    \valid{\emptyset}{\tau} \\
     \synelab{\Gamma}{e}{\tau'}{d}{\Delta}
   }{
     \anaelab{\Gamma}{
@@ -1185,6 +1180,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[TARoll]{
+    \valid{\emptyset}{\Trec{\pi}{\tau}} \\
     \assign{\Delta}{\Gamma}{ d }{ \subst{\Trec{\pi}{\tau}}{\pi}{\tau} }
   }{
     \assign{\Delta}{\Gamma}{ \Droll{\pi}{\tau}{d} }{ \Trec{\pi}{\tau} }
@@ -1216,7 +1212,15 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     u :: \tau[\Gamma'] \in \Delta \\
     \assign{\Delta}{\Gamma}{ \sigma }{ \Gamma' }
   }{
-    \assign{\Delta}{\Gamma}{ \dhole{\sigma}{u} }{ \tau }
+    \assign{\Delta}{\Gamma}{ \dhole[d]{\sigma}{u} }{ \tau }
+  }
+
+  \inferrule[TAMHole]{
+    \assign{\Delta}{\Gamma}{ d }{ \tau' } \\
+    u :: \tau[\Gamma'] \in \Delta \\
+    \assign{\Delta}{\Gamma}{ \sigma }{ \Gamma' }
+  }{
+    \assign{\Delta}{\Gamma}{ \mhole[d]{u}_{\sigma} }{ \tau }
   }
 
   \inferrule[TACast]{
@@ -1390,12 +1394,6 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \val{ \Droll{\pi}{\tau}{d} }
   }
 
-  \inferrule[VUnroll]{
-    \val{d}
-  }{
-    \val{\Dunroll{d}}
-  }
-
   \inferrule[VInjSome]{
     \val{d}
   }{
@@ -1427,12 +1425,6 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \boxedval{d}
   }{
     \boxedval{\Droll{\pi}{\tau}{d}}
-  }
-
-  \inferrule[BVUnroll]{
-    \boxedval{d}
-  }{
-    \boxedval{\Dunroll{d}}
   }
 
   \inferrule[BVInj]{
@@ -1567,6 +1559,16 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     }
   }
 
+  \inferrule[ITUnroll]{
+    \eager{\final{d}}
+  }{
+    \trans{
+      \Dunroll{\Droll{\pi}{\tau}{d}}
+    }{
+      d
+    }
+  }
+
   \inferrule[ITAppCast]{
     \eager{\final{d_1}} \\
     \eager{\final{d_2}} \\
@@ -1574,7 +1576,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }{
     \trans{
       \Dapp{
-        \cast{d}{ \Tarrow{\tau_1}{\tau_2} }{ \Tarrow{\tau_1}{\tau_2} }
+        \cast{d_1}{ \Tarrow{\tau_1}{\tau_2} }{ \Tarrow{\tau_1'}{\tau_2'} }
       }{
         d_2
       }
@@ -1582,6 +1584,17 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
       \cast{
         \left( \Dapp{d_1}{ \cast{d_2}{\tau_1'}{\tau_1} } \right)
       }{\tau_2}{\tau_2'}
+    }
+  }
+
+  \inferrule[ITUnrollCast]{
+    \eager{\final{d}} \\
+    \Trec{\pi}{\tau} \neq \Trec{\pi'}{\tau'}
+  }{
+    \trans{
+      \Dunroll{ \cast{d}{\Trec{\pi}{\tau}}{\Trec{\pi'}{\tau'}} }
+    }{
+      \cast{ \Dunroll{d} }{ \subst{\Trec{\pi}{\tau}}{\pi}{\tau} }{ \subst{\Trec{\pi'}{\tau'}}{\pi'}{\tau'} }
     }
   }
 
@@ -1647,6 +1660,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
       \mid \Dunroll{\E}
       \mid \Dinj{C}{\tau}{\E}
       \mid \hole[\E]{u}_\sigma
+      \mid \mhole[\E]{u}_\sigma
       \mid \cast{\E}{\tau}{\tau}
       \mid \failedcast{\E}{\tau}{\tau}
       \\
@@ -1710,6 +1724,12 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \eval{d}{\E}{d'}
   }{
     \eval{ \hole[d]{u}_\sigma }{ \hole[\E]{u}_\sigma }{ d' }
+  }
+
+  \inferrule[FMHoleInside]{
+    \eval{d}{\E}{d'}
+  }{
+    \eval{ \mhole[d]{u}_\sigma }{ \mhole[\E]{u}_\sigma }{ d' }
   }
 
   \inferrule[FHCastInside]{
