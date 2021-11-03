@@ -1,6 +1,7 @@
 \documentclass{article}
 
 \usepackage{fullpage}
+\usepackage{xcolor}
 \usepackage{amsmath, stmaryrd, amssymb, mathtools, mathpartir}
 
 % fix spacing between math operators and large paired delimiters
@@ -53,6 +54,7 @@
 % Tags
 
 \newcommand\Tag{\mathbf{C}}
+\newcommand\TagHole[1]{?^{#1}}
 \newcommand\TagSet{\mathcal{C}}
 
 % Optional Tag Arguments
@@ -106,7 +108,9 @@
 \newcommand\boxedval[1]{#1~\judgment{boxedval}}
 \newcommand\indet[1]{#1~\judgment{indet}}
 \newcommand\final[1]{#1~\judgment{final}}
+\newcommand\trans[2]{#1 \longrightarrow #2}
 \newcommand\eval[3]{#1 = #2\left\{#3\right\}}
+\newcommand\step[2]{#1 \mapsto #2}
 
 % Inference Rule Names
 
@@ -136,10 +140,12 @@
 % Evaluation
 
 \newcommand\E{\mathcal{E}}
+\newcommand\Mark{\circ}
 
 % Other Notation
 
 % \newcommand{\defeq}{\stackrel{\text{def}}{=}}
+\newcommand\eager[1]{{\color{red}[}#1{\color{red}]}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -179,6 +185,10 @@
       \\ & & &
       \mid \hole{u}
       \mid \hole[e]{u}
+      \\
+    \HTag & C & \Coloneqq &
+      \Tag
+      \mid \TagHole{u}
       \\
     \HTagTyp & T & \Coloneqq & \tau \mid \None \\
     \HTagArg & E & \Coloneqq & e \mid \None \\
@@ -1307,16 +1317,56 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 }
 
 \begin{mathpar}
-  \inferrule[MGSum]{
-    \tau = \Tsum{C_i(T_i)}_{C_i \in \TagSet} \\
-    \tau' = \Tsum{C_i(T_i')}_{C_i \in \TagSet} \\
-    \tau \neq \tau' \\
-    \Set{
-      T_i =   \tau_i \implies T_i' = \hole \wedge
-      T_i = \None \implies T_i' = \None
-    }_i
+  \inferrule[MGArr]{
+    \Tarrow{\tau_1}{\tau_2} \neq \Tarrow{\hole{}}{\hole{}}
   }{
-    \MatchedGroundTyp{\tau}{\tau'}
+    \MatchedGroundTyp{ \Tarrow{\tau_1}{\tau_2} }{ \Tarrow{\hole{}}{\hole{}} }
+  }
+
+  \inferrule[MGRec]{
+    \tau \neq \hole{}
+  }{
+    \MatchedGroundTyp{ \Trec{\pi}{\tau} }{ \Trec{\hole{}}{\hole{}} }
+  }
+
+  \inferrule[MGSum]{
+    \Tsum{C_i(T_i)}_{C_i \in \TagSet} \neq \Tsum{C_i(T_i')}_{C_i \in \TagSet} \\
+    \Set{
+      T_i =   \tau_i \implies T_i' = \hole{} \wedge
+      T_i = \None \implies T_i' = \None
+    }_{C_i \in \TagSet}
+  }{
+    \MatchedGroundTyp{
+      \Tsum{C_i(T_i)}_{C_i \in \TagSet}
+    }{
+      \Tsum{C_i(T_i')}_{C_i \in \TagSet}
+    }
+  }
+\end{mathpar}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+\newpage
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+\Judgment{
+  \final{d}
+}{
+  $d$ is final
+}
+
+\begin{mathpar}
+  \inferrule[FBoxedVal]{
+    \boxedval{d}
+  }{
+    \final{d}
+  }
+
+  \inferrule[FIndet]{
+    \indet{d}
+  }{
+    \final{d}
   }
 \end{mathpar}
 
@@ -1329,6 +1379,11 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 }
 
 \begin{mathpar}
+  \inferrule[VLam]{
+  }{
+    \val{ \Dfun{x}{\tau}{d} }
+  }
+
   \inferrule[VRoll]{
     \val{d}
   }{
@@ -1341,19 +1396,17 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \val{\Dunroll{d}}
   }
 
-  \inferrule[VInj]{
+  \inferrule[VInjSome]{
     \val{d}
   }{
     \val{ \Dinj{\Tag}{\tau}{d} }
   }
 
-  \inferrule[VInjNull]{
+  \inferrule[VInjNone]{
   }{
     \val{ \Dinj{\Tag}{\tau}{\None} }
   }
 \end{mathpar}
-
-\vspace*{\baselineskip}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
@@ -1364,6 +1417,12 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 }
 
 \begin{mathpar}
+  \inferrule[BVVal]{
+    \val{d}
+  }{
+    \boxedval{d}
+  }
+
   \inferrule[BVRoll]{
     \boxedval{d}
   }{
@@ -1382,17 +1441,46 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \boxedval{\Dinj{\Tag}{\tau}{d}}
   }
 
-  \inferrule[BVSumCast]{
-    \tau = \Tsum{C_i(T_i)}_{C_i \in \TagSet} \\
-    \tau' = \Tsum{C_i(T_i')}_{C_i \in \TagSet} \\
-    \tau \neq \tau' \\
+  \inferrule[BVArrCast]{
+    \Tarrow{\tau_1}{\tau_2} \neq \Tarrow{\tau_3}{\tau_4} \\
     \boxedval{d}
   }{
-    \boxedval{\cast{d}{\tau}{\tau'}}
+    \boxedval{
+      \cast{d}{
+        \Tarrow{\tau_1}{\tau_2}
+      }{
+        \Tarrow{\tau_3}{\tau_4}
+      }
+    }
+  }
+
+  \inferrule[BVRecCast]{
+    \Trec{\pi}{\tau} \neq \Trec{\pi'}{\tau'} \\
+    \boxedval{d}
+  }{
+    \boxedval{\cast{d}{ \Trec{\pi}{\tau} }{ \Trec{\pi'}{\tau'} }}
+  }
+
+  \inferrule[BVSumCast]{
+    \Tsum{C_i(T_i)}_{C_i \in \TagSet} \neq \Tsum{C_i(T_i')}_{C_i \in \TagSet} \\
+    \boxedval{d}
+  }{
+    \boxedval{
+      \cast{d}{
+        \Tsum{C_i(T_i)}_{C_i \in \TagSet}
+      }{
+        \Tsum{C_i(T_i')}_{C_i \in \TagSet}
+      }
+    }
+  }
+
+  \inferrule[BVHoleCast]{
+    \boxedval{d} \\
+    \ground{\tau}
+  }{
+    \boxedval{ \cast{d}{\tau}{\hole{}} }
   }
 \end{mathpar}
-
-\vspace*{\baselineskip}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
@@ -1406,7 +1494,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   \inferrule[IRoll]{
     \indet{d}
   }{
-    \indet{\Droll{\Trec{\alpha}{\tau}}{d}}
+    \indet{\Droll{\pi}{\tau}{d}}
   }
 
   \inferrule[IUnroll]{
@@ -1421,39 +1509,147 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \indet{\Dinj{\Tag}{\tau}{d}}
   }
 
-  \inferrule[IInjTag]{
+  \inferrule[IInjSome]{
     \final{d}
   }{
-    \indet{\Dinj{ \hole{} }{\tau}{d}}
+    \indet{\Dinj{ \TagHole{u} }{\tau}{d}}
   }
 
-  \inferrule[IInjNull]{
+  \inferrule[IInjNone]{
+    %
   }{
-    \indet{\Dinj{ \hole{} }{\tau}{\None}}
+    \indet{\Dinj{ \TagHole{u} }{\tau}{\None}}
+  }
+
+  \inferrule[ICastRec]{
+    \Trec{\pi}{\tau} \neq \Trec{\pi'}{\tau'} \\
+    \indet{d}
+  }{
+    \indet{
+      \cast{d}{
+        \Trec{\pi}{\tau}
+      }{
+        \Trec{\pi'}{\tau'}
+      }
+    }
   }
 
   \inferrule[ICastSum]{
-    \tau = \Tsum{C_i(T_i)}_{C_i \in \TagSet} \\
-    \tau' = \Tsum{C_i(T_i')}_{C_i \in \TagSet} \\
-    \tau \neq \tau' \\
+    \Tsum{C_i(T_i)}_{C_i \in \TagSet} \neq \Tsum{C_i(T_i')}_{C_i \in \TagSet} \\
     \indet{d}
   }{
-    \indet{\cast{d}{\tau}{\tau'}}
+    \indet{
+      \cast{d}{
+        \Tsum{C_i(T_i)}_{C_i \in \TagSet}
+      }{
+        \Tsum{C_i(T_i')}_{C_i \in \TagSet}
+      }
+    }
   }
 \end{mathpar}
 
-\vspace*{\baselineskip}
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+\Judgment{
+  \trans{d}{d'}
+}{
+  $d$ takes an instruction transition to $d'$
+}
+
+\begin{mathpar}
+  \inferrule[ITApp]{
+    \eager{\final{d_2}}
+  }{
+    \trans{  
+      \Dapp{ \left( \Dfun{x}{\tau}{d_1} \right) }{ d_2 }
+    }{
+      \subst{d_2}{x}{d_1}
+    }
+  }
+
+  \inferrule[ITAppCast]{
+    \eager{\final{d_1}} \\
+    \eager{\final{d_2}} \\
+    \Tarrow{\tau_1}{\tau_2} \neq \Tarrow{\tau_1'}{\tau_2'}
+  }{
+    \trans{
+      \Dapp{
+        \cast{d}{ \Tarrow{\tau_1}{\tau_2} }{ \Tarrow{\tau_1}{\tau_2} }
+      }{
+        d_2
+      }
+    }{
+      \cast{
+        \left( \Dapp{d_1}{ \cast{d_2}{\tau_1'}{\tau_1} } \right)
+      }{\tau_2}{\tau_2'}
+    }
+  }
+
+  \inferrule[ITCastId]{
+    \eager{\final{d}}
+  }{
+    \trans{ \cast{d}{\tau}{\tau} }{ d }
+  }
+
+  \inferrule[ITCastSucceed]{
+    \eager{\final{d}} \\
+    \ground{\tau}
+  }{
+    \trans{ \casts{d}{\tau}{\hole{}}{\tau} }{ d }
+  }
+
+  \inferrule[ITCastFail]{
+    \eager{\final{d}} \\
+    \tau_1 \neq \tau_2 \\
+    \ground{\tau_1} \\
+    \ground{\tau_2}
+  }{
+    \trans{
+      \casts{d}{\tau_1}{\hole{}}{\tau_2}
+    }{
+      \failedcast{d}{\tau_1}{\tau_2}
+    }
+  }
+
+  \inferrule[ITGround]{
+    \eager{\final{d}} \\
+    \MatchedGroundTyp{\tau}{\tau'}
+  }{
+    \trans{
+      \cast{d}{\tau}{\hole{}}
+    }{
+      \casts{d}{\tau}{\tau'}{\hole{}}
+    }
+  }
+
+  \inferrule[ITExpand]{
+    \eager{\final{d}} \\
+    \MatchedGroundTyp{\tau}{\tau'}
+  }{
+    \trans{
+      \cast{d}{\hole{}}{\tau}
+    }{
+      \casts{d}{\hole{}}{\tau'}{\tau}
+    }
+  }
+\end{mathpar}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
 \[
-  \arraycolsep=0pt  \arraycolsep=0pt
+  \arraycolsep=0pt
   \begin{array}{l@{~~}c@{~~}c@{~~}l}
     \EvalCtx & \E & {}\Coloneqq{} &
-      \ldots
+      \Mark
+      \mid \Dapp{\E}{d}
+      \mid \Dapp{d}{\E}
       \mid \Droll{\pi}{\tau}{\E}
+      \mid \Dunroll{\E}
       \mid \Dinj{C}{\tau}{\E}
-    \\
+      \mid \hole[\E]{u}_\sigma
+      \mid \cast{\E}{\tau}{\tau}
+      \mid \failedcast{\E}{\tau}{\tau}
+      \\
   \end{array}
 \]
 
@@ -1464,6 +1660,25 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 }
 
 \begin{mathpar}
+  \inferrule[FHOuter]{
+    %
+  }{
+    \eval{d}{\Mark}{d}
+  }
+
+  \inferrule[FHApp1]{
+    \eval{d_1}{\E}{d_1'}
+  }{
+    \eval{ \Dapp{d_1}{d_2} }{ \Dapp{\E}{d_2} }{d_1'}
+  }
+
+  \inferrule[FHApp2]{
+    \eager{\final{d_1}} \\
+    \eval{d_2}{\E}{d_2'}
+  }{
+    \eval{ \Dapp{d_1}{d_2} }{ \Dapp{d_1}{\E} }{ d_2' }
+  }
+
   \inferrule[FHRoll]{
     \eval{d}{\E}{d'}
   }{
@@ -1489,6 +1704,46 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
       \Dinj{C}{\tau}{d}
     }{\Dinj{C}{\tau}{\E}
     }{d'}
+  }
+
+  \inferrule[FNEHoleInside]{
+    \eval{d}{\E}{d'}
+  }{
+    \eval{ \hole[d]{u}_\sigma }{ \hole[\E]{u}_\sigma }{ d' }
+  }
+
+  \inferrule[FHCastInside]{
+    \eval{d}{\E}{d'}
+  }{
+    \eval{ \cast{d}{\tau_1}{\tau_2} }{ \cast{\E}{\tau_1}{\tau_2} }{ d' }
+  }
+
+  \inferrule[FHFailedCast]{
+    \eval{d}{\E}{d'}
+  }{
+    \eval{
+      \failedcast{d}{\tau_1}{\tau_2}
+    }{
+      \failedcast{\E}{\tau_1}{\tau_2}
+    }{d'}
+  }
+\end{mathpar}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+\Judgment{
+  \step{d}{d'}
+}{
+  $d$ steps to $d'$
+}
+
+\begin{mathpar}
+  \inferrule[Step]{
+    \eval{d}{\E}{d_0} \\
+    \trans{d_0}{d_0'} \\
+    \eval{d'}{\E}{d_0'}
+  }{
+    \step{d}{d'}
   }
 \end{mathpar}
 
