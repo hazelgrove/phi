@@ -1174,6 +1174,26 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \assign{\Delta}{\Gamma}{ \Dapp{d_1}{d_2} }{ \tau }
   }
 
+  \inferrule[TARoll]{
+    \assign{\Delta}{\Gamma}{ d }{ \subst{\Trec{\pi}{\tau}}{\pi}{\tau} }
+  }{
+    \assign{\Delta}{\Gamma}{ \Droll{\pi}{\tau}{d} }{ \Trec{\pi}{\tau} }
+  }
+
+  \inferrule[TAUnroll]{
+    \assign{\Delta}{\Gamma}{ d }{ \Trec{\pi}{\tau} }
+  }{
+    \assign{\Delta}{\Gamma}{ \Dunroll{d} }{ \subst{\Trec{\pi}{\tau}}{\pi}{\tau} }
+  }
+
+  \inferrule[TAInj]{
+    \tau = \Tsum{C_i(T_i)}_{C_i \in \TagSet} \\
+    C_j \in \TagSet \\
+    \assign{\Delta}{\Gamma}{ D }{ T_j }
+  }{
+    \assign{\Delta}{\Gamma}{ \Dinj{C_j}{\tau}{D} }{ \tau }
+  }
+
   \inferrule[TAEHole]{
     u :: \tau[\Gamma'] \in \Delta \\
     \assign{\Delta}{\Gamma}{ \sigma }{ \Gamma' }
@@ -1204,27 +1224,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }{
     \assign{\Delta}{\Gamma}{ \failedcast{d}{\tau_1}{\tau_2} }{ \tau_2 }
   }
-
-%   \inferrule[TRoll]{
-%     \assign{\Delta}{\Gamma}{d}{ \subst{\Trec{\alpha}{\tau}}{\alpha}{\tau} }
-%   }{
-%     \assign{\Delta}{\Gamma}{ \Droll{\Trec{\alpha}{\tau}}{d} }{ \Trec{\alpha}{\tau} }
-%   }
-
-%   \inferrule[TUnroll]{
-%     \assign{\Delta}{\Gamma}{d}{ \Trec{\alpha}{\tau} }
-%   }{
-%     \assign{\Delta}{\Gamma}{\unroll{d}}{ \subst{\Trec{\alpha}{\tau}}{\alpha}{\tau} }
-%   }
-
-%   \inferrule[TInj]{
-%     \tau = \Tsum{C_i(T_i)}_{C_i \in \TagSet} \\
-%     C_j \in \TagSet \\
-%     \assign{\Delta}{\Gamma}{D}{T_j}
-%   }{
-%     \assign{\Delta}{\Gamma}{\Dinj{C_j}{\tau}{D}}{\tau}
-%   }
-
+%
 %   \inferrule[TCase]{
 %     \assign{\Delta}{\Gamma}{d}{\Tsum{C_i(T_i)}_{C_i \in \TagSet}} \\
 %     \assign{\Delta}{\Gamma, X_i : T_i}{d_i}{\tau} \\
@@ -1234,7 +1234,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 %       \case{d}{C_i(X_i){=}d_i}_{C_i \in \TagSet}
 %     }{\tau}
 %   }
-
+%
 %   \inferrule[TCaseU]{
 %     \assign{\Delta}{\Gamma}{d}{\hole} \\
 %     \assign{\Delta}{\Gamma, X_i : \hole}{d_i}{\tau} \\
@@ -1244,28 +1244,28 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 %   }
 \end{mathpar}
 
-% \vspace*{\baselineskip}
-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 % Gamma |- D : T
 
-% \noindent
-% $\boxed{\assignD{\Delta}{\Gamma}{D}{T}}$
-% \quad $D$ is assigned optional type $T$
+\Judgment{
+  \assign{\Delta}{\Gamma}{D}{T}
+}{
+  $D$ is assigned optional type $T$
+}
 
-% \begin{mathpar}
-%   \inferrule{
-%     \assign{\Delta}{\Gamma}{d}{\tau}
-%   }{
-%     \assignD{\Delta}{\Gamma}{d}{\tau}
-%   }
+\begin{mathpar}
+  \inferrule[TASome]{
+    \assign{\Delta}{\Gamma}{d}{\tau}
+  }{
+    \assign{\Delta}{\Gamma}{d}{\tau}
+  }
 
-%   \inferrule{
-%     % 
-%   }{
-%     \assign{\Delta}{\Gamma}{\None}{\None}
-%   }
-% \end{mathpar}
+  \inferrule[TANone]{
+    % 
+  }{
+    \assign{\Delta}{\Gamma}{\None}{\None}
+  }
+\end{mathpar}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
