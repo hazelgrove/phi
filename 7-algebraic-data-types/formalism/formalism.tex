@@ -450,22 +450,32 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
 }
 
 \begin{mathpar}
-  \inferrule[TCHole1]{
+  \inferrule[TCRefl]{
+    %
+  }{
+    \consistent{\tau}{\tau}
+  }
+
+  \inferrule[TCEHole1]{
     %
   }{
     \consistent{\hole{}}{\tau}
   }
 
-  \inferrule[TCHole2]{
+  \inferrule[TCEHole2]{
     %
   }{
     \consistent{\tau}{\hole{}}
   }
 
-  \inferrule[TCRefl]{
-    %
+  \inferrule[TCNEHole1]{
   }{
-    \consistent{\tau}{\tau}
+    \consistent{\hole[\alpha]{u}}{\tau}
+  }
+
+  \inferrule[TCNEHole2]{
+  }{
+    \consistent{\tau}{\hole[\alpha]{u}}
   }
 
   \inferrule[TCArr]{
