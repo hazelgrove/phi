@@ -996,11 +996,11 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }{
     \synelab{\Gamma}{
       \hole[ \Einj{C}{e} ]{u}
-    }{ \tau' }{
+    }{ \hole{} }{
       \dhole[
         \Dinj{C}{ \tau' }{ \cast{d}{\tau}{ \hole{} } }
       ]{\id{\Gamma}}{u}
-    }{\Delta, u :: \tau'{}[\Gamma]}
+    }{\Delta, u :: \hole{}[\Gamma]}
   }
 
   \inferrule[ESInjErrNone]{
@@ -1008,9 +1008,9 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }{
     \synelab{\Gamma}{
       \hole[ \Einj{c}{\None} ]{u}
-    }{ \tau }{
+    }{ \hole{} }{
       \dhole[ \Dinj{C}{\tau}{\None} ]{\id{\Gamma}}{u}
-    }{\Delta, u :: \tau{}[\Gamma]}
+    }{\Delta, u :: \hole{}[\Gamma]}
   }
 
   \inferrule[ESEHole]{
