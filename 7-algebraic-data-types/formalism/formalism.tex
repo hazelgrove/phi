@@ -172,7 +172,7 @@
       \mid \Trec{\pi}{\tau}
       \mid \Tsum{C_i(T_i)}_{C_i \in \TagSet}
       \mid \hole{}
-      \mid \hole[\alpha]{u}
+      \mid \hole[\alpha]{}
       \\
     \HTypPat & \pi & \Coloneqq & \alpha \mid \hole{} \\
     \HExp & e & \Coloneqq &
@@ -268,7 +268,7 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
     \subst{\tau}{\alpha}{ \Tsum{C_i(T_i)}_{C_i \in \TagSet} }
       & \Tsum{C_i( \subst{\tau}{\alpha}{T_i} )}_{C_i \in \TagSet} \\
     \subst{\tau}{\alpha}{ \hole{} } & \hole{} \\
-    \subst{\alpha'}{\alpha}{ \hole[\alpha]{u} } & \hole[\alpha']{u} \\
+    \subst{\alpha'}{\alpha}{ \hole[\alpha]{} } & \hole[\alpha']{u} \\
     \subst{\alpha'}{\alpha}{ \hole[\alpha_1]{u} } & \hole[\alpha_1]{u} & \text{ when } \alpha \neq \alpha_1 \\
   \end{array}
 \]
@@ -405,11 +405,11 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
     \valid{\Theta}{\hole{}}
   }
 
-  \inferrule[TVNEHole]{
-    \alpha \notin \Theta
-  }{
-    \valid{\Theta}{ \hole[\alpha]{u} }
-  }
+  % \inferrule[TVNEHole]{
+  %   \alpha \notin \Theta
+  % }{
+  %   \valid{\Theta}{ \hole[\alpha]{} }
+  % }
 \end{mathpar}
 
 \vspace*{\baselineskip}
@@ -470,12 +470,12 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
 
   \inferrule[TCNEHole1]{
   }{
-    \consistent{\hole[\alpha]{u}}{\tau}
+    \consistent{\hole[\alpha]{}}{\tau}
   }
 
   \inferrule[TCNEHole2]{
   }{
-    \consistent{\tau}{\hole[\alpha]{u}}
+    \consistent{\tau}{\hole[\alpha]{}}
   }
 
   \inferrule[TCArr]{
@@ -597,6 +597,8 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
+\newpage
+
 \Judgment{
   \MatchedRecTyp{\tau}{\pi}{\tau'}
 }{
@@ -646,6 +648,12 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \syn{\Gamma}{ \Efun{x}{\tau}{e} }{\Tarr{\tau}{\tau'}}
   }
 
+  \inferrule[SLamInvalid]{
+    \syn{\Gamma, \asc{x}{\hole{}}}{e}{\tau}
+  }{
+    \syn{\Gamma}{ \Efun{x}{ \hole[\alpha]{} }{e} }{ \Tarr{\hole{}}{\tau} }
+  }
+
   \inferrule[SApp]{
     \syn{\Gamma}{e_1}{\tau_1} \\
     \MatchedArrowTyp{\tau_1}{\tau_2}{\tau} \\
@@ -667,6 +675,12 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \ana{\Gamma}{e}{\tau}
   }{
     \syn{\Gamma}{ \asc{e}{\tau} }{\tau}
+  }
+
+  \inferrule[SAscInvalid]{
+    \ana{\Gamma}{e}{\hole{}}
+  }{
+    \syn{\Gamma}{ \asc{e}{\hole[\alpha]{}} }{ \hole{} }
   }
 
   \inferrule[SRollError]{
@@ -713,12 +727,6 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }{
     \syn{\Gamma}{ \hole[e]{u} }{\hole{}}
   }
-
-  \inferrule[SMHole]{
-    \syn{\Gamma}{e}{\tau}
-  }{
-    \syn{\Gamma}{ \mhole[e]{u} }{\hole{}}
-  }
 \end{mathpar}
 
 % \textsc{SInj} = Injection in Synthetic Position or Analyzed Against Non-Sum
@@ -748,8 +756,6 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 %  Gamma |- e <= tau
-
-\newpage
 
 \Judgment{
   \ana{\Gamma}{e}{\tau}
@@ -840,8 +846,6 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 \end{mathpar}
 
-\newpage
-
 \subsection{Typed Elaboration}
 
 \begin{Theorem}[Synthetic Typed Elaboration Validity]
@@ -883,6 +887,16 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
       \Efun{x}{\tau}{e}
     }{ \Tarr{\tau}{\tau'} }{
       \Dfun{x}{\tau}{d}
+    }{\Delta}
+  }
+
+  \inferrule[ESLamInvalid]{
+    \synelab{\Gamma, \asc{x}{\hole{}}}{e}{\tau}{d}{\Delta}
+  }{
+    \synelab{\Gamma}{
+      \Efun{x}{\hole[\alpha]{}}{e}
+    }{ \Tarr{\hole{}}{\tau} }{
+      \Dfun{x}{\hole[\alpha]{}}{d}
     }{\Delta}
   }
 
@@ -930,6 +944,16 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     }{\Delta}
   }
 
+  \inferrule[ESAscInvalid]{
+    \anaelab{\Gamma}{e}{\hole{}}{d}{\tau}{\Delta}
+  }{
+    \synelab{\Gamma}{
+      \asc{e}{\hole[\alpha]{}}
+    }{ \hole{} }{
+      \cast{d}{\tau}{\hole{}}
+    }{\Delta}
+  }
+
   \inferrule[ESRollError]{
     \anaelab{\Gamma}{
       e
@@ -966,17 +990,27 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     }{\Delta, u :: \Trec{\hole{}}{\hole{}}[\Gamma]}
   }
 
-  \inferrule[ESInjError]{
-    \anaelab{\Gamma}{E}{ \hole{} }{D}{T}{\Delta} \\
-    T = frob(E)
+  \inferrule[ESInjErrSome]{
+    \anaelab{\Gamma}{e}{\hole{}}{d}{\tau}{\Delta} \\
+    \tau' = \Tsum{C(\tau)} \\
   }{
     \synelab{\Gamma}{
-      \hole[ \Einj{C}{E} ]{u}
-    }{ \Tsum{C(T)} }{
-      \hole[
-        \Dinj{C}{ \Tsum{C(T)} }{ \cast{D}{T}{ \hole{} } }
-      ]{u}_{ \id{\Gamma} }
-    }{\Delta, u :: \Tsum{C(T)}[\Gamma]}
+      \hole[ \Einj{C}{e} ]{u}
+    }{ \tau' }{
+      \dhole[
+        \Dinj{C}{ \tau' }{ \cast{d}{\tau}{ \hole{} } }
+      ]{\id{\Gamma}}{u}
+    }{\Delta, u :: \tau'{}[\Gamma]}
+  }
+
+  \inferrule[ESInjErrNone]{
+    \tau = \Tsum{C(\None)}
+  }{
+    \synelab{\Gamma}{
+      \hole[ \Einj{c}{\None} ]{u}
+    }{ \tau }{
+      \dhole[ \Dinj{C}{\tau}{\None} ]{\id{\Gamma}}{u}
+    }{\Delta, u :: \tau{}[\Gamma]}
   }
 
   \inferrule[ESEHole]{
@@ -1134,16 +1168,6 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
       \dhole[d]{\id{\Gamma}}{u}
     }{\tau}{u :: \tau[\Gamma]}
   }
-
-  \inferrule[EAMHole]{
-    \synelab{\Gamma}{e}{\tau'}{d}{\Delta}
-  }{
-    \anaelab{\Gamma}{
-      \mhole[e]{u}
-    }{ \tau }{
-      \dmhole[d]{\id{\Gamma}}{u}
-    }{\tau}{u :: \tau[\Gamma]}
-  }
 \end{mathpar}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
@@ -1190,9 +1214,16 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[TALam]{
-    \assign{\Delta}{\Gamma, \asc{x}{\tau_1}}{ d }{ \tau_2 }
+    \tau \neq \hole[\alpha]{} \\
+    \assign{\Delta}{\Gamma, \asc{x}{\tau}}{ d }{ \tau' }
   }{
-    \assign{\Delta}{\Gamma}{ \Dfun{x}{\tau_1}{d} }{ \tau_1 \to \tau_2 }
+    \assign{\Delta}{\Gamma}{ \Dfun{x}{\tau}{d} }{ \Tarr{\tau}{\tau'} }
+  }
+
+  \inferrule[TALamFree]{
+    \assign{\Delta}{\Gamma, \asc{x}{\hole{}}}{ d }{ \tau }
+  }{
+    \assign{\Delta}{\Gamma}{ \Dfun{x}{\hole[\alpha]{}}{d} }{ \Tarr{\hole{}}{\tau} }
   }
 
   \inferrule[TAApp]{
@@ -1564,6 +1595,8 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 \end{mathpar}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
+
+\newpage
 
 \Judgment{
   \trans{d}{d'}
