@@ -683,7 +683,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \syn{\Gamma}{ \asc{e}{\hole[\alpha]{}} }{ \hole{} }
   }
 
-  \inferrule[SRollError]{
+  \inferrule[SRollErr]{
     \ana{\Gamma}{e}{\hole{}}
   }{
     \syn{\Gamma}{ \hole[ \Eroll{e} ]{u} }{ \Trec{\hole{}}{\hole{}} }
@@ -703,13 +703,13 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \syn{\Gamma}{ \Eunroll{\mhole[e]{u}} }{\hole{}}
   }
 
-  \inferrule[SInjError]{
+  \inferrule[SInjErr]{
     \valid{\Gamma}{E}
   }{
     \syn{\Gamma}{ \hole[ \Einj{C}{E} ]{u} }{\hole{}}
   }
 
-  % \inferrule[SCaseError]{
+  % \inferrule[SCaseErr]{
   %   \ana{\Gamma}{e}{\hole{}} \\
   %   \Set{ \ana{\Gamma,\asc{X_i}{\hole{}}}{e_i}{\hole{}} }_{C_i \in \TagSet}
   % }{
@@ -954,7 +954,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     }{\Delta}
   }
 
-  \inferrule[ESRollError]{
+  \inferrule[ESRollErr]{
     \anaelab{\Gamma}{
       e
     }{ \hole{}}{
