@@ -61,7 +61,7 @@
 
 % Optional Tag Arguments
 
-\newcommand\None{\varnothing}
+\newcommand\Unit{\varnothing}
 
 % Token Literals
 
@@ -168,7 +168,7 @@
   \arraycolsep=0pt
   \begin{array}{l@{~~}c@{~~}c@{~~}l}
     \HTyp & \tau & \Coloneqq &
-      \None
+      \Unit
       \mid \Tarr{\tau}{\tau}
       \mid \alpha
       \mid \Trec{\pi}{\tau}
@@ -178,7 +178,7 @@
       \\
     \HTypPat & \pi & \Coloneqq & \alpha \mid \hole{} \\
     \HExp & e & \Coloneqq &
-      \None
+      \Unit
       \mid x
       \mid \Efun{x}{\tau}{e}
       \mid \Eapp{e}{e}
@@ -193,7 +193,7 @@
       \mid \mhole[e]{u}
       \\
     \IHExp & d & \Coloneqq &
-      \None
+      \Unit
       \mid x
       \mid \Dfun{x}{\tau}{d}
       \mid \Dapp{d}{d}
@@ -246,7 +246,7 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
   \begin{array}{l@{\quad=\quad}l@{\quad}l}
     \subst{\tau}{\hole{}}{\tau'} & \tau'
     \\
-    \subst{\tau}{\alpha}{ \None } & \None \\
+    \subst{\tau}{\alpha}{ \Unit } & \Unit \\
     \subst{\tau}{\alpha}{ (\Tarr{\tau_1}{\tau_2}) }
       & \Tarr{ \subst{\tau}{\alpha}{\tau_1} }{ \subst{\tau}{\alpha}{\tau_1} } \\
     \subst{\tau}{\alpha}{ \alpha } & \tau \\
@@ -314,7 +314,7 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
 % \[
 %   \join{T_1}{T_2} = \begin{cases}
 %     \join{\tau_1}{\tau_2} & \text{when } T_1 = \tau_1 \wedge T_2 = \tau_2 \\
-%     \None & \text{when } T_1 = T_2 = \None \\
+%     \Unit & \text{when } T_1 = T_2 = \Unit \\
 %   \end{cases}
 % \]
 
@@ -351,7 +351,7 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
   \inferrule[TVUnit]{
     %
   }{
-    \valid{\Theta}{ \None }
+    \valid{\Theta}{ \Unit }
   }
 
   \inferrule[TVArr]{
@@ -622,7 +622,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   \inferrule[SUnit]{
     %
   }{
-    \syn{\Gamma}{\None}{\None}
+    \syn{\Gamma}{\Unit}{\Unit}
   }
 
   \inferrule[SVar]{
@@ -773,8 +773,8 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 
   \inferrule[AInjUnexpectedBody]{
     C_j \in \TagSet \\
-    \tau_j = \None \\
-    e \neq \None \\
+    \tau_j = \Unit \\
+    e \neq \Unit \\
     \ana{\Gamma}{e}{\hole{}}
   }{
     \ana{\Gamma}{ \hole[\Einj{C_j}{e}]{u} }{\Tsum{C_i(\tau_i)}_{C_i \in \TagSet}}
@@ -782,9 +782,9 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 
   \inferrule[AInjExpectedBody]{
     C_j \in \TagSet \\
-    \tau_j \neq \None
+    \tau_j \neq \Unit
   }{
-    \ana{\Gamma}{ \hole[\Einj{C_j}{\None}]{u} }{\Tsum{C_i(\tau_i)}_{C_i \in \TagSet}}
+    \ana{\Gamma}{ \hole[\Einj{C_j}{\Unit}]{u} }{\Tsum{C_i(\tau_i)}_{C_i \in \TagSet}}
   }
 
   \inferrule[AInjBadTag]{
@@ -832,7 +832,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   \inferrule[ESUnit]{
     %
   }{
-    \synelab{\Gamma}{\None}{\None}{\None}{\emptyset}
+    \synelab{\Gamma}{\Unit}{\Unit}{\Unit}{\emptyset}
   }
 
   \inferrule[ESVar]{
@@ -1074,8 +1074,8 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   \inferrule[EAInjUnexpectedBody]{
     \tau = \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} \\
     C_j \in \TagSet \\
-    \tau_j = \None \\
-    e \neq \None \\\\
+    \tau_j = \Unit \\
+    e \neq \Unit \\\\
     \anaelab{\Gamma}{e}{ \hole{} }{ d }{ \tau_j }{\Delta} \\
     \tau' = \Tsum{\Set{C_i(\tau_i)}_{C_i \in \TagSet \setminus C_j} \cup \Set{C_j(\tau_j)}}
   }{
@@ -1089,13 +1089,13 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   \inferrule[EAInjExpectedBody]{
     \tau = \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} \\
     C_j \in \TagSet \\
-    \tau_j \neq \None \\
-    \tau' = \Tsum{\Set{C_i(\tau_i)}_{C_i \in \TagSet \setminus C_j} \cup \Set{C_j(\None)}}
+    \tau_j \neq \Unit \\
+    \tau' = \Tsum{\Set{C_i(\tau_i)}_{C_i \in \TagSet \setminus C_j} \cup \Set{C_j(\Unit)}}
   }{
     \anaelab{\Gamma}{
-      \hole[ \Einj{C_j}{\None} ]{u}
+      \hole[ \Einj{C_j}{\Unit} ]{u}
     }{\tau}{
-      \dhole[ \Dinj{C_j}{\tau'}{\None} ]{\id{\Gamma}}{u}
+      \dhole[ \Dinj{C_j}{\tau'}{\Unit} ]{\id{\Gamma}}{u}
     }{\tau}{\Delta, u :: \tau[\Gamma]}
   }
 
@@ -1170,7 +1170,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   \inferrule[TAUnit]{
     %
   }{
-    \assign{\Delta}{\Gamma}{\None}{\None}
+    \assign{\Delta}{\Gamma}{\Unit}{\Unit}
   }
 
   \inferrule[TAVar]{
@@ -1303,7 +1303,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[GSum]{
-    \Set{\tau_i = \None \vee \tau_i = \hole{}}_{C_i \in \TagSet}
+    \Set{\tau_i = \Unit \vee \tau_i = \hole{}}_{C_i \in \TagSet}
   }{
     \ground{ \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} }
   }
@@ -1333,8 +1333,8 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   \inferrule[MGSum]{
     \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} \neq \Tsum{C_i(\tau_i')}_{C_i \in \TagSet} \\
     \Set{
-      \left( \tau_i   =  \None \implies \tau_i' = \None   \right) \wedge
-      \left( \tau_i \neq \None \implies \tau_i' = \hole{} \right)
+      \left( \tau_i   =  \Unit \implies \tau_i' = \Unit   \right) \wedge
+      \left( \tau_i \neq \Unit \implies \tau_i' = \hole{} \right)
     }_{C_i \in \TagSet}
   }{
     \MatchedGroundTyp{
@@ -1379,7 +1379,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   \inferrule[VUnit]{
     %
   }{
-    \val{ \None }
+    \val{ \Unit }
   }
 
   \inferrule[VLam]{
