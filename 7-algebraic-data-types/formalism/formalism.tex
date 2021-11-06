@@ -168,10 +168,11 @@
   \arraycolsep=0pt
   \begin{array}{l@{~~}c@{~~}c@{~~}l}
     \HTyp & \tau & \Coloneqq &
-      \Tarr{\tau}{\tau}
+      \None
+      \mid \Tarr{\tau}{\tau}
       \mid \alpha
       \mid \Trec{\pi}{\tau}
-      \mid \Tsum{C_i(T_i)}_{C_i \in \TagSet}
+      \mid \Tsum{C_i(\tau_i)}_{C_i \in \TagSet}
       \mid \hole{}
       \mid \hole[\alpha]{}
       \\
@@ -181,7 +182,7 @@
       \mid \Efun{x}{\tau}{e}
       \mid \Eapp{e}{e}
       \mid \asc{e}{\tau}
-      \mid \Einj{C}{E}
+      \mid \Einj{C}{e}
       % \mid \Ecase{e}{C_i(X_i){=}e_i}_{C_i \in \TagSet}
       \mid \Eroll{e}
       \mid \Eunroll{e}
@@ -190,19 +191,12 @@
       \mid \hole[e]{u}
       \mid \mhole[e]{u}
       \\
-    \HTag & C & \Coloneqq &
-      \Tag
-      \mid \TagHole{u}
-      \mid \TagHole[c]{u}
-      \\
-    \HTagTyp & T & \Coloneqq & \tau \mid \None \\
-    \HTagArg & E & \Coloneqq & e \mid \None \\
-    % \HTagVar & X & \Coloneqq & x \mid \None \\
     \IHExp & d & \Coloneqq &
-      x
+      \None
+      \mid x
       \mid \Dfun{x}{\tau}{d}
       \mid \Dapp{d}{d}
-      \mid \Dinj{C}{\tau}{D}
+      \mid \Dinj{C}{\tau}{d}
       % \mid \Dcase{d}{C_i(X_i)}_{C_u \in \TagSet}
       \mid \Droll{\alpha}{\tau}{d}
       \mid \Dunroll{d}
@@ -213,9 +207,10 @@
       \mid \dhole[d]{\sigma}{u}
       \mid \dmhole[d]{\sigma}{u}
       \\
-    \IHTagArg & D & \Coloneqq &
-      d
-      \mid \None
+    \HTag & C & \Coloneqq &
+      \Tag
+      \mid \TagHole{u}
+      \mid \TagHole[c]{u}
       \\
   \end{array}
 \]
@@ -224,15 +219,6 @@
 
 \subsection{Context Extension}
 
-We write $\Gamma, \asc{X}{T}$ to denote the extension of typing context $\Gamma$ with optional variable $X$ of optional type $T$.
-\[
-  \Gamma, \asc{X}{T} = \begin{cases}
-    \Gamma, \asc{x}{\tau} & X = x \wedge T = \tau \\
-    \Gamma, \asc{x}{\hole{}} & X = x \wedge T = \None \\
-    \Gamma & X = \None \\
-  \end{cases}
-\]
-%
 We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$ with optional type variable name $\pi$.
 \[
   \Theta, \pi = \begin{cases}
@@ -259,6 +245,7 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
   \begin{array}{l@{\quad=\quad}l@{\quad}l}
     \subst{\tau}{\hole{}}{\tau'} & \tau'
     \\
+    \subst{\tau}{\alpha}{ \None } & \None \\
     \subst{\tau}{\alpha}{ (\Tarr{\tau_1}{\tau_2}) }
       & \Tarr{ \subst{\tau}{\alpha}{\tau_1} }{ \subst{\tau}{\alpha}{\tau_1} } \\
     \subst{\tau}{\alpha}{ \alpha } & \tau \\
@@ -267,30 +254,12 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
       & \Trec{\alpha_1}{ \subst{\tau}{\alpha}{\tau_2} }
       & \text{ when } \alpha \neq \alpha_1 \text{ and } \alpha_1 \notin \FV{\tau} \\
     \subst{\tau}{\alpha}{ \Trec{\hole{}}{\tau_2} } & \Trec{\hole{}}{ \subst{\tau}{\alpha}{\tau_2} } \\
-    \subst{\tau}{\alpha}{ \Tsum{C_i(T_i)}_{C_i \in \TagSet} }
-      & \Tsum{C_i( \subst{\tau}{\alpha}{T_i} )}_{C_i \in \TagSet} \\
+    \subst{\tau}{\alpha}{ \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} }
+      & \Tsum{C_i( \subst{\tau}{\alpha}{\tau_i} )}_{C_i \in \TagSet} \\
     \subst{\tau}{\alpha}{ \hole{} } & \hole{} \\
     \subst{\alpha'}{\alpha}{ \hole[\alpha]{} } & \hole[\alpha']{u} \\
     \subst{\alpha'}{\alpha}{ \hole[\alpha_1]{u} } & \hole[\alpha_1]{u} & \text{ when } \alpha \neq \alpha_1 \\
   \end{array}
-\]
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-%  [tau/pi]T
-
-\newpage
-
-\Judgment{
-  \subst{\tau}{\pi}{T} = \tau'
-}{
-  $\tau'$ is obtained by substituting $\tau$ for $\pi$ in $T$
-}
-
-\[
-  \subst{\tau}{\pi}{T} = \begin{cases}
-    \subst{\tau}{\pi}{\tau'} & \text{when } T = \tau' \\
-    \None & \text{when } T = \None \\
-  \end{cases}
 \]
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
@@ -378,6 +347,12 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
 }
 
 \begin{mathpar}
+  \inferrule[TVUnit]{
+    %
+  }{
+    \valid{\Theta}{ \None }
+  }
+
   \inferrule[TVArr]{
     \valid{\Theta}{\tau_1} \\
     \valid{\Theta}{\tau_2}
@@ -398,9 +373,9 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
   }
 
   \inferrule[TVSum]{
-    \Set{ \valid{\Theta}{T_i} }_{C_i \in \TagSet}
+    \Set{ \valid{\Theta}{\tau_i} }_{C_i \in \TagSet}
   }{
-    \valid{\Theta}{ \Tsum{ C_i(T_i) }_{C_i \in \TagSet} }
+    \valid{\Theta}{ \Tsum{ C_i(\tau_i) }_{C_i \in \TagSet} }
   }
 
   \inferrule[TVEHole]{
@@ -415,32 +390,6 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
   %   \valid{\Theta}{ \hole[\alpha]{} }
   % }
 \end{mathpar}
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-%  Theta |- T valid
-
-\Judgment{
-  \valid{\Theta}{T}
-}{
-  $T$ is a valid optional type
-}
-
-\begin{mathpar}
-  \inferrule[TVSome]{
-    T = \tau \\
-    \valid{\Theta}{\tau}
-  }{
-    \valid{\Theta}{T}
-  }
-
-  \inferrule[TVNone]{
-    %
-  }{
-    \valid{\Theta}{\None}
-  }
-\end{mathpar}
-
-\vspace*{\baselineskip}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 % tau ~ tau'
@@ -471,13 +420,21 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
   }
 
   \inferrule[TCNEHole1]{
+    %
   }{
     \consistent{\hole[\alpha]{}}{\tau}
   }
 
   \inferrule[TCNEHole2]{
+    %
   }{
     \consistent{\tau}{\hole[\alpha]{}}
+  }
+
+  \inferrule[TCUnit]{
+    %
+  }{
+    \consistent{\None}{\None}
   }
 
   \inferrule[TCArr]{
@@ -520,40 +477,13 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
   }
 
   \inferrule[TCSum]{
-    % \Set{ \validtag{C_i} }_{C_i \in \TagSet} \\
-    \Set{ \consistent{T_i}{T_i'} }_{C_i \in \TagSet}
+    \Set{ \consistent{\tau_i}{\tau_i'} }_{C_i \in \TagSet}
   }{
     \consistent{
-      \Tsum{C_i(T_i)}_{C_i \in \TagSet}
+      \Tsum{C_i(\tau_i)}_{C_i \in \TagSet}
     }{
-      \Tsum{C_i(T_i')}_{C_i \in \TagSet}
+      \Tsum{C_i(\tau_i')}_{C_i \in \TagSet}
     }
-  }
-\end{mathpar}
-
-% For \textsc{TCRecVar}, we choose to substitute $\alpha_1$ for $\alpha_2$ arbitrarily.
-% Due to this asymmetry, recursive types are only consistent up to alpha renaming.
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% T ~ T'
-
-\Judgment{
-  \consistent{T}{T'}
-}{
-  $T$ and $T'$ are consistent
-}
-
-\begin{mathpar}
-  \inferrule[TCSome]{
-    \consistent{\tau}{\tau'}
-  }{
-    \consistent{\tau}{\tau'}
-  }
-
-  \inferrule[TCNone]{
-    %
-  }{
-    \consistent{\None}{\None}
   }
 \end{mathpar}
 
@@ -567,13 +497,13 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
 }
 
 \begin{mathpar}
-  \inferrule[TagVTag]{
+  \inferrule[CVTag]{
     %
   }{
     \validtag{\Tag}
   }
 
-  \inferrule[TagVHole]{
+  \inferrule[CVEHole]{
     %
   }{
     \validtag{\TagHole{u}}
@@ -664,8 +594,6 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 
-\newpage
-
 \Judgment{
   \MatchedRecTyp{\tau}{\pi}{\tau'}
 }{
@@ -695,7 +623,13 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   $e$ synthesizes type $\tau$
 }
 
-\begin{mathpar}
+\begin{mathparpagebreakable}
+  \inferrule[SUnit]{
+    %
+  }{
+    \syn{\Gamma}{\None}{\None}
+  }
+
   \inferrule[SVar]{
     \asc{x}{\tau} \in \Gamma
   }{
@@ -734,7 +668,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \notconsistent{\tau_1}{\Tarr{\hole{}}{\hole{}}} \\
     \ana{\Gamma}{e_2}{\hole{}}
   }{
-    \syn{\Gamma}{ \hole[ \Eapp{e_1}{e_2} ]{u} }{\hole{}}
+    \syn{\Gamma}{ \Eapp{\mhole[e_1]{u}}{e_2} }{\hole{}}
   }
 
   \inferrule[SAsc]{
@@ -772,15 +706,15 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 
   \inferrule[SInjErr]{
     \validtag{C} \\
-    \valid{\Gamma}{E}
+    \ana{\Gamma}{e}{\hole{}}
   }{
-    \syn{\Gamma}{ \hole[ \Einj{C}{E} ]{u} }{\hole{}}
+    \syn{\Gamma}{ \hole[ \Einj{C}{e} ]{u} }{\hole{}}
   }
 
   \inferrule[SInjTagErr]{
-    \valid{\Gamma}{E}
+    \ana{\Gamma}{e}{\hole{}}
   }{
-    \syn{\Gamma}{\Einj{\TagHole[c]{u}}{E}}{\hole{}}
+    \syn{\Gamma}{\Einj{\TagHole[c]{u}}{e}}{\hole{}}
   }
 
   % \inferrule[SCaseErr]{
@@ -801,32 +735,9 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }{
     \syn{\Gamma}{ \hole[e]{u} }{\hole{}}
   }
-\end{mathpar}
+\end{mathparpagebreakable}
 
 % \textsc{SInj} = Injection in Synthetic Position or Analyzed Against Non-Sum
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-%  Gamma |- E valid
-
-\Judgment{
-  \valid{\Gamma}{E}
-}{
-  $E$ is a valid optional expression
-}
-
-\begin{mathpar}
-  \inferrule[EVSome]{
-    \ana{\Gamma}{e}{\hole{}}
-  }{
-    \valid{\Gamma}{e}
-  }
-
-  \inferrule[EVNone]{
-    %
-  }{
-    \valid{\Gamma}{\None}
-  }
-\end{mathpar}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 %  Gamma |- e <= tau
@@ -849,50 +760,53 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \notconsistent{\tau}{\Trec{\hole{}}{\hole{}}} \\
     \ana{\Gamma}{e}{ \hole{} }
   }{
-    \ana{\Gamma}{ \Eroll{\mhole[e]{u}} }{\tau}
+    \ana{\Gamma}{ \hole[\Eroll{e}]{u} }{\tau}
   }
 
   \inferrule[AInjHole]{
-    \valid{\Gamma}{E}
+    \ana{\Gamma}{e}{\hole{}}
   }{
-    \ana{\Gamma}{ \Einj{C}{E} }{\hole{}}
+    \ana{\Gamma}{ \Einj{C}{e} }{\hole{}}
   }
 
   \inferrule[AInj]{
     C_j \in \TagSet \\
-    \ana{\Gamma}{E}{T_j}
+    \ana{\Gamma}{e}{\tau_j}
   }{
-    \ana{\Gamma}{ \Einj{C_j}{E} }{ \Tsum{C_i(T_i)}_{C_i \in \TagSet} }
-  }
-
-  \inferrule[AInjTagErr]{
-    \valid{\Gamma}{E}
-  }{
-    \ana{\Gamma}{ \Einj{\TagHole[c]{u}}{E} }{ \Tsum{C_i(T_i)}_{C_i \in \TagSet} }
+    \ana{\Gamma}{ \Einj{C_j}{e} }{ \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} }
   }
 
   \inferrule[AInjUnexpectedBody]{
     C_j \in \TagSet \\
-    T_j = \None \\
+    \tau_j = \None \\
+    e \neq \None \\
     \ana{\Gamma}{e}{\hole{}}
   }{
-    \ana{\Gamma}{ \hole[\Einj{C_j}{e}]{u} }{\Tsum{C_i(T_i)}_{C_i \in \TagSet}}
+    \ana{\Gamma}{ \hole[\Einj{C_j}{e}]{u} }{\Tsum{C_i(\tau_i)}_{C_i \in \TagSet}}
   }
 
   \inferrule[AInjExpectedBody]{
     C_j \in \TagSet \\
-    T_j = \tau
+    \tau_j \neq \None
   }{
-    \ana{\Gamma}{ \hole[\Einj{C_j}{\None}]{u} }{\Tsum{C_i(T_i)}_{C_i \in \TagSet}}
+    \ana{\Gamma}{ \hole[\Einj{C_j}{\None}]{u} }{\Tsum{C_i(\tau_i)}_{C_i \in \TagSet}}
   }
 
   \inferrule[AInjBadTag]{
+    \validtag{C} \\
     C \notin \TagSet \\
-    \valid{\Gamma}{E}
+    \ana{\Gamma}{e}{\hole{}}
   }{
     \ana{\Gamma}{
-      \hole[\Einj{C}{E}]{u}
-    }{\Tsum{C_i(T_i)}_{C_i \in \TagSet}}
+      \hole[\Einj{C}{e}]{u}
+    }{\Tsum{C_i(\tau_i)}_{C_i \in \TagSet}}
+  }
+
+  \inferrule[AInjTagErr]{
+    \TagHole[c]{u} \notin \TagSet \\
+    \ana{\Gamma}{e}{\hole{}}
+  }{
+    \ana{\Gamma}{ \Einj{\TagHole[c]{u}}{e} }{ \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} }
   }
 
   \inferrule[ASubsume]{
@@ -902,31 +816,6 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \ana{\Gamma}{e}{\tau}
   }
 \end{mathpar}
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-%  Gamma |- E <= T
-
-\Judgment{
-  \ana{\Gamma}{E}{T}
-}{
-  $E$ analyzes against optional type $T$
-}
-
-\begin{mathpar}
-  \inferrule[ASome]{
-    \ana{\Gamma}{e}{\tau}
-  }{
-    \ana{\Gamma}{e}{\tau}
-  }
-
-  \inferrule[ANone]{
-    %
-  }{
-    \ana{\Gamma}{\None}{\None}
-  }
-\end{mathpar}
-
-% \newpage
 
 \subsection{Typed Elaboration}
 
@@ -945,6 +834,12 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 }
 
 \begin{mathparpagebreakable}
+  \inferrule[ESUnit]{
+    %
+  }{
+    \synelab{\Gamma}{\None}{\None}{\None}{\emptyset}
+  }
+
   \inferrule[ESVar]{
     \asc{x}{\tau} \in \Gamma
   }{
@@ -1072,7 +967,8 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     }{\Delta, u :: \Trec{\hole{}}{\hole{}}[\Gamma]}
   }
 
-  \inferrule[ESInjSomeErr]{
+  \inferrule[ESInjErr]{
+    \validtag{C} \\
     \anaelab{\Gamma}{e}{\hole{}}{d}{\tau}{\Delta} \\
     \tau' = \Tsum{C(\tau)} \\
   }{
@@ -1085,17 +981,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     }{\Delta, u :: \hole{}[\Gamma]}
   }
 
-  \inferrule[ESInjNoneErr]{
-    \tau = \Tsum{C(\None)}
-  }{
-    \synelab{\Gamma}{
-      \hole[ \Einj{C}{\None} ]{u}
-    }{ \hole{} }{
-      \dhole[ \Dinj{C}{\tau}{\None} ]{\id{\Gamma}}{u}
-    }{\Delta, u :: \hole{}[\Gamma]}
-  }
-
-  \inferrule[ESInjSomeTagErr]{
+  \inferrule[ESInjTagErr]{
     \anaelab{\Gamma}{e}{\hole{}}{d}{\tau}{\Delta} \\
     \tau' = \Tsum{\TagHole[c]{u}(\tau)}
   }{
@@ -1103,16 +989,6 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
       \Einj{\TagHole[c]{u}}{e}
     }{\hole{}}{
       \Dinj{\TagHole[c]{u}}{\tau'}{ \cast{d}{\tau}{\hole{}} }
-    }{\Delta}
-  }
-
-  \inferrule[ESInjNoneTagErr]{
-    \tau = \Tsum{\TagHole[c]{u}(\None)}
-  }{
-    \synelab{\Gamma}{
-      \Einj{\TagHole[c]{u}}{\None}
-    }{\hole{}}{
-      \Dinj{\TagHole[c]{u}}{\tau}{\None}
     }{\Delta}
   }
 
@@ -1173,25 +1049,24 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \anaelab{\Gamma}{
       \hole[ \Eroll{e} ]{u}
     }{\tau}{
-      \Droll{\hole{}}{\hole{}}{ \dmhole[d]{\id{\Gamma}}{u} }
+      \dhole[ \Droll{\hole{}}{\hole{}}{d} ]{\id{\Gamma}}{u}
     }{ \Trec{\hole{}}{\hole{}} }{ \Delta, u :: \Trec{\hole{}}{\hole{}}[\Gamma] }
   }
 
   \inferrule[EAInjHole]{
-    \anaelab{\Gamma}{E}{ \hole{} }{D}{T}{\Delta} \\
-    \tau = \Tsum{C(T)}
+    \anaelab{\Gamma}{e}{ \hole{} }{d}{\tau}{\Delta} \\
+    \tau' = \Tsum{C(\tau)}
   }{
     \anaelab{\Gamma}{
-      \Einj{C}{E}
+      \Einj{C}{e}
     }{ \hole{} }{
-      \Dinj{C}{\tau}{D}
-    }{\tau}{\Delta}
+      \Dinj{C}{\tau'}{d}
+    }{\tau'}{\Delta}
   }
 
-  \inferrule[EAInjSome]{
-    \tau = \Tsum{C_i(T_i)}_{C_i \in \TagSet} \\
+  \inferrule[EAInj]{
+    \tau = \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} \\
     C_j \in \TagSet \\
-    T_j = \tau_j \\
     \anaelab{\Gamma}{e}{\tau_j}{d}{\tau_j'}{\Delta}
   }{
     \anaelab{\Gamma}{
@@ -1201,25 +1076,13 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     }{\tau}{\Delta}
   }
 
-  \inferrule[EAInjNone]{
-    \tau = \Tsum{C_i(T_i)}_{C_i \in \TagSet} \\
-    C_j \in \TagSet \\
-    T_j = \None
-    % \anaelab{\Gamma}{e}{\tau_j}{d}{\tau_j'}{\Delta}
-  }{
-    \anaelab{\Gamma}{
-      \Einj{C_j}{\None}
-    }{\tau}{
-      \Dinj{C_j}{\tau}{\None}
-    }{\tau}{\Delta}
-  }
-
   \inferrule[EAInjUnexpectedBody]{
-    \tau = \Tsum{C_i(T_i)}_{C_i \in \TagSet} \\
+    \tau = \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} \\
     C_j \in \TagSet \\
-    T_j = \None \\
+    \tau_j = \None \\
+    e \neq \None \\\\
     \anaelab{\Gamma}{e}{ \hole{} }{ d }{ \tau_j }{\Delta} \\
-    \tau' = \Tsum{\Set{C_i(T_i)}_{C_i \in \TagSet \setminus C_j} \cup \Set{C_j(\tau_j)}}
+    \tau' = \Tsum{\Set{C_i(\tau_i)}_{C_i \in \TagSet \setminus C_j} \cup \Set{C_j(\tau_j)}}
   }{
     \anaelab{\Gamma}{
       \hole[ \Einj{C_j}{e} ]{u}
@@ -1229,10 +1092,10 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[EAInjExpectedBody]{
-    \tau = \Tsum{C_i(T_i)}_{C_i \in \TagSet} \\
+    \tau = \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} \\
     C_j \in \TagSet \\
-    T_j = \tau_j \\
-    \tau' = \Tsum{\Set{C_i(T_i)}_{C_i \in \TagSet \setminus C_j} \cup \Set{C_j(\None)}}
+    \tau_j \neq \None \\
+    \tau' = \Tsum{\Set{C_i(\tau_i)}_{C_i \in \TagSet \setminus C_j} \cup \Set{C_j(\None)}}
   }{
     \anaelab{\Gamma}{
       \hole[ \Einj{C_j}{\None} ]{u}
@@ -1242,37 +1105,29 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[EAInjBadTag]{
-    \tau = \Tsum{C_i(T_i)}_{C_i \in \TagSet} \\
+    \tau = \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} \\
     C \notin \TagSet \\
-    \anaelab{\Gamma}{E}{ \hole{} }{D}{T}{\Delta} \\
-    \tau' = \Tsum{\Set{C_i(T_i)}_{C_i \in \TagSet} \cup \Set{C(T)}}
+    \validtag{C} \\
+    \anaelab{\Gamma}{e}{ \hole{} }{d}{\tau'}{\Delta} \\
+    \tau'' = \Tsum{\Set{C_i(\tau_i)}_{C_i \in \TagSet} \cup \Set{C(\tau')}}
   }{
     \anaelab{\Gamma}{
-      \hole[ \Einj{C}{E} ]{u}
+      \hole[ \Einj{C}{e} ]{u}
     }{\tau}{
-      \dhole[ \Dinj{C}{\tau'}{D} ]{\id{\Gamma}}{u}
+      \dhole[ \Dinj{C}{\tau''}{d} ]{\id{\Gamma}}{u}
     }{\tau}{\Delta, u :: \tau[\Gamma]}
   }
 
-  \inferrule[EAInjSomeTagErr]{
+  \inferrule[EAInjTagErr]{
+    \TagHole[c]{u} \notin \TagSet \\
     \anaelab{\Gamma}{e}{\hole{}}{d}{\tau}{\Delta} \\
-    \tau' = \Tsum{\Set{C_i(T_i)}_{C_i \in \TagSet} \cup \Set{\TagHole[c]{u}(\tau)}}
+    \tau' = \Tsum{\Set{C_i(\tau_i)}_{C_i \in \TagSet} \cup \Set{\TagHole[c]{u}(\tau)}}
   }{
     \anaelab{\Gamma}{
       \Einj{\TagHole[c]{u}}{e}
-    }{ \Tsum{C_i(T_i)}_{C_i \in \TagSet} }{
+    }{ \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} }{
       \Dinj{\TagHole[c]{u}}{\tau'}{ \cast{d}{\tau}{\hole{}} }
-    }{ \Tsum{C_i(T_i)}_{C_i \in \TagSet} }{ \Delta }
-  }
-
-  \inferrule[EAInjNoneTagErr]{
-    \tau = \Tsum{\Set{C_i(T_i)}_{C_i \in \TagSet} \cup \Set{\TagHole[c]{u}(\None)}}
-  }{
-    \anaelab{\Gamma}{
-      \Einj{\TagHole[c]{u}}{\None}
-    }{ \Tsum{C_i(T_i)}_{C_i \in \TagSet} }{
-      \Dinj{\TagHole[c]{u}}{\tau}{\None}
-    }{ \Tsum{C_i(T_i)}_{C_i \in \TagSet} }{ \emptyset }
+    }{ \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} }{ \Delta }
   }
 
   \inferrule[EASubsume]{
@@ -1305,29 +1160,6 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 \end{mathparpagebreakable}
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% Gamma |- E <= T_1 ~> D : T_2 -| Delta
-
-\Judgment{
-  \anaelab{\Gamma}{E}{T_1}{D}{T_2}{\Delta}
-}{
-  $E$ analyzes against optional type $T_1$ and elaborates to $D$ of consistent optional type $T_2$
-}
-
-\begin{mathpar}
-  \inferrule[EASome]{
-    \anaelab{\Gamma}{e}{\tau_1}{d}{\tau_2}{\Delta}   
-  }{
-    \anaelab{\Gamma}{e}{\tau_1}{d}{\tau_2}{\Delta}
-  }
-
-  \inferrule[EANone]{
-    % 
-  }{
-    \anaelab{\Gamma}{\None}{\None}{\None}{\None}{\emptyset}
-  }
-\end{mathpar}
-
 \subsection{Type Assignment}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
@@ -1340,6 +1172,12 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 }
 
 \begin{mathpar}
+  \inferrule[TAUnit]{
+    %
+  }{
+    \assign{\Delta}{\Gamma}{\None}{\None}
+  }
+
   \inferrule[TAVar]{
     \asc{x}{\tau} \in \Gamma
   }{
@@ -1380,11 +1218,11 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[TAInj]{
-    \tau = \Tsum{C_i(T_i)}_{C_i \in \TagSet} \\
+    \tau = \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} \\
     C_j \in \TagSet \\
-    \assign{\Delta}{\Gamma}{ D }{ T_j }
+    \assign{\Delta}{\Gamma}{ d }{ \tau_j }
   }{
-    \assign{\Delta}{\Gamma}{ \Dinj{C_j}{\tau}{D} }{ \tau }
+    \assign{\Delta}{\Gamma}{ \Dinj{C_j}{\tau}{d} }{ \tau }
   }
 
   \inferrule[TAEHole]{
@@ -1445,29 +1283,6 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 %   }
 \end{mathpar}
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-% Gamma |- D : T
-
-\Judgment{
-  \assign{\Delta}{\Gamma}{D}{T}
-}{
-  $D$ is assigned optional type $T$
-}
-
-\begin{mathpar}
-  \inferrule[TASome]{
-    \assign{\Delta}{\Gamma}{d}{\tau}
-  }{
-    \assign{\Delta}{\Gamma}{d}{\tau}
-  }
-
-  \inferrule[TANone]{
-    % 
-  }{
-    \assign{\Delta}{\Gamma}{\None}{\None}
-  }
-\end{mathpar}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Dynamic Semantics}
@@ -1493,15 +1308,13 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[GSum]{
-    \Set{T_i = \hole{} \vee T_i = \None}_{C_i \in \TagSet}
+    \Set{\tau_i = \None \vee \tau_i = \hole{}}_{C_i \in \TagSet}
   }{
-    \ground{ \Tsum{C_i(T_i)}_{C_i \in \TagSet} }
+    \ground{ \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} }
   }
 \end{mathpar}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-
-\newpage
 
 \Judgment{
   \MatchedGroundTyp{\tau}{\tau'}
@@ -1523,16 +1336,16 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[MGSum]{
-    \Tsum{C_i(T_i)}_{C_i \in \TagSet} \neq \Tsum{C_i(T_i')}_{C_i \in \TagSet} \\
+    \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} \neq \Tsum{C_i(\tau_i')}_{C_i \in \TagSet} \\
     \Set{
-      T_i =   \tau_i \implies T_i' = \hole{} \wedge
-      T_i = \None \implies T_i' = \None
+      \left( \tau_i   =  \None \implies \tau_i' = \None   \right) \wedge
+      \left( \tau_i \neq \None \implies \tau_i' = \hole{} \right)
     }_{C_i \in \TagSet}
   }{
     \MatchedGroundTyp{
-      \Tsum{C_i(T_i)}_{C_i \in \TagSet}
+      \Tsum{C_i(\tau_i)}_{C_i \in \TagSet}
     }{
-      \Tsum{C_i(T_i')}_{C_i \in \TagSet}
+      \Tsum{C_i(\tau_i')}_{C_i \in \TagSet}
     }
   }
 \end{mathpar}
@@ -1568,6 +1381,12 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 }
 
 \begin{mathpar}
+  \inferrule[VUnit]{
+    %
+  }{
+    \val{ \None }
+  }
+
   \inferrule[VLam]{
     %
   }{
@@ -1584,12 +1403,6 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \val{d}
   }{
     \val{ \Dinj{\Tag}{\tau}{d} }
-  }
-
-  \inferrule[VNone]{
-    %
-  }{
-    \val{ \None }
   }
 \end{mathpar}
 
@@ -1641,16 +1454,12 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[BVSumCast]{
-    \Tsum{C_i(T_i)}_{C_i \in \TagSet} \neq \Tsum{C_i(T_i')}_{C_i \in \TagSet} \\
+    \tau = \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} \\\\
+    \tau' = \Tsum{C_i(\tau_i')}_{C_i \in \TagSet} \\\\
+    \tau \neq \tau' \\
     \boxedval{d}
   }{
-    \boxedval{
-      \cast{d}{
-        \Tsum{C_i(T_i)}_{C_i \in \TagSet}
-      }{
-        \Tsum{C_i(T_i')}_{C_i \in \TagSet}
-      }
-    }
+    \boxedval{ \cast{d}{\tau}{\tau'} }
   }
 
   \inferrule[BVHoleCast]{
@@ -1688,16 +1497,11 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \indet{\Dinj{\Tag}{\tau}{d}}
   }
 
-  \inferrule[IInjSome]{
+  \inferrule[IInjHole]{
+    C \neq \Tag \\
     \final{d}
   }{
-    \indet{\Dinj{ \TagHole{u} }{\tau}{d}}
-  }
-
-  \inferrule[IInjNone]{
-    %
-  }{
-    \indet{\Dinj{ \TagHole{u} }{\tau}{\None}}
+    \indet{\Dinj{C}{\tau}{d}}
   }
 
   \inferrule[ICastRec]{
@@ -1714,22 +1518,16 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[ICastSum]{
-    \Tsum{C_i(T_i)}_{C_i \in \TagSet} \neq \Tsum{C_i(T_i')}_{C_i \in \TagSet} \\
+    \tau = \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} \\\\
+    \tau' = \Tsum{C_i(\tau_i')}_{C_i \in \TagSet} \\\\
+    \tau \neq \tau' \\
     \indet{d}
   }{
-    \indet{
-      \cast{d}{
-        \Tsum{C_i(T_i)}_{C_i \in \TagSet}
-      }{
-        \Tsum{C_i(T_i')}_{C_i \in \TagSet}
-      }
-    }
+    \indet{ \cast{d}{\tau}{\tau'} }
   }
 \end{mathpar}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-
-% \newpage
 
 \Judgment{
   \trans{d}{d'}
