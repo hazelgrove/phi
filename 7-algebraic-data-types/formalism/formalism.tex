@@ -645,9 +645,10 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[SLamInvalid]{
-    \syn{\Gamma, \asc{x}{\hole{}}}{e}{\tau}
+    \neg \left( \valid{\emptyset}{\tau} \right) \\
+    \syn{\Gamma, \asc{x}{\hole{}}}{e}{\tau'}
   }{
-    \syn{\Gamma}{ \Efun{x}{ \hole[\alpha]{} }{e} }{ \Tarr{\hole{}}{\tau} }
+    \syn{\Gamma}{ \Efun{x}{\tau}{e} }{ \Tarr{\hole{}}{\tau'} }
   }
 
   \inferrule[SApp]{
@@ -674,9 +675,10 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[SAscInvalid]{
+    \neg \left( \valid{\emptyset}{\tau} \right) \\
     \ana{\Gamma}{e}{\hole{}}
   }{
-    \syn{\Gamma}{ \asc{e}{\hole[\alpha]{}} }{ \hole{} }
+    \syn{\Gamma}{ \asc{e}{\tau} }{ \hole{} }
   }
 
   \inferrule[SRollErr]{
@@ -863,12 +865,13 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[ESLamInvalid]{
-    \synelab{\Gamma, \asc{x}{\hole{}}}{e}{\tau}{d}{\Delta}
+    \neg \left( \valid{\emptyset}{\tau} \right) \\
+    \synelab{\Gamma, \asc{x}{\hole{}}}{e}{\tau'}{d}{\Delta}
   }{
     \synelab{\Gamma}{
-      \Efun{x}{\hole[\alpha]{}}{e}
-    }{ \Tarr{\hole{}}{\tau} }{
-      \Dfun{x}{\hole[\alpha]{}}{d}
+      \Efun{x}{\tau}{e}
+    }{ \Tarr{\hole{}}{\tau'} }{
+      \Dfun{x}{\tau}{d}
     }{\Delta}
   }
 
@@ -917,12 +920,13 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[ESAscInvalid]{
-    \anaelab{\Gamma}{e}{\hole{}}{d}{\tau}{\Delta}
+    \neg \left( \valid{\emptyset}{\tau} \right) \\
+    \anaelab{\Gamma}{e}{\hole{}}{d}{\tau'}{\Delta}
   }{
     \synelab{\Gamma}{
-      \asc{e}{\hole[\alpha]{}}
+      \asc{e}{\tau}
     }{ \hole{} }{
-      \cast{d}{\tau}{\hole{}}
+      \cast{d}{\tau'}{\hole{}}
     }{\Delta}
   }
 
@@ -1180,16 +1184,17 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[TALam]{
-    \tau \neq \hole[\alpha]{} \\
+    \valid{\emptyset}{\tau} \\
     \assign{\Delta}{\Gamma, \asc{x}{\tau}}{ d }{ \tau' }
   }{
     \assign{\Delta}{\Gamma}{ \Dfun{x}{\tau}{d} }{ \Tarr{\tau}{\tau'} }
   }
 
-  \inferrule[TALamFree]{
-    \assign{\Delta}{\Gamma, \asc{x}{\hole{}}}{ d }{ \tau }
+  \inferrule[TALamInvalid]{
+    \neg \left( \valid{\emptyset}{\tau} \right) \\
+    \assign{\Delta}{\Gamma, \asc{x}{\hole{}}}{ d }{ \tau' }
   }{
-    \assign{\Delta}{\Gamma}{ \Dfun{x}{\hole[\alpha]{}}{d} }{ \Tarr{\hole{}}{\tau} }
+    \assign{\Delta}{\Gamma}{ \Dfun{x}{\tau}{d} }{ \Tarr{\hole{}}{\tau'} }
   }
 
   \inferrule[TAApp]{
