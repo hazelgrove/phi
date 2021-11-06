@@ -432,12 +432,6 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
     \consistent{\tau}{\hole[\alpha]{}}
   }
 
-  \inferrule[TCUnit]{
-    %
-  }{
-    \consistent{\None}{\None}
-  }
-
   \inferrule[TCArr]{
     \consistent{\tau_1}{\tau_1'} \\
     \consistent{\tau_2}{\tau_2'}
