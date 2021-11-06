@@ -1479,6 +1479,26 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 }
 
 \begin{mathpar}
+  \inferrule[IEHole]{
+    %
+  }{
+    \indet{\dhole{\sigma}{u}}
+  }
+
+  \inferrule[INEHole]{
+    \final{d}
+  }{
+    \indet{\dhole[d]{\sigma}{u}}
+  }
+
+  \inferrule[IApp]{
+    d_1 \neq \cast{d_1'}{\Tarr{\tau_1}{\tau_2}}{\Tarr{\tau_3}{\tau_4}} \\
+    \indet{d_1} \\
+    \final{d_2}
+  }{
+    \indet{\Dapp{d_1}{d_2}}
+  }
+
   \inferrule[IRoll]{
     \indet{d}
   }{
@@ -1504,6 +1524,28 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \indet{\Dinj{C}{\tau}{d}}
   }
 
+  \inferrule[ICastGroundHole]{
+    \indet{d} \\
+    \ground{\tau}
+  }{
+    \indet{\cast{d}{\tau}{\hole{}}}
+  }
+
+  \inferrule[ICastHoleGround]{
+    d \neq \cast{d'}{\tau'}{\hole{}} \\
+    \indet{d} \\
+    \ground{\tau}
+  }{
+    \indet{\cast{d}{\hole{}}{\tau}}
+  }
+
+  \inferrule[ICastArr]{
+    \Tarr{\tau_1}{\tau_2} \neq \Tarr{\tau_3}{\tau_4} \\
+    \indet{d}
+  }{
+    \indet{\cast{d}{\Tarr{\tau_1}{\tau_2}}{\Tarr{\tau_3}{\tau_4}}}
+  }
+
   \inferrule[ICastRec]{
     \Trec{\pi}{\tau} \neq \Trec{\pi'}{\tau'} \\
     \indet{d}
@@ -1524,6 +1566,15 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \indet{d}
   }{
     \indet{ \cast{d}{\tau}{\tau'} }
+  }
+
+  \inferrule[IFailedCast]{
+    \final{d} \\
+    \ground{\tau_1} \\
+    \ground{\tau_2} \\
+    \tau_1 \neq \tau_2
+  }{
+    \indet{\failedcast{d}{\tau_1}{\tau_2}}
   }
 \end{mathpar}
 
