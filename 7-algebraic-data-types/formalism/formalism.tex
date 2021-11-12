@@ -620,13 +620,6 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \syn{\Gamma}{ \Efun{x}{\tau}{e} }{\Tarr{\tau}{\tau'}}
   }
 
-  \inferrule[SLamInvalid]{
-    \neg \left( \valid{\emptyset}{\tau} \right) \\
-    \syn{\Gamma, \asc{x}{\hole{}}}{e}{\tau'}
-  }{
-    \syn{\Gamma}{ \Efun{x}{\tau}{e} }{ \Tarr{\hole{}}{\tau'} }
-  }
-
   \inferrule[SApp]{
     \syn{\Gamma}{e_1}{\tau_1} \\
     \MatchedArrowTyp{\tau_1}{\tau_2}{\tau} \\
@@ -648,13 +641,6 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \ana{\Gamma}{e}{\tau}
   }{
     \syn{\Gamma}{ \asc{e}{\tau} }{\tau}
-  }
-
-  \inferrule[SAscInvalid]{
-    \neg \left( \valid{\emptyset}{\tau} \right) \\
-    \ana{\Gamma}{e}{\hole{}}
-  }{
-    \syn{\Gamma}{ \asc{e}{\tau} }{ \hole{} }
   }
 
   \inferrule[SRollErr]{
@@ -838,21 +824,10 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     }{\Delta}
   }
 
-  \inferrule[ESLamInvalid]{
-    \neg \left( \valid{\emptyset}{\tau} \right) \\
-    \synelab{\Gamma, \asc{x}{\hole{}}}{e}{\tau'}{d}{\Delta}
-  }{
-    \synelab{\Gamma}{
-      \Efun{x}{\tau}{e}
-    }{ \Tarr{\hole{}}{\tau'} }{
-      \Dfun{x}{\tau}{d}
-    }{\Delta}
-  }
-
   \inferrule[ESApp]{
     \syn{\Gamma}{e_1}{\tau_1} \\
-    \MatchedArrowTyp{\tau_1}{\tau_2}{\tau} \\
-    \anaelab{\Gamma}{e_1}{ \Tarr{\tau_2}{\tau} }{d_1}{\tau_1'}{\Delta_1} \\
+    \MatchedArrowTyp{\tau_1}{\tau_2}{\tau} \\\\
+    \anaelab{\Gamma}{e_1}{ \Tarr{\tau_2}{\tau} }{d_1}{\tau_1'}{\Delta_1} \\\\
     \anaelab{\Gamma}{e_2}{ \tau_2 }{ d_2 }{\tau_2'}{\Delta_2}
   }{
     \synelab{\Gamma}{
@@ -890,17 +865,6 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
       \asc{e}{\tau}
     }{ \tau }{
       \cast{d}{\tau'}{\tau}
-    }{\Delta}
-  }
-
-  \inferrule[ESAscInvalid]{
-    \neg \left( \valid{\emptyset}{\tau} \right) \\
-    \anaelab{\Gamma}{e}{\hole{}}{d}{\tau'}{\Delta}
-  }{
-    \synelab{\Gamma}{
-      \asc{e}{\tau}
-    }{ \hole{} }{
-      \cast{d}{\tau'}{\hole{}}
     }{\Delta}
   }
 
@@ -1160,13 +1124,6 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \assign{\Delta}{\Gamma, \asc{x}{\tau}}{ d }{ \tau' }
   }{
     \assign{\Delta}{\Gamma}{ \Dfun{x}{\tau}{d} }{ \Tarr{\tau}{\tau'} }
-  }
-
-  \inferrule[TALamInvalid]{
-    \neg \left( \valid{\emptyset}{\tau} \right) \\
-    \assign{\Delta}{\Gamma, \asc{x}{\hole{}}}{ d }{ \tau' }
-  }{
-    \assign{\Delta}{\Gamma}{ \Dfun{x}{\tau}{d} }{ \Tarr{\hole{}}{\tau'} }
   }
 
   \inferrule[TAApp]{
