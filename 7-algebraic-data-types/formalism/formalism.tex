@@ -209,8 +209,8 @@
       \\
     \HTag & C & \Coloneqq &
       \Tag
-      \mid \TagHole{}
-      \mid \TagHole[\Tag]{}
+      \mid \TagHole{u}
+      \mid \TagHole[\Tag]{u}
       \\
   \end{array}
 \]
@@ -672,7 +672,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   \inferrule[SInjTagErr]{
     \ana{\Gamma}{e}{\hole{}}
   }{
-    \syn{\Gamma}{\Einj{\TagHole[\Tag]{}}{e}}{\hole{}}
+    \syn{\Gamma}{\Einj{\TagHole[\Tag]{u}}{e}}{\hole{}}
   }
 
   % \inferrule[SCaseErr]{
@@ -740,7 +740,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \Tag \notin \TagSet \\
     \ana{\Gamma}{e}{\hole{}}
   }{
-    \ana{\Gamma}{ \Einj{\TagHole[\Tag]{}}{e} }{ \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} }
+    \ana{\Gamma}{ \Einj{\TagHole[\Tag]{u}}{e} }{ \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} }
   }
 
   \inferrule[AInjUnexpectedBody]{
@@ -912,12 +912,12 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
 
   \inferrule[ESInjTagErr]{
     \anaelab{\Gamma}{e}{\hole{}}{d}{\tau}{\Delta} \\
-    \tau' = \Tsum{\TagHole[\Tag]{}(\tau)}
+    \tau' = \Tsum{\TagHole[\Tag]{u}(\tau)}
   }{
     \synelab{\Gamma}{
-      \Einj{\TagHole[\Tag]{}}{e}
+      \Einj{\TagHole[\Tag]{u}}{e}
     }{\hole{}}{
-      \Dinj{\TagHole[\Tag]{}}{\tau'}{ \cast{d}{\tau}{\hole{}} }
+      \Dinj{\TagHole[\Tag]{u}}{\tau'}{ \cast{d}{\tau}{\hole{}} }
     }{\Delta}
   }
 
@@ -1006,14 +1006,14 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[EAInjTagErr]{
-    \TagHole[\Tag]{} \notin \TagSet \\
+    \Tag \notin \TagSet \\
     \anaelab{\Gamma}{e}{\hole{}}{d}{\tau}{\Delta} \\
-    \tau' = \Tsum{\Set{C_i(\tau_i)}_{C_i \in \TagSet} \cup \Set{\TagHole[\Tag]{}(\tau)}}
+    \tau' = \Tsum{\Set{C_i(\tau_i)}_{C_i \in \TagSet} \cup \Set{\TagHole[\Tag]{u}(\tau)}}
   }{
     \anaelab{\Gamma}{
-      \Einj{\TagHole[\Tag]{}}{e}
+      \Einj{\TagHole[\Tag]{u}}{e}
     }{ \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} }{
-      \Dinj{\TagHole[\Tag]{}}{\tau'}{ \cast{d}{\tau}{\hole{}} }
+      \Dinj{\TagHole[\Tag]{u}}{\tau'}{ \cast{d}{\tau}{\hole{}} }
     }{ \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} }{ \Delta }
   } 
 
