@@ -384,12 +384,12 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
   }{
     \valid{\Theta}{\hole{}}
   }
-%
-  % \inferrule[TVNEHole]{
-  %   \alpha \notin \Theta
-  % }{
-  %   \valid{\Theta}{ \hole[\alpha]{} }
-  % }
+
+  \inferrule[TVNEHole]{
+    \alpha \notin \Theta
+  }{
+    \valid{\Theta}{ \hole[\alpha]{} }
+  }
 \end{mathpar}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
