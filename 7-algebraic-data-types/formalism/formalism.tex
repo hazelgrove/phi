@@ -125,7 +125,6 @@
 \newcommand\consistent[2]{{#1}\sim{#2}}
 \newcommand\notconsistent[2]{{#1}\nsim{#2}}
 \newcommand\valid[2]{{#1}\vdash{#2}\,\helper{valid}}
-\newcommand\validtag[1]{{#1}\,\helper{valid}}
 \newcommand\FV[1]{\helper{FV}\left(#1\right)}
 \newcommand\id[1]{\helper{id}\left(#1\right)}
 \newcommand\dom[1]{\helper{dom}{\left(#1\right)}}
@@ -258,8 +257,8 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
     \subst{\tau}{\alpha}{ \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} }
       & \Tsum{C_i( \subst{\tau}{\alpha}{\tau_i} )}_{C_i \in \TagSet} \\
     \subst{\tau}{\alpha}{ \hole{} } & \hole{} \\
-    \subst{\alpha'}{\alpha}{ \hole[\alpha]{} } & \hole[\alpha']{u} \\
-    \subst{\alpha'}{\alpha}{ \hole[\alpha']{u} } & \hole[\alpha']{u} & \text{ when } \alpha \neq \alpha' \\
+    \subst{\alpha'}{\alpha}{ \hole[\alpha]{} } & \hole[\alpha']{} \\
+    \subst{\alpha'}{\alpha}{ \hole[\alpha']{} } & \hole[\alpha']{} & \text{ when } \alpha \neq \alpha' \\
   \end{array}
 \]
 
@@ -483,29 +482,6 @@ We write $\Theta, \pi$ to denote the extension of type variable context $\Theta$
 \end{mathpar}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
-%  C valid
-
-\Judgment{
-  \validtag{C}
-}{
-  $C$ is a valid tag
-}
-
-\begin{mathpar}
-  \inferrule[CVTag]{
-    %
-  }{
-    \validtag{\Tag}
-  }
-
-  \inferrule[CVEHole]{
-    %
-  }{
-    \validtag{\TagHole{u}}
-  }
-\end{mathpar}
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % 
 %  C ~ C'
 
 % \Judgment{
@@ -702,7 +678,6 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[SInjErr]{
-    \validtag{C} \\
     \ana{\Gamma}{e}{\hole{}}
   }{
     \syn{\Gamma}{ \hole[ \Einj{C}{e} ]{u} }{\hole{}}
@@ -781,7 +756,6 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[AInjBadTag]{
-    \validtag{C} \\
     C \notin \TagSet \\
     \ana{\Gamma}{e}{\hole{}}
   }{
@@ -967,7 +941,6 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[ESInjErr]{
-    \validtag{C} \\
     \anaelab{\Gamma}{e}{\hole{}}{d}{\tau}{\Delta} \\
     \tau' = \Tsum{C(\tau)} \\
   }{
@@ -1090,7 +1063,6 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   \inferrule[EAInjBadTag]{
     \tau = \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} \\
     C \notin \TagSet \\
-    \validtag{C} \\
     \anaelab{\Gamma}{e}{ \hole{} }{d}{\tau'}{\Delta} \\
     \tau'' = \Tsum{\Set{C_i(\tau_i)}_{C_i \in \TagSet} \cup \Set{C(\tau')}}
   }{
