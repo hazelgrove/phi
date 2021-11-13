@@ -731,9 +731,10 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[AInjTagErr]{
+    C \notin \TagSet \\
     \ana{\Gamma}{e}{\hole{}}
   }{
-    \ana{\Gamma}{ \Einj{\TagHole[\Tag]{u}}{e} }{ \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} }
+    \ana{\Gamma}{ \Einj{C}{e} }{ \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} }
   }
 
   \inferrule[AInjUnexpectedBody]{
@@ -988,13 +989,14 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   }
 
   \inferrule[EAInjTagErr]{
+    C \notin \TagSet \\
     \anaelab{\Gamma}{e}{\hole{}}{d}{\tau}{\Delta} \\
-    \tau' = \Tsum{\Set{C_i(\tau_i)}_{C_i \in \TagSet} \cup \Set{\TagHole[\Tag]{u}(\tau)}}
+    \tau' = \Tsum{\Set{C_i(\tau_i)}_{C_i \in \TagSet} \cup \Set{C(\tau)}}
   }{
     \anaelab{\Gamma}{
-      \Einj{\TagHole[\Tag]{u}}{e}
+      \Einj{C}{e}
     }{ \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} }{
-      \Dinj{\TagHole[\Tag]{u}}{\tau'}{ \cast{d}{\tau}{\hole{}} }
+      \Dinj{C}{\tau'}{ \cast{d}{\tau}{\hole{}} }
     }{ \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} }{ \Delta }
   } 
 
