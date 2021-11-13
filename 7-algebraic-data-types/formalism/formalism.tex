@@ -737,7 +737,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \ana{\Gamma}{ \Einj{C}{e} }{ \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} }
   }
 
-  \inferrule[AInjUnexpectedBody]{
+  \inferrule[AInjUnexpectedArg]{
     C_j \in \TagSet \\
     \tau_j = \Unit \\
     e \neq \Unit \\
@@ -746,7 +746,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     \ana{\Gamma}{ \hole[\Einj{C_j}{e}]{u} }{\Tsum{C_i(\tau_i)}_{C_i \in \TagSet}}
   }
 
-  \inferrule[AInjExpectedBody]{
+  \inferrule[AInjExpectedArg]{
     C_j \in \TagSet \\
     \tau_j \neq \Unit
   }{
@@ -1000,7 +1000,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     }{ \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} }{ \Delta }
   } 
 
-  \inferrule[EAInjUnexpectedBody]{
+  \inferrule[EAInjUnexpectedArg]{
     \tau = \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} \\
     C_j \in \TagSet \\
     \tau_j = \Unit \\
@@ -1015,7 +1015,7 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
     }{\tau}{\Delta, u :: \tau[\Gamma]}
   }
 
-  \inferrule[EAInjExpectedBody]{
+  \inferrule[EAInjExpectedArg]{
     \tau = \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} \\
     C_j \in \TagSet \\
     \tau_j \neq \Unit \\
