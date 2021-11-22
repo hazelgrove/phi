@@ -183,12 +183,18 @@ let elaborate: exter_exp => option(inter_exp) = {
 
     | Ap(e1, Tuple(es) as e2) as e =>
       if (List.mem(Deferral, es)) {
+        // PARTIAL APPLICATION CODE BEGINS
         let deferral_var_name = "~";
 
+        // Elaborate the original function being applied
         let* e1 = syn_elaborate(ctx, e1);
 
+        // Replace the deferred inputs in the applied expression with the deferral variable
         let* es_deferred = {
-          let deferral_replacement = {
+          // Generate the expression to replace the Deferrals by index
+          let deferral_replacement: int => inter_exp = {
+            // True if multiple inputs are deferred, false otherwise
+            // Used to determine whether the deferral variable should be a tuple
             let multiple_deferrals =
               es
               |> List.filter((e: exter_exp) => e == Deferral)
@@ -197,13 +203,22 @@ let elaborate: exter_exp => option(inter_exp) = {
             (
               (index: int) =>
                 if (multiple_deferrals) {
-                  Proj(Var(deferral_var_name), index);
+                  // Deferral variable is a tuple, so it needs to be projected
+                  Proj(
+                    Var(deferral_var_name),
+                    index,
+                  );
                 } else {
-                  Var(deferral_var_name);
+                  // Deferral variable is not a tuple, so it can be used directly
+                  Var(
+                    deferral_var_name,
+                  );
                 }
             );
           };
 
+          // The function used by List.fold_left
+          // Iterates through the applied expression, replacing each Deferral
           let f =
               (acc: option((list(inter_exp), int)), e: exter_exp)
               : option((list(inter_exp), int)) => {
@@ -221,12 +236,16 @@ let elaborate: exter_exp => option(inter_exp) = {
 
           let+ (es_deferred_backwards, _) =
             es |> List.fold_left(f, Some(([], 0)));
+
+          // List.fold_left reverses the order of the list, so reverse it again
           List.rev(es_deferred_backwards);
         };
 
+        // We need to annotate the end result of this elaboration with its type since function literals can't synthesize
         let+ t = syn(ctx, e);
 
         Ann(Fun(deferral_var_name, Ap(e1, Tuple(es_deferred))), t);
+        // PARTIAL APPLICATION CODE ENDS
       } else {
         let* e1 = syn_elaborate(ctx, e1);
         let+ e2 = syn_elaborate(ctx, e2);
