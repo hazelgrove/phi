@@ -991,13 +991,13 @@ We call $\subst{\Trec{\pi}{\tau}}{\pi}{\tau}$ the \emph{unrolling} of recursive 
   \inferrule[EAInjTagErr]{
     C \notin \TagSet \\
     \anaelab{\Gamma}{e}{\hole{}}{d}{\tau}{\Delta} \\
-    \tau' = \Tsum{\Set{C_i(\tau_i)}_{C_i \in \TagSet} \cup \Set{C(\tau)}}
+    \tau' = \Tsum{C(\tau)}
   }{
     \anaelab{\Gamma}{
       \Einj{C}{e}
     }{ \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} }{
-      \Dinj{C}{\tau'}{ \cast{d}{\tau}{\hole{}} }
-    }{ \Tsum{C_i(\tau_i)}_{C_i \in \TagSet} }{ \Delta }
+      \cast{ \Dinj{C}{\tau'}{d} }{ \tau' }{ \hole{} }
+    }{ \hole{} }{ \Delta }
   } 
 
   \inferrule[EAInjUnexpectedArg]{
