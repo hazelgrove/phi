@@ -76,6 +76,88 @@ let matched_arrow_type = (t: option(typ)): option(typ) => t;
 let matched_product_type = (t: option(typ)): option(typ) => t;
 let consistent = (t1: typ, t2: typ): bool => t1 == t2;
 
+let rec new_syn = (ctx: typctx, e: exter_exp): option((inter_exp, typ)) =>
+  switch (e) {
+  | Var(x) =>
+    let+ t =
+      try(Some(TypCtx.find(x, ctx))) {
+      | Not_found => None
+      };
+    (Var(x), t);
+
+  | Fun(_) => None
+
+  | Ap(_) => () // TODO
+
+  | Num(n) => Some((Num(n), Num))
+
+  | Add(e1, e2) =>
+    let num: typ = Num;
+    let* e1 = new_ana(ctx, e1, num);
+    let+ e2 = new_ana(ctx, e2, num);
+    (Add(e1, e2), num);
+
+  | Ann(e1, t1) =>
+    let+ e1 = new_ana(ctx, e1, t1);
+    (Ann(e1, t1), t1);
+
+  | Tuple(es) =>
+    let+$ es_ts = List.map(new_syn(ctx, _), es);
+    let (es, ts) = List.split(es_ts);
+    (Tuple(es), Product(ts));
+
+  | Proj(e1, i) =>
+    let* (e1, t1) = new_syn(ctx, e1);
+    switch (t1) {
+    | Product(ts) =>
+      let+ t =
+        try(List.nth_opt(ts, i)) {
+        | Invalid_argument(_) => None
+        };
+      (Proj(e1, i), t);
+    | _ => None
+    };
+
+  | Deferral => None
+  }
+
+and new_ana = (ctx: typctx, e: exter_exp, t: typ): option(inter_exp) =>
+  switch (e) {
+  | Fun(x, e1) =>
+    switch (matched_arrow_type(Some(t))) {
+    | Some(Arrow(t1, t2)) =>
+      let+ e1 = new_ana(TypCtx.add(x, t1, ctx), e1, t2);
+      Fun(x, e1);
+    | _ => None
+    }
+
+  | Tuple(es) =>
+    switch (matched_product_type(Some(t))) {
+    | Some(Product(ts)) =>
+      let* es =
+        try(Some(List.map2(new_ana(ctx), es, ts))) {
+        | Invalid_argument(_) => None
+        };
+      let+$ es = es;
+      Tuple(es);
+    | _ => None
+    }
+
+  | Var(_)
+  | Ap(_)
+  | Num(_)
+  | Add(_)
+  | Ann(_)
+  | Proj(_)
+  | Deferral =>
+    let* (e, t') = new_syn(ctx, e);
+    if (consistent(t, t')) {
+      Some(e);
+    } else {
+      None;
+    };
+  };
+
 let rec syn = (ctx: typctx, e: exter_exp): option(typ) =>
   switch (e) {
   | Var(x) =>
