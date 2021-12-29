@@ -87,7 +87,107 @@ let rec new_syn = (ctx: typctx, e: exter_exp): option((inter_exp, typ)) =>
 
   | Fun(_) => None
 
-  | Ap(_) => () // TODO
+  | Ap(e1, e2) =>
+    let* (e1, t1) = new_syn(ctx, e1);
+    switch (matched_arrow_type(Some(t1))) {
+    | Some(Arrow(t2, t)) =>
+      switch (new_ana(ctx, e2, t2)) {
+      | Some(e2) => Some((Ap(e1, e2), t))
+      | None =>
+        // PARTIAL APPLICATION CODE BEGINS
+        switch (e2, t2) {
+        | (Tuple(es), Product(ts)) =>
+          let* final_t = {
+            let get_deferred_typ =
+                (e: exter_exp, t: typ): option(option(typ)) =>
+              switch (e, new_ana(ctx, e, t)) {
+              | (Deferral, _) => Some(Some(t))
+              | (_, Some(_)) => Some(None)
+              | (_, None) => None
+              };
+
+            let* deferred_inputs =
+              try(Some(List.map2(get_deferred_typ, es, ts))) {
+              | Invalid_argument(_) => None
+              };
+            let+$ deferred_inputs = deferred_inputs;
+            let deferred_inputs = filter(deferred_inputs);
+
+            switch (deferred_inputs) {
+            | [_, _, ..._] => Arrow(Product(deferred_inputs), t)
+            | [hd] => Arrow(hd, t)
+            | [] => t2
+            };
+          };
+
+          let+ final_e = {
+            let deferral_var_name = "~";
+
+            let* es_deferred = {
+              let+ (es_deferred_backwards, _) = {
+                let deferral_replacement: int => inter_exp = {
+                  let multiple_deferrals =
+                    es
+                    |> List.filter((e: exter_exp) => (e == Deferral: bool))
+                    |> List.length > 1;
+
+                  if (multiple_deferrals) {
+                    (
+                      (index: int) => (
+                        Proj(Var(deferral_var_name), index): inter_exp
+                      )
+                    );
+                  } else {
+                    ((_: int) => (Var(deferral_var_name): inter_exp));
+                  };
+                };
+
+                let f =
+                    (
+                      acc: option((list(inter_exp), int)),
+                      e: exter_exp,
+                      t: typ,
+                    )
+                    : option((list(inter_exp), int)) => {
+                  let* (acc_list, index) = acc;
+                  let+ (new_hd, new_index) =
+                    switch (e) {
+                    | Deferral =>
+                      Some((deferral_replacement(index), index + 1))
+                    | _ =>
+                      let _ = ts;
+                      let+ e = new_ana(ctx, e, t); // Maybe use ana here?
+                      (e, index);
+                    };
+
+                  ([new_hd, ...acc_list], new_index);
+                };
+
+                // Replace with fold_left_map?
+                try(List.fold_left2(f, Some(([], 0)), es, ts)) {
+                | Invalid_argument(_) => None
+                };
+              };
+
+              List.rev(es_deferred_backwards);
+            };
+
+            Some(
+              Ann(
+                Fun(deferral_var_name, Ap(e1, Tuple(es_deferred))),
+                final_t,
+              ),
+            );
+          };
+
+          (final_e, final_t);
+        | _ => None
+        }
+      // PARTIAL APPLICATION CODE ENDS
+      }
+
+    | _ => None
+    };
 
   | Num(n) => Some((Num(n), Num))
 
