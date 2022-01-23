@@ -1,0 +1,42 @@
+digraph pipeline {
+  graph [ fontname = "Fira Code", fontsize=11.0                                   ];
+  node  [ fontname = "Fira Code", fontsize=11.0                                   ];
+  edge  [ fontname = "Fira Code", fontsize=10.0, arrowhead="vee", arrowsize = 0.5 ];
+
+  newrank = true;
+  rank = same;
+
+  subgraph hazelcore {
+    label = "hazelcore";
+    rank = same;
+
+    node        [ shape = plaintext     ];
+    elaborator  [ label = "elaborator"  ];
+
+    node        [ shape = box           ];
+    uhexp       [ label = "UHExp.t"     ];
+    dhexp       [ label = "DHExp.t"     ];
+
+    uhexp -> elaborator -> dhexp
+  }
+
+  subgraph compiler {
+    label = "compiler";
+    rank = same;
+
+    node        [ shape = plaintext     ];
+    translator  [ label = "translator"  ];
+    grainc      [ label = "grainc"      ];
+
+    node        [ shape = box           ];
+    grain       [ label = "*.gr"        ];
+
+    translator -> grain -> grainc;
+  }
+
+  node  [ shape = box       ]
+  wasm  [ label = "*.wasm"  ];
+
+  dhexp -> translator;
+  grainc -> wasm;
+}
