@@ -1,4 +1,4 @@
-cabal-version:      3.0
+cabal-version:      3.6
 name:               algo
 version:            0.1.0.0
 
@@ -28,11 +28,11 @@ library
     default-language: GHC2021
 
 test-suite test-algo
-    type:             detailed-0.9
-    test-module:      Tests
+    type:             exitcode-stdio-1.0
+    main-is:          Tests.hs
     hs-source-dirs:   test
     build-depends:    base ^>=4.16.0.0
-                     ,Cabal
+                     ,HUnit
                      ,algo
     default-language: GHC2021
 
