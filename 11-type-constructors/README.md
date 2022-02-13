@@ -14,8 +14,10 @@ parameterized types
 
 -   Sigma kinds
 
--   some other stuff in my notebook <s>that’s in a box</s> I need to
-    look through
+-   KEquiv-Π has a typo: κ1/2/3/4 premisses screwed up
+
+-   KEquiv-SKind: premisses order should be flipped (implementing
+    left→right)
 
 ## Notes
 

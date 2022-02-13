@@ -24,8 +24,11 @@ extra-source-files: CHANGELOG.md
 library
     exposed-modules:  Algo
     hs-source-dirs:   src
+    other-modules:    Common
+                      Ctx
     build-depends:    base ^>=4.16.0.0
     default-language: GHC2021
+    ghc-options:      -Wall
 
 test-suite test-algo
     type:             exitcode-stdio-1.0
@@ -35,4 +38,4 @@ test-suite test-algo
                      ,HUnit
                      ,algo
     default-language: GHC2021
-
+    ghc-options:      -Wall
