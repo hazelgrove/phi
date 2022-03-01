@@ -33,6 +33,7 @@ class Rewrite a
    -}
   where
   αRename :: TID -> TID -> a -> a
+  subst :: Typ -> TID -> a -> a
 
 instance Rewrite Typ where
   αRename t'' t' (TVar t)
@@ -45,10 +46,30 @@ instance Rewrite Typ where
     | otherwise = Tλ t (αRename t'' t' κ) (αRename t'' t' τ)
   αRename t'' t' (TAp τ1 τ2) = TAp (αRename t'' t' τ1) (αRename t'' t' τ2)
   αRename _ _ τ = τ
+  ----------
+  subst τ' t' τ@(TVar t)
+    | t' == t = τ'
+    | otherwise = τ
+  subst _ _ Bse = Bse
+  subst τ' t' (τ1 :⊕ τ2) = (subst τ' t' τ1) :⊕ (subst τ' t' τ2)
+  subst _ _ τ@(ETHole _) = τ
+  subst τ' t' (NETHole u τ1) = NETHole u (subst τ' t' τ1)
+  subst τ' t' (Tλ t κ τ1)
+    | t' == t = error "Why are you doing this?"
+    | otherwise = Tλ t (subst τ' t' κ) (subst τ' t' τ1)
+  subst τ' t' (TAp τ1 τ2) = TAp (subst τ' t' τ1) (subst τ' t' τ2)
 
+-- tequiv' aΓ (TAp τ1 τ2) τ3 κ = tequiv aΓ (βReduce τ1 τ2) τ3 κ
+-- tequiv' aΓ τ1 (TAp τ2 τ3) κ = tequiv aΓ τ1 (βReduce τ2 τ3) κ
 instance Rewrite Knd where
   αRename t'' t' (Π t κ1 κ2)
     | t' == t = Π t'' (αRename t'' t' κ1) (αRename t'' t' κ2)
     | otherwise = Π t (αRename t'' t' κ1) (αRename t'' t' κ2)
   αRename t'' t' (S κ τ) = S (αRename t'' t' κ) (αRename t'' t' τ)
   αRename _ _ κ = κ
+  subst _ _ Type = Type
+  subst _ _ KHole = KHole
+  subst τ' t' (S κ τ) = S (subst τ' t' κ) (subst τ' t' τ)
+  subst τ' t' (Π t κ1 κ2)
+    | t' == t = error "Seriously, why are you doing this?"
+    | otherwise = Π t (subst τ' t' κ1) (subst τ' t' κ2)

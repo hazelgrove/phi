@@ -24,5 +24,14 @@ lookupH (aΓ :⌢⌢ (u', κ)) u
 (⌢) :: Ctx -> TAssump -> Ctx
 (⌢) aΓ tassump@(t, _κ) =
   case lookupT aΓ t of
-  Just _ -> error "Do not shadow"
-  Nothing -> aΓ :⌢ tassump
+    Just _ -> error "Do not shadow"
+    Nothing -> aΓ :⌢ tassump
+
+class Canon a where
+  canon :: Ctx -> a -> Maybe a
+
+instance Canon Typ where
+  canon _ _ = undefined
+
+instance Canon Knd where
+  canon _ _ = undefined
