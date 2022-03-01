@@ -6,6 +6,7 @@ module Algo
 
 import Common
 import Ctx
+
 import Data.Maybe
 
 tequiv :: Ctx -> Typ -> Typ -> Knd -> Bool
@@ -18,6 +19,8 @@ tequiv aΓ τ1 τ2 κ =
           then Just True
           else Nothing)
 
+-- (didn't define a seperate datatype since more symbols would clash and I'm
+-- still changing a lot of stuff)
 tequiv' :: Ctx -> Typ -> Typ -> Knd -> Bool
 tequiv' _ Bse Bse Type = True
 tequiv' aΓ (τ1 :⊕ τ2) (τ3 :⊕ τ4) Type =
@@ -38,8 +41,3 @@ kequiv aΓ (S κ1 τ1) (S κ2 τ2) = (kequiv aΓ κ1 κ2) && (tequiv aΓ τ1 τ2
 kequiv _ κ1 κ2
   | κ1 == κ2 = undefined
   | otherwise = False
-
-βReduce :: Typ -> Typ -> Typ
-βReduce (Tλ t κ τ) τ'
-  | True = subst τ' t τ
-βReduce τ1 τ2 = error $ "Can't β-reduce " ++ (show $ TAp τ1 τ2)
