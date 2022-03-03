@@ -18,9 +18,7 @@ tequiv aΓ τ1 τ2 κ =
     (do ωτ1 <- canon aΓ τ1
         ωτ2 <- canon aΓ τ2
         ωκ <- canon aΓ κ
-        if (tequiv' aΓ ωτ1 ωτ2 ωκ)
-          then Just True
-          else Nothing)
+        tequiv' aΓ ωτ1 ωτ2 ωκ |>> Just ())
 
 -- (didn't define a seperate datatype since more symbols would clash and I'm
 -- still changing a lot of stuff)
@@ -77,7 +75,7 @@ instance Canon Typ where
     ωτ2 <- canon aΓ τ2
     -- check κ (subkinding)
     case ωτ1 of
-      Tλ t κ τ -> wfak aΓ ωτ1 κ >> canon aΓ (subst ωτ2 t τ)
+      Tλ t κ τ -> wfak aΓ ωτ1 κ |>> canon aΓ (subst ωτ2 t τ)
       _ -> trace ("Can't β-reduce " ++ (show $ TAp ωτ1 ωτ2)) Nothing
 
 instance Canon Knd where
@@ -92,5 +90,11 @@ instance Canon Knd where
     ωκ2 <- canon aΓ κ2
     return $ Π t ωκ1 ωκ2
 
-wfak :: _
-wfak = undefined
+pk :: Ctx -> Typ -> Knd
+pk aΓ τ = undefined
+
+wfak :: Ctx -> Typ -> Knd -> Bool
+wfak aΓ τ κ = csk aΓ (pk aΓ τ) κ
+
+csk :: Ctx -> Knd -> Knd -> Bool
+csk aΓ κ1 κ2 = undefined

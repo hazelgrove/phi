@@ -1,6 +1,8 @@
 -- NOTE: we alwys assume programs are α-renamed so no shadowing occurs
 module Common where
 
+import Control.Monad (MonadPlus, mzero)
+
 type TID = String
 
 type HID = Int
@@ -73,3 +75,7 @@ instance Rewrite Knd where
   subst τ' t' (Π t κ1 κ2)
     | t' == t = error "Seriously, why are you doing this?"
     | otherwise = Π t (subst τ' t' κ1) (subst τ' t' κ2)
+
+(|>>) :: MonadPlus m => Bool -> m a -> m a
+(|>>) True = id
+(|>>) False = \_ -> mzero
