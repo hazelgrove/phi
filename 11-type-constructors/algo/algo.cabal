@@ -27,8 +27,9 @@ library
     other-modules:    Common
                       Ctx
     build-depends:    base ^>=4.16.0.0
+                     ,hs-perl5
     default-language: GHC2021
-    ghc-options:      -Wall
+    ghc-options:      -Wall -Wno-unused-matches
 
 test-suite test-algo
     type:             exitcode-stdio-1.0
@@ -38,4 +39,4 @@ test-suite test-algo
                      ,HUnit
                      ,algo
     default-language: GHC2021
-    ghc-options:      -Wall
+    ghc-options:      -Wall -L/usr/local/lib  -L/usr/lib/x86_64-linux-gnu/perl/5.34/CORE -lperl -ldl -lm -lpthread -lc -lcrypt -D_REENTRANT -D_GNU_SOURCE -DDEBIAN -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -I/usr/lib/x86_64-linux-gnu/perl/5.34/CORE

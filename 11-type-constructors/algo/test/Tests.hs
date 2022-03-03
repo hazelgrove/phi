@@ -14,6 +14,7 @@ tests =
     -- , Nil |- tequiv Bse Bse (S Type Bse) ~?= True
     -- , Nil |- tequiv Bse Bse (Π "t" Type (S Type (TVar "t"))) ~?= False
     ]
+  , [fresh "t" ~?= "t1", fresh "t1" ~?= "t2"]
   , [ Nil |- canon' Bse ~?= Just Bse
     , Nil |- canon' (TVar "T") ~?= Nothing
     , Nil ⌢ ("T", S Type Bse) |- canon' (TVar "T") ~?= Just Bse
@@ -58,3 +59,14 @@ aΓ |- f = f aΓ
 -- since application precedence is so high (and can't be competed against)
 tequiv :: _
 tequiv = ((.) . (.) $ flip) . ((.) flip) . flip $ Algo.tequiv
+
+class Canon a =>
+      Canon' a
+  where
+  canon' :: a -> Ctx -> Maybe a
+  --canon' = flip canon
+  canon' = undefined
+
+instance Canon' Typ
+
+instance Canon' Knd

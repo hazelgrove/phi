@@ -1,3 +1,8 @@
 packages: ./*.cabal
 jobs: $ncpus
 optimization: 0
+
+source-repository-package
+  type: git
+  location: https://github.com/phlummox/hs-perl5.git
+  tag: 22d1aa69c4f101873c81ac9a2ff4a208a96cd1d4

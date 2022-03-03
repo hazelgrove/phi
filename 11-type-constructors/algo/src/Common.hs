@@ -2,6 +2,9 @@
 module Common where
 
 import Control.Monad (MonadPlus, mzero)
+import Debug.Trace
+import Language.Perl
+import System.IO.Unsafe
 
 type TID = String
 
@@ -79,3 +82,6 @@ instance Rewrite Knd where
 (|>>) :: MonadPlus m => Bool -> m a -> m a
 (|>>) True = id
 (|>>) False = \_ -> mzero
+
+fresh :: TID -> TID
+fresh t = unsafePerformIO $ withPerl $ eval $ "my $tid = '" ++ t ++ "'; $tid"

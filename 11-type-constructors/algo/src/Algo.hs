@@ -45,8 +45,6 @@ kequiv _ κ1 κ2
 
 class Canon a where
   canon :: Ctx -> a -> Maybe a
-  canon' :: a -> Ctx -> Maybe a
-  canon' = flip canon
 
 instance Canon Typ where
   canon aΓ (TVar t) = do
@@ -84,7 +82,13 @@ instance Canon Knd where
   canon aΓ (S κ τ) = do
     ωκ <- canon aΓ κ
     ωτ <- canon aΓ τ
-    return $ S ωκ ωτ
+    case ωκ of
+      Type -> canon aΓ $ S Type ωτ
+      KHole -> canon aΓ $ S KHole ωτ
+      S κ' τ' -> canon aΓ $ S κ' τ'
+      Π t κ1 κ2 ->
+        let t' = fresh t
+         in canon aΓ $ Π t' (αRename t' t κ1) (S κ2 (TAp ωτ $ TVar t'))
   canon aΓ (Π t κ1 κ2) = do
     ωκ1 <- canon aΓ κ1
     ωκ2 <- canon aΓ κ2
@@ -111,6 +115,7 @@ pk' aΓ τ@(NETHole u _) = do
 pk' aΓ τ'@(Tλ t κ τ) = do
   κ' <- pk' (aΓ ⌢ (t, κ)) τ
   canon aΓ (S (Π "t" κ κ') τ')
+pk' _ _ = error "Typ should be canonized coming in"
 
 wfak :: Ctx -> Typ -> Knd -> Bool
 wfak aΓ τ κ =
@@ -121,4 +126,8 @@ wfak aΓ τ κ =
 csk :: Ctx -> Knd -> Knd -> Bool
 csk aΓ κ1 KHole = True -- check κ1 is well formed
 csk aΓ KHole κ2 = True -- check κ2 is well formed
-csk aΓ κ1 κ2 = undefined
+csk aΓ κ1 κ2 =
+  isJust
+    (do ωκ1 <- canon aΓ κ1
+        ωκ2 <- canon aΓ κ2
+        return ())
