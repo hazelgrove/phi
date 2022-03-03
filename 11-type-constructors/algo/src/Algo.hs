@@ -53,7 +53,7 @@ instance Canon Typ where
     κ <- lookupT aΓ t
     case κ of
       S κ' τ' -> canon aΓ τ'
-      Type -> error "We aren't handling builtins yet"
+      Type -> error $ "We aren't handling builtins yet: " ++ (show $ TVar t)
       KHole -> error "This should not happen"
       Π t' κ1 κ2 -> error "???"
   canon _ Bse = Just Bse
@@ -75,7 +75,7 @@ instance Canon Typ where
     ωτ2 <- canon aΓ τ2
     -- check κ (subkinding)
     case ωτ1 of
-      Tλ t κ τ -> wfak aΓ ωτ1 κ |>> canon aΓ (subst ωτ2 t τ)
+      Tλ t κ τ -> wfak aΓ ωτ2 κ |>> canon aΓ (subst ωτ2 t τ)
       _ -> trace ("Can't β-reduce " ++ (show $ TAp ωτ1 ωτ2)) Nothing
 
 instance Canon Knd where
@@ -90,11 +90,35 @@ instance Canon Knd where
     ωκ2 <- canon aΓ κ2
     return $ Π t ωκ1 ωκ2
 
-pk :: Ctx -> Typ -> Knd
-pk aΓ τ = undefined
+pk :: Ctx -> Typ -> Maybe Knd
+pk aΓ τ = do
+  ωτ <- canon aΓ τ
+  pk' aΓ ωτ
+
+pk' :: Ctx -> Typ -> Maybe Knd
+pk' aΓ (TVar _) = error "We aren't handling builtins"
+pk' aΓ Bse = canon aΓ (S Type Bse)
+pk' aΓ (ωτ1 :⊕ ωτ2) = do
+  wfak aΓ ωτ1 Type |>> Just ()
+  wfak aΓ ωτ2 Type |>> Just ()
+  canon aΓ (S Type (ωτ1 :⊕ ωτ2))
+pk' aΓ τ@(ETHole u) = do
+  κ <- lookupH aΓ u
+  canon aΓ (S κ τ)
+pk' aΓ τ@(NETHole u _) = do
+  κ <- lookupH aΓ u
+  canon aΓ (S κ τ)
+pk' aΓ τ'@(Tλ t κ τ) = do
+  κ' <- pk' (aΓ ⌢ (t, κ)) τ
+  canon aΓ (S (Π "t" κ κ') τ')
 
 wfak :: Ctx -> Typ -> Knd -> Bool
-wfak aΓ τ κ = csk aΓ (pk aΓ τ) κ
+wfak aΓ τ κ =
+  isJust
+    (do νκ <- pk aΓ τ
+        csk aΓ νκ κ |>> Just ())
 
 csk :: Ctx -> Knd -> Knd -> Bool
+csk aΓ κ1 KHole = True -- check κ1 is well formed
+csk aΓ KHole κ2 = True -- check κ2 is well formed
 csk aΓ κ1 κ2 = undefined
