@@ -31,6 +31,8 @@ lookupH (aΓ :⌢⌢ (u', κ)) u
 
 class Canon a where
   canon :: Ctx -> a -> Maybe a
+  canon' :: a -> Ctx -> Maybe a
+  canon' = flip canon
 
 instance Canon Typ where
   canon aΓ (TVar t) = do
@@ -63,4 +65,13 @@ instance Canon Typ where
       _ -> trace ("Can't β-reduce " ++ (show $ TAp ωτ1 ωτ2)) Nothing
 
 instance Canon Knd where
-  canon _ _ = undefined
+  canon aΓ Type = return Type
+  canon aΓ KHole = return KHole
+  canon aΓ (S κ τ) = do
+    ωκ <- canon aΓ κ
+    ωτ <- canon aΓ τ
+    return $ S ωκ ωτ
+  canon aΓ (Π t κ1 κ2) = do
+    ωκ1 <- canon aΓ κ1
+    ωκ2 <- canon aΓ κ2
+    return $ Π t ωκ1 ωκ2
