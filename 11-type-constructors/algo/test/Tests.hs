@@ -38,6 +38,7 @@ tests =
     canonTypTests =
       [ Nil |- canon' Bse ~?= Just Bse
       , Nil |- canon' (TVar "T") ~?= Nothing
+      , Nil |- canon' (TAp Bse Bse) ~?= Nothing
       , Nil ⌢ ("T", S Type Bse) |- canon' (TVar "T") ~?= Just Bse
       , Nil ⌢ ("T", S Type Bse) ⌢ ("V", S (S Type Bse) (TVar "T")) |-
         canon' (TVar "V") ~?=

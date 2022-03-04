@@ -10,6 +10,7 @@ module Algo
 import Common
 import Ctx
 
+import Control.Exception.Base
 import Data.Maybe
 import Debug.Trace
 
@@ -21,36 +22,44 @@ tequiv aΓ τ1 τ2 κ =
         ωκ <- canon aΓ κ
         tequiv' aΓ ωτ1 ωτ2 ωκ |>> Just ())
 
--- (didn't define a seperate datatype since more symbols would clash and I'm
--- still changing a lot of stuff)
 tequiv' :: Ctx -> Typ -> Typ -> Knd -> Bool
 tequiv' _ Bse Bse Type = True
 tequiv' aΓ (τ1 :⊕ τ2) (τ3 :⊕ τ4) Type =
   (tequiv aΓ τ1 τ3 Type) && (tequiv aΓ τ2 τ4 Type)
 tequiv' aΓ τ1@(Tλ _ _ _) τ2@(Tλ _ _ _) (Π t κ1 κ2) =
   tequiv (aΓ ⌢ (t, κ1)) (TAp τ1 $ TVar t) (TAp τ2 $ TVar t) κ2
--- need to check κ v. lookupH
-tequiv' aΓ (ETHole u) (ETHole u') κ = u == u' && isJust (lookupH aΓ u)
+tequiv' aΓ (ETHole u) (ETHole u') κ = isJust (do u == u' |>> lookupH aΓ u)
 tequiv' aΓ (NETHole u1 τ1) (NETHole u2 τ2) κ =
-  u1 == u2 && isJust (lookupH aΓ u1)
+  isJust
+    (do _ <- u1 == u2 |>> lookupH aΓ u1
+        assert (τ1 ≡ τ2) $ Just ())
 tequiv' _ _ _ _ = False
 
 kequiv :: Ctx -> Knd -> Knd -> Bool
-kequiv aΓ (Π t κ1 κ2) κ'@(Π t' _ _) =
-  let (Π t'' κ3 κ4) = αRename t t' κ'
-   in (kequiv aΓ κ1 κ3) && (kequiv (aΓ ⌢ (t, κ1)) κ2 κ4)
-kequiv aΓ (S κ1 τ1) (S κ2 τ2) = (kequiv aΓ κ1 κ2) && (tequiv aΓ τ1 τ2 κ1)
-kequiv _ κ1 κ2
-  | κ1 ≡ κ2 = undefined
-  | otherwise = False
+kequiv aΓ κ1 κ2 =
+  isJust
+    (do ωκ1 <- canon aΓ κ1
+        ωκ2 <- canon aΓ κ2
+        kequiv' aΓ ωκ1 ωκ2 |>> Just ())
 
+kequiv' :: Ctx -> Knd -> Knd -> Bool
+kequiv' aΓ κ@(Π t _ _) κ'@(Π t' _ _) =
+  let t'' = fresh2 t t'
+   in let (Π _ κ1 κ2) = αRename t'' t κ
+       in let (Π _ κ3 κ4) = αRename t'' t' κ'
+           in (kequiv aΓ κ1 κ3) && (kequiv (aΓ ⌢ (t'', κ1)) κ2 κ4)
+kequiv' aΓ (S κ1 τ1) (S κ2 τ2) = (kequiv aΓ κ1 κ2) && (tequiv aΓ τ1 τ2 κ1)
+kequiv' _ κ1 κ2 = κ1 ≡ κ2
+
+-- (didn't define a seperate datatype since more symbols would clash and I'm
+-- still changing a lot of stuff)
 class Canon a where
   canon :: Ctx -> a -> Maybe a
 
 instance Canon Typ where
   canon aΓ (TVar t) = do
-    κ <- lookupT aΓ t
-    case κ of
+    γκ <- lookupT aΓ t
+    case γκ of
       S κ' τ' -> canon aΓ τ'
       Type -> Just $ TVar t
       KHole -> error "This should not happen"
@@ -61,7 +70,7 @@ instance Canon Typ where
     ωτ2 <- canon aΓ τ2
     return $ ωτ1 :⊕ ωτ2
   canon aΓ τ@(ETHole u) = do
-    κ <- lookupH aΓ u
+    _ <- lookupH aΓ u
     return τ
   canon aΓ τ@(NETHole u τ') = do
     κ <- lookupH aΓ u
@@ -133,13 +142,14 @@ wfak aΓ τ κ =
            ->
             (trace
                ("\nshort circuit: " ++ show νκ ++ ", " ++ show κ ++ "\n")
-               νκ' ≡
-             κ ||
+               kequiv
+               aΓ
+               νκ'
+               κ ||
              csk aΓ νκ κ) |>>
             Just ()
           _ -> error "pk s are always singletons")
 
--- TODO: a lot
 csk :: Ctx -> Knd -> Knd -> Bool
 csk aΓ κ κ' =
   isJust
@@ -154,4 +164,4 @@ csk aΓ κ κ' =
           (S Type τ, Type) ->
             trace "\nYou should never see this unless you call csk directly\n" $
             Just ()
-          _ -> ωκ1 ≡ ωκ2 |>> Just ())
+          _ -> kequiv aΓ ωκ1 ωκ2 |>> Just ())
