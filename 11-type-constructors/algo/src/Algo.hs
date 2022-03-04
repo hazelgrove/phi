@@ -1,5 +1,6 @@
 {-# LANGUAGE PartialTypeSignatures #-}
-
+{-# LANGUAGE CPP #-}
+#define LINE (show (__LINE__ :: Integer))
 module Algo
   ( module Algo
   , module Common
@@ -127,15 +128,23 @@ wfak aΓ τ κ =
     (do νκ <- pk aΓ τ
         ωκ <- canon aΓ κ
         case νκ of
-          S νκ' ντ' -> (νκ' ≡ κ || csk aΓ νκ κ) |>> Just ()
+          S νκ' ντ'
+          -- the short circuit cuts a circular dependency between wfak and csk
+           ->
+            (trace
+               ("\nshort circuit: " ++ show νκ ++ ", " ++ show κ ++ "\n")
+               νκ' ≡
+             κ ||
+             csk aΓ νκ κ) |>>
+            Just ()
           _ -> error "pk s are always singletons")
 
 -- TODO: a lot
 csk :: Ctx -> Knd -> Knd -> Bool
 csk aΓ κ κ' =
   isJust
-    (do ωκ1 <- canon aΓ κ
-        ωκ2 <- canon aΓ κ'
+    (do ωκ1 <- trace ("\n" ++ LINE ++ "\n") $ canon aΓ κ
+        ωκ2 <- trace ("\n" ++ LINE ++ "\n") $ canon aΓ κ'
         case (ωκ1, ωκ2) of
           (_, KHole) -> Just ()
           (KHole, _) -> Just ()
