@@ -117,6 +117,8 @@ instance Rewrite Knd where
 (|>>) True = id
 (|>>) False = \_ -> mzero
 
+infix 3 |>>
+
 fresh :: TID -> TID
 fresh t =
   unsafePerformIO $

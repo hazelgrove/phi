@@ -151,5 +151,7 @@ csk aΓ κ κ' =
           (Π t κ1 κ2, Π t' κ3 κ4) ->
             ((csk aΓ κ3 κ1) && (csk (aΓ ⌢ (t, κ3)) κ2 (αRename t t' κ4))) |>>
             Just ()
-          (S Type τ, Type) -> Just ()
-          _ -> Nothing)
+          (S Type τ, Type) ->
+            trace "\nYou should never see this unless you call csk directly\n" $
+            Just ()
+          _ -> ωκ1 ≡ ωκ2 |>> Just ())
