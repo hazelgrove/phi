@@ -40,7 +40,7 @@ kequiv aΓ (Π t κ1 κ2) κ'@(Π t' _ _) =
    in (kequiv aΓ κ1 κ3) && (kequiv (aΓ ⌢ (t, κ1)) κ2 κ4)
 kequiv aΓ (S κ1 τ1) (S κ2 τ2) = (kequiv aΓ κ1 κ2) && (tequiv aΓ τ1 τ2 κ1)
 kequiv _ κ1 κ2
-  | κ1 == κ2 = undefined
+  | κ1 ≡ κ2 = undefined
   | otherwise = False
 
 class Canon a where
@@ -123,7 +123,7 @@ wfak aΓ τ κ =
     (do νκ <- pk aΓ τ
         ωκ <- canon aΓ κ
         case νκ of
-          S νκ' ντ' -> (νκ' == κ || csk aΓ νκ κ) |>> Just ()
+          S νκ' ντ' -> (νκ' ≡ κ || csk aΓ νκ κ) |>> Just ()
           _ -> error "pk s are always singletons")
 
 -- TODO: a lot

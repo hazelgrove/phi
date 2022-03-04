@@ -72,12 +72,12 @@ tests =
       --, Nil |- canon' (S Type Bse) ~?= Just (S Type Bse)
       ]
     αKndTests =
-      [ Type == Type ~?= True
-      , Π "t" Type Type == Π "t1" Type Type ~?= True
-      , Π "t" Type (S Type $ TVar "t") ==
-        Π "t1" Type (S Type $ TVar "t1") ~?= True
-      , Π "t" Type (S Type $ TVar "t") ==
-        Π "t1" Type (S Type $ TVar "t") ~?= False
+      [ Type ≡ Type ~?= True
+      , Π "t" Type Type ≡ Π "t1" Type Type ~?= True
+      , Π "t" Type (S Type $ TVar "t") ≡ Π "t1" Type (S Type $ TVar "t1") ~?=
+        True
+      , Π "t" Type (S Type $ TVar "t") ≡ Π "t1" Type (S Type $ TVar "t") ~?=
+        False
       ]
 
 -- in a somewhat increasing order of complexity

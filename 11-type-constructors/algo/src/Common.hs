@@ -1,6 +1,7 @@
 -- NOTE: we alwys assume programs are α-renamed so no shadowing occurs
 module Common where
 
+import Control.Exception.Base
 import Control.Monad (MonadPlus, mzero)
 import Debug.Trace
 import Language.Perl
@@ -22,7 +23,7 @@ data Typ
   | NETHole HID Typ
   | Tλ TID Knd Typ
   | TAp Typ Typ
-  deriving (Eq, Show)
+  deriving (Show)
 
 data Knd
   = Type
@@ -33,6 +34,19 @@ data Knd
 
 -- I'm afraid that sooner or later I'll run into a case where just using De
 -- Bruijn indeces would've been much easier
+instance Eq Typ where
+  (TVar t) == (TVar t') = t == t'
+  Bse == Bse = True
+  (τ1 :⊕ τ2) == (τ3 :⊕ τ4) = (τ1 == τ3) && (τ2 == τ4)
+  (ETHole u) == (ETHole u') = u == u'
+  (NETHole u τ) == (NETHole u' τ') = assert (τ == τ') $ u == u'
+  (Tλ t κ τ) == (Tλ t' κ' τ') =
+    κ == κ' &&
+    let t'' = fresh2 t t'
+     in (αRename t'' t τ) == (αRename t'' t' τ')
+  (TAp τ1 τ2) == (TAp τ3 τ4) = (τ1 == τ3) && (τ2 == τ4)
+  _ == _ = False
+
 instance Eq Knd where
   Type == Type = True
   KHole == KHole = True
@@ -43,14 +57,22 @@ instance Eq Knd where
      in ((αRename t'' t κ2) == (αRename t'' t' κ4))
   _ == _ = False
 
-class Rewrite a
+class Eq a =>
+      Rewrite a
+  {-
+   - (==) must be ≡_α
+   -}
+  where
+  (≡) :: a -> a -> Bool
+  (≡) = (==)
   {-
    - okay, not exactly an alpha-conversion,
    - but replaces all instances of a variable with another
    -}
-  where
   αRename :: TID -> TID -> a -> a
   subst :: Typ -> TID -> a -> a
+
+infix 4 ≡
 
 instance Rewrite Typ where
   αRename t'' t' (TVar t)
