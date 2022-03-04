@@ -9,7 +9,14 @@ main = runTestTTAndExit tests
 
 tests :: Test
 tests =
-  TestList . concat $ [tequivTests, freshTests, canonTypTests, canonKndTests]
+  TestList . concat $
+  [ tequivTests
+  , freshTests
+  , fresh2Tests
+  , canonTypTests
+  , canonKndTests
+  , αKndTests
+  ]
   where
     tequivTests =
       [ Nil |- tequiv Bse Bse Type ~?= True
@@ -21,6 +28,12 @@ tests =
       , fresh "t1" ~?= "t2"
       , fresh "t9" ~?= "t10"
       , fresh "terrible_Name10" ~?= "terrible_Name11"
+      ]
+    fresh2Tests =
+      [ fresh2 "t" "t" ~?= "tt1"
+      , fresh2 "t1" "foo" ~?= "tfoo1"
+      , fresh2 "t9" "foo10" ~?= "tfoo1"
+      , fresh2 "terrible_Name10" "t" ~?= "terrible_Namet1"
       ]
     canonTypTests =
       [ Nil |- canon' Bse ~?= Just Bse
@@ -57,6 +70,14 @@ tests =
     canonKndTests =
       [ Nil |- canon' Type ~?= Just Type
       --, Nil |- canon' (S Type Bse) ~?= Just (S Type Bse)
+      ]
+    αKndTests =
+      [ Type == Type ~?= True
+      , Π "t" Type Type == Π "t1" Type Type ~?= True
+      , Π "t" Type (S Type $ TVar "t") ==
+        Π "t1" Type (S Type $ TVar "t1") ~?= True
+      , Π "t" Type (S Type $ TVar "t") ==
+        Π "t1" Type (S Type $ TVar "t") ~?= False
       ]
 
 -- in a somewhat increasing order of complexity
