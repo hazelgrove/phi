@@ -84,4 +84,13 @@ instance Rewrite Knd where
 (|>>) False = \_ -> mzero
 
 fresh :: TID -> TID
-fresh t = unsafePerformIO $ withPerl $ eval $ "my $tid = '" ++ t ++ "'; $tid"
+fresh t =
+  unsafePerformIO $
+  withPerl $
+  eval $
+  "my $tid = '" ++
+  t ++
+  "';" ++
+  "$tid =~ /(\\D+)(\\d+)?/;" ++
+  "if(defined $2){" ++
+  "$_ = $1 . ($2 + 1)" ++ "} else{" ++ "$_ = $1 . '1'" ++ "}"
