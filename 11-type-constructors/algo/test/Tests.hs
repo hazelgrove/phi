@@ -16,26 +16,31 @@ tests =
       -- , Nil |- tequiv Bse Bse (S Type Bse) ~?= True
       -- , Nil |- tequiv Bse Bse (Π "t" Type (S Type (TVar "t"))) ~?= False
       ]
-    freshTests = [fresh "t" ~?= "t1", fresh "t1" ~?= "t2"]
+    freshTests =
+      [ fresh "t" ~?= "t1"
+      , fresh "t1" ~?= "t2"
+      , fresh "t9" ~?= "t10"
+      , fresh "terrible_Name10" ~?= "terrible_Name11"
+      ]
     canonTypTests =
       [ Nil |- canon' Bse ~?= Just Bse
-      --, Nil |- canon' (TVar "T") ~?= Nothing
-      --, Nil ⌢ ("T", S Type Bse) |- canon' (TVar "T") ~?= Just Bse
-      --, Nil ⌢ ("T", S Type Bse) ⌢ ("V", S (S Type Bse) (TVar "T")) |-
-      --  canon' (TVar "V") ~?=
-      --  Just Bse
-      --, Nil ⌢
-      --  ( "Pair"
-      --  , S (Π "t" Type (S Type (TVar "t" :⊕ TVar "t")))
-      --      (Tλ "t" Type (TVar "t" :⊕ TVar "t"))) |-
-      --  canon' (TVar "Pair") ~?=
-      --  (Just $ (Tλ "t" Type (TVar "t" :⊕ TVar "t")))
-      --, Nil ⌢
-      --  ( "Pair"
-      --  , S (Π "t" Type (S Type (TVar "t" :⊕ TVar "t")))
-      --      (Tλ "t" Type (TVar "t" :⊕ TVar "t"))) |-
-      --  canon' (TAp (TVar "Pair") Bse) ~?=
-      --  (Just $ Bse :⊕ Bse)
+      , Nil |- canon' (TVar "T") ~?= Nothing
+      , Nil ⌢ ("T", S Type Bse) |- canon' (TVar "T") ~?= Just Bse
+      , Nil ⌢ ("T", S Type Bse) ⌢ ("V", S (S Type Bse) (TVar "T")) |-
+        canon' (TVar "V") ~?=
+        Just Bse
+      , Nil ⌢
+        ( "Pair"
+        , S (Π "t" Type (S Type (TVar "t" :⊕ TVar "t")))
+            (Tλ "t" Type (TVar "t" :⊕ TVar "t"))) |-
+        canon' (TVar "Pair") ~?=
+        (Just $ (Tλ "t" Type (TVar "t" :⊕ TVar "t")))
+      , Nil ⌢
+        ( "Pair"
+        , S (Π "t" Type (S Type (TVar "t" :⊕ TVar "t")))
+            (Tλ "t" Type (TVar "t" :⊕ TVar "t"))) |-
+        canon' (TAp (TVar "Pair") Bse) ~?=
+        (Just $ Bse :⊕ Bse)
       --, Nil ⌢
       --  ( "Pair"
       --  , S (Π "t" Type (S Type (TVar "t" :⊕ TVar "t")))
