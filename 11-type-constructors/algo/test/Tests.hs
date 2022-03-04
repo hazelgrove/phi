@@ -54,18 +54,18 @@ tests =
             (Tλ "t" Type (TVar "t" :⊕ TVar "t"))) |-
         canon' (TAp (TVar "Pair") Bse) ~?=
         (Just $ Bse :⊕ Bse)
-      --, Nil ⌢
-      --  ( "Pair"
-      --  , S (Π "t" Type (S Type (TVar "t" :⊕ TVar "t")))
-      --      (Tλ "t" Type (TVar "t" :⊕ TVar "t"))) |-
-      --  canon' (TAp (TVar "Pair") (TAp (TVar "Pair") (Bse))) ~?=
-      --  (Just $ (Bse :⊕ Bse) :⊕ (Bse :⊕ Bse))
-      --, Nil ⌢
-      --  ( "Pair"
-      --  , S (Π "t" Type (S Type (TVar "t" :⊕ TVar "t")))
-      --      (Tλ "t" Type (TVar "t" :⊕ TVar "t"))) |-
-      --  canon' (TAp (TVar "Pair") (TVar "Pair")) ~?=
-      --  Nothing
+      , Nil ⌢
+        ( "Pair"
+        , S (Π "t" Type (S Type (TVar "t" :⊕ TVar "t")))
+            (Tλ "t" Type (TVar "t" :⊕ TVar "t"))) |-
+        canon' (TAp (TVar "Pair") (TAp (TVar "Pair") (Bse))) ~?=
+        (Just $ (Bse :⊕ Bse) :⊕ (Bse :⊕ Bse))
+      , Nil ⌢
+        ( "Pair"
+        , S (Π "t" Type (S Type (TVar "t" :⊕ TVar "t")))
+            (Tλ "t" Type (TVar "t" :⊕ TVar "t"))) |-
+        canon' (TAp (TVar "Pair") (TVar "Pair")) ~?=
+        Nothing
       ]
     canonKndTests =
       [ Nil |- canon' Type ~?= Just Type
