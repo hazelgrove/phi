@@ -29,7 +29,16 @@ data Knd
   | KHole
   | S Knd Typ
   | Π TID Knd Knd
-  deriving (Eq, Show)
+  deriving (Show)
+
+-- I'm afraid that sooner or later I'll run into a case where just using De
+-- Bruijn indeces would've been much easier
+instance Eq Knd where
+  Type == Type = True
+  KHole == KHole = True
+  (S κ1 τ1) == (S κ2 τ2) = (κ1 == κ2) && (τ1 == τ2)
+  (Π t κ1 κ2) == (Π t' κ3 κ4) = (κ1 == κ3) && (κ3 == (αRename t' t κ4))
+  _ == _ = False
 
 class Rewrite a
   {-

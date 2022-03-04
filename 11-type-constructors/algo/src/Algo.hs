@@ -83,7 +83,7 @@ instance Canon Knd where
     ωκ <- canon aΓ κ
     ωτ <- canon aΓ τ
     case ωκ of
-      Type -> canon aΓ $ S Type ωτ
+      Type -> wfak aΓ ωτ Type |>> (Just $ S Type ωτ)
       KHole -> canon aΓ $ S KHole ωτ
       S κ' τ' -> canon aΓ $ S κ' τ'
       Π t κ1 κ2 ->
@@ -101,33 +101,42 @@ pk aΓ τ = do
 
 pk' :: Ctx -> Typ -> Maybe Knd
 pk' aΓ (TVar _) = error "We aren't handling builtins"
-pk' aΓ Bse = canon aΓ (S Type Bse)
+pk' aΓ Bse = Just $ S Type Bse
 pk' aΓ (ωτ1 :⊕ ωτ2) = do
   wfak aΓ ωτ1 Type |>> Just ()
   wfak aΓ ωτ2 Type |>> Just ()
-  canon aΓ (S Type (ωτ1 :⊕ ωτ2))
+  Just $ S Type (ωτ1 :⊕ ωτ2)
 pk' aΓ τ@(ETHole u) = do
   κ <- lookupH aΓ u
-  canon aΓ (S κ τ)
+  Just $ S κ τ
 pk' aΓ τ@(NETHole u _) = do
   κ <- lookupH aΓ u
-  canon aΓ (S κ τ)
+  Just $ S κ τ
 pk' aΓ τ'@(Tλ t κ τ) = do
   κ' <- pk' (aΓ ⌢ (t, κ)) τ
-  canon aΓ (S (Π "t" κ κ') τ')
+  Just $ S (Π "t" κ κ') τ'
 pk' _ _ = error "Typ should be canonized coming in"
 
 wfak :: Ctx -> Typ -> Knd -> Bool
 wfak aΓ τ κ =
   isJust
     (do νκ <- pk aΓ τ
-        csk aΓ νκ κ |>> Just ())
+        ωκ <- canon aΓ κ
+        case νκ of
+          S νκ' ντ' -> (νκ' == κ || csk aΓ νκ κ) |>> Just ()
+          _ -> error "pk s are always singletons")
 
+-- TODO: a lot
 csk :: Ctx -> Knd -> Knd -> Bool
-csk aΓ κ1 KHole = True -- check κ1 is well formed
-csk aΓ KHole κ2 = True -- check κ2 is well formed
-csk aΓ κ1 κ2 =
+csk aΓ κ κ' =
   isJust
-    (do ωκ1 <- canon aΓ κ1
-        ωκ2 <- canon aΓ κ2
-        return ())
+    (do ωκ1 <- canon aΓ κ
+        ωκ2 <- canon aΓ κ'
+        case (ωκ1, ωκ2) of
+          (_, KHole) -> Just ()
+          (KHole, _) -> Just ()
+          (Π t κ1 κ2, Π t' κ3 κ4) ->
+            ((csk aΓ κ3 κ1) && (csk (aΓ ⌢ (t, κ3)) κ2 (αRename t t' κ4))) |>>
+            Just ()
+          (S Type τ, Type) -> Just ()
+          _ -> Nothing)
