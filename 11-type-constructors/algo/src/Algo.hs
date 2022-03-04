@@ -51,7 +51,7 @@ instance Canon Typ where
     κ <- lookupT aΓ t
     case κ of
       S κ' τ' -> canon aΓ τ'
-      Type -> error $ "We aren't handling builtins yet: " ++ (show $ TVar t)
+      Type -> Just $ TVar t
       KHole -> error "This should not happen"
       Π t' κ1 κ2 -> error "???"
   canon _ Bse = Just Bse
@@ -82,17 +82,19 @@ instance Canon Knd where
   canon aΓ (S κ τ) = do
     ωκ <- canon aΓ κ
     ωτ <- canon aΓ τ
-    case ωκ of
-      Type -> wfak aΓ ωτ Type |>> (Just $ S Type ωτ)
-      KHole -> canon aΓ $ S KHole ωτ
-      S κ' τ' -> canon aΓ $ S κ' τ'
-      Π t κ1 κ2 ->
-        let t' = fresh t
-         in canon aΓ $ Π t' (αRename t' t κ1) (S κ2 (TAp ωτ $ TVar t'))
+    trace ("\nωκ: " ++ show ωκ ++ "\nωτ: " ++ show ωτ) $
+      case ωκ of
+        Type -> wfak aΓ ωτ Type |>> (Just $ S Type ωτ)
+        KHole -> canon aΓ $ S KHole ωτ
+        S κ' τ' -> canon aΓ $ S κ' τ'
+        Π t κ1 κ2 ->
+          let t' = fresh t
+           in let ωκ' = Π t' (αRename t' t κ1) (S κ2 (TAp ωτ $ TVar t'))
+               in trace ("\nNormalize Singleton: " ++ show ωκ') $ canon aΓ ωκ'
   canon aΓ (Π t κ1 κ2) = do
     ωκ1 <- canon aΓ κ1
-    ωκ2 <- canon aΓ κ2
-    return $ Π t ωκ1 ωκ2
+    ωκ2 <- canon (aΓ ⌢ (t, κ1)) κ2
+    Just $ Π t ωκ1 ωκ2
 
 pk :: Ctx -> Typ -> Maybe Knd
 pk aΓ τ = do
@@ -100,7 +102,9 @@ pk aΓ τ = do
   pk' aΓ ωτ
 
 pk' :: Ctx -> Typ -> Maybe Knd
-pk' aΓ (TVar _) = error "We aren't handling builtins"
+pk' aΓ (TVar t) = do
+  κ <- lookupT aΓ t
+  Just $ S κ (TVar t)
 pk' aΓ Bse = Just $ S Type Bse
 pk' aΓ (ωτ1 :⊕ ωτ2) = do
   wfak aΓ ωτ1 Type |>> Just ()

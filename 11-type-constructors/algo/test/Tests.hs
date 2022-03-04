@@ -69,7 +69,12 @@ tests =
       ]
     canonKndTests =
       [ Nil |- canon' Type ~?= Just Type
-      --, Nil |- canon' (S Type Bse) ~?= Just (S Type Bse)
+      , Nil |- canon' (S Type Bse) ~?= Just (S Type Bse)
+      , let τ = (Tλ "t" Type $ TVar "t")
+         in let t = "t"
+             in let t1 = fresh t
+                 in Nil |- canon' (S (Π t Type Type) τ) ~?=
+                    Just (Π t1 Type (S (αRename t1 t Type) $ TVar t1))
       ]
     αKndTests =
       [ Type ≡ Type ~?= True
