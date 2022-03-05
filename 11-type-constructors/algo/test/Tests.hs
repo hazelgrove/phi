@@ -20,8 +20,24 @@ tests =
   where
     tequivTests =
       [ Nil |- tequiv Bse Bse Type ~?= True
-      -- , Nil |- tequiv Bse Bse (S Type Bse) ~?= True
-      -- , Nil |- tequiv Bse Bse (Π "t" Type (S Type (TVar "t"))) ~?= False
+      , Nil |- tequiv Bse Bse (S Type Bse) ~?= True
+      , Nil |- tequiv Bse Bse (Π "t" Type (S Type (TVar "t"))) ~?= False
+      , Nil |- tequiv (Bse :⊕ Bse) (Bse :⊕ Bse) Type ~?= True
+      , Nil |- tequiv (Bse :⊕ Bse) (Bse :⊕ Bse) (S Type $ Bse :⊕ Bse) ~?= True
+      , Nil |-
+        tequiv (Bse :⊕ Bse) (Bse :⊕ Bse) (S (S Type $ Bse :⊕ Bse) (Bse :⊕ Bse)) ~?=
+        True
+      , Nil ⌢ ("Int", Type) |- tequiv (TVar "Int") Bse Type ~?= False
+      , Nil |- tequiv (Tλ "t" Type $ TVar "t") (Tλ "t" Type Bse) Type ~?= False
+      , Nil |-
+        tequiv (Tλ "t" Type $ TVar "t") (Tλ "t" Type Bse) (Π "t" Type Type) ~?=
+        False
+      , Nil |-
+        tequiv
+          (Tλ "t" Type $ TVar "t")
+          (Tλ "t" Type Bse)
+          (Π "t" (S Type Bse) Type) ~?=
+        True
       ]
     freshTests =
       [ fresh "t" ~?= "t1"

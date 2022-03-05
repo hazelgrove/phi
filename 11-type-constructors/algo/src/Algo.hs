@@ -24,15 +24,16 @@ tequiv aΓ τ1 τ2 κ =
 
 tequiv' :: Ctx -> Typ -> Typ -> Knd -> Bool
 tequiv' _ Bse Bse Type = True
-tequiv' aΓ (τ1 :⊕ τ2) (τ3 :⊕ τ4) Type =
-  (tequiv aΓ τ1 τ3 Type) && (tequiv aΓ τ2 τ4 Type)
-tequiv' aΓ τ1@(Tλ _ _ _) τ2@(Tλ _ _ _) (Π t κ1 κ2) =
-  tequiv (aΓ ⌢ (t, κ1)) (TAp τ1 $ TVar t) (TAp τ2 $ TVar t) κ2
+tequiv' aΓ (ωτ1 :⊕ ωτ2) (ωτ3 :⊕ ωτ4) Type =
+  (tequiv aΓ ωτ1 ωτ3 Type) && (tequiv aΓ ωτ2 ωτ4 Type)
 tequiv' aΓ (ETHole u) (ETHole u') κ = isJust (do u == u' |>> lookupH aΓ u)
 tequiv' aΓ (NETHole u1 τ1) (NETHole u2 τ2) κ =
   isJust
     (do _ <- u1 == u2 |>> lookupH aΓ u1
         assert (τ1 ≡ τ2) $ Just ())
+tequiv' aΓ ωτ1@(Tλ _ _ _) ωτ2@(Tλ _ _ _) (Π t κ1 κ2) =
+  tequiv (aΓ ⌢ (t, κ1)) (TAp ωτ1 $ TVar t) (TAp ωτ2 $ TVar t) κ2
+tequiv' aΓ ωτ1 ωτ2 (S ωκ ωτ3) = tequiv aΓ ωτ1 ωτ2 ωκ && tequiv aΓ ωτ1 ωτ3 ωκ
 tequiv' _ _ _ _ = False
 
 kequiv :: Ctx -> Knd -> Knd -> Bool
