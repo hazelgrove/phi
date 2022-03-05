@@ -58,13 +58,15 @@ class Canon a where
   canon :: Ctx -> a -> Maybe a
 
 instance Canon Typ where
-  canon aΓ (TVar t) = do
+  canon aΓ τ@(TVar t) = do
     γκ <- lookupT aΓ t
     case γκ of
       S κ' τ' -> canon aΓ τ'
-      Type -> Just $ TVar t
+      Type -> Just $ τ
       KHole -> error "This should not happen"
-      Π t' κ1 κ2 -> error "???"
+      Π t' κ1 κ2 -> do
+        ωκ1 <- canon aΓ κ1
+        Just $ Tλ t' ωκ1 (TAp τ $ TVar t')
   canon _ Bse = Just Bse
   canon aΓ (τ1 :⊕ τ2) = do
     ωτ1 <- canon aΓ τ1
@@ -83,8 +85,20 @@ instance Canon Typ where
     ωτ1 <- canon aΓ τ1
     ωτ2 <- canon aΓ τ2
     -- check κ (subkinding)
-    case ωτ1 of
-      Tλ t κ τ -> wfak aΓ ωτ2 κ |>> canon aΓ (subst ωτ2 t τ)
+    case ωτ1
+      -- do not η-reduce, otherwise we loop
+          of
+      (Tλ t κ (TAp τ (TVar t'))) ->
+        t ==
+        t' |>>
+        (do ωτ <- canon aΓ τ
+            if ωτ1 ≡ ωτ
+              then (Just $ TAp τ ωτ2)
+              else error $
+                   "\n" ++ show ωτ1 ++ " is supposed to be a η-expansion\n")
+      Tλ t κ τ -> case τ of
+                   TAp τ' (TVar)
+                    wfak aΓ ωτ2 κ |>> canon aΓ (subst ωτ2 t τ)
       _ -> trace ("Can't β-reduce " ++ (show $ TAp ωτ1 ωτ2)) Nothing
 
 instance Canon Knd where
