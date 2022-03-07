@@ -20,16 +20,16 @@ tequiv aΓ τ1 τ2 κ =
     (do ωτ1 <- canon aΓ τ1
         ωτ2 <- canon aΓ τ2
         ωκ <- canon aΓ κ
-        tequiv' aΓ ωτ1 ωτ2 ωκ |>> Just ())
+        tequiv' aΓ ωτ1 ωτ2 ωκ &>> Just ())
 
 tequiv' :: Ctx -> Typ -> Typ -> Knd -> Bool
 tequiv' _ Bse Bse Type = True
 tequiv' aΓ (ωτ1 :⊕ ωτ2) (ωτ3 :⊕ ωτ4) Type =
   (tequiv aΓ ωτ1 ωτ3 Type) && (tequiv aΓ ωτ2 ωτ4 Type)
-tequiv' aΓ (ETHole u) (ETHole u') κ = isJust (do u == u' |>> lookupH aΓ u)
+tequiv' aΓ (ETHole u) (ETHole u') κ = isJust (do u == u' &>> lookupH aΓ u)
 tequiv' aΓ (NETHole u1 τ1) (NETHole u2 τ2) κ =
   isJust
-    (do _ <- u1 == u2 |>> lookupH aΓ u1
+    (do _ <- u1 == u2 &>> lookupH aΓ u1
         assert (τ1 ≡ τ2) $ Just ())
 tequiv' aΓ ωτ1@(Tλ _ _ _) ωτ2@(Tλ _ _ _) (Π t κ1 κ2) =
   tequiv (aΓ ⌢ (t, κ1)) (TAp ωτ1 $ TVar t) (TAp ωτ2 $ TVar t) κ2
@@ -41,7 +41,7 @@ kequiv aΓ κ1 κ2 =
   isJust
     (do ωκ1 <- canon aΓ κ1
         ωκ2 <- canon aΓ κ2
-        kequiv' aΓ ωκ1 ωκ2 |>> Just ())
+        kequiv' aΓ ωκ1 ωκ2 &>> Just ())
 
 kequiv' :: Ctx -> Knd -> Knd -> Bool
 kequiv' aΓ κ@(Π t _ _) κ'@(Π t' _ _) =
@@ -84,7 +84,7 @@ instance Canon Typ where
     ωτ2 <- canon aΓ τ2
     -- check κ (subkinding)
     case ωτ1 of
-      Tλ t κ τ -> wfak aΓ ωτ2 κ |>> canon aΓ (subst ωτ2 t τ)
+      Tλ t κ τ -> wfak aΓ ωτ2 κ &>> canon aΓ (subst ωτ2 t τ)
       _ -> trace ("Can't β-reduce " ++ (show $ TAp ωτ1 ωτ2)) Nothing
 
 -- need a canonical form to normalize higher order singletons
