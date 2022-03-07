@@ -32,12 +32,6 @@ data Knd
   | Π TID Knd Knd
   deriving (Show)
 
-newtype CKnd =
-  CKnd
-    { getKnd :: Knd
-    }
-  deriving (Eq, Show, Rewrite)
-
 -- I'm afraid that sooner or later I'll run into a case where just using De
 -- Bruijn indeces would've been much easier
 instance Eq Typ where
@@ -119,11 +113,11 @@ instance Rewrite Knd where
     | t' == t = error "Seriously, why are you doing this?"
     | otherwise = Π t (subst τ' t' κ1) (subst τ' t' κ2)
 
-(|>>) :: MonadPlus m => Bool -> m a -> m a
-(|>>) True = id
-(|>>) False = \_ -> mzero
+(&>>) :: MonadPlus m => Bool -> m a -> m a
+(&>>) True = id
+(&>>) False = \_ -> mzero
 
-infix 3 |>>
+infix 2 &>>
 
 fresh :: TID -> TID
 fresh t =
