@@ -15,9 +15,7 @@ type TAssump = (TID, Knd)
 
 type HAssump = (HID, Knd)
 
--- canon Typ only has variables if they are base types (do not have singleton kind)
--- TAp s are β reduced
--- Tλ s are ``values'' (we don't canon the body)
+-- The external type language
 data Typ
   = TVar TID
   | Bse
@@ -26,14 +24,38 @@ data Typ
   | NETHole HID Typ
   | Tλ TID Knd Typ
   | TAp Typ Typ
+  deriving (Show)--
+
+-- The internal type language
+--
+-- canon Typ only has variables if they are base types (do not have singleton kind)
+-- TAp s are β reduced
+-- ΩTAp s only exist if irriducible (invlove base type constructors)
+-- ΩTλ s are ``values'' (we don't canon the body)
+data ΩTyp
+  = ΩTVar TID
+  | ΩBse
+  | ΩTyp :⊕* ΩTyp
+  | ΩETHole HID
+  | ΩNETHole HID ΩTyp
+  | Ωλ TID ΩKnd Typ
+  | ΩTAp ΩTyp ΩTyp
+  | ΩTAp' ΩTyp ΩTyp
   deriving (Show)
 
--- need a canonical form to normalize higher order singletons
 data Knd
   = Type
   | KHole
   | S Knd Typ
   | Π TID Knd Knd
+  deriving (Show)
+
+-- need a canonical form to normalize higher order singletons
+data ΩKnd
+  = ΩType
+  | ΩKHole
+  | ΩS ΩKnd ΩTyp
+  | ΩΠ TID ΩKnd ΩKnd
   deriving (Show)
 
 -- I'm afraid that sooner or later I'll run into a case where just using De
