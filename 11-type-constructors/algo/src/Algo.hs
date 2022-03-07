@@ -85,20 +85,8 @@ instance Canon Typ where
     ωτ1 <- canon aΓ τ1
     ωτ2 <- canon aΓ τ2
     -- check κ (subkinding)
-    case ωτ1
-      -- do not η-reduce, otherwise we loop
-          of
-      (Tλ t κ (TAp τ (TVar t'))) ->
-        t ==
-        t' |>>
-        (do ωτ <- canon aΓ τ
-            if ωτ1 ≡ ωτ
-              then (Just $ TAp τ ωτ2)
-              else error $
-                   "\n" ++ show ωτ1 ++ " is supposed to be a η-expansion\n")
-      Tλ t κ τ -> case τ of
-                   TAp τ' (TVar)
-                    wfak aΓ ωτ2 κ |>> canon aΓ (subst ωτ2 t τ)
+    case ωτ1 of
+      Tλ t κ τ -> wfak aΓ ωτ2 κ |>> canon aΓ (subst ωτ2 t τ)
       _ -> trace ("Can't β-reduce " ++ (show $ TAp ωτ1 ωτ2)) Nothing
 
 instance Canon Knd where
