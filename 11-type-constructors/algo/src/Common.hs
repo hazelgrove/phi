@@ -15,9 +15,6 @@ type TAssump = (TID, Knd)
 
 type HAssump = (HID, Knd)
 
--- canon Typ only has variables if they are base types (do not have singleton kind)
--- TAp s are β reduced
--- Tλ s are ``values'' (we don't canon the body)
 data Typ
   = TVar TID
   | Bse
@@ -27,6 +24,15 @@ data Typ
   | Tλ TID Knd Typ
   | TAp Typ Typ
   deriving (Show)
+
+-- CTyp only has variables if they are base types (do not have singleton kind)
+-- TAp s are β reduced as much as possible
+-- Tλ s are ``values'' (we don't canon the body)
+newtype CTyp =
+  CTyp
+    { getTyp :: Typ
+    }
+  deriving (Eq, Show, Rewrite)
 
 -- need a canonical form to normalize higher order singletons
 data Knd
