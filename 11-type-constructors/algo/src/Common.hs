@@ -25,22 +25,18 @@ data Typ
   | TAp Typ Typ
   deriving (Show)
 
--- CTyp only has variables if they are base types (do not have singleton kind)
--- TAp s are β reduced as much as possible
--- Tλ s are ``values'' (we don't canon the body)
-newtype CTyp =
-  CTyp
-    { getTyp :: Typ
-    }
-  deriving (Eq, Show, Rewrite)
-
--- need a canonical form to normalize higher order singletons
 data Knd
   = Type
   | KHole
   | S Knd Typ
   | Π TID Knd Knd
   deriving (Show)
+
+newtype CKnd =
+  CKnd
+    { getKnd :: Knd
+    }
+  deriving (Eq, Show, Rewrite)
 
 -- I'm afraid that sooner or later I'll run into a case where just using De
 -- Bruijn indeces would've been much easier
