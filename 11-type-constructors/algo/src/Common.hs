@@ -3,7 +3,6 @@ module Common where
 
 import Control.Exception.Base
 import Control.Monad (MonadPlus, mzero)
-import Debug.Trace
 import Language.Perl
 import System.IO.Unsafe
 
@@ -18,13 +17,13 @@ type HAssump = (HID, Knd)
 -- The external type language
 data Typ
   = TVar TID
-  | Bse
+  | Bse -- We'll remove this once built in types work
   | Typ :⊕ Typ
   | ETHole HID
   | NETHole HID Typ
   | Tλ TID Knd Typ
   | TAp Typ Typ
-  deriving (Show)--
+  deriving (Show) --
 
 -- The internal type language
 --
@@ -32,6 +31,14 @@ data Typ
 -- TAp s are β reduced
 -- ΩTAp s only exist if irriducible (invlove base type constructors)
 -- ΩTλ s are ``values'' (we don't canon the body)
+data Path
+  = PTVar TID
+  | PBse
+  | Path :∨ Path
+  | PETHole HID
+  | PNETHole HID Typ
+  | PAp Path Typ
+
 data ΩTyp
   = ΩTVar TID
   | ΩBse
@@ -44,6 +51,7 @@ data ΩTyp
   deriving (Show)
 
 data Knd
+  -- the external kind language
   = Type
   | KHole
   | S Knd Typ
