@@ -26,6 +26,8 @@ library
     hs-source-dirs:   src
     other-modules:    Common
                       Ctx
+                      External
+                      Internal
     build-depends:    base ^>=4.16.0.0
                      ,hs-perl5
     default-language: GHC2021
