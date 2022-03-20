@@ -1,6 +1,11 @@
-module Ctx where
+module ECtx where
 
 import Common
+import External
+
+type TAssump = (TID, Knd)
+
+type HAssump = (HID, Knd)
 
 data Ctx
   = Nil

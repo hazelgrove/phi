@@ -1,17 +1,9 @@
+{-# LANGUAGE TypeFamilies #-}
+
 module External where
 
+import Common
 import Control.Exception.Base
-import Control.Monad (MonadPlus, mzero)
-import Language.Perl
-import System.IO.Unsafe
-
-type TID = String
-
-type HID = Int
-
-type TAssump = (TID, Knd)
-
-type HAssump = (HID, Knd)
 
 -- The external type language
 data Typ
@@ -57,24 +49,8 @@ instance Eq Knd where
      in ((αRename t'' t κ2) == (αRename t'' t' κ4))
   _ == _ = False
 
-class Eq a =>
-      Rewrite a
-  {-
-   - (==) must be ≡_α
-   -}
-  where
-  (≡) :: a -> a -> Bool
-  (≡) = (==)
-  {-
-   - okay, not exactly an alpha-conversion,
-   - but replaces all instances of a variable with another
-   -}
-  αRename :: TID -> TID -> a -> a
-  subst :: Typ -> TID -> a -> a
-
-infix 4 ≡
-
 instance Rewrite Typ where
+  type RW Typ = Typ
   αRename t'' t' (TVar t)
     | t' == t = TVar t''
     | otherwise = TVar t
@@ -98,9 +74,11 @@ instance Rewrite Typ where
     | otherwise = Tλ t (subst τ' t' κ) (subst τ' t' τ1)
   subst τ' t' (TAp τ1 τ2) = TAp (subst τ' t' τ1) (subst τ' t' τ2)
 
+-- NOTE: What is this?
 -- tequiv' aΓ (TAp τ1 τ2) τ3 κ = tequiv aΓ (βReduce τ1 τ2) τ3 κ
 -- tequiv' aΓ τ1 (TAp τ2 τ3) κ = tequiv aΓ τ1 (βReduce τ2 τ3) κ
 instance Rewrite Knd where
+  type RW Knd = Typ
   αRename t'' t' (Π t κ1 κ2)
     | t' == t = Π t'' (αRename t'' t' κ1) (αRename t'' t' κ2)
     | otherwise = Π t (αRename t'' t' κ1) (αRename t'' t' κ2)
@@ -112,37 +90,3 @@ instance Rewrite Knd where
   subst τ' t' (Π t κ1 κ2)
     | t' == t = error "Seriously, why are you doing this?"
     | otherwise = Π t (subst τ' t' κ1) (subst τ' t' κ2)
-
-(&>>) :: MonadPlus m => Bool -> m a -> m a
-(&>>) True = id
-(&>>) False = \_ -> mzero
-
-infix 2 &>>
-
-fresh :: TID -> TID
-fresh t =
-  unsafePerformIO $
-  withPerl $
-  eval $
-  "my $tid = '" ++
-  t ++
-  "';" ++
-  "$tid =~ /(\\D+)(\\d+)?/;" ++
-  "if(defined $2){" ++
-  "$_ = $1 . ($2 + 1)" ++ "} else{" ++ "$_ = $1 . '1'" ++ "}"
-
-fresh2 :: TID -> TID -> TID
-fresh2 t t' =
-  unsafePerformIO $
-  withPerl $
-  eval $
-  "my $tid1 = '" ++
-  t ++
-  "';" ++
-  "my $tid2 = '" ++
-  t' ++
-  "';" ++
-  "$tid1 =~ /(\\D+)(\\d+)?/;" ++
-  "my ($tid1_1, $tid1_2) = ($1, $2);" ++
-  "$tid2 =~ /(\\D+)(\\d+)?/;" ++
-  "my ($tid2_1, $tid2_2) = ($1, $2);" ++ "$_ = $tid1_1 . $tid2_1 . '1'"
