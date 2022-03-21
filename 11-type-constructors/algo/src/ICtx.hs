@@ -12,6 +12,8 @@ data Ctx
   | Ctx :⌢ TAssump
   | Ctx :⌢⌢ HAssump
 
+-- TODO: this is c/p from ECtx
+-- rename variables (since we're talking about Terms/Types now)
 lookupT :: Ctx -> TID -> Maybe Typ
 lookupT Nil _ = Nothing
 lookupT (aΓ :⌢ (t', κ)) t

@@ -74,9 +74,6 @@ instance Rewrite Typ where
     | otherwise = Tλ t (subst τ' t' κ) (subst τ' t' τ1)
   subst τ' t' (TAp τ1 τ2) = TAp (subst τ' t' τ1) (subst τ' t' τ2)
 
--- NOTE: What is this?
--- tequiv' aΓ (TAp τ1 τ2) τ3 κ = tequiv aΓ (βReduce τ1 τ2) τ3 κ
--- tequiv' aΓ τ1 (TAp τ2 τ3) κ = tequiv aΓ τ1 (βReduce τ2 τ3) κ
 instance Rewrite Knd where
   type RW Knd = Typ
   αRename t'' t' (Π t κ1 κ2)

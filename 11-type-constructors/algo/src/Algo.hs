@@ -1,32 +1,10 @@
 module Algo
-  ( module Algo
+  ( module Algo -- does nothing right now
+  , module Normalize
   , module ECtx
+  , module External
   ) where
 
-import Common
-import qualified ECtx
-import qualified External as E
-import ICtx
-import Internal
-
-import Control.Exception.Base
-import Data.Maybe
-import Debug.Trace
-
-δsyn_elab :: Ctx -> E.Typ -> Maybe (Typ, Term)
-δsyn_elab aΓ (E.TVar x) = do
-  undefined
-
-τ_elab :: Ctx -> E.Knd -> Maybe Typ
-τ_elab = undefined
-
-wh_reduc = undefined
-
-wh_normal = undefined
-
-term_normal = undefined
-
-type_normal = undefined
-
-tequiv :: ECtx.Ctx -> E.Typ -> E.Typ -> E.Knd -> Bool
-tequiv = undefined
+import ECtx
+import External
+import Normalize

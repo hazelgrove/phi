@@ -36,6 +36,16 @@ infix 4 ≡
 
 infix 2 &>>
 
+-- when Γ is the first argument
+(|-) :: a -> (a -> b) -> b
+aΓ |- f = f aΓ
+
+-- when Γ is the last argument
+(|>) :: a -> (a -> b) -> b
+aΓ |> f = f aΓ
+
+infixl 2 |>
+
 fresh :: TID -> TID
 fresh t =
   unsafePerformIO $

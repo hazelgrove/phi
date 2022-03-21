@@ -30,6 +30,7 @@ data Typ
   | Π TID Typ Typ
   deriving (Show)
 
+-- NOTE: copy/pasted from External + s///, since Internal ≡ External right now
 instance Eq Term where
   (TVar t) == (TVar t') = t == t'
   Bse == Bse = True
@@ -78,9 +79,6 @@ instance Rewrite Term where
     | otherwise = Tλ t (subst τ' t' κ) (subst τ' t' τ1)
   subst τ' t' (TAp τ1 τ2) = TAp (subst τ' t' τ1) (subst τ' t' τ2)
 
--- NOTE: What is this?
--- tequiv' aΓ (TAp τ1 τ2) τ3 κ = tequiv aΓ (βReduce τ1 τ2) τ3 κ
--- tequiv' aΓ τ1 (TAp τ2 τ3) κ = tequiv aΓ τ1 (βReduce τ2 τ3) κ
 instance Rewrite Typ where
   type RW Typ = Term
   αRename t'' t' (Π t κ1 κ2)
