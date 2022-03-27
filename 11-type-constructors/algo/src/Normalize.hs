@@ -25,7 +25,7 @@ fixKnd' _ E.Type = return Type
 fixKnd' _ E.KHole = return KHole
 fixKnd' iΓ (E.S eκ eτ) = do
   iτ <- fixKnd' iΓ eκ
-  iδ <- ana_elab' iΓ eτ iτ
+  iδ <- (ana_elab' iΓ eτ iτ).term -- shouldn't have holes in initial ctx
   return $ S iτ iδ
 fixKnd' iΓ (E.Π t eκ1 eκ2) = do
   iτ1 <- fixKnd' iΓ eκ1

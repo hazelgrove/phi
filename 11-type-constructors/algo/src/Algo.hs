@@ -1,8 +1,8 @@
 module Algo
   ( module Algo -- does nothing right now
-  , module Normalize
-  , module ECtx
-  , module External
+  , module Normalize -- to call algorithms
+  , module ECtx -- initial contexts
+  , module External -- so we can write types
   ) where
 
 import ECtx

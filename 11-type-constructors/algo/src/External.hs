@@ -54,13 +54,14 @@ instance Rewrite Typ where
   αRename t'' t' (TVar t)
     | t' == t = TVar t''
     | otherwise = TVar t
+  αRename _ _ Bse = Bse
   αRename t'' t' (τ1 :⊕ τ2) = (αRename t'' t' τ1) :⊕ (αRename t'' t' τ2)
+  αRename _ _ τ@(ETHole _) = τ
   αRename t'' t' (NETHole u τ) = NETHole u (αRename t'' t' τ)
   αRename t'' t' (Tλ t κ τ)
     | t' == t = Tλ t'' (αRename t'' t' κ) (αRename t'' t' τ)
     | otherwise = Tλ t (αRename t'' t' κ) (αRename t'' t' τ)
   αRename t'' t' (TAp τ1 τ2) = TAp (αRename t'' t' τ1) (αRename t'' t' τ2)
-  αRename _ _ τ = τ
   ----------
   subst τ' t' τ@(TVar t)
     | t' == t = τ'
