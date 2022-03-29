@@ -104,16 +104,31 @@ ana_elab' iΓ eτ iτ = do
 τ_elab :: Ctx -> E.Knd -> Maybe Typ
 τ_elab = undefined
 -}
-wh_reduc = undefined
+-- Maybe since ``otherwise''
+wh_reduc :: Ctx -> Term -> Either Term Term
+wh_reduc _ (TAp (Tλ t τ δ1) δ2) = assert (True) $ Right $ subst δ2 t δ1 {- check δ2 against τ -}
+wh_reduc iΓ (TVar t) = undefined
+-- wh_reduc iΓ Bse = Right $ path_normal iΓ Bse
+wh_reduc iΓ δ@(TAp δ1 δ2) =
+  case wh_reduc iΓ δ1 of
+    Right δ1' -> assert (δ1' /= δ1) $ Right (TAp δ1' δ2)
+    Left ωδ1 -> assert (ωδ1 == δ1) $ Left δ
+wh_reduc _ δ = Left δ
 
 wh_normal :: Ctx -> Term -> Term
-wh_normal = undefined
+wh_normal iΓ δ =
+  case wh_reduc iΓ δ of
+    Right δ' -> wh_normal iΓ δ'
+    Left ωδ -> assert (ωδ == δ) $ δ
 
 term_normal :: Ctx -> Term -> Typ -> Term
 term_normal iΓ δ τ =
   let ωτ = type_normal iΓ τ
    in case ωτ of
-        Type -> wh_normal
+        Type -> wh_normal iΓ δ
+
+path_normal :: Ctx -> Term -> (Term, Typ)
+path_normal _ Bse = (Bse, Type)
 
 type_normal :: Ctx -> Typ -> Typ
 type_normal _ Type = Type
