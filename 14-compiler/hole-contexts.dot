@@ -1,0 +1,53 @@
+digraph {
+  label = "hole contexts spaghetti stack example"
+
+  graph [ colorscheme = ylorbr9, fontname = "Fira Code", fontsize = 10.0, fontcolor = 9                                 ];
+  node  [ colorscheme = ylorbr9, fontname = "Fira Code", fontsize = 10.0, fontcolor = 9                                 ];
+  edge  [ colorscheme = ylorbr9, fontname = "Fira Code", fontsize = 9.0 , color = 8, arrowhead = "vee", arrowsize = 0.5 ];
+
+  // Hole nodes.
+  node [ shape = circle, style = filled, fillcolor = 2, color = 4 ];
+  hole90 [ label = <H<SUB>90</SUB>> ];
+  hole67 [ label = <H<SUB>67</SUB>> ];
+
+  node [ shape = Mrecord, style = filled, fillcolor = 3, color = 5 ];
+  ab [ label = "{a|b}" ];
+  c [ label = "{c}" ];
+
+  subgraph cluster_lam {
+    label = "fun a { ... }";
+
+    style = rounded;
+    bgcolor = 1;
+    color = 3;
+
+    node [ shape = circle, style = filled, fillcolor = 2, color = 4 ];
+    hole113 [ label = <H<SUB>113</SUB>> ];
+    hole99 [ label = <H<SUB>99</SUB>> ];
+    holed [ label = <H<SUB>d</SUB>> ];
+
+    node [ shape = Mrecord, style = filled, fillcolor = 3, color = 5 ];
+    lama [ label = "a" ];
+    lamd [ label = "d" ];
+    lamf [ label = "f" ];
+    lamg [ label = "g" ];
+  }
+
+  f [ label = "f" ];
+  g [ label = "g" ];
+
+  ab -> c;
+  ab -> hole90;
+  
+  c -> lama;
+  lama -> lamd;
+  lamd -> holed;
+  lamd -> hole113;
+  lamd -> lamf;
+  lamf -> hole99;
+  lamf -> lamg;
+
+  c -> f;
+  f -> hole67;
+  f -> g;
+}

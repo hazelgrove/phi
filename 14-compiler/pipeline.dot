@@ -52,10 +52,10 @@ digraph pipeline {
       linearize   [ label = "linearize" ];
 
       node        [ shape = box, style = filled, color = 4, fillcolor = 4 ];
-      mir         [ label = "mir" ];
+      hir         [ label = "hir" ];
       anf         [ label = "anf" ];
 
-      transform -> mir -> linearize -> anf -> anf;
+      transform -> hir -> linearize -> anf -> anf;
     }
 
     subgraph cluster_codegen {
@@ -67,14 +67,14 @@ digraph pipeline {
 
       node        [ shape = plaintext   ];
       codegen     [ label = "codegen"   ];
-      printer     [ label = "printer"   ];
+      print       [ label = "print"     ];
       grainc      [ label = "grainc"    ];
 
       node        [ shape = box, style = filled, color = 4, fillcolor = 4 ];
       gir         [ label = "gir"   ];
       grain       [ label = "grain" ];
 
-      codegen -> gir -> printer -> grain -> grainc
+      codegen -> gir -> print -> grain -> grainc
     }
 
     anf -> codegen;
