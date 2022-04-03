@@ -99,21 +99,67 @@ ana_elab' iΓ eτ iτ = do
   SER {typ = iτ', term = iδ, ..} <- syn_elab' iΓ eτ
   (iΓ |- (iτ' ≲ iτ)) &>> (return $ AER iδ iΓ)
 
--- TODO: We don't need this, right?
-{-
-τ_elab :: Ctx -> E.Knd -> Maybe Typ
-τ_elab = undefined
--}
+typ_elab' :: Ctx -> E.Knd -> Maybe Typ
+typ_elab' _ E.Type = return Type
+typ_elab' _ E.KHole = return KHole
+typ_elab' iΓ (E.S eκ eτ) = do
+  iτ <- typ_elab' iΓ eκ
+  AER {term = iδ} <- ana_elab' iΓ eτ iτ
+  return $ S iτ iδ
+typ_elab' iΓ (E.Π t eκ1 eκ2) = do
+  iτ1 <- typ_elab' iΓ eκ1
+  iτ2 <- typ_elab' (iΓ :⌢ (t, iτ1)) eκ2
+  return $ Π t iτ1 iτ2
+
+is_path :: Term -> Bool
+is_path Bse = True
+is_path (TVar _) = True
+is_path (_ :⊕ _) = True
+is_path (ETHole _) = True
+is_path (NETHole _ _) = True
+is_path (TAp δ1 _) = is_path δ1
+is_path _ = False
+
+nat_type :: Ctx -> Term -> Typ
+nat_type _ Bse = Type
+nat_type iΓ (TVar t) =
+  case lookupT iΓ t of
+    Just τ -> τ
+    Nothing -> error "free variable\n"
+nat_type iΓ (δ1 :⊕ δ2) = Type
+nat_type iΓ (ETHole u) =
+  case lookupH iΓ u of
+    Just τ -> τ
+    Nothing -> error "free hole?\n"
+nat_type iΓ (NETHole u _) =
+  case lookupH iΓ u of
+    Just τ -> τ
+    Nothing -> error "free hole?\n"
+nat_type _ (Tλ _ _ _) = error "not a path\n"
+nat_type iΓ (TAp δ1 δ2) =
+  case type_normal iΓ (nat_type iΓ δ1) of
+    Π t τ1 τ2 -> subst δ2 t τ2
+    _ -> error "unexpected natural type\n"
+
+wh_path_reduc :: Ctx -> Term -> Either Term Term
+wh_path_reduc iΓ δ =
+  case nat_type iΓ δ of
+    S _ δ' -> Right $ δ'
+    _ -> Left $ δ
+
 -- Maybe since ``otherwise''
 wh_reduc :: Ctx -> Term -> Either Term Term
-wh_reduc _ (TAp (Tλ t τ δ1) δ2) = assert (True) $ Right $ subst δ2 t δ1 {- check δ2 against τ -}
-wh_reduc iΓ (TVar t) = undefined
--- wh_reduc iΓ Bse = Right $ path_normal iΓ Bse
-wh_reduc iΓ δ@(TAp δ1 δ2) =
-  case wh_reduc iΓ δ1 of
+wh_reduc iΓ δ
+  | is_path δ = wh_path_reduc iΓ δ
+  | otherwise = wh_reduc' iΓ δ
+
+wh_reduc' :: Ctx -> Term -> Either Term Term
+wh_reduc' _ (TAp (Tλ t τ δ1) δ2) = assert (True) $ Right $ subst δ2 t δ1 {- check δ2 against τ -}
+wh_reduc' iΓ δ@(TAp δ1 δ2) =
+  case wh_reduc' iΓ δ1 of
     Right δ1' -> assert (δ1' /= δ1) $ Right (TAp δ1' δ2)
     Left ωδ1 -> assert (ωδ1 == δ1) $ Left δ
-wh_reduc _ δ = Left δ
+wh_reduc' _ δ = Left δ
 
 wh_normal :: Ctx -> Term -> Term
 wh_normal iΓ δ =
@@ -125,10 +171,47 @@ term_normal :: Ctx -> Term -> Typ -> Term
 term_normal iΓ δ τ =
   let ωτ = type_normal iΓ τ
    in case ωτ of
-        Type -> wh_normal iΓ δ
+        Type ->
+          case path_normal iΓ (wh_normal iΓ δ) of
+            (ωδ, Type) -> ωδ
+            _ -> error "did not reduce enough?\n" -- csk
+        KHole -> error "TODO: KHole\n"
+        S Type sδ ->
+          case path_normal iΓ (wh_normal iΓ δ) of
+            (ωδ, Type) -> assert (ωδ ≡ sδ) $ ωδ
+            _ -> error "error 3\n"
+        S KHole sδ -> error "TODO\n"
+        S _ _ -> error "type_normal failure?\n"
+        Π t ωτ1 ωτ2 ->
+          let t' = fresh t
+           in Tλ t' ωτ1 (term_normal (iΓ :⌢ (t', ωτ1)) (TAp δ (TVar t')) ωτ2)
 
 path_normal :: Ctx -> Term -> (Term, Typ)
 path_normal _ Bse = (Bse, Type)
+path_normal iΓ (TVar t) =
+  case lookupT iΓ t of
+    Just τ -> (TVar t, τ)
+    Nothing -> error "free var again!\n"
+path_normal iΓ (δ1 :⊕ δ2) =
+  let ωδ1 = term_normal iΓ δ1 Type
+   in let ωδ2 = term_normal iΓ δ2 Type
+       in (ωδ1 :⊕ ωδ2, Type)
+path_normal iΓ (ETHole u) =
+  case lookupH iΓ u of
+    Just τ -> (ETHole u, τ)
+    Nothing -> error "free hole!\n"
+path_normal iΓ (NETHole u δ) =
+  case lookupH iΓ u of
+    Just τ -> (NETHole u δ, τ)
+    Nothing -> error "free hole!\n"
+path_normal _ (Tλ _ _ _) = error "not a path!!\n"
+path_normal iΓ (TAp δ1 δ2) =
+  let (δ1', τ1) = path_normal iΓ δ1
+   in case type_normal iΓ τ1 of
+        Π t τ1' τ2' ->
+          let δ2' = term_normal iΓ δ2 τ1
+           in (TAp δ1' δ2', subst δ2' t τ2')
+        _ -> error "unexpected path normal type\n"
 
 type_normal :: Ctx -> Typ -> Typ
 type_normal _ Type = Type
@@ -146,15 +229,44 @@ type_normal iΓ (S τ δ) =
                    in let ωδ' =
                             term_normal (iΓ :⌢ (t', τ1)) (TAp ωδ (TVar t')) τ3
                        in Π t' τ1 (S τ3 ωδ')
+type_normal iΓ (Π t τ1 τ2) =
+  let ωτ1 = type_normal iΓ τ1
+   in Π t ωτ1 (type_normal (iΓ :⌢ (t, ωτ1)) τ2)
 
 tequiv :: ECtx.Ctx -> E.Typ -> E.Typ -> E.Knd -> Bool
-tequiv = undefined
+tequiv eΓ eτ1 eτ2 eκ =
+  isJust
+    (do iΓ <- fixCtx eΓ
+        iτ <- typ_elab' iΓ eκ
+        AER {term = iδ1, ..} <- ana_elab' iΓ eτ1 iτ
+        AER {term = iδ2, ..} <- ana_elab' iΓ eτ2 iτ
+        (tequiv' iΓ iδ1 iδ2 iτ) &>> return ())
+
+tequiv' :: Ctx -> Term -> Term -> Typ -> Bool
+tequiv' iΓ δ1 δ2 τ = (term_normal iΓ δ1 τ) ≡ (term_normal iΓ δ2 τ)
 
 kequiv' :: Ctx -> Typ -> Typ -> Bool
-kequiv' = undefined
+kequiv' iΓ τ1 τ2 =
+  case (type_normal iΓ τ1, type_normal iΓ τ2) of
+    (S ωτ1 ωδ1, S ωτ2 ωδ2) -> (kequiv' iΓ ωτ1 ωτ2) && (tequiv' iΓ ωδ1 ωδ2 ωτ1)
+    (τ@(Π t _ _), τ'@(Π t' _ _)) ->
+      let t'' = fresh2 t t'
+       in case (αRename t'' t τ, αRename t'' t' τ') of
+            (Π _ ωτ1 ωτ2, Π _ ωτ3 ωτ4) ->
+              (kequiv' iΓ ωτ1 ωτ3) && (kequiv' (iΓ :⌢ (t'', ωτ1)) ωτ2 ωτ4)
+            _ -> error "bad bad\n"
+    (ωτ1, ωτ2) -> ωτ1 ≡ ωτ2
 
 csk' :: Ctx -> Typ -> Typ -> Bool
-csk' = undefined
+csk' iΓ τ1 τ2 =
+  case (type_normal iΓ τ1, type_normal iΓ τ2) of
+    (KHole, _) -> True
+    (_, KHole) -> True
+    (S Type _, Type) -> True
+    (Π t ωτ1 ωτ2, Π t' ωτ3 ωτ4) ->
+      let t'' = fresh2 t t'
+       in (csk' iΓ ωτ3 ωτ1) && csk' (iΓ :⌢ (t'', ωτ3)) ωτ2 ωτ4
+    (ωδ1, ωδ2) -> kequiv' iΓ ωδ1 ωδ2
 
 (≲) = ((.) flip) . flip $ csk'
 

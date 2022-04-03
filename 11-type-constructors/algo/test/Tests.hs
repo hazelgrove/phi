@@ -8,15 +8,7 @@ main :: IO ()
 main = runTestTTAndExit tests
 
 tests :: Test
-tests =
-  TestList . concat $
-  [ tequivTests
-  , freshTests
-  , fresh2Tests
-  , canonTypTests
-  , canonKndTests
-  , αKndTests
-  ]
+tests = TestList . concat $ [tequivTests, freshTests, fresh2Tests, αKndTests]
   where
     tequivTests =
       [ Nil |- tequiv Bse Bse Type ~?= True
@@ -51,6 +43,20 @@ tests =
       , fresh2 "t9" "foo10" ~?= "tfoo1"
       , fresh2 "terrible_Name10" "t" ~?= "terrible_Namet1"
       ]
+    αKndTests =
+      [ Type ≡ Type ~?= True
+      , Π "t" Type Type ≡ Π "t1" Type Type ~?= True
+      , Π "t" Type (S Type $ TVar "t") ≡ Π "t1" Type (S Type $ TVar "t1") ~?=
+        True
+      , Π "t" Type (S Type $ TVar "t") ≡ Π "t1" Type (S Type $ TVar "t") ~?=
+        False
+      ]
+
+{-
+  , canonTypTests
+  , canonKndTests
+-}
+{-
     canonTypTests =
       [ Nil |- canon' Bse ~?= Just Bse
       , Nil |- canon' (TVar "T") ~?= Nothing
@@ -93,30 +99,19 @@ tests =
                  in Nil |- canon' (S (Π t Type Type) τ) ~?=
                     Just (Π t1 Type (S (αRename t1 t Type) $ TVar t1))
       ]
-    αKndTests =
-      [ Type ≡ Type ~?= True
-      , Π "t" Type Type ≡ Π "t1" Type Type ~?= True
-      , Π "t" Type (S Type $ TVar "t") ≡ Π "t1" Type (S Type $ TVar "t1") ~?=
-        True
-      , Π "t" Type (S Type $ TVar "t") ≡ Π "t1" Type (S Type $ TVar "t") ~?=
-        False
-      ]
-
+-}
 -- in a somewhat increasing order of complexity
-(|-) :: _
-aΓ |- f = f aΓ
-
 -- tequiv τ1 τ2 κ = \aΓ -> Algo.tequiv aΓ τ1 τ2 κ
 -- since application precedence is so high (and can't be competed against)
 tequiv :: _
 tequiv = ((.) . (.) $ flip) . ((.) flip) . flip $ Algo.tequiv
-
+{-
 class Canon a =>
       Canon' a
   where
   canon' :: a -> Ctx -> Maybe a
   canon' = flip canon
-
 instance Canon' Typ
 
 instance Canon' Knd
+-}
