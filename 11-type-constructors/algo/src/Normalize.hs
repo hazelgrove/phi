@@ -72,7 +72,7 @@ syn_elab' iΓ (E.NETHole u eτ) =
 syn_elab' iΓ (E.Tλ t eκ eτ) = do
   iτ1 <- fixKnd' iΓ eκ
   SER {typ = iτ2, term = iδ, ..} <- syn_elab' (iΓ ⌢ (t, iτ1)) eτ
-  return $ SER (S (Π t iτ1 iτ2) (Tλ t iτ1 iδ)) (Tλ t iτ1 iδ) iΓ
+  return $ SER (S (Π t iτ1 iτ2) (Tλ t iτ1 iδ)) (Tλ t iτ1 iδ) (removeT iΓ t)
 syn_elab' iΓ (E.TAp eτ1 eτ2) = do
   SER {typ = iτ1} <- syn_elab' iΓ eτ1 -- we don't have a plain syn
   MPKR {..} <- iΓ |- (iτ1 ⊳→)

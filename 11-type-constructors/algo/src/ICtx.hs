@@ -21,6 +21,12 @@ lookupT (aΓ :⌢ (t', κ)) t
   | otherwise = lookupT aΓ t
 lookupT (aΓ :⌢⌢ _) t = lookupT aΓ t
 
+removeT :: Ctx -> TID -> Ctx
+removeT (iΓ :⌢ (t', τ)) t
+  | t' == t = iΓ
+  | otherwise = removeT iΓ t
+removeT (iΓ :⌢⌢ _) t = removeT iΓ t
+
 lookupH :: Ctx -> HID -> Maybe Typ
 lookupH Nil _ = Nothing
 lookupH (aΓ :⌢ _) u = lookupH aΓ u
