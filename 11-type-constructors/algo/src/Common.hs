@@ -73,3 +73,6 @@ fresh2 t t' =
   "my ($tid1_1, $tid1_2) = ($1, $2);" ++
   "$tid2 =~ /(\\D+)(\\d+)?/;" ++
   "my ($tid2_1, $tid2_2) = ($1, $2);" ++ "$_ = $tid1_1 . $tid2_1 . '1'"
+
+freshfresh :: TID
+freshfresh = unsafePerformIO $ withPerl $ eval $ "$_ = 'mpk' . time()"

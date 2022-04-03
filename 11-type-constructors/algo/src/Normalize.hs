@@ -279,7 +279,15 @@ data MPKResult =
     }
 
 mpk' :: Ctx -> Typ -> Maybe MPKResult
-mpk' = undefined
+mpk' _ KHole = return $ MPKR freshfresh KHole KHole
+mpk' iΓ τ =
+  case type_normal iΓ τ of
+    ωτ@(S KHole τ') ->
+      let t = freshfresh
+       in return $ MPKR t ωτ (S KHole (TAp τ' (TVar t)))
+    Π t ωτ1 ωτ2 -> return $ MPKR t ωτ1 ωτ2
+    _ -> Nothing
+mpk' _ _ = Nothing
 
 -- really should be ⊳Π, but Π is a letter...
 (⊳→) = flip mpk'
