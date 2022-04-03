@@ -20,6 +20,37 @@ tests = TestList . concat $ [tequivTests, freshTests, fresh2Tests, αKndTests]
         tequiv (Bse :⊕ Bse) (Bse :⊕ Bse) (S (S Type $ Bse :⊕ Bse) (Bse :⊕ Bse)) ~?=
         True
       , Nil ⌢ ("Int", Type) |- tequiv (TVar "Int") Bse Type ~?= False
+      , Nil ⌢ ("Int", Type) |- tequiv (TVar "Int") (TVar "Int") Type ~?= True
+      , Nil ⌢ ("Int", Type) |-
+        tequiv
+          ((TVar "Int") :⊕ (TVar "Int"))
+          ((TVar "Int") :⊕ (TVar "Int"))
+          Type ~?=
+        True
+      , Nil ⌢ ("Int", Type) ⌢ ("Int'", S Type $ TVar "Int") |-
+        tequiv
+          ((TVar "Int'") :⊕ (TVar "Int"))
+          ((TVar "Int") :⊕ (TVar "Int"))
+          Type ~?=
+        True
+      , Nil ⌢ ("Int", Type) ⌢ ("Int'", S Type $ TVar "Int") |-
+        tequiv
+          ((TVar "Int'") :⊕ (TVar "Int'"))
+          ((TVar "Int") :⊕ (TVar "Int"))
+          Type ~?=
+        True
+      , Nil ⌢ ("Int", Type) ⌢ ("Int'", S Type $ TVar "Int") |-
+        tequiv
+          ((TVar "Int") :⊕ (TVar "Int'"))
+          ((TVar "Int'") :⊕ (TVar "Int"))
+          Type ~?=
+        True
+      , Nil ⌢ ("Int", Type) ⌢ ("Int'", S Type $ TVar "Int") |-
+        tequiv
+          ((TVar "Int") :⊕ (TVar "Int'"))
+          ((TVar "Int'") :⊕ (TVar "Int'"))
+          Type ~?=
+        True
       , Nil |- tequiv (Tλ "t" Type $ TVar "t") (Tλ "t" Type Bse) Type ~?= False
       , Nil |-
         tequiv (Tλ "t" Type $ TVar "t") (Tλ "t" Type Bse) (Π "t" Type Type) ~?=
