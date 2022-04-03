@@ -33,3 +33,9 @@ lookupH (aΓ :⌢⌢ (u', κ)) u
   case lookupT aΓ t of
     Just _ -> error "Do not shadow"
     Nothing -> aΓ :⌢ tassump
+
+(⌢⌢) :: Ctx -> HAssump -> Ctx
+(⌢⌢) aΓ hassump@(u, _κ) =
+  case lookupH aΓ u of
+    Just _ -> error "Do not shadow"
+    Nothing -> aΓ :⌢⌢ hassump

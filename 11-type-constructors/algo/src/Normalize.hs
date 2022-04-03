@@ -29,7 +29,7 @@ fixKnd' iΓ (E.S eκ eτ) = do
   return $ S iτ iδ
 fixKnd' iΓ (E.Π t eκ1 eκ2) = do
   iτ1 <- fixKnd' iΓ eκ1
-  iτ2 <- fixKnd' (iΓ :⌢ (t, iτ1)) eκ2
+  iτ2 <- fixKnd' (iΓ ⌢ (t, iτ1)) eκ2
   return $ Π t iτ1 iτ2
 
 fixCtx :: ECtx.Ctx -> Maybe Ctx
@@ -64,14 +64,14 @@ syn_elab' iΓ (eτ1 E.:⊕ eτ2) = do
   return $ SER (S Type $ iδ1 :⊕ iδ2) (iδ1 :⊕ iδ2) iΓ
 syn_elab' iΓ (E.ETHole u) =
   assert (isNothing $ lookupH iΓ u) $
-  return $ SER (S KHole $ ETHole u) (ETHole u) (iΓ :⌢⌢ (u, KHole))
+  return $ SER (S KHole $ ETHole u) (ETHole u) (iΓ ⌢⌢ (u, KHole))
 syn_elab' iΓ (E.NETHole u eτ) =
   assert (isNothing $ lookupH iΓ u) $ do
     SER {term = iδ, ..} <- syn_elab' iΓ eτ
-    return $ SER (S KHole $ NETHole u iδ) (NETHole u iδ) (iΓ :⌢⌢ (u, KHole))
+    return $ SER (S KHole $ NETHole u iδ) (NETHole u iδ) (iΓ ⌢⌢ (u, KHole))
 syn_elab' iΓ (E.Tλ t eκ eτ) = do
   iτ1 <- fixKnd' iΓ eκ
-  SER {typ = iτ2, term = iδ, ..} <- syn_elab' (iΓ :⌢ (t, iτ1)) eτ
+  SER {typ = iτ2, term = iδ, ..} <- syn_elab' (iΓ ⌢ (t, iτ1)) eτ
   return $ SER (S (Π t iτ1 iτ2) (Tλ t iτ1 iδ)) (Tλ t iτ1 iδ) iΓ
 syn_elab' iΓ (E.TAp eτ1 eτ2) = do
   SER {typ = iτ1} <- syn_elab' iΓ eτ1 -- we don't have a plain syn
@@ -90,11 +90,11 @@ data AnaElabResult =
 -- TODO: something something not holes
 ana_elab' :: Ctx -> E.Typ -> Typ -> Maybe AnaElabResult
 ana_elab' iΓ (E.ETHole u) iτ =
-  assert (isNothing $ lookupH iΓ u) $ return $ AER (ETHole u) (iΓ :⌢⌢ (u, iτ))
+  assert (isNothing $ lookupH iΓ u) $ return $ AER (ETHole u) (iΓ ⌢⌢ (u, iτ))
 ana_elab' iΓ (E.NETHole u eτ) iτ =
   assert (isNothing $ lookupH iΓ u) $ do
     SER {term = iδ, ..} <- syn_elab' iΓ eτ
-    return $ AER (NETHole u iδ) (iΓ :⌢⌢ (u, iτ))
+    return $ AER (NETHole u iδ) (iΓ ⌢⌢ (u, iτ))
 ana_elab' iΓ eτ iτ = do
   SER {typ = iτ', term = iδ, ..} <- syn_elab' iΓ eτ
   (iΓ |- (iτ' ≲ iτ)) &>> (return $ AER iδ iΓ)
@@ -108,7 +108,7 @@ typ_elab' iΓ (E.S eκ eτ) = do
   return $ S iτ iδ
 typ_elab' iΓ (E.Π t eκ1 eκ2) = do
   iτ1 <- typ_elab' iΓ eκ1
-  iτ2 <- typ_elab' (iΓ :⌢ (t, iτ1)) eκ2
+  iτ2 <- typ_elab' (iΓ ⌢ (t, iτ1)) eκ2
   return $ Π t iτ1 iτ2
 
 is_path :: Term -> Bool
@@ -184,7 +184,7 @@ term_normal iΓ δ τ =
         S _ _ -> error "type_normal failure?\n"
         Π t ωτ1 ωτ2 ->
           let t' = fresh t
-           in Tλ t' ωτ1 (term_normal (iΓ :⌢ (t', ωτ1)) (TAp δ (TVar t')) ωτ2)
+           in Tλ t' ωτ1 (term_normal (iΓ ⌢ (t', ωτ1)) (TAp δ (TVar t')) ωτ2)
 
 path_normal :: Ctx -> Term -> (Term, Typ)
 path_normal _ Bse = (Bse, Type)
@@ -227,11 +227,11 @@ type_normal iΓ (S τ δ) =
               let t' = fresh t
                in let τ3 = αRename t' t τ2
                    in let ωδ' =
-                            term_normal (iΓ :⌢ (t', τ1)) (TAp ωδ (TVar t')) τ3
+                            term_normal (iΓ ⌢ (t', τ1)) (TAp ωδ (TVar t')) τ3
                        in Π t' τ1 (S τ3 ωδ')
 type_normal iΓ (Π t τ1 τ2) =
   let ωτ1 = type_normal iΓ τ1
-   in Π t ωτ1 (type_normal (iΓ :⌢ (t, ωτ1)) τ2)
+   in Π t ωτ1 (type_normal (iΓ ⌢ (t, ωτ1)) τ2)
 
 tequiv :: ECtx.Ctx -> E.Typ -> E.Typ -> E.Knd -> Bool
 tequiv eΓ eτ1 eτ2 eκ =
@@ -253,7 +253,7 @@ kequiv' iΓ τ1 τ2 =
       let t'' = fresh2 t t'
        in case (αRename t'' t τ, αRename t'' t' τ') of
             (Π _ ωτ1 ωτ2, Π _ ωτ3 ωτ4) ->
-              (kequiv' iΓ ωτ1 ωτ3) && (kequiv' (iΓ :⌢ (t'', ωτ1)) ωτ2 ωτ4)
+              (kequiv' iΓ ωτ1 ωτ3) && (kequiv' (iΓ ⌢ (t'', ωτ1)) ωτ2 ωτ4)
             _ -> error "bad bad\n"
     (ωτ1, ωτ2) -> ωτ1 ≡ ωτ2
 
@@ -265,7 +265,7 @@ csk' iΓ τ1 τ2 =
     (S Type _, Type) -> True
     (Π t ωτ1 ωτ2, Π t' ωτ3 ωτ4) ->
       let t'' = fresh2 t t'
-       in (csk' iΓ ωτ3 ωτ1) && csk' (iΓ :⌢ (t'', ωτ3)) ωτ2 ωτ4
+       in (csk' iΓ ωτ3 ωτ1) && csk' (iΓ ⌢ (t'', ωτ3)) ωτ2 ωτ4
     (ωδ1, ωδ2) -> kequiv' iΓ ωδ1 ωδ2
 
 (≲) = ((.) flip) . flip $ csk'
