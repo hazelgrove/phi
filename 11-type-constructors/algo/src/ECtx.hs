@@ -8,6 +8,7 @@ type TAssump = (TID, Knd)
 data Ctx
   = Nil
   | Ctx :⌢ TAssump
+  deriving (Show)
 
 lookupT :: Ctx -> TID -> Maybe Knd
 lookupT Nil _ = Nothing

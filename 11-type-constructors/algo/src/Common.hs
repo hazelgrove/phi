@@ -1,11 +1,14 @@
 -- NOTE: we alwys assume programs are α-renamed so no shadowing occurs
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE QuasiQuotes #-}
 
 module Common where
 
 import Control.Monad (MonadPlus, mzero)
 import Language.Perl
 import System.IO.Unsafe
+import System.ShQQ
 
 type TID = String
 
@@ -48,31 +51,45 @@ infixl 2 |>
 
 fresh :: TID -> TID
 fresh t =
-  unsafePerformIO $
+  let p =
+        "my $tid = '" ++
+        t ++
+        "';" ++
+        "$tid =~ /(\\D+)(\\d+)?/;" ++
+        "if(defined $2){" ++
+        "$_ = $1 . ($2 + 1)" ++ "} else{" ++ "$_ = $1 . '1'" ++ "}"
+   in let pp = p ++ "; print"
+       in unsafePerformIO $ [sh| perl -e $pp |]
+
+{-
   withPerl $
   eval $
-  "my $tid = '" ++
-  t ++
-  "';" ++
-  "$tid =~ /(\\D+)(\\d+)?/;" ++
-  "if(defined $2){" ++
-  "$_ = $1 . ($2 + 1)" ++ "} else{" ++ "$_ = $1 . '1'" ++ "}"
-
+-}
 fresh2 :: TID -> TID -> TID
 fresh2 t t' =
-  unsafePerformIO $
+  let p =
+        "my $tid1 = '" ++
+        t ++
+        "';" ++
+        "my $tid2 = '" ++
+        t' ++
+        "';" ++
+        "$tid1 =~ /(\\D+)(\\d+)?/;" ++
+        "my ($tid1_1, $tid1_2) = ($1, $2);" ++
+        "$tid2 =~ /(\\D+)(\\d+)?/;" ++
+        "my ($tid2_1, $tid2_2) = ($1, $2);" ++ "$_ = $tid1_1 . $tid2_1 . '1'"
+   in let pp = p ++ "; print"
+       in unsafePerformIO $ [sh| perl -e $pp |]
+
+{-
   withPerl $
   eval $
-  "my $tid1 = '" ++
-  t ++
-  "';" ++
-  "my $tid2 = '" ++
-  t' ++
-  "';" ++
-  "$tid1 =~ /(\\D+)(\\d+)?/;" ++
-  "my ($tid1_1, $tid1_2) = ($1, $2);" ++
-  "$tid2 =~ /(\\D+)(\\d+)?/;" ++
-  "my ($tid2_1, $tid2_2) = ($1, $2);" ++ "$_ = $tid1_1 . $tid2_1 . '1'"
-
+-}
 freshfresh :: TID
-freshfresh = unsafePerformIO $ withPerl $ eval $ "$_ = 'mpk' . time()"
+freshfresh =
+  let p = "$_ = 'mpk' . time()"
+   in let pp = p ++ "; print"
+       in unsafePerformIO $ [sh| perl -e $pp |]
+{-
+withPerl $ eval $
+-}

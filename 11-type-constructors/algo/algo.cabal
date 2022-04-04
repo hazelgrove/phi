@@ -32,6 +32,7 @@ library
                       Normalize
     build-depends:    base ^>=4.16.0.0
                      ,hs-perl5
+                     ,shqq
     default-language: GHC2021
     ghc-options:      -Wall -Wno-unused-matches
 

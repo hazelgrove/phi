@@ -84,11 +84,8 @@ tests = TestList . concat $ [tequivTests, freshTests, fresh2Tests, αKndTests]
           (Π "a" Type (Π "b" Type Type)) ~?=
         True
       , Nil |-
-        tequiv
-          (parseTyp "(λt::Type.t⊕t) Int")
-          (parseTyp "Int ⊕ Int")
-          (parseKnd "Type") ~?=
-        False
+        tequiv (parseTyp "(λt::Type.t) Bse") (parseTyp "Bse") (parseKnd "Type") ~?=
+        True
       , Nil ⌢ ("Int", Type) |-
         tequiv
           (parseTyp "(λt::Type.t⊕t) Int")

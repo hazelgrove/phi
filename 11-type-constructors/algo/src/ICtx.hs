@@ -11,6 +11,7 @@ data Ctx
   = Nil
   | Ctx :⌢ TAssump
   | Ctx :⌢⌢ HAssump
+  deriving (Show)
 
 -- TODO: this is c/p from ECtx
 -- rename variables (since we're talking about Terms/Types now)
@@ -24,8 +25,8 @@ lookupT (aΓ :⌢⌢ _) t = lookupT aΓ t
 removeT :: Ctx -> TID -> Ctx
 removeT (iΓ :⌢ (t', τ)) t
   | t' == t = iΓ
-  | otherwise = removeT iΓ t
-removeT (iΓ :⌢⌢ _) t = removeT iΓ t
+  | otherwise = (removeT iΓ t) ⌢ (t', τ)
+removeT (iΓ :⌢⌢ (u, τ)) t = (removeT iΓ t) ⌢⌢ (u, τ)
 
 lookupH :: Ctx -> HID -> Maybe Typ
 lookupH Nil _ = Nothing

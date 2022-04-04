@@ -45,6 +45,7 @@ data SynElabResult =
     , term :: Term
     , iΓ :: Ctx -- named for shadowing
     }
+  deriving (Show)
 
 syn_elab :: ECtx.Ctx -> E.Typ -> Maybe SynElabResult
 syn_elab eΓ eτ = do
@@ -85,6 +86,7 @@ data AnaElabResult =
     { term :: Term
     , iΓ :: Ctx -- named for shadowing
     }
+  deriving (Show)
 
 -- NOTE: prob don't need ana_elab :: ECtx.Ctx
 -- TODO: something something not holes
@@ -125,7 +127,7 @@ nat_type _ Bse = Type
 nat_type iΓ (TVar t) =
   case lookupT iΓ t of
     Just τ -> τ
-    Nothing -> error "free variable\n"
+    Nothing -> error $ "free variable: " ++ t ++ "\n"
 nat_type iΓ (δ1 :⊕ δ2) = Type
 nat_type iΓ (ETHole u) =
   case lookupH iΓ u of
@@ -277,6 +279,7 @@ data MPKResult =
     , iτIn :: Typ
     , iτOut :: Typ
     }
+  deriving (Show)
 
 mpk' :: Ctx -> Typ -> Maybe MPKResult
 mpk' _ KHole = return $ MPKR freshfresh KHole KHole
