@@ -186,7 +186,13 @@ term_normal iΓ δ τ =
         S _ _ -> error "type_normal failure?\n"
         Π t ωτ1 ωτ2 ->
           let t' = fresh t
-           in Tλ t' ωτ1 (term_normal (iΓ ⌢ (t', ωτ1)) (TAp δ (TVar t')) ωτ2)
+           in Tλ
+                t'
+                ωτ1
+                (term_normal
+                   (iΓ ⌢ (t', ωτ1))
+                   (TAp δ (TVar t'))
+                   (αRename t' t ωτ2))
 
 path_normal :: Ctx -> Term -> (Term, Typ)
 path_normal _ Bse = (Bse, Type)
