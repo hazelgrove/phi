@@ -39,9 +39,12 @@ test-suite test-algo
     type:             exitcode-stdio-1.0
     main-is:          Tests.hs
     hs-source-dirs:   test
+    other-modules:    Lexer
+                      Parser
     build-depends:    base ^>=4.16.0.0
                      ,HUnit
                      ,algo
+                     ,array
     default-language: GHC2021
     -- man perlembed: `perl -MExtUtils::Embed -e ccopts -e ldopts`
     -- and then pruned for stuff ghc doesn't understand
