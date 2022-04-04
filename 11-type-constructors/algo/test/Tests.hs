@@ -51,6 +51,12 @@ tests = TestList . concat $ [tequivTests, freshTests, fresh2Tests, αKndTests]
           ((TVar "Int'") :⊕ (TVar "Int'"))
           Type ~?=
         True
+      , Nil ⌢ ("Int", Type) ⌢ ("Int'", S Type $ TVar "Int") |-
+        tequiv
+          ((TVar "Int") :⊕ (TVar "Int'"))
+          ((TVar "Int'") :⊕ (TVar "Bse"))
+          Type ~?=
+        False
       , Nil |- tequiv (Tλ "t" Type $ TVar "t") (Tλ "t" Type Bse) Type ~?= False
       , Nil |-
         tequiv (Tλ "t" Type $ TVar "t") (Tλ "t" Type Bse) (Π "t" Type Type) ~?=
@@ -60,6 +66,21 @@ tests = TestList . concat $ [tequivTests, freshTests, fresh2Tests, αKndTests]
           (Tλ "t" Type $ TVar "t")
           (Tλ "t" Type Bse)
           (Π "t" (S Type Bse) Type) ~?=
+        True
+      , Nil ⌢ ("Int", Type) ⌢ ("T", S Type $ TVar "Int") |-
+        tequiv
+          (Tλ "t" Type $ TVar "t")
+          (Tλ "t" Type $ TVar "Int")
+          (Π "t" (S Type $ TVar "T") Type) ~?=
+        True
+      , Nil ⌢ ("Int", Type) ⌢ ("T", S Type $ TVar "Int") ⌢
+        ( "Prod"
+        , S (Π "t" Type (Π "v" Type Type))
+            (Tλ "t" Type (Tλ "v" Type ((TVar "t") :⊕ (TVar "v"))))) |-
+        tequiv
+          (TVar "Prod")
+          (Tλ "foo" Type (Tλ "bar" Type ((TVar "foo") :⊕ (TVar "bar"))))
+          (Π "a" Type (Π "b" Type Type)) ~?=
         True
       ]
     freshTests =
