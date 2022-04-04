@@ -222,7 +222,7 @@ type_normal iΓ (S τ δ) =
        in case ωτ of
             Type -> S Type ωδ
             KHole -> S KHole ωδ
-            S τ' δ' -> S τ' δ'
+            S τ' δ' -> type_normal iΓ (S τ' δ')
             Π t τ1 τ2 ->
               let t' = fresh t
                in let τ3 = αRename t' t τ2
