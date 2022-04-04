@@ -273,7 +273,8 @@ csk' iΓ τ1 τ2 =
     (S Type _, Type) -> True
     (Π t ωτ1 ωτ2, Π t' ωτ3 ωτ4) ->
       let t'' = fresh2 t t'
-       in (csk' iΓ ωτ3 ωτ1) && csk' (iΓ ⌢ (t'', ωτ3)) ωτ2 ωτ4
+       in (csk' iΓ ωτ3 ωτ1) &&
+          csk' (iΓ ⌢ (t'', ωτ3)) (αRename t'' t ωτ2) (αRename t'' t' ωτ4)
     (ωδ1, ωδ2) -> kequiv' iΓ ωδ1 ωδ2
 
 (≲) = ((.) flip) . flip $ csk'
