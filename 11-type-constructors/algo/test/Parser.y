@@ -5,7 +5,8 @@ import Algo
 import Lexer
 }
 
-%name parser
+%name typParser Typ
+%name kndParser Knd
 %tokentype{Token}
 %error{parseError}
 
@@ -44,6 +45,9 @@ Knd : 'Type' {Type}
 parseError :: [Token] -> a
 parseError _ = error "Parse error!\n"
 
-parse :: String -> Typ
-parse = parser . alexScanTokens
+parseTyp :: String -> Typ
+parseTyp = typParser. alexScanTokens
+
+parseKnd :: String -> Knd
+parseKnd = kndParser. alexScanTokens
 }
