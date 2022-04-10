@@ -5,12 +5,18 @@ import Algo
 import Lexer
 }
 
+%name expParser Exp
 %name typParser Typ
 %name kndParser Knd
 %tokentype{Token}
 %error{parseError}
 
 %token
+'type' {TKTypLet}
+'let' {TKExpLet}
+'=' {TKEq}
+'in' {TKIn}
+':' {TKTypAsc}
 var {TKVar $$}
 bse {TKBse}
 '⊕' {TKBinop}
@@ -27,6 +33,10 @@ bse {TKBse}
 
 %%
 
+Exp : var {EVar $1}
+    | 'λ' var ':' Typ '.' Exp {Eλ $2 $4 $6}
+    | 'type' ' ' var ' ' '=' ' ' Typ ' ' 'in' ' ' Exp {ETypLet $3 $7 $11}
+    | 'let' ' ' var ' ' ':' ' ' Typ ' ' '=' ' ' Exp ' ' 'in' ' ' Exp {EExpLet $3 $7 $11 $15}
 Typ : var {TVar $1}
     | bse {Bse}
     | Typ '⊕' Typ {$1 :⊕ $3}
@@ -45,9 +55,11 @@ Knd : 'Type' {Type}
 parseError :: [Token] -> a
 parseError _ = error "Parse error!\n"
 
+parseExp  :: String -> Exp
+parseExp = expParser . alexScanTokens
 parseTyp :: String -> Typ
-parseTyp = typParser. alexScanTokens
+parseTyp = typParser . alexScanTokens
 
 parseKnd :: String -> Knd
-parseKnd = kndParser. alexScanTokens
+parseKnd = kndParser . alexScanTokens
 }

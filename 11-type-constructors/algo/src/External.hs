@@ -5,6 +5,12 @@ module External where
 import Common
 import Control.Exception.Base
 
+data Exp
+  = EVar TID
+  | Eλ TID Typ Exp
+  | ETypLet TID Typ Exp
+  | EExpLet TID Typ Exp Exp
+
 -- The external type language
 data Typ
   = TVar TID

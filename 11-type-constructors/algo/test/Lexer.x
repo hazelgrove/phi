@@ -8,6 +8,11 @@ import Algo
 
 tokens :-
 
+"type" {\_ -> TKTypLet}
+"let" {\_ -> TKExpLet}
+"=" {\_ -> TKEq}
+"in" {\_ -> TKIn}
+":" {\_ -> TKTypAsc}
 "Bse" {\_ -> TKBse}
 "\" {\_ -> TKλ}
 "λ" {\_ -> TKλ}
@@ -27,7 +32,12 @@ $white+ {\_ -> TKAp}
 
 {
 data Token
-  = TKVar TID
+  = TKTypLet
+  | TKExpLet
+  | TKEq
+  | TKIn
+  | TKTypAsc
+  | TKVar TID
   | TKBse
   | TKBinop
   | TKλ
