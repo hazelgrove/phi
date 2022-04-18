@@ -5,9 +5,11 @@ module External where
 import Common
 import Control.Exception.Base
 
+-- The external expression langauge
 data Exp
   = EVar TID
   | Eλ TID Typ Exp
+  | EAp Exp Exp
   | ETypLet TID Typ Exp
   | EExpLet TID Typ Exp Exp
 

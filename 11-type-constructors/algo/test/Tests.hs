@@ -9,7 +9,9 @@ main :: IO ()
 main = runTestTTAndExit tests
 
 tests :: Test
-tests = TestList . concat $ [tequivTests, freshTests, fresh2Tests, αKndTests]
+tests =
+  TestList . concat $
+  [tequivTests, synTests, freshTests, fresh2Tests, αKndTests]
   where
     tequivTests =
       [ Nil |- tequiv Bse Bse Type ~?= True
@@ -93,6 +95,7 @@ tests = TestList . concat $ [tequivTests, freshTests, fresh2Tests, αKndTests]
           (parseKnd "Type") ~?=
         True
       ]
+    synTests = []
     freshTests =
       [ fresh "t" ~?= "t1"
       , fresh "t1" ~?= "t2"
