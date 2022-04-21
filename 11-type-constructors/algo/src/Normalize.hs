@@ -20,6 +20,11 @@ import Debug.Trace
 -- non ' functions are ``public facing''
 -- non ' functions perform more checks/conversions before calling ' version
 -- internal functions typically call internal functions
+fixTyp :: ECtx.Ctx -> E.Typ -> Maybe Term
+fixTyp eΓ eτ = do
+  SER {term = iδ} <- syn_elab eΓ eτ
+  return iδ
+
 fixKnd' :: Ctx -> E.Knd -> Maybe Typ
 fixKnd' _ E.Type = return Type
 fixKnd' _ E.KHole = return KHole
@@ -38,6 +43,10 @@ fixCtx (eΓ ECtx.:⌢ (t, eκ)) = do
   iΓ <- fixCtx eΓ
   iτ <- fixKnd' iΓ eκ
   return $ iΓ ⌢ (t, iτ)
+fixCtx (eΓ ECtx.:⌢⌢⌢ (x, eτ)) = do
+  iΓ <- fixCtx eΓ
+  iδ <- fixTyp eΓ eτ -- ehhh it's fine. We don't need fixTyp'
+  return $ iΓ ⌢⌢⌢ (x, iδ)
 
 data SynElabResult =
   SER

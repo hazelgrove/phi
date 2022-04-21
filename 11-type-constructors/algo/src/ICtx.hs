@@ -63,7 +63,7 @@ lookupH (iΓ :⌢⌢⌢ _) t = lookupH iΓ t
     Nothing -> aΓ :⌢⌢ hassump
 
 (⌢⌢⌢) :: Ctx -> EAssump -> Ctx
-(⌢⌢⌢) iΓ eassump@(t, _δ) =
-  case lookupE iΓ t of
+(⌢⌢⌢) iΓ eassump@(x, _δ) =
+  case lookupE iΓ x of
     Just _ -> error "Do not shadow"
     Nothing -> iΓ :⌢⌢⌢ eassump

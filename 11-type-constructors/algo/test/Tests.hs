@@ -1,7 +1,8 @@
 {-# LANGUAGE PartialTypeSignatures #-}
 
-import Algo hiding (tequiv)
-import qualified Algo (tequiv)
+import Algo hiding (syn, tequiv)
+import qualified Algo (syn, tequiv)
+import Data.Maybe
 import Parser
 import Test.HUnit
 
@@ -95,7 +96,32 @@ tests =
           (parseKnd "Type") ~?=
         True
       ]
-    synTests = []
+    synTestHelper :: Ctx -> String -> String -> Test
+    synTestHelper aΓ δ τ =
+      let τ' = fromJust $ fixTyp aΓ (parseTyp τ)
+       in aΓ |- syn (parseExp δ) ~?= Just τ'
+    synTests =
+      [ synTestHelper Nil "λx:Bse.x" "Bse ⊕ Bse"
+      , synTestHelper Nil "type T = Bse in λx:T.x" "Bse ⊕ Bse"
+      , synTestHelper
+          (Nil ⌢ ("Int", Type) ⌢⌢⌢ ("zero", TVar "Int"))
+          "type T = Bse in λx:T.x"
+          "Bse ⊕ Bse"
+      , synTestHelper
+          (Nil ⌢ ("Int", Type) ⌢⌢⌢ ("zero", TVar "Int"))
+          "type T = Int in λx:T.x"
+          "Int ⊕ Int"
+      , synTestHelper
+          (Nil ⌢ ("Int", Type) ⌢⌢⌢ ("zero", TVar "Int"))
+          "type T = Int in λx:T.zero"
+          "Int ⊕ Int"
+      , synTestHelper (Nil ⌢⌢⌢ ("b", Bse)) "(λx:Bse.x) b" "Bse"
+      , synTestHelper (Nil ⌢ ("T", S Type Bse) ⌢⌢⌢ ("b", Bse)) "(λx:T.x) b" "T"
+      , synTestHelper
+          (Nil ⌢ ("Int", Type) ⌢⌢⌢ ("zero", TVar "Int"))
+          "type T = Int in ((λx:T.x) zero)"
+          "Int"
+      ]
     freshTests =
       [ fresh "t" ~?= "t1"
       , fresh "t1" ~?= "t2"
@@ -170,6 +196,9 @@ tests =
 -- since application precedence is so high (and can't be competed against)
 tequiv :: _
 tequiv = ((.) . (.) $ flip) . ((.) flip) . flip $ Algo.tequiv
+
+syn :: _
+syn = flip Algo.syn
 {-
 class Canon a =>
       Canon' a
