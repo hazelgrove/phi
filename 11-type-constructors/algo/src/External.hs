@@ -12,6 +12,7 @@ data Exp
   | EAp Exp Exp
   | ETypLet TID Typ Exp
   | EExpLet TID Typ Exp Exp
+  deriving (Show)
 
 -- The external type language
 data Typ

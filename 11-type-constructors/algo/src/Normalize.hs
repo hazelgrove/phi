@@ -310,3 +310,26 @@ mpk' _ _ = Nothing
 
 -- really should be ⊳Π, but Π is a letter...
 (⊳→) = flip mpk'
+
+-- for syn' when we subst out the scoped type variable
+insensitiveβnormal :: Term -> Term
+insensitiveβnormal τ@(TVar _) = τ
+insensitiveβnormal Bse = Bse
+insensitiveβnormal (τ1 :⊕ τ2) =
+  (insensitiveβnormal τ1) :⊕ (insensitiveβnormal τ2)
+insensitiveβnormal τ@(ETHole _) = τ
+insensitiveβnormal τ@(NETHole _ _) = τ
+insensitiveβnormal (Tλ t κ τ) =
+  Tλ t (insensitiveβnormalK κ) (insensitiveβnormal τ)
+insensitiveβnormal (TAp τ1 τ2) =
+  let τ2' = insensitiveβnormal τ2
+   in case insensitiveβnormal τ1 of
+        Tλ t κ τ -> subst τ2' t τ
+        τ -> τ
+
+insensitiveβnormalK :: Typ -> Typ
+insensitiveβnormalK Type = Type
+insensitiveβnormalK KHole = KHole
+insensitiveβnormalK (S κ τ) = S (insensitiveβnormalK κ) (insensitiveβnormal τ)
+insensitiveβnormalK (Π t κ1 κ2) =
+  Π t (insensitiveβnormalK κ1) (insensitiveβnormalK κ2)

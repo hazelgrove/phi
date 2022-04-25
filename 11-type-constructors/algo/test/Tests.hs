@@ -121,6 +121,14 @@ tests =
           (Nil ⌢ ("Int", Type) ⌢⌢⌢ ("zero", TVar "Int"))
           "type T = Int in ((λx:T.x) zero)"
           "Int"
+      , synTestHelper
+          (Nil ⌢ ("Int", Type) ⌢⌢⌢ ("zero", TVar "Int"))
+          "type T = (λt::Type.t⊕t) in λx:T Int.x"
+          "(Int⊕Int) ⊕ (Int⊕Int)"
+      , synTestHelper
+          (Nil ⌢ ("Int", Type) ⌢⌢⌢ ("zero", TVar "Int"))
+          "type T = (λt::Type.t⊕t) in λx:T Int.(x zero)"
+          "(Int⊕Int) ⊕ Int"
       ]
     freshTests =
       [ fresh "t" ~?= "t1"
