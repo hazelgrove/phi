@@ -281,6 +281,26 @@
                 \pgfkeys{/AlgTypeNormal, default, #1}%
                 \kv{c} \triangleright \kv{i}\AlgTypeNormalOp[\kv{k}]\kv{o}%
             }
+            \newcommand*{\AlgKindNormalOp}{\AlgTypeNormalOp}
+            \pgfkeys{%
+                /AlgKindNormal/.is family,
+                /AlgKindNormal,
+                default/.style = {
+                    ctx = \HoleCtx\TypVarCtx,
+                    in = \knd,
+                    out = \knd[\omega],
+                },
+                ctx/.initial = undef,
+                in/.initial = undef,
+                out/.initial = undef,
+            }
+            \NewDocumentCommand{\AlgKindNormal}{O{}}{%
+                \pgfkeys{/tmp/c/.link = /AlgKindNormal/ctx}%
+                \pgfkeys{/tmp/i/.link = /AlgKindNormal/in}%
+                \pgfkeys{/tmp/o/.link = /AlgKindNormal/out}%
+                \pgfkeys{/AlgKindNormal, default, #1}%
+                \kv{c} \triangleright \kv{i}\AlgKindNormalOp[]\kv{o}%
+            }
 
         \newcommand{\Syn}[3]{#1 \vdash #2~\Rightarrow~#3}
         \NewDocumentCommand{\SynKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{\knd}}{\Syn{#1}{#2}{#3}}

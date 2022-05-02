@@ -278,6 +278,36 @@
                 \rinfer[]{\AlgTypeNormal}{}
             \end{mathpar}
         \end{minipage}
+    \subsection*{}
+        \begin{minipage}{\textwidth}
+            \judgbox{\AlgKindNormal}{$\knd$ normalizes to $\knd[\omega]$}
+            \begin{mathpar}
+                \rinfer[]{\AlgKindNormal[in=\Type, out=\Type]}{ }
+                \and
+                \rinfer[]{\AlgKindNormal[in=\KHole, out=\KHole]}{ }
+                \and
+                \rinfer[]{\AlgKindNormal[in=\SKind, out=\SKind[\Type][\typ[\omega]]]}{
+                    \rinfer[]{\AlgKindNormal[out=\Type]}{} \\
+                    \rinfer[]{\AlgTypeNormal}{}
+                }
+                \and
+                \rinfer[]{\AlgKindNormal[in=\SKind, out=\SKind[\KHole][\typ[\omega]]]}{
+                    \rinfer[]{\AlgKindNormal[out=\KHole]}{} \\
+                    \rinfer[]{\AlgTypeNormal}{}
+                }
+                \and
+                \rinfer[]{\AlgKindNormal[in=\SKind]}{
+                    \rinfer[]{\AlgKindNormal[out=\SKind[\knd[1]][\typ[1]]]}{} \\
+                    \rinfer[]{\AlgKindNormal[in=\SKind[\knd[1]][\typ[1]]]}{}
+                }
+                \and
+                \rinfer[]{\AlgKindNormal[in=\SKind, out=\DepFunKind[1][\knd[1]][\SKind[\subst{\typvar[1]}{\typvar}{\knd[2]}][\typ[\omega_1]]]]}{
+                    \rinfer[]{\AlgKindNormal[out=\DepFunKind]}{} \\
+                    \rinfer[]{\AlgTypeNormal}{} \\
+                    \rinfer[]{\AlgTypeNormal[ctx=\HoleCtx\ExtendTypVarCtx[][1][{\knd[1]}], in=\TypeAp[\typ[\omega]][\typvar[1]], kind=\subst{\typvar[1]}{\typvar}{\knd[2]}, out=\typ[\omega_1]]}{}
+                }
+            \end{mathpar}
+        \end{minipage}
 \section{Metatheory}
     \subsection*{}
     subderivation preserving inferences:
