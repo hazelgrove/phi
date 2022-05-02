@@ -1,4 +1,4 @@
-\ProvidesPackage{hejohns-hazel}[2021/07/02 - for phis]
+\ProvidesPackage{hejohns-hazel}[2022/05/02 - for phis]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % packages
     \RequirePackage{hejohns-colors}
@@ -16,6 +16,7 @@
     % https://tex.stackexchange.com/questions/12678/squiggly-arrows-in-tikz
     \usetikzlibrary{decorations.pathmorphing}
     \usetikzlibrary{arrows.meta}
+    \RequirePackage{pgfkeys} % \pgfkeys
     % https://tex.stackexchange.com/questions/317121/automatically-adding-page-breaks-into-long-array-environments
     \RequirePackage{array}
     \RequirePackage{longtable}
@@ -233,6 +234,54 @@
         % ???
             \newcommand*{\WellFormedAtType}[3]{\mathrm{#1 \vdash #2 \TypAsc #3}}
     % algorithmic
+            \NewDocumentCommand{\kv}{m}{\pgfkeysvalueof{/tmp/#1}}
+        % types
+            \pgfkeys{%
+                /AlgTypeEquivAtKind/.is family,
+                /AlgTypeEquivAtKind,
+                default/.style = {
+                    ctx = \HoleCtx\TypVarCtx,
+                    left = \typ[1],
+                    right = \typ[2],
+                    kind = \knd,
+                },
+                ctx/.initial = undef,
+                left/.initial = undef,
+                right/.initial = undef,
+                kind/.initial = undef,
+            }
+            \NewDocumentCommand{\AlgTypeEquivAtKind}{O{}}{%
+                \pgfkeys{/tmp/c/.link = /AlgTypeEquivAtKind/ctx}%
+                \pgfkeys{/tmp/l/.link = /AlgTypeEquivAtKind/left}%
+                \pgfkeys{/tmp/r/.link = /AlgTypeEquivAtKind/right}%
+                \pgfkeys{/tmp/k/.link = /AlgTypeEquivAtKind/kind}%
+                \pgfkeys{/AlgTypeEquivAtKind, default, #1}%
+                \kv{c} \triangleright \kv{l}\TypeEquivAtKindOp[\kv{k}]\kv{r}%
+            }
+            \NewDocumentCommand{\AlgTypeNormalOp}{O{\knd}}{\overset{#1}{\Longrightarrow}}
+            \pgfkeys{%
+                /AlgTypeNormal/.is family,
+                /AlgTypeNormal,
+                default/.style = {
+                    ctx = \HoleCtx\TypVarCtx,
+                    in = \typ,
+                    kind = \knd,
+                    out = \typ[\omega],
+                },
+                ctx/.initial = undef,
+                in/.initial = undef,
+                kind/.initial = undef,
+                out/.initial = undef,
+            }
+            \NewDocumentCommand{\AlgTypeNormal}{O{}}{%
+                \pgfkeys{/tmp/c/.link = /AlgTypeNormal/ctx}%
+                \pgfkeys{/tmp/i/.link = /AlgTypeNormal/in}%
+                \pgfkeys{/tmp/k/.link = /AlgTypeNormal/kind}%
+                \pgfkeys{/tmp/o/.link = /AlgTypeNormal/out}%
+                \pgfkeys{/AlgTypeNormal, default, #1}%
+                \kv{c} \triangleright \kv{i}\AlgTypeNormalOp[\kv{k}]\kv{o}%
+            }
+
         \newcommand{\Syn}[3]{#1 \vdash #2~\Rightarrow~#3}
         \NewDocumentCommand{\SynKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{\knd}}{\Syn{#1}{#2}{#3}}
         \newcommand{\Ana}[3]{#1 \vdash #2~\Leftarrow~#3}

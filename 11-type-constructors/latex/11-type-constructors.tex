@@ -258,6 +258,26 @@
                 \rule[CWF\hyph Hole]{\hole\notin\dom{\HoleCtx[]} \\ \KindWellFormed}{\ContextWellFormed[\xExtendTypHoleCtx[;][]\TypVarCtx[]]}
             \end{mathpar}
         \end{minipage}
+\section{Algorithm}
+    \subsection*{}
+    (syntactically distinguished up to \alpha-equivalence)
+    \subsection*{}
+        \begin{minipage}{\textwidth}
+            \judgbox{\AlgTypeEquivAtKind}{$\typ[1]$ is equivalent to $\typ[2]$ at kind $\knd$}
+            \begin{mathpar}
+                \rinfer[]{\AlgTypeEquivAtKind}{
+                \AlgTypeNormal[in=\typ[1], out=\typ[\omega]] \\
+                \AlgTypeNormal[in=\typ[2], out=\typ[\omega]]
+                }
+            \end{mathpar}
+        \end{minipage}
+    \subsection*{}
+        \begin{minipage}{\textwidth}
+            \judgbox{\AlgTypeNormal}{$\typ$ normalizes to $\typ[\omega]$ at kind $\knd$}
+            \begin{mathpar}
+                \rinfer[]{\AlgTypeNormal}{}
+            \end{mathpar}
+        \end{minipage}
 \section{Metatheory}
     \subsection*{}
     subderivation preserving inferences:
