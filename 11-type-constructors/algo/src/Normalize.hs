@@ -226,7 +226,7 @@ path_normal iΓ (TAp δ1 δ2) =
   let (δ1', τ1) = path_normal iΓ δ1
    in case type_normal iΓ τ1 of
         Π t τ1' τ2' ->
-          let δ2' = term_normal iΓ δ2 τ1
+          let δ2' = term_normal iΓ δ2 τ1'
            in (TAp δ1' δ2', subst δ2' t τ2')
         _ -> error "unexpected path normal type\n"
 
