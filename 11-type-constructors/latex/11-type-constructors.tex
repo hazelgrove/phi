@@ -275,6 +275,67 @@
         \end{minipage}
     \subsection*{}
         \begin{minipage}{\textwidth}
+            \judgbox{\AlgNatKind}{$\typ$ has natural kind $\knd$}
+            \begin{mathpar}
+                \rinfer[]{\AlgNatKind[in=\bse, out=\Type]}{
+                }
+                \and
+                \rinfer[]{\AlgNatKind[in=\typvar, out=\knd]}{
+                    \InTypVarCtx[]
+                }
+                \and
+                \rinfer[]{\AlgNatKind[in=\binop, out=\Type]}{
+                }
+                \and
+                \rinfer[]{\AlgNatKind[in=\ETypeHole, out=\knd]}{
+                    \InTypHoleCtx[]
+                }
+                \and
+                \rinfer[]{\AlgNatKind[in=\NETypeHole, out=\knd]}{
+                    \InTypHoleCtx[]
+                }
+                \and
+                \rinfer[]{\AlgNatKind[in=\TypeAp, out=\subst{\typ[2]}{\typvar}{\knd[2]}]}{
+                    \AlgNatKind[in=\typ[1]] \\
+                    \AlgKindNormal[out=\DepFunKind]
+                }
+            \end{mathpar}
+        \end{minipage}
+    \subsection*{}
+        \begin{minipage}{\textwidth}
+            \judgbox{\AlgWHReduc[in=\EvalCtx{\typ[1]}, out=\EvalCtx{\typ[2]}]}{
+                $\EvalCtx{\typ[1]}$ single step weak head reduces to $\EvalCtx{\typ[2]}$
+            }
+            \begin{mathpar}
+                \rinfer[]{\AlgWHReduc[in=\EvalCtx{\TypeAp[(\TypeFun)][\typ[1]]}, out=\EvalCtx{\subst{\typ[1]}{\typvar}{\typ}}]}{
+                    TODO:~check~\typ[1]~against~\knd
+                }
+                \and
+                \rinfer[]{\AlgWHReduc[in=\EvalCtx{\typvar}, out=\EvalCtx{\typ}]}{
+                    \AlgNatKind[in=\typvar, out=\SKind]
+                }
+                \and
+                \rinfer[]{\AlgWHReduc*[in=\bse, out=\bse]}{
+                }
+                \and
+                \rinfer[]{\AlgWHReduc*[in=\binop, out=\binop]}{
+                }
+                \and
+                \rinfer[]{\AlgWHReduc*[in=\EvalCtx{\ETypeHole}, out=\EvalCtx{\ETypeHole}]}{
+                }
+                \and
+                \rinfer[]{\AlgWHReduc*[in=\EvalCtx{\NETypeHole}, out=\EvalCtx{\NETypeHole}]}{
+                }
+                \and
+                \rinfer[]{\AlgWHReduc*[in=\EvalCtx{\UnboundTypeVar}, out=\EvalCtx{\UnboundTypeVar}]}{
+                }
+                \and
+                \rinfer[]{\AlgWHReduc*[in=\TypeFun, out=\TypeFun]}{
+                }
+            \end{mathpar}
+        \end{minipage}
+    \subsection*{}
+        \begin{minipage}{\textwidth}
             \judgbox{\AlgWHNormal}{$\typ$ weak head normalizes to $\typ[\psi]$}
             \begin{mathpar}
                 \rinfer[]{\AlgWHNormal}{

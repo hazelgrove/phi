@@ -259,6 +259,28 @@
                 \pgfkeys{/AlgTypeEquivAtKind, default, #1}%
                 \kv{c} \triangleright \kv{l}\TypeEquivAtKindOp[\kv{k}]\kv{r}%
             }
+            \NewDocumentCommand{\AlgNatKindOp}{}{%
+                \uparrow%
+            }
+            \pgfkeys{%
+                /AlgNatKind/.is family,
+                /AlgNatKind,
+                default/.style = {
+                    ctx = \HoleCtx\TypVarCtx,
+                    in = \typ,
+                    out = \knd,
+                },
+                ctx/.initial = undef,
+                in/.initial = undef,
+                out/.initial = undef,
+            }
+            \NewDocumentCommand{\AlgNatKind}{O{}}{%
+                \pgfkeys{/tmp/c/.link = /AlgNatKind/ctx}%
+                \pgfkeys{/tmp/i/.link = /AlgNatKind/in}%
+                \pgfkeys{/tmp/o/.link = /AlgNatKind/out}%
+                \pgfkeys{/AlgNatKind, default, #1}%
+                \kv{c} \triangleright \kv{i}\AlgNatKindOp\kv{o}%
+            }
             \NewDocumentCommand{\AlgWHReducOp}{s}{%
                 \IfBooleanTF{#1}{\cancel{\rightsquigarrow}}{\rightsquigarrow}%
             }
@@ -274,6 +296,7 @@
                 in/.initial = undef,
                 out/.initial = undef,
             }
+            \NewDocumentCommand{\EvalCtx}{m}{\mathcal{E}[#1]}
             \NewDocumentCommand{\AlgWHReduc}{sO{}}{%
                 \pgfkeys{/tmp/c/.link = /AlgWHReduc/ctx}%
                 \pgfkeys{/tmp/i/.link = /AlgWHReduc/in}%
