@@ -260,7 +260,9 @@
         \end{minipage}
 \section{Algorithm}
     \subsection*{}
-    (syntactically distinguished up to \alpha-equivalence)
+    (syntactically distinguished up to \alpha-equivalence... when needed) \\
+    (TODO: remove the `... when needed'. The bound variable renamings should get adjusted) \\
+    (NOTE: current implementation has explicit $\equiv_\alpha$ checks which are not written in these rules since we eventually want to use De Bruijn indices, hence the above)
     \subsection*{}
         \begin{minipage}{\textwidth}
             \judgbox{\AlgTypeEquivAtKind}{$\typ[1]$ is equivalent to $\typ[2]$ at kind $\knd$}
@@ -276,7 +278,31 @@
             \judgbox{\AlgTypeNormal}{$\typ$ normalizes to $\typ[\omega]$ at kind $\knd$}
             \begin{mathpar}
                 \rinfer[]{\AlgTypeNormal}{
-                    \AlgKindNormal[out=\Type]
+                    \AlgKindNormal[out=\Type] \\
+                    \AlgWHNormal \\
+                    \AlgPathNormal[kind=\Type]
+                }
+                \and
+                \rinfer[]{\AlgTypeNormal}{
+                    \AlgKindNormal[out=\KHole] \\
+                    TODO:
+                }
+                \and
+                \rinfer[]{\AlgTypeNormal}{
+                    \AlgKindNormal[out=\SKind[\Type][\typ[s]]] \\
+                    \AlgWHNormal \\
+                    \AlgPathNormal[kind=\Type] \\
+                    TODO:~prop: \typ[\omega] = \typ[s]
+                }
+                \and
+                \rinfer[]{\AlgTypeNormal}{
+                    \AlgKindNormal[out=\SKind[\KHole][\typ[s]]] \\
+                    TODO:
+                }
+                \and
+                \rinfer[]{\AlgTypeNormal[out=\TypeFun[1][\knd[\omega_1]][\typ[\omega]]]}{
+                    \AlgKindNormal[out=\DepFunKind[][\knd[\omega_1]][\knd[\omega_2]]] \\
+                    \AlgTypeNormal[ctx=\HoleCtx\ExtendTypVarCtx[][1][\knd[\omega_1]], in=\TypeAp[\tau][\typvar[1]], kind=\subst{\typvar[1]}{\typvar}{\knd[2]}]
                 }
             \end{mathpar}
         \end{minipage}

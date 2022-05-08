@@ -258,6 +258,26 @@
                 \pgfkeys{/AlgTypeEquivAtKind, default, #1}%
                 \kv{c} \triangleright \kv{l}\TypeEquivAtKindOp[\kv{k}]\kv{r}%
             }
+            \NewDocumentCommand{\AlgWHNormalOp}{}{\Downarrow}
+            \pgfkeys{%
+                /AlgWHNormal/.is family,
+                /AlgWHNormal,
+                default/.style = {
+                    ctx = \HoleCtx\TypVarCtx,
+                    in = \typ,
+                    out = \typ[\psi],
+                },
+                ctx/.initial = undef,
+                in/.initial = undef,
+                out/.initial = undef,
+            }
+            \NewDocumentCommand{\AlgWHNormal}{O{}}{%
+                \pgfkeys{/tmp/c/.link = /AlgWHNormal/ctx}%
+                \pgfkeys{/tmp/i/.link = /AlgWHNormal/in}%
+                \pgfkeys{/tmp/o/.link = /AlgWHNormal/out}%
+                \pgfkeys{/AlgWHNormal, default, #1}%
+                \kv{c} \triangleright \kv{i}\AlgWHNormalOp\kv{o}%
+            }
             \NewDocumentCommand{\AlgTypeNormalOp}{O{\knd}}{\overset{#1}{\Longrightarrow}}
             \pgfkeys{%
                 /AlgTypeNormal/.is family,
@@ -280,6 +300,29 @@
                 \pgfkeys{/tmp/o/.link = /AlgTypeNormal/out}%
                 \pgfkeys{/AlgTypeNormal, default, #1}%
                 \kv{c} \triangleright \kv{i}\AlgTypeNormalOp[\kv{k}]\kv{o}%
+            }
+            \NewDocumentCommand{\AlgPathNormalOp}{O{\knd}}{\longrightarrow^{#1}}
+            \pgfkeys{%
+                /AlgPathNormal/.is family,
+                /AlgPathNormal,
+                default/.style = {
+                    ctx = \HoleCtx\TypVarCtx,
+                    in = \typ[\psi],
+                    out = \typ[\omega],
+                    kind = \knd,
+                },
+                ctx/.initial = undef,
+                in/.initial = undef,
+                out/.initial = undef,
+                kind/.initial = undef,
+            }
+            \NewDocumentCommand{\AlgPathNormal}{O{}}{%
+                \pgfkeys{/tmp/c/.link = /AlgPathNormal/ctx}%
+                \pgfkeys{/tmp/i/.link = /AlgPathNormal/in}%
+                \pgfkeys{/tmp/o/.link = /AlgPathNormal/out}%
+                \pgfkeys{/tmp/k/.link = /AlgPathNormal/kind}%
+                \pgfkeys{/AlgPathNormal, default, #1}%
+                \kv{c} \triangleright \kv{i}\AlgPathNormalOp[\kv{k}]\kv{o}%
             }
             \newcommand*{\AlgKindNormalOp}{\AlgTypeNormalOp}
             \pgfkeys{%
