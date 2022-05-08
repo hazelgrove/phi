@@ -275,7 +275,9 @@
         \begin{minipage}{\textwidth}
             \judgbox{\AlgTypeNormal}{$\typ$ normalizes to $\typ[\omega]$ at kind $\knd$}
             \begin{mathpar}
-                \rinfer[]{\AlgTypeNormal}{}
+                \rinfer[]{\AlgTypeNormal}{
+                    \AlgKindNormal[out=\Type]
+                }
             \end{mathpar}
         \end{minipage}
     \subsection*{}
@@ -287,24 +289,29 @@
                 \rinfer[]{\AlgKindNormal[in=\KHole, out=\KHole]}{ }
                 \and
                 \rinfer[]{\AlgKindNormal[in=\SKind, out=\SKind[\Type][\typ[\omega]]]}{
-                    \rinfer[]{\AlgKindNormal[out=\Type]}{} \\
-                    \rinfer[]{\AlgTypeNormal}{}
+                    \AlgKindNormal[out=\Type] \\
+                    \AlgTypeNormal
                 }
                 \and
                 \rinfer[]{\AlgKindNormal[in=\SKind, out=\SKind[\KHole][\typ[\omega]]]}{
-                    \rinfer[]{\AlgKindNormal[out=\KHole]}{} \\
-                    \rinfer[]{\AlgTypeNormal}{}
+                    \AlgKindNormal[out=\KHole] \\
+                    \AlgTypeNormal
                 }
                 \and
                 \rinfer[]{\AlgKindNormal[in=\SKind]}{
-                    \rinfer[]{\AlgKindNormal[out=\SKind[\knd[1]][\typ[1]]]}{} \\
-                    \rinfer[]{\AlgKindNormal[in=\SKind[\knd[1]][\typ[1]]]}{}
+                    \AlgKindNormal[out=\SKind[\knd[1]][\typ[1]]] \\
+                    \AlgKindNormal[in=\SKind[\knd[1]][\typ[1]]]
                 }
                 \and
                 \rinfer[]{\AlgKindNormal[in=\SKind, out=\DepFunKind[1][\knd[1]][\SKind[\subst{\typvar[1]}{\typvar}{\knd[2]}][\typ[\omega_1]]]]}{
-                    \rinfer[]{\AlgKindNormal[out=\DepFunKind]}{} \\
-                    \rinfer[]{\AlgTypeNormal}{} \\
-                    \rinfer[]{\AlgTypeNormal[ctx=\HoleCtx\ExtendTypVarCtx[][1][{\knd[1]}], in=\TypeAp[\typ[\omega]][\typvar[1]], kind=\subst{\typvar[1]}{\typvar}{\knd[2]}, out=\typ[\omega_1]]}{}
+                    \AlgKindNormal[out=\DepFunKind] \\
+                    \AlgTypeNormal \\
+                    \AlgTypeNormal[ctx=\HoleCtx\ExtendTypVarCtx[][1][{\knd[1]}], in=\TypeAp[\typ[\omega]][\typvar[1]], kind=\subst{\typvar[1]}{\typvar}{\knd[2]}, out=\typ[\omega_1]]
+                }
+                \and
+                \rinfer[]{\AlgKindNormal[in=\DepFunKind, out=\DepFunKind[][\knd[\omega_1]][\omega_2]]}{
+                    \AlgKindNormal[in=\knd[1], out=\knd[\omega_1]] \\
+                    \AlgKindNormal[ctx=\HoleCtx\ExtendTypVarCtx[][][\knd[\omega_1]], in=\knd[2], out=\knd[\omega_2]]
                 }
             \end{mathpar}
         \end{minipage}
