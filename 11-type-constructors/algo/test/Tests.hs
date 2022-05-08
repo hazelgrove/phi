@@ -95,6 +95,12 @@ tests =
           (parseTyp "Int ⊕ Int")
           (parseKnd "Type") ~?=
         True
+      , Nil ⌢ ("Int", Type) ⌢ ("Int64", S Type $ TVar "Int") |-
+        tequiv
+          (parseTyp "(λt::Type.t⊕t) Int")
+          (parseTyp "Int64 ⊕ Int64")
+          (parseKnd "Type") ~?=
+        True
       ]
     synTestHelper :: Ctx -> String -> String -> Test
     synTestHelper aΓ δ τ =
