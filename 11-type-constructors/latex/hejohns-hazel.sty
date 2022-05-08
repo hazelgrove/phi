@@ -17,6 +17,7 @@
     \usetikzlibrary{decorations.pathmorphing}
     \usetikzlibrary{arrows.meta}
     \RequirePackage{pgfkeys} % \pgfkeys
+    \RequirePackage{cancel} % \cancel
     % https://tex.stackexchange.com/questions/317121/automatically-adding-page-breaks-into-long-array-environments
     \RequirePackage{array}
     \RequirePackage{longtable}
@@ -257,6 +258,32 @@
                 \pgfkeys{/tmp/k/.link = /AlgTypeEquivAtKind/kind}%
                 \pgfkeys{/AlgTypeEquivAtKind, default, #1}%
                 \kv{c} \triangleright \kv{l}\TypeEquivAtKindOp[\kv{k}]\kv{r}%
+            }
+            \NewDocumentCommand{\AlgWHReducOp}{s}{%
+                \IfBooleanTF{#1}{\cancel{\rightsquigarrow}}{\rightsquigarrow}%
+            }
+            \pgfkeys{%
+                /AlgWHReduc/.is family,
+                /AlgWHReduc,
+                default/.style = {
+                    ctx = \HoleCtx\TypVarCtx,
+                    in = \typ,
+                    out = \typ[\chi],
+                },
+                ctx/.initial = undef,
+                in/.initial = undef,
+                out/.initial = undef,
+            }
+            \NewDocumentCommand{\AlgWHReduc}{sO{}}{%
+                \pgfkeys{/tmp/c/.link = /AlgWHReduc/ctx}%
+                \pgfkeys{/tmp/i/.link = /AlgWHReduc/in}%
+                \pgfkeys{/tmp/o/.link = /AlgWHReduc/out}%
+                \pgfkeys{/AlgWHReduc, default, #2}%
+                \IfBooleanTF{#1}{
+                    \kv{c} \triangleright \kv{i}\AlgWHReducOp*\kv{i}%
+                }{
+                    \kv{c} \triangleright \kv{i}\AlgWHReducOp\kv{o}%
+                }
             }
             \NewDocumentCommand{\AlgWHNormalOp}{}{\Downarrow}
             \pgfkeys{%

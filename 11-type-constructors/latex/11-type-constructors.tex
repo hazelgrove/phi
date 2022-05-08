@@ -275,6 +275,19 @@
         \end{minipage}
     \subsection*{}
         \begin{minipage}{\textwidth}
+            \judgbox{\AlgWHNormal}{$\typ$ weak head normalizes to $\typ[\psi]$}
+            \begin{mathpar}
+                \rinfer[]{\AlgWHNormal}{
+                    \AlgWHReduc \\
+                    \AlgWHNormal[in=\typ[\chi]] \\
+                }
+                \rinfer[]{\AlgWHNormal[out=\typ]}{
+                    \AlgWHReduc*
+                }
+            \end{mathpar}
+        \end{minipage}
+    \subsection*{}
+        \begin{minipage}{\textwidth}
             \judgbox{\AlgTypeNormal}{$\typ$ normalizes to $\typ[\omega]$ at kind $\knd$}
             \begin{mathpar}
                 \rinfer[]{\AlgTypeNormal}{
