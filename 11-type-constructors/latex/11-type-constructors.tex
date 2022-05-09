@@ -275,7 +275,7 @@
         \end{minipage}
     \subsection*{}
         \begin{minipage}{\textwidth}
-            \judgbox{\AlgNatKind}{$\typ$ has natural kind $\knd$}
+            \judgbox{\AlgNatKind}{path $\typ$ has natural kind $\knd$}
             \begin{mathpar}
                 \rinfer[]{\AlgNatKind[in=\bse, out=\Type]}{
                 }
@@ -382,6 +382,37 @@
         \end{minipage}
     \subsection*{}
         \begin{minipage}{\textwidth}
+    \subsection*{}
+        \begin{minipage}{\textwidth}
+            \judgbox{\AlgPathNormal}{path $\typ[\psi]$ normalizes to $\typ[\omega]$ with kind $\knd$}
+            \begin{mathpar}
+                \rinfer[]{\AlgPathNormal[in=\bse, out=\bse, kind=\Type]}{
+                }
+                \and
+                \rinfer[]{\AlgPathNormal[in=\typvar, out=\typvar]}{
+                    \InTypVarCtx[]
+                }
+                \and
+                \rinfer[]{\AlgPathNormal[in=\binop, out=\binop[\typ[\omega_1]][\typ[\omega_2]], kind=\Type]}{
+                    \AlgTypeNormal[in=\typ[1], kind=\Type, out=\typ[\omega_1]] \\
+                    \AlgTypeNormal[in=\typ[2], kind=\Type, out=\typ[\omega_2]]
+                }
+                \and
+                \rinfer[]{\AlgPathNormal[in=\ETypeHole, out=\ETypeHole]}{
+                    \InTypHoleCtx[]
+                }
+                \and
+                \rinfer[]{\AlgPathNormal[in=\NETypeHole, out=\NETypeHole]}{
+                    \InTypHoleCtx[]
+                }
+                \and
+                \rinfer[]{\AlgPathNormal[in=\TypeAp, out=\TypeAp[\typ[\omega_1]][\typ[\omega_2]], kind=\subst{\typ[\omega_2]}{\typvar}{\knd[2]}]}{
+                    \AlgPathNormal[in=\typ[1], out=\typ[\omega_1]] \\
+                    \AlgKindNormal[out=\DepFunKind] \\
+                    \AlgTypeNormal[in=\typ[2], kind=\knd[1], out=\typ[\omega_2]] \\
+                }
+            \end{mathpar}
+        \end{minipage}
             \judgbox{\AlgKindNormal}{$\knd$ normalizes to $\knd[\omega]$}
             \begin{mathpar}
                 \rinfer[]{\AlgKindNormal[in=\Type, out=\Type]}{ }
