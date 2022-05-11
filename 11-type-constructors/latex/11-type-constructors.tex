@@ -264,6 +264,13 @@
     (TODO: remove the `... when needed'. The bound variable renamings should get adjusted) \\
     (NOTE: current implementation has explicit $\equiv_\alpha$ checks which are not written in these rules since we eventually want to use De Bruijn indices, hence the above)
     \subsection*{}
+    Elimination contexts
+        \begin{longtable}{RRL}
+            \ElimCtxOp & ::=
+                       &\greentt{\diamond} \\
+                       &\vert& \TypeAp[\ElimCtxOp][\typ] \\
+        \end{longtable}
+    \subsection*{}
         \begin{minipage}{\textwidth}
             \judgbox{\AlgTypeEquivAtKind}{$\typ[1]$ is equivalent to $\typ[2]$ at kind $\knd$}
             \begin{mathpar}
@@ -303,15 +310,15 @@
         \end{minipage}
     \subsection*{}
         \begin{minipage}{\textwidth}
-            \judgbox{\AlgWHReduc[in=\EvalCtx{\typ[1]}, out=\EvalCtx{\typ[2]}]}{
-                $\EvalCtx{\typ[1]}$ single step weak head reduces to $\EvalCtx{\typ[2]}$
+            \judgbox{\AlgWHReduc[in=\ElimCtx{\typ[1]}, out=\ElimCtx{\typ[2]}]}{
+                $\ElimCtx{\typ[1]}$ single step weak head reduces to $\ElimCtx{\typ[2]}$
             }
             \begin{mathpar}
-                \rinfer[]{\AlgWHReduc[in=\EvalCtx{\TypeAp[(\TypeFun)][\typ[1]]}, out=\EvalCtx{\subst{\typ[1]}{\typvar}{\typ}}]}{
+                \rinfer[]{\AlgWHReduc[in=\ElimCtx{\TypeAp[(\TypeFun)][\typ[1]]}, out=\ElimCtx{\subst{\typ[1]}{\typvar}{\typ}}]}{
                     TODO:~check~\typ[1]~against~\knd
                 }
                 \and
-                \rinfer[]{\AlgWHReduc[in=\EvalCtx{\typvar}, out=\EvalCtx{\typ}]}{
+                \rinfer[]{\AlgWHReduc[in=\ElimCtx{\typvar}, out=\ElimCtx{\typ}]}{
                     \AlgNatKind[in=\typvar, out=\SKind]
                 }
                 \and
@@ -321,13 +328,13 @@
                 \rinfer[]{\AlgWHReduc*[in=\binop, out=\binop]}{
                 }
                 \and
-                \rinfer[]{\AlgWHReduc*[in=\EvalCtx{\ETypeHole}, out=\EvalCtx{\ETypeHole}]}{
+                \rinfer[]{\AlgWHReduc*[in=\ElimCtx{\ETypeHole}, out=\ElimCtx{\ETypeHole}]}{
                 }
                 \and
-                \rinfer[]{\AlgWHReduc*[in=\EvalCtx{\NETypeHole}, out=\EvalCtx{\NETypeHole}]}{
+                \rinfer[]{\AlgWHReduc*[in=\ElimCtx{\NETypeHole}, out=\ElimCtx{\NETypeHole}]}{
                 }
                 \and
-                \rinfer[]{\AlgWHReduc*[in=\EvalCtx{\UnboundTypeVar}, out=\EvalCtx{\UnboundTypeVar}]}{
+                \rinfer[]{\AlgWHReduc*[in=\ElimCtx{\UnboundTypeVar}, out=\ElimCtx{\UnboundTypeVar}]}{
                 }
                 \and
                 \rinfer[]{\AlgWHReduc*[in=\TypeFun, out=\TypeFun]}{

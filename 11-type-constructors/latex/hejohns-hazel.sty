@@ -296,7 +296,8 @@
                 in/.initial = undef,
                 out/.initial = undef,
             }
-            \NewDocumentCommand{\EvalCtx}{m}{\mathcal{E}[#1]}
+            \newcommand*{\ElimCtxOp}{\greentt{\mathcal{E}}}
+            \NewDocumentCommand{\ElimCtx}{m}{\ElimCtxOp[#1]}
             \NewDocumentCommand{\AlgWHReduc}{sO{}}{%
                 \pgfkeys{/tmp/c/.link = /AlgWHReduc/ctx}%
                 \pgfkeys{/tmp/i/.link = /AlgWHReduc/in}%
