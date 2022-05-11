@@ -15,63 +15,63 @@ tests =
   [tequivTests, synTests, freshTests, fresh2Tests, αKndTests]
   where
     tequivTests =
-      [ Nil |- tequiv Bse Bse Type ~?= True
-      , Nil |- tequiv Bse Bse (S Type Bse) ~?= True
-      , Nil |- tequiv Bse Bse (Π "t" Type (S Type (TVar "t"))) ~?= False
-      , Nil |- tequiv (Bse :⊕ Bse) (Bse :⊕ Bse) Type ~?= True
-      , Nil |- tequiv (Bse :⊕ Bse) (Bse :⊕ Bse) (S Type $ Bse :⊕ Bse) ~?= True
-      , Nil |-
+      [ Nil ⊢ tequiv Bse Bse Type ~?= True
+      , Nil ⊢ tequiv Bse Bse (S Type Bse) ~?= True
+      , Nil ⊢ tequiv Bse Bse (Π "t" Type (S Type (TVar "t"))) ~?= False
+      , Nil ⊢ tequiv (Bse :⊕ Bse) (Bse :⊕ Bse) Type ~?= True
+      , Nil ⊢ tequiv (Bse :⊕ Bse) (Bse :⊕ Bse) (S Type $ Bse :⊕ Bse) ~?= True
+      , Nil ⊢
         tequiv (Bse :⊕ Bse) (Bse :⊕ Bse) (S (S Type $ Bse :⊕ Bse) (Bse :⊕ Bse)) ~?=
         True
-      , Nil ⌢ ("Int", Type) |- tequiv (TVar "Int") Bse Type ~?= False
-      , Nil ⌢ ("Int", Type) |- tequiv (TVar "Int") (TVar "Int") Type ~?= True
-      , Nil ⌢ ("Int", Type) |-
+      , Nil ⌢ ("Int", Type) ⊢ tequiv (TVar "Int") Bse Type ~?= False
+      , Nil ⌢ ("Int", Type) ⊢ tequiv (TVar "Int") (TVar "Int") Type ~?= True
+      , Nil ⌢ ("Int", Type) ⊢
         tequiv
           ((TVar "Int") :⊕ (TVar "Int"))
           ((TVar "Int") :⊕ (TVar "Int"))
           Type ~?=
         True
-      , Nil ⌢ ("Int", Type) ⌢ ("Int'", S Type $ TVar "Int") |-
+      , Nil ⌢ ("Int", Type) ⌢ ("Int'", S Type $ TVar "Int") ⊢
         tequiv
           ((TVar "Int'") :⊕ (TVar "Int"))
           ((TVar "Int") :⊕ (TVar "Int"))
           Type ~?=
         True
-      , Nil ⌢ ("Int", Type) ⌢ ("Int'", S Type $ TVar "Int") |-
+      , Nil ⌢ ("Int", Type) ⌢ ("Int'", S Type $ TVar "Int") ⊢
         tequiv
           ((TVar "Int'") :⊕ (TVar "Int'"))
           ((TVar "Int") :⊕ (TVar "Int"))
           Type ~?=
         True
-      , Nil ⌢ ("Int", Type) ⌢ ("Int'", S Type $ TVar "Int") |-
+      , Nil ⌢ ("Int", Type) ⌢ ("Int'", S Type $ TVar "Int") ⊢
         tequiv
           ((TVar "Int") :⊕ (TVar "Int'"))
           ((TVar "Int'") :⊕ (TVar "Int"))
           Type ~?=
         True
-      , Nil ⌢ ("Int", Type) ⌢ ("Int'", S Type $ TVar "Int") |-
+      , Nil ⌢ ("Int", Type) ⌢ ("Int'", S Type $ TVar "Int") ⊢
         tequiv
           ((TVar "Int") :⊕ (TVar "Int'"))
           ((TVar "Int'") :⊕ (TVar "Int'"))
           Type ~?=
         True
-      , Nil ⌢ ("Int", Type) ⌢ ("Int'", S Type $ TVar "Int") |-
+      , Nil ⌢ ("Int", Type) ⌢ ("Int'", S Type $ TVar "Int") ⊢
         tequiv
           ((TVar "Int") :⊕ (TVar "Int'"))
           ((TVar "Int'") :⊕ (TVar "Bse"))
           Type ~?=
         False
-      , Nil |- tequiv (Tλ "t" Type $ TVar "t") (Tλ "t" Type Bse) Type ~?= False
-      , Nil |-
+      , Nil ⊢ tequiv (Tλ "t" Type $ TVar "t") (Tλ "t" Type Bse) Type ~?= False
+      , Nil ⊢
         tequiv (Tλ "t" Type $ TVar "t") (Tλ "t" Type Bse) (Π "t" Type Type) ~?=
         False
-      , Nil |-
+      , Nil ⊢
         tequiv
           (Tλ "t" Type $ TVar "t")
           (Tλ "t" Type Bse)
           (Π "t" (S Type Bse) Type) ~?=
         True
-      , Nil ⌢ ("Int", Type) ⌢ ("T", S Type $ TVar "Int") |-
+      , Nil ⌢ ("Int", Type) ⌢ ("T", S Type $ TVar "Int") ⊢
         tequiv
           (Tλ "t" Type $ TVar "t")
           (Tλ "t" Type $ TVar "Int")
@@ -80,22 +80,22 @@ tests =
       , Nil ⌢ ("Int", Type) ⌢ ("T", S Type $ TVar "Int") ⌢
         ( "Prod"
         , S (Π "t" Type (Π "v" Type Type))
-            (Tλ "t" Type (Tλ "v" Type ((TVar "t") :⊕ (TVar "v"))))) |-
+            (Tλ "t" Type (Tλ "v" Type ((TVar "t") :⊕ (TVar "v"))))) ⊢
         tequiv
           (TVar "Prod")
           (Tλ "foo" Type (Tλ "bar" Type ((TVar "foo") :⊕ (TVar "bar"))))
           (Π "a" Type (Π "b" Type Type)) ~?=
         True
-      , Nil |-
+      , Nil ⊢
         tequiv (parseTyp "(λt::Type.t) Bse") (parseTyp "Bse") (parseKnd "Type") ~?=
         True
-      , Nil ⌢ ("Int", Type) |-
+      , Nil ⌢ ("Int", Type) ⊢
         tequiv
           (parseTyp "(λt::Type.t⊕t) Int")
           (parseTyp "Int ⊕ Int")
           (parseKnd "Type") ~?=
         True
-      , Nil ⌢ ("Int", Type) ⌢ ("Int64", S Type $ TVar "Int") |-
+      , Nil ⌢ ("Int", Type) ⌢ ("Int64", S Type $ TVar "Int") ⊢
         tequiv
           (parseTyp "(λt::Type.t⊕t) Int")
           (parseTyp "Int64 ⊕ Int64")
@@ -108,7 +108,7 @@ tests =
     synTestHelper :: Ctx -> String -> String -> Test
     synTestHelper aΓ δ τ =
       let τ' = fromJust $ fixTyp aΓ (parseTyp τ)
-       in aΓ |- syn (parseExp δ) ~?= Just τ'
+       in aΓ ⊢ syn (parseExp δ) ~?= Just τ'
     synTests =
       [ synTestHelper Nil "λx:Bse.x" "Bse ⊕ Bse"
       , synTestHelper Nil "type T = Bse in λx:T.x" "Bse ⊕ Bse"
@@ -166,45 +166,45 @@ tests =
 -}
 {-
     canonTypTests =
-      [ Nil |- canon' Bse ~?= Just Bse
-      , Nil |- canon' (TVar "T") ~?= Nothing
-      , Nil |- canon' (TAp Bse Bse) ~?= Nothing
-      , Nil ⌢ ("T", S Type Bse) |- canon' (TVar "T") ~?= Just Bse
-      , Nil ⌢ ("T", S Type Bse) ⌢ ("V", S (S Type Bse) (TVar "T")) |-
+      [ Nil ⊢ canon' Bse ~?= Just Bse
+      , Nil ⊢ canon' (TVar "T") ~?= Nothing
+      , Nil ⊢ canon' (TAp Bse Bse) ~?= Nothing
+      , Nil ⌢ ("T", S Type Bse) ⊢ canon' (TVar "T") ~?= Just Bse
+      , Nil ⌢ ("T", S Type Bse) ⌢ ("V", S (S Type Bse) (TVar "T")) ⊢
         canon' (TVar "V") ~?=
         Just Bse
       , Nil ⌢
         ( "Pair"
         , S (Π "t" Type (S Type (TVar "t" :⊕ TVar "t")))
-            (Tλ "t" Type (TVar "t" :⊕ TVar "t"))) |-
+            (Tλ "t" Type (TVar "t" :⊕ TVar "t"))) ⊢
         canon' (TVar "Pair") ~?=
         (Just $ (Tλ "t" Type (TVar "t" :⊕ TVar "t")))
       , Nil ⌢
         ( "Pair"
         , S (Π "t" Type (S Type (TVar "t" :⊕ TVar "t")))
-            (Tλ "t" Type (TVar "t" :⊕ TVar "t"))) |-
+            (Tλ "t" Type (TVar "t" :⊕ TVar "t"))) ⊢
         canon' (TAp (TVar "Pair") Bse) ~?=
         (Just $ Bse :⊕ Bse)
       , Nil ⌢
         ( "Pair"
         , S (Π "t" Type (S Type (TVar "t" :⊕ TVar "t")))
-            (Tλ "t" Type (TVar "t" :⊕ TVar "t"))) |-
+            (Tλ "t" Type (TVar "t" :⊕ TVar "t"))) ⊢
         canon' (TAp (TVar "Pair") (TAp (TVar "Pair") (Bse))) ~?=
         (Just $ (Bse :⊕ Bse) :⊕ (Bse :⊕ Bse))
       , Nil ⌢
         ( "Pair"
         , S (Π "t" Type (S Type (TVar "t" :⊕ TVar "t")))
-            (Tλ "t" Type (TVar "t" :⊕ TVar "t"))) |-
+            (Tλ "t" Type (TVar "t" :⊕ TVar "t"))) ⊢
         canon' (TAp (TVar "Pair") (TVar "Pair")) ~?=
         Nothing
       ]
     canonKndTests =
-      [ Nil |- canon' Type ~?= Just Type
-      , Nil |- canon' (S Type Bse) ~?= Just (S Type Bse)
+      [ Nil ⊢ canon' Type ~?= Just Type
+      , Nil ⊢ canon' (S Type Bse) ~?= Just (S Type Bse)
       , let τ = (Tλ "t" Type $ TVar "t")
          in let t = "t"
              in let t1 = fresh t
-                 in Nil |- canon' (S (Π t Type Type) τ) ~?=
+                 in Nil ⊢ canon' (S (Π t Type Type) τ) ~?=
                     Just (Π t1 Type (S (αRename t1 t Type) $ TVar t1))
       ]
 -}

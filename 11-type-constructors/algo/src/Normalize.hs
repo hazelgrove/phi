@@ -85,7 +85,7 @@ syn_elab' iΓ (E.Tλ t eκ eτ) = do
   return $ SER (S (Π t iτ1 iτ2) (Tλ t iτ1 iδ)) (Tλ t iτ1 iδ) (removeT iΓ t)
 syn_elab' iΓ (E.TAp eτ1 eτ2) = do
   SER {typ = iτ1} <- syn_elab' iΓ eτ1 -- we don't have a plain syn
-  MPKR {..} <- iΓ |- (iτ1 ⊳→)
+  MPKR {..} <- iΓ ⊢ (iτ1 ⊳→)
   AER {term = iδ1, ..} <- ana_elab' iΓ eτ1 (Π tπ iτIn iτOut)
   AER {term = iδ2, ..} <- ana_elab' iΓ eτ2 (iτIn)
   return $ SER (subst iδ2 tπ iτOut) (TAp iδ1 iδ2) iΓ
@@ -108,7 +108,7 @@ ana_elab' iΓ (E.NETHole u eτ) iτ =
     return $ AER (NETHole u iδ) (iΓ ⌢⌢ (u, iτ))
 ana_elab' iΓ eτ iτ = do
   SER {typ = iτ', term = iδ, ..} <- syn_elab' iΓ eτ
-  (iΓ |- (iτ' ≲ iτ)) &>> (return $ AER iδ iΓ)
+  (iΓ ⊢ (iτ' ≲ iτ)) &>> (return $ AER iδ iΓ)
 
 typ_elab' :: Ctx -> E.Knd -> Maybe Typ
 typ_elab' _ E.Type = return Type

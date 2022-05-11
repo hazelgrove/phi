@@ -26,7 +26,7 @@ syn' iΓ (E.Eλ x eτ eδ) = do
   return $ iδ1 I.:⊕ iδ2
 syn' iΓ (E.EAp eδ1 eδ2) = do
   iδ1 <- syn' iΓ eδ1
-  let MATR {..} = iΓ |- (iδ1 ⊳→)
+  let MATR {..} = iΓ ⊢ (iδ1 ⊳→)
   ana iΓ eδ2 iδIn &>> return iδOut
 syn' iΓ (E.ETypLet t eτ eδ) = do
   SER {typ = iτ, term = iδ, ..} <- syn_elab' iΓ eτ
@@ -38,7 +38,7 @@ syn' iΓ (E.EExpLet x eτ eδDef eδBody) = do
   ana iΓ eδDef iδ &>> syn' (iΓ ICtx.⌢⌢⌢ (x, iδ)) eδBody
 
 ana :: ICtx.Ctx -> E.Exp -> I.Term -> Bool
-ana iΓ eδ iδ' = fromMaybe False (syn' iΓ eδ >>= \iδ -> Just (iΓ |- (iδ ~ iδ' $ I.Type)))
+ana iΓ eδ iδ' = fromMaybe False (syn' iΓ eδ >>= \iδ -> Just (iΓ ⊢ (iδ ~ iδ' $ I.Type)))
 
 data MATResult =
   MATR
