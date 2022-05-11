@@ -101,6 +101,9 @@ tests =
           (parseTyp "Int64 ⊕ Int64")
           (parseKnd "Type") ~?=
         True
+      , Nil ⌢ ("T1000", KHole) ⌢ ("V1000", S KHole $ TVar "T1000") ⊢
+        tequiv (parseTyp "T1000") (parseTyp "V1000") (parseKnd "Type") ~?=
+        True
       ]
     synTestHelper :: Ctx -> String -> String -> Test
     synTestHelper aΓ δ τ =

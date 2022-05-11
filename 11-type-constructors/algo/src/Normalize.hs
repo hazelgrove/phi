@@ -183,9 +183,12 @@ term_normal iΓ δ τ =
   let ωτ = type_normal iΓ τ
    in case ωτ of
         Type ->
-          case path_normal iΓ (wh_normal iΓ δ) of
-            (ωδ, Type) -> ωδ
-            _ -> error "did not reduce enough?\n" -- csk
+          case path_normal iΓ (wh_normal iΓ δ)
+            --(ωδ, Type) -> ωδ
+                of
+            (ωδ, ψτ)
+              | iΓ ⊢ (ψτ ≲ Type) -> ωδ
+              | otherwise -> error "did not reduce enough?\n" -- csk
         KHole -> error "TODO: KHole\n"
         S Type sδ ->
           case path_normal iΓ (wh_normal iΓ δ) of
@@ -279,6 +282,8 @@ csk' iΓ τ1 τ2 =
   case (type_normal iΓ τ1, type_normal iΓ τ2) of
     (KHole, _) -> True
     (_, KHole) -> True
+    (S KHole _, _) -> True
+    (_, S KHole _) -> True
     (S Type _, Type) -> True
     (Π t ωτ1 ωτ2, Π t' ωτ3 ωτ4) ->
       let t'' = fresh2 t t'
