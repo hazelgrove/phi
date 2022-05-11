@@ -57,6 +57,7 @@
     \refstepcounter{counter}
     \newcommand*{\hyph}{\text{-}}
     \renewcommand*{\rule}[1][(\thecounter)\refstepcounter{counter}]{\inferrule*[vcenter,rightstyle=\texttt,right=$\mathtt{#1}$]}
+    \NewDocumentCommand{\rrule}{O{(\thecounter)\refstepcounter{counter}}mm}{\inferrule*[vcenter,rightstyle=\texttt,right=$\mathtt{#1}$]{#3}{#2}}
 % get rid of 10-modules stuff
     \RenewDocumentCommand{\TypVarCtx}{oO{}}{\Phi_{#2}}
     \RenewDocumentCommand{\InTypVarCtx}{oO{}O{\knd}}{\TypVarCtx[][1],\typvar[#2]\KndAssump{#3},\TypVarCtx[][2]}
@@ -274,7 +275,7 @@
         \begin{minipage}{\textwidth}
             \judgbox{\AlgTypeEquivAtKind}{$\typ[1]$ is equivalent to $\typ[2]$ at kind $\knd$}
             \begin{mathpar}
-                \rinfer[]{\AlgTypeEquivAtKind}{
+                \rrule{\AlgTypeEquivAtKind}{
                 \AlgTypeNormal[in=\typ[1], out=\typ[\omega]] \\
                 \AlgTypeNormal[in=\typ[2], out=\typ[\omega]]
                 }
@@ -284,25 +285,25 @@
         \begin{minipage}{\textwidth}
             \judgbox{\AlgNatKind}{path $\typ$ has natural kind $\knd$}
             \begin{mathpar}
-                \rinfer[]{\AlgNatKind[in=\bse, out=\Type]}{
+                \rrule{\AlgNatKind[in=\bse, out=\Type]}{
                 }
                 \and
-                \rinfer[]{\AlgNatKind[in=\typvar, out=\knd]}{
+                \rrule{\AlgNatKind[in=\typvar, out=\knd]}{
                     \InTypVarCtx[]
                 }
                 \and
-                \rinfer[]{\AlgNatKind[in=\binop, out=\Type]}{
+                \rrule{\AlgNatKind[in=\binop, out=\Type]}{
                 }
                 \and
-                \rinfer[]{\AlgNatKind[in=\ETypeHole, out=\knd]}{
+                \rrule{\AlgNatKind[in=\ETypeHole, out=\knd]}{
                     \InTypHoleCtx[]
                 }
                 \and
-                \rinfer[]{\AlgNatKind[in=\NETypeHole, out=\knd]}{
+                \rrule{\AlgNatKind[in=\NETypeHole, out=\knd]}{
                     \InTypHoleCtx[]
                 }
                 \and
-                \rinfer[]{\AlgNatKind[in=\TypeAp, out=\subst{\typ[2]}{\typvar}{\knd[2]}]}{
+                \rrule{\AlgNatKind[in=\TypeAp, out=\subst{\typ[2]}{\typvar}{\knd[2]}]}{
                     \AlgNatKind[in=\typ[1]] \\
                     \AlgKindNormal[out=\DepFunKind]
                 }
@@ -314,30 +315,30 @@
                 $\ElimCtx{\typ[1]}$ single step weak head reduces to $\ElimCtx{\typ[2]}$
             }
             \begin{mathpar}
-                \rinfer[]{\AlgWHReduc[in=\ElimCtx{\TypeAp[(\TypeFun)][\typ[1]]}, out=\ElimCtx{\subst{\typ[1]}{\typvar}{\typ}}]}{
+                \rrule{\AlgWHReduc[in=\ElimCtx{\TypeAp[(\TypeFun)][\typ[1]]}, out=\ElimCtx{\subst{\typ[1]}{\typvar}{\typ}}]}{
                     TODO:~check~\typ[1]~against~\knd
                 }
                 \and
-                \rinfer[]{\AlgWHReduc[in=\ElimCtx{\typvar}, out=\ElimCtx{\typ}]}{
+                \rrule{\AlgWHReduc[in=\ElimCtx{\typvar}, out=\ElimCtx{\typ}]}{
                     \AlgNatKind[in=\typvar, out=\SKind]
                 }
                 \and
-                \rinfer[]{\AlgWHReduc*[in=\bse, out=\bse]}{
+                \rrule{\AlgWHReduc*[in=\bse, out=\bse]}{
                 }
                 \and
-                \rinfer[]{\AlgWHReduc*[in=\binop, out=\binop]}{
+                \rrule{\AlgWHReduc*[in=\binop, out=\binop]}{
                 }
                 \and
-                \rinfer[]{\AlgWHReduc*[in=\ElimCtx{\ETypeHole}, out=\ElimCtx{\ETypeHole}]}{
+                \rrule{\AlgWHReduc*[in=\ElimCtx{\ETypeHole}, out=\ElimCtx{\ETypeHole}]}{
                 }
                 \and
-                \rinfer[]{\AlgWHReduc*[in=\ElimCtx{\NETypeHole}, out=\ElimCtx{\NETypeHole}]}{
+                \rrule{\AlgWHReduc*[in=\ElimCtx{\NETypeHole}, out=\ElimCtx{\NETypeHole}]}{
                 }
                 \and
-                \rinfer[]{\AlgWHReduc*[in=\ElimCtx{\UnboundTypeVar}, out=\ElimCtx{\UnboundTypeVar}]}{
+                \rrule{\AlgWHReduc*[in=\ElimCtx{\UnboundTypeVar}, out=\ElimCtx{\UnboundTypeVar}]}{
                 }
                 \and
-                \rinfer[]{\AlgWHReduc*[in=\TypeFun, out=\TypeFun]}{
+                \rrule{\AlgWHReduc*[in=\TypeFun, out=\TypeFun]}{
                 }
             \end{mathpar}
         \end{minipage}
@@ -345,11 +346,11 @@
         \begin{minipage}{\textwidth}
             \judgbox{\AlgWHNormal}{$\typ$ weak head normalizes to $\typ[\psi]$}
             \begin{mathpar}
-                \rinfer[]{\AlgWHNormal}{
+                \rrule{\AlgWHNormal}{
                     \AlgWHReduc \\
                     \AlgWHNormal[in=\typ[\chi]] \\
                 }
-                \rinfer[]{\AlgWHNormal[out=\typ]}{
+                \rrule{\AlgWHNormal[out=\typ]}{
                     \AlgWHReduc*
                 }
             \end{mathpar}
@@ -358,30 +359,30 @@
         \begin{minipage}{\textwidth}
             \judgbox{\AlgTypeNormal}{$\typ$ normalizes to $\typ[\omega]$ at kind $\knd$}
             \begin{mathpar}
-                \rinfer[]{\AlgTypeNormal}{
+                \rrule{\AlgTypeNormal}{
                     \AlgKindNormal[out=\Type] \\
                     \AlgWHNormal \\
                     \AlgPathNormal[kind=\Type]
                 }
                 \and
-                \rinfer[]{\AlgTypeNormal}{
+                \rrule{\AlgTypeNormal}{
                     \AlgKindNormal[out=\KHole] \\
                     TODO:
                 }
                 \and
-                \rinfer[]{\AlgTypeNormal}{
+                \rrule{\AlgTypeNormal}{
                     \AlgKindNormal[out=\SKind[\Type][\typ[s]]] \\
                     \AlgWHNormal \\
                     \AlgPathNormal[kind=\Type] \\
                     TODO:~prop: \typ[\omega] = \typ[s]
                 }
                 \and
-                \rinfer[]{\AlgTypeNormal}{
+                \rrule{\AlgTypeNormal}{
                     \AlgKindNormal[out=\SKind[\KHole][\typ[s]]] \\
                     TODO:
                 }
                 \and
-                \rinfer[]{\AlgTypeNormal[out=\TypeFun[1][\knd[\omega_1]][\typ[\omega]]]}{
+                \rrule{\AlgTypeNormal[out=\TypeFun[1][\knd[\omega_1]][\typ[\omega]]]}{
                     \AlgKindNormal[out=\DepFunKind[][\knd[\omega_1]][\knd[\omega_2]]] \\
                     \AlgTypeNormal[ctx=\HoleCtx\ExtendTypVarCtx[][1][\knd[\omega_1]], in=\TypeAp[\tau][\typvar[1]], kind=\subst{\typvar[1]}{\typvar}{\knd[2]}]
                 }
@@ -393,27 +394,27 @@
         \begin{minipage}{\textwidth}
             \judgbox{\AlgPathNormal}{path $\typ[\psi]$ normalizes to $\typ[\omega]$ with kind $\knd$}
             \begin{mathpar}
-                \rinfer[]{\AlgPathNormal[in=\bse, out=\bse, kind=\Type]}{
+                \rrule{\AlgPathNormal[in=\bse, out=\bse, kind=\Type]}{
                 }
                 \and
-                \rinfer[]{\AlgPathNormal[in=\typvar, out=\typvar]}{
+                \rrule{\AlgPathNormal[in=\typvar, out=\typvar]}{
                     \InTypVarCtx[]
                 }
                 \and
-                \rinfer[]{\AlgPathNormal[in=\binop, out=\binop[\typ[\omega_1]][\typ[\omega_2]], kind=\Type]}{
+                \rrule{\AlgPathNormal[in=\binop, out=\binop[\typ[\omega_1]][\typ[\omega_2]], kind=\Type]}{
                     \AlgTypeNormal[in=\typ[1], kind=\Type, out=\typ[\omega_1]] \\
                     \AlgTypeNormal[in=\typ[2], kind=\Type, out=\typ[\omega_2]]
                 }
                 \and
-                \rinfer[]{\AlgPathNormal[in=\ETypeHole, out=\ETypeHole]}{
+                \rrule{\AlgPathNormal[in=\ETypeHole, out=\ETypeHole]}{
                     \InTypHoleCtx[]
                 }
                 \and
-                \rinfer[]{\AlgPathNormal[in=\NETypeHole, out=\NETypeHole]}{
+                \rrule{\AlgPathNormal[in=\NETypeHole, out=\NETypeHole]}{
                     \InTypHoleCtx[]
                 }
                 \and
-                \rinfer[]{\AlgPathNormal[in=\TypeAp, out=\TypeAp[\typ[\omega_1]][\typ[\omega_2]], kind=\subst{\typ[\omega_2]}{\typvar}{\knd[2]}]}{
+                \rrule{\AlgPathNormal[in=\TypeAp, out=\TypeAp[\typ[\omega_1]][\typ[\omega_2]], kind=\subst{\typ[\omega_2]}{\typvar}{\knd[2]}]}{
                     \AlgPathNormal[in=\typ[1], out=\typ[\omega_1]] \\
                     \AlgKindNormal[out=\DepFunKind] \\
                     \AlgTypeNormal[in=\typ[2], kind=\knd[1], out=\typ[\omega_2]] \\
@@ -422,32 +423,32 @@
         \end{minipage}
             \judgbox{\AlgKindNormal}{$\knd$ normalizes to $\knd[\omega]$}
             \begin{mathpar}
-                \rinfer[]{\AlgKindNormal[in=\Type, out=\Type]}{ }
+                \rrule{\AlgKindNormal[in=\Type, out=\Type]}{ }
                 \and
-                \rinfer[]{\AlgKindNormal[in=\KHole, out=\KHole]}{ }
+                \rrule{\AlgKindNormal[in=\KHole, out=\KHole]}{ }
                 \and
-                \rinfer[]{\AlgKindNormal[in=\SKind, out=\SKind[\Type][\typ[\omega]]]}{
+                \rrule{\AlgKindNormal[in=\SKind, out=\SKind[\Type][\typ[\omega]]]}{
                     \AlgKindNormal[out=\Type] \\
                     \AlgTypeNormal
                 }
                 \and
-                \rinfer[]{\AlgKindNormal[in=\SKind, out=\SKind[\KHole][\typ[\omega]]]}{
+                \rrule{\AlgKindNormal[in=\SKind, out=\SKind[\KHole][\typ[\omega]]]}{
                     \AlgKindNormal[out=\KHole] \\
                     \AlgTypeNormal
                 }
                 \and
-                \rinfer[]{\AlgKindNormal[in=\SKind]}{
+                \rrule{\AlgKindNormal[in=\SKind]}{
                     \AlgKindNormal[out=\SKind[\knd[1]][\typ[1]]] \\
                     \AlgKindNormal[in=\SKind[\knd[1]][\typ[1]]]
                 }
                 \and
-                \rinfer[]{\AlgKindNormal[in=\SKind, out=\DepFunKind[1][\knd[1]][\SKind[\subst{\typvar[1]}{\typvar}{\knd[2]}][\typ[\omega_1]]]]}{
+                \rrule{\AlgKindNormal[in=\SKind, out=\DepFunKind[1][\knd[1]][\SKind[\subst{\typvar[1]}{\typvar}{\knd[2]}][\typ[\omega_1]]]]}{
                     \AlgKindNormal[out=\DepFunKind] \\
                     \AlgTypeNormal \\
                     \AlgTypeNormal[ctx=\HoleCtx\ExtendTypVarCtx[][1][{\knd[1]}], in=\TypeAp[\typ[\omega]][\typvar[1]], kind=\subst{\typvar[1]}{\typvar}{\knd[2]}, out=\typ[\omega_1]]
                 }
                 \and
-                \rinfer[]{\AlgKindNormal[in=\DepFunKind, out=\DepFunKind[][\knd[\omega_1]][\omega_2]]}{
+                \rrule{\AlgKindNormal[in=\DepFunKind, out=\DepFunKind[][\knd[\omega_1]][\omega_2]]}{
                     \AlgKindNormal[in=\knd[1], out=\knd[\omega_1]] \\
                     \AlgKindNormal[ctx=\HoleCtx\ExtendTypVarCtx[][][\knd[\omega_1]], in=\knd[2], out=\knd[\omega_2]]
                 }
