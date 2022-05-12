@@ -305,7 +305,8 @@
                 \and
                 \rrule{\AlgNatKind[in=\TypeAp, out=\subst{\typ[2]}{\typvar}{\knd[2]}]}{
                     \AlgNatKind[in=\typ[1]] \\
-                    \AlgKindNormal[out=\DepFunKind]
+                    \AlgKindNormal \\
+                    \MatchedPiKind{\knd[\omega]}
                 }
             \end{mathpar}
         \end{minipage}
@@ -366,9 +367,17 @@
                     \AlgConsistentSubKind[left=\knd[\psi], right=\Type]
                 }
                 \and
+                \rrule{\AlgTypeNormal[out=\TypeFun[][\knd[\omega]][\typ[\omega]]]}{
+                    \AlgKindNormal[out=\KHole] \\
+                    \AlgWHNormal[out=\TypeFun[][\knd[1]][\typ[1]]] \\
+                    \AlgKindNormal[in=\knd[1]] \\
+                    \AlgTypeNormal[ctx=\HoleCtx\ExtendTypVarCtx[][][\knd[1]], in=\typ[1], kind=\knd[1]]
+                }
+                \and
                 \rrule{\AlgTypeNormal}{
                     \AlgKindNormal[out=\KHole] \\
-                    TODO:
+                    \AlgWHNormal[out=otherwise] \\
+                    \AlgPathNormal[in=otherwise, kind=\knd[\psi]]
                 }
                 \and
                 \rrule{\AlgTypeNormal}{
@@ -418,7 +427,8 @@
                 \and
                 \rrule{\AlgPathNormal[in=\TypeAp, out=\TypeAp[\typ[\omega_1]][\typ[\omega_2]], kind=\subst{\typ[\omega_2]}{\typvar}{\knd[2]}]}{
                     \AlgPathNormal[in=\typ[1], out=\typ[\omega_1]] \\
-                    \AlgKindNormal[out=\DepFunKind] \\
+                    \AlgKindNormal \\
+                    \MatchedPiKind{\knd[\omega]} \\
                     \AlgTypeNormal[in=\typ[2], kind=\knd[1], out=\typ[\omega_2]] \\
                 }
             \end{mathpar}
