@@ -395,6 +395,46 @@
                 \pgfkeys{/AlgKindNormal, default, #1}%
                 \kv{c} \triangleright \kv{i}\AlgKindNormalOp[]\kv{o}%
             }
+            \newcommand*{\AlgConsistentSubKindOp}{\ConsistentSubKindOp}
+            \pgfkeys{%
+                /AlgConsistentSubKind/.is family,
+                /AlgConsistentSubKind,
+                default/.style = {
+                    ctx = \HoleCtx\TypVarCtx,
+                    left = \knd[1],
+                    right  = \knd[2],
+                },
+                ctx/.initial = undef,
+                left/.initial = undef,
+                right/.initial = undef,
+            }
+            \NewDocumentCommand{\AlgConsistentSubKind}{O{}}{%
+                \pgfkeys{/tmp/c/.link = /AlgConsistentSubKind/ctx}%
+                \pgfkeys{/tmp/l/.link = /AlgConsistentSubKind/left}%
+                \pgfkeys{/tmp/r/.link = /AlgConsistentSubKind/right}%
+                \pgfkeys{/AlgConsistentSubKind, default, #1}%
+                \kv{c} \triangleright \kv{l}\AlgConsistentSubKindOp\kv{r}%
+            }
+            \newcommand*{\AlgKindEquivOp}{\KindEquivOp}
+            \pgfkeys{%
+                /AlgKindEquiv/.is family,
+                /AlgKindEquiv,
+                default/.style = {
+                    ctx = \HoleCtx\TypVarCtx,
+                    left = \knd[1],
+                    right  = \knd[2],
+                },
+                ctx/.initial = undef,
+                left/.initial = undef,
+                right/.initial = undef,
+            }
+            \NewDocumentCommand{\AlgKindEquiv}{O{}}{%
+                \pgfkeys{/tmp/c/.link = /AlgKindEquiv/ctx}%
+                \pgfkeys{/tmp/l/.link = /AlgKindEquiv/left}%
+                \pgfkeys{/tmp/r/.link = /AlgKindEquiv/right}%
+                \pgfkeys{/AlgKindEquiv, default, #1}%
+                \kv{c} \triangleright \kv{l}\AlgKindEquivOp\kv{r}%
+            }
 
         \newcommand{\Syn}[3]{#1 \vdash #2~\Rightarrow~#3}
         \NewDocumentCommand{\SynKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{\knd}}{\Syn{#1}{#2}{#3}}

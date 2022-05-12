@@ -362,7 +362,8 @@
                 \rrule{\AlgTypeNormal}{
                     \AlgKindNormal[out=\Type] \\
                     \AlgWHNormal \\
-                    \AlgPathNormal[kind=\Type]
+                    \AlgPathNormal[kind=\knd[\psi]] \\
+                    \AlgConsistentSubKind[left=\knd[\psi], right=\Type]
                 }
                 \and
                 \rrule{\AlgTypeNormal}{
@@ -373,8 +374,9 @@
                 \rrule{\AlgTypeNormal}{
                     \AlgKindNormal[out=\SKind[\Type][\typ[s]]] \\
                     \AlgWHNormal \\
-                    \AlgPathNormal[kind=\Type] \\
-                    TODO:~prop: \typ[\omega] = \typ[s]
+                    \AlgPathNormal[kind=\knd[\psi]] \\
+                    \AlgConsistentSubKind[left=\knd[\psi], right=\Type] \\
+                    \typ[\omega] = \typ[s]
                 }
                 \and
                 \rrule{\AlgTypeNormal}{
@@ -451,6 +453,70 @@
                 \rrule{\AlgKindNormal[in=\DepFunKind, out=\DepFunKind[][\knd[\omega_1]][\omega_2]]}{
                     \AlgKindNormal[in=\knd[1], out=\knd[\omega_1]] \\
                     \AlgKindNormal[ctx=\HoleCtx\ExtendTypVarCtx[][][\knd[\omega_1]], in=\knd[2], out=\knd[\omega_2]]
+                }
+            \end{mathpar}
+        \end{minipage}
+    \subsection*{}
+        \begin{minipage}{\textwidth}
+            \judgbox{\AlgConsistentSubKind}{$\knd[1]$ is a consistent subkind of $\knd[2]$}
+            \begin{mathpar}
+                \rrule{\AlgConsistentSubKind}{
+                    \AlgKindNormal[in=\knd[1], out=\KHole]
+                }
+                \and
+                \rrule{\AlgConsistentSubKind}{
+                    \AlgKindNormal[in=\knd[2], out=\KHole]
+                }
+                \and
+                \rrule{\AlgConsistentSubKind}{
+                    \AlgKindNormal[in=\knd[1], out=\SKind[\KHole]]
+                }
+                \and
+                \rrule{\AlgConsistentSubKind}{
+                    \AlgKindNormal[in=\knd[2], out=\SKind[\KHole]]
+                }
+                \and
+                \rrule{\AlgConsistentSubKind}{
+                    \AlgKindNormal[in=\knd[1], out=\SKind[\Type]] \\
+                    \AlgKindNormal[in=\knd[2], out=\Type]
+                }
+                \and
+                \rrule{\AlgConsistentSubKind}{
+                    \AlgKindNormal[in=\knd[1], out=\DepFunKind[1][\knd[\omega_{1}]][\knd[\omega_{2}]]] \\
+                    \AlgKindNormal[in=\knd[2], out=\DepFunKind[2][\knd[\omega_{3}]][\knd[\omega_{4}]]] \\
+                    \AlgConsistentSubKind[left=\knd[\omega_3], right=\knd[\omega_1]] \\
+                    \AlgConsistentSubKind[ctx=\HoleCtx\ExtendTypVarCtx[][3][\knd[\omega_3]], left=\subst{\typvar[3]}{\typvar[1]}{\knd[\omega_2]}, right=\subst{\typvar[3]}{\typvar[2]}{\knd[\omega_4]}]
+                }
+                \and
+                \rrule{\AlgConsistentSubKind}{
+                    \AlgKindNormal[in=\knd[1], out=\knd[\omega_1]] \\
+                    \AlgKindNormal[in=\knd[2], out=\knd[\omega_2]] \\
+                    \AlgKindEquiv[left=\knd[\omega_1], right=\knd[\omega_2]]
+                }
+            \end{mathpar}
+        \end{minipage}
+    \subsection*{}
+        \begin{minipage}{\textwidth}
+            \judgbox{\AlgKindEquiv}{$\knd[1]$ is equivalent to $\knd[2]$}
+            \begin{mathpar}
+                \rrule{\AlgKindEquiv}{
+                    \AlgKindNormal[in=\knd[1], out=\SKind[\knd[\omega_1]][\typ[1]]] \\
+                    \AlgKindNormal[in=\knd[2], out=\SKind[\knd[\omega_2]][\typ[2]]] \\
+                    \AlgKindEquiv[left=\knd[\omega_1], right=\knd[\omega_2]] \\
+                    \AlgTypeEquivAtKind[left=\typ[1], right=\typ[2], kind=\knd[\omega_1]]
+                }
+                \and
+                \rrule{\AlgKindEquiv}{
+                    \AlgKindNormal[in=\knd[1], out=\DepFunKind[1][\knd[\omega_{1}]][\knd[\omega_{2}]]] \\
+                    \AlgKindNormal[in=\knd[2], out=\DepFunKind[2][\knd[\omega_{3}]][\knd[\omega_{4}]]] \\
+                    \AlgKindEquiv[left=\knd[\omega_3], right=\knd[\omega_1]] \\
+                    \AlgKindEquiv[ctx=\HoleCtx\ExtendTypVarCtx[][3][\knd[\omega_3]], left=\subst{\typvar[3]}{\typvar[1]}{\knd[\omega_2]}, right=\subst{\typvar[3]}{\typvar[2]}{\knd[\omega_4]}]
+                }
+                \and
+                \rrule{\AlgKindEquiv}{
+                    \AlgKindNormal[in=\knd[1], out=\knd[\omega_1]] \\
+                    \AlgKindNormal[in=\knd[2], out=\knd[\omega_2]] \\
+                    \knd[\omega_1] = \knd[\omega_2]
                 }
             \end{mathpar}
         \end{minipage}
