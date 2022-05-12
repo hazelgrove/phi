@@ -104,6 +104,30 @@ tests =
       , Nil ⌢ ("T1000", KHole) ⌢ ("V1000", S KHole $ TVar "T1000") ⊢
         tequiv (parseTyp "T1000") (parseTyp "V1000") (parseKnd "Type") ~?=
         True
+      , Nil ⌢ ("T1001", KHole) ⌢ ("V1001", S KHole $ TVar "T1001") ⊢
+        tequiv (parseTyp "T1001") (parseTyp "V1001") (parseKnd "Πt::Type.Type") ~?=
+        True
+      , Nil ⌢ ("T", KHole) ⌢ ("V", KHole) ⊢
+        tequiv (parseTyp "T") (parseTyp "V") (parseKnd "Πt::Type.Type") ~?=
+        False
+      , Nil ⌢ ("T", KHole) ⌢ ("V", S KHole $ TVar "T") ⊢
+        tequiv
+          (parseTyp "T")
+          (parseTyp "V")
+          (parseKnd "Πt::(Πv::Type.Type).Type") ~?=
+        True
+      , Nil ⊢
+        tequiv
+          (parseTyp "λt::Type.t")
+          (parseTyp "λv::Type.v")
+          (parseKnd "KHole") ~?=
+        True
+      , Nil ⌢ ("Int", Type) ⌢ ("Int64", S Type (TVar "Int")) ⊢
+        tequiv
+          (parseTyp "λt::Type.Int")
+          (parseTyp "λv::Type.Int64")
+          (parseKnd "KHole") ~?=
+        True
       ]
     synTestHelper :: Ctx -> String -> String -> Test
     synTestHelper aΓ δ τ =

@@ -148,8 +148,8 @@ nat_type iΓ (NETHole u _) =
     Nothing -> error "free hole?\n"
 nat_type _ (Tλ _ _ _) = error "not a path\n"
 nat_type iΓ (TAp δ1 δ2) =
-  case type_normal iΓ (nat_type iΓ δ1) of
-    Π t τ1 τ2 -> subst δ2 t τ2
+  case iΓ ⊢ ((type_normal iΓ (nat_type iΓ δ1)) ⊳→) of
+    Just (MPKR {..}) -> subst δ2 tπ iτOut
     _ -> error "unexpected natural type\n"
 
 wh_path_reduc :: Ctx -> Term -> Either Term Term
@@ -183,17 +183,22 @@ term_normal iΓ δ τ =
   let ωτ = type_normal iΓ τ
    in case ωτ of
         Type ->
-          case path_normal iΓ (wh_normal iΓ δ)
-            --(ωδ, Type) -> ωδ
-                of
-            (ωδ, ψτ)
-              | iΓ ⊢ (ψτ ≲ Type) -> ωδ
-              | otherwise -> error "did not reduce enough?\n" -- csk
-        KHole -> error "TODO: KHole\n"
+          let (ωδ, ψτ) = path_normal iΓ (wh_normal iΓ δ)
+           in if (iΓ ⊢ (ψτ ≲ Type))
+                then ωδ
+                else error "did not reduce enough?\n" -- csk
+        KHole ->
+          case wh_normal iΓ δ of
+            Tλ t' τ' δ' ->
+              Tλ t' (type_normal iΓ τ') (term_normal (iΓ ⌢ (t', τ')) δ' τ')
+            δ' ->
+              let (ωδ, _ψτ) = path_normal iΓ δ'
+               in ωδ
         S Type sδ ->
-          case path_normal iΓ (wh_normal iΓ δ) of
-            (ωδ, Type) -> assert (ωδ ≡ sδ) $ ωδ
-            _ -> error "error 3\n"
+          let (ωδ, ψτ) = path_normal iΓ (wh_normal iΓ δ)
+           in if iΓ ⊢ (ψτ ≲ Type) && (ωδ ≡ sδ)
+                then ωδ
+                else error "error 3\n"
         S KHole sδ -> error "TODO\n"
         S _ _ -> error "type_normal failure?\n"
         Π t ωτ1 ωτ2 ->
@@ -227,10 +232,10 @@ path_normal iΓ (NETHole u δ) =
 path_normal _ (Tλ _ _ _) = error "not a path!!\n"
 path_normal iΓ (TAp δ1 δ2) =
   let (δ1', τ1) = path_normal iΓ δ1
-   in case type_normal iΓ τ1 of
-        Π t τ1' τ2' ->
-          let δ2' = term_normal iΓ δ2 τ1'
-           in (TAp δ1' δ2', subst δ2' t τ2')
+   in case iΓ ⊢ ((type_normal iΓ τ1) ⊳→) of
+        Just (MPKR {..}) ->
+          let δ2' = term_normal iΓ δ2 iτIn
+           in (TAp δ1' δ2', subst δ2' tπ iτOut)
         _ -> error "unexpected path normal type\n"
 
 type_normal :: Ctx -> Typ -> Typ
