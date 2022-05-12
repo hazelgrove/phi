@@ -314,6 +314,9 @@
         \begin{minipage}{\textwidth}
             \judgbox{\AlgWHReduc[in=\ElimCtx{\typ[1]}, out=\ElimCtx{\typ[2]}]}{
                 $\ElimCtx{\typ[1]}$ single step weak head reduces to $\ElimCtx{\typ[2]}$
+            } \vphantom{.} \\
+            \judgbox{\AlgWHReduc*[in=\ElimCtx{\typ}]}{
+                $\ElimCtx{\typ}$ does not weak head reduce
             }
             \begin{mathpar}
                 \rrule{\AlgWHReduc[in=\ElimCtx{\TypeAp[(\TypeFun)][\typ[1]]}, out=\ElimCtx{\subst{\typ[1]}{\typvar}{\typ}}]}{
@@ -324,10 +327,10 @@
                     \AlgNatKind[in=\typvar, out=\SKind]
                 }
                 \and
-                \rrule{\AlgWHReduc*[in=\bse, out=\bse]}{
+                \rrule{\AlgWHReduc*[in=\diamond[\bse], out=\diamond[\bse]]}{
                 }
                 \and
-                \rrule{\AlgWHReduc*[in=\binop, out=\binop]}{
+                \rrule{\AlgWHReduc*[in=\diamond[\binop], out=\diamond[\binop]]}{
                 }
                 \and
                 \rrule{\AlgWHReduc*[in=\ElimCtx{\ETypeHole}, out=\ElimCtx{\ETypeHole}]}{
@@ -339,7 +342,7 @@
                 \rrule{\AlgWHReduc*[in=\ElimCtx{\UnboundTypeVar}, out=\ElimCtx{\UnboundTypeVar}]}{
                 }
                 \and
-                \rrule{\AlgWHReduc*[in=\TypeFun, out=\TypeFun]}{
+                \rrule{\AlgWHReduc*[in=\diamond[\TypeFun], out=\diamond[\TypeFun]]}{
                 }
             \end{mathpar}
         \end{minipage}
@@ -351,6 +354,7 @@
                     \AlgWHReduc \\
                     \AlgWHNormal[in=\typ[\chi]] \\
                 }
+                \and
                 \rrule{\AlgWHNormal[out=\typ]}{
                     \AlgWHReduc*
                 }
@@ -376,8 +380,9 @@
                 \and
                 \rrule{\AlgTypeNormal}{
                     \AlgKindNormal[out=\KHole] \\
-                    \AlgWHNormal[out=otherwise] \\
-                    \AlgPathNormal[in=otherwise, kind=\knd[\psi]]
+                    \AlgWHNormal \\
+                    \typ[\psi]\ne\TypeFun[][\knd[1]][\typ[1]] \\
+                    \AlgPathNormal[kind=\knd[\psi]]
                 }
                 \and
                 \rrule{\AlgTypeNormal}{
