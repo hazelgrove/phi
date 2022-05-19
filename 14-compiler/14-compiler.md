@@ -39,22 +39,40 @@ machinery to execute.
 
 #### Unresolved issues
 
-Due to some of Grain limitations, there are some cases of complete programs that it cannot handle,
-such as pattern matching with number/boolean literal patterns.
+-   *Pattern matching:* Due to some of Grain limitations, there are some cases of complete programs
+    that it cannot handle, such as pattern matching with number/boolean literal patterns.
+-   *Lambda abstractions:* Currently not sure how to determine if a given lambda can be determined
+    to be non-indeterminate.
 
 ### Incomplete programs
 
-For incomplete programs, the compiler will embed code to construct the syntax trees of indeterminate
-forms during runtime.
+For incomplete programs, the compiler will insert code to construct the syntax trees of
+indeterminate forms during runtime.
 
-This is done by writing a separate `Hazel` module that will be linked to during Grain compilation.
+This is done by writing a separate "stdlib" modules that will be linked to during Grain compilation.
 As opposed to directly calling Grain's primitive operators, we will mask these with functions that
 will check for indeterminate expressions (see [below](#memory-representation)).
 
 In the future, optimizations in code generation will allow for the direct application of Grain's
 primitive operators when it is guaranteed that a sub-expression has no holes.
 
-There remain many unsolved problems in this area, namely GC integration and pattern matching.
+There remain many unsolved problems in this area, namely [pattern matching](#pattern-matching) and
+[GC integration](#garbage-collection).
+
+#### Hole environments
+
+For now, hole environments will be stored in the runtime syntax tree as a `Map` from variables names
+to syntax tree nodes.
+
+#### Casts
+
+**TODO**: Sync with Hilbert on this topic (embedding-projection pairs?)
+
+In the future, we will switch to coercions à la [Grift](https://github.com/Gradual-Typing/Grift).
+
+#### Pattern matching
+
+This is still an unresolved question.
 
 #### Memory representation
 
@@ -70,48 +88,9 @@ as syntax trees. The syntax tree will be represented by an `enum` type similar t
 `Hazel` module's functions will manually examine value's tag and perform the correct operation
 accordingly.
 
-#### Casts
+##### Garbage collection
 
-During execution, casting will be performed via proxy functions that check types. That is, a cast on
-some expression `d` from `t1` to `t2` will compile into
-
-``` ocaml
-(fun () -> { (* perform casting *) })()
-```
-
-In the future, we will switch to coercions à la [Grift](https://github.com/Gradual-Typing/Grift).
-
-#### Hole contexts
-
-During execution, like in the evaluator, the variable context for each hole must be maintained. We
-will use a spaghetti stack, branching whenever hole or lambda expressions are encountered. A
-separate table of hole identifiers and stack nodes will be kept for lookup.
-
-As an example, consider the following Hazel code:
-
-![hole-contexts-code.png](./assets/hole-contexts-code.png)
-
-During execution, the following tree would be constructed:
-
-![hole-contexts-tree.png](./assets/hole-contexts.svg)
-
-The variable context of a hole consists of all identifiers in ancestor nodes. Hole 90, for example,
-has `a` and `b`, but not `c`, in scope; and hole 67's context contains `a`, `b`, `c`, and `f`, but
-not `g`. We must also respect binding scopes for lambdas; hole 67 does not contain any variables
-inside the lambda expression.
-
-Note that during execution, the sub-tree representing the lambda expression will only be constructed
-when it is actually executed (i.e. when `f` is applied to `g` in the final line). Thus, we also must
-keep track of where function contexts will branch from; when the lambda expression is first
-encountered in the binding for `f`, the current node will remembered.
-
-Though holes have been drawn here as separate nodes, in actual execution, a separate table in which
-hole identifiers are paired with stack nodes would be maintained (e.g. for hole 90, the table entry
-would point to the root node).
-
-#### Pattern matching
-
-This is still an unresolved question.
+How this change plays with the existing garbage collection is unclear.
 
 ### Architecture
 
@@ -124,14 +103,16 @@ The compilation pipeline consists of a few separate stages.
 The elaborated DHExp is converted into a similar high-level intermediate representation with a
 number of transformations:
 
--   Recursive functions are resolved
--   Casts are converted to proxy functions (this may be changed)
--   Non-indeterminate sub-expressions use primitive operations
+-   Recursive functions definitions are resolved into a `LetRec` construct
+-   The types of bound variables are resolved and stored.
 
-#### `linearize` : linearization
+#### `linearise` : linearisation
 
-Linearization converts the high-level intermediate representation into linearised ANF. On this form,
+Linearisation converts the high-level intermediate representation into linearised ANF. On this form,
 optimizations may be performed in the future, if desired.
+
+-   Whether a given expression has any possibly indeterminate sub-expressions is computed and
+    stored.
 
 #### `codegen` : code generation
 
@@ -146,7 +127,7 @@ Grain. Following pretty printing, `grainc` is called to produce a wasm executabl
 -   [ ] Complete programs
     -   [ ] case expression with number or boolean literal patterns
 -   [ ] Incomplete programs
-    -   [ ] Hole contexts
+    -   [ ] Hole environments
     -   [ ] Cast handling
     -   [ ] Pattern matching with holes
 -   [ ] Program analysis and optimization
