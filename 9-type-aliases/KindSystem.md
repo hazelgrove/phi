@@ -161,6 +161,7 @@ To get the underlying (ReasonML) constructors of an `HTyp.t`, use
 
 ```
 switch (HTyp.to_syntax(HTyp.int)) { ...
+
 ```
 
 and in the other direction:
@@ -182,7 +183,7 @@ context inspector.
 
 # New Type System
 
-<diagram>
+![modules](9-type-aliases/modules.png)
 
 # New Challenges
 
