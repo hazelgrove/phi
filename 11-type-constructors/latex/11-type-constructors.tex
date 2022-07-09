@@ -60,7 +60,7 @@
     \NewDocumentCommand{\rrule}{O{(\thecounter)\refstepcounter{counter}}mm}{\inferrule*[vcenter,rightstyle=\texttt,right=$\mathtt{#1}$]{#3}{#2}}
 % get rid of 10-modules stuff
     \RenewDocumentCommand{\TypVarCtx}{oO{}}{\Phi_{#2}}
-    \RenewDocumentCommand{\InTypVarCtx}{oO{}O{\knd}}{\TypVarCtx[][1],\typvar[#2]\KndAssump{#3},\TypVarCtx[][2]}
+    \RenewDocumentCommand{\InTypVarCtx}{oO{}O{\knd}}{\TypVarCtx[] = \TypVarCtx[][1],\typvar[#2]\KndAssump{#3},\TypVarCtx[][2]}
     \RenewDocumentCommand{\ExtendTypVarCtx}{ooO{\knd}}{\TypVarCtx[],\typvar[#2]\KndAssump{#3}#1}
     \renewcommand*{\ModVarCtx}[1][]{}
     \renewcommand*{\SigVarCtx}[1][]{}
@@ -261,7 +261,7 @@
         \end{minipage}
 \section{Algorithm}
     \subsection*{}
-    (syntactically distinguished up to \alpha-equivalence... when needed) \\
+    (syntactically distinguished up to $\alpha$-equivalence... when needed) \\
     (TODO: remove the `... when needed'. The bound variable renamings should get adjusted) \\
     (NOTE: current implementation has explicit $\equiv_\alpha$ checks which are not written in these rules since we eventually want to use De Bruijn indices, hence the above)
     \subsection*{}
@@ -312,19 +312,33 @@
         \end{minipage}
     \subsection*{}
         \begin{minipage}{\textwidth}
+            \judgbox{\IsPath}{
+                $\ElimCtx{\typ}$ is a path
+            } \vphantom{.} \\
+            \begin{mathpar}
+                \rrule{\IsPath[in=\diamond[\bse]]}{ }
+                \and
+                \rrule{\IsPath[in=\ElimCtx{\typvar}]}{\InTypVarCtx}
+                \and
+                \rrule{\IsPath[in=\diamond[\binop]]}{ }
+                \and
+                \rrule{\IsPath[in=\ElimCtx{\ETypeHole}]}{\InTypHoleCtx}
+                \rrule{\IsPath[in=\ElimCtx{\NETypeHole}]}{\InTypHoleCtx}
+            \end{mathpar}
             \judgbox{\AlgWHReduc[in=\ElimCtx{\typ[1]}, out=\ElimCtx{\typ[2]}]}{
                 $\ElimCtx{\typ[1]}$ single step weak head reduces to $\ElimCtx{\typ[2]}$
             } \vphantom{.} \\
             \judgbox{\AlgWHReduc*[in=\ElimCtx{\typ}]}{
                 $\ElimCtx{\typ}$ does not weak head reduce
-            }
+            } \vphantom{.} \\
             \begin{mathpar}
                 \rrule{\AlgWHReduc[in=\ElimCtx{\TypeAp[(\TypeFun)][\typ[1]]}, out=\ElimCtx{\subst{\typ[1]}{\typvar}{\typ}}]}{
                     TODO:~check~\typ[1]~against~\knd
                 }
                 \and
-                \rrule{\AlgWHReduc[in=\ElimCtx{\typvar}, out=\ElimCtx{\typ}]}{
-                    \AlgNatKind[in=\typvar, out=\SKind]
+                \rrule{\AlgWHReduc[in=\ElimCtx{\typ}, out=\ElimCtx{\typ[\psi]}]}{
+                    \IsPath \\
+                    \AlgNatKind[in=\typ, out=\SKind[\knd][\typ[\psi]]]
                 }
                 \and
                 \rrule{\AlgWHReduc*[in=\diamond[\bse], out=\diamond[\bse]]}{

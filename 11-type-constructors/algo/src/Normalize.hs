@@ -165,7 +165,7 @@ wh_reduc iΓ δ
   | otherwise = wh_reduc' iΓ δ
 
 wh_reduc' :: Ctx -> Term -> Either Term Term
-wh_reduc' _ (TAp (Tλ t τ δ1) δ2) = assert (True) $ Right $ subst δ2 t δ1 {- check δ2 against τ -}
+wh_reduc' _ (TAp (Tλ t τ δ1) δ2) = assert (True) $ Right $ subst δ2 t δ1 {- TODO: check δ2 against τ -}
 wh_reduc' iΓ δ@(TAp δ1 δ2) =
   case wh_reduc' iΓ δ1 of
     Right δ1' -> assert (δ1' /= δ1) $ Right (TAp δ1' δ2)
