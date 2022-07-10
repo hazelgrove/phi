@@ -376,6 +376,13 @@
                     \AlgConsistentSubKind[left=\knd[\psi], right=\Type]
                 }
                 \and
+                \rrule{\AlgTypeNormal}{
+                    \AlgKindNormal[out=\KHole] \\
+                    \AlgWHNormal \\
+                    \IsPath[in=\typ[\psi]] \\
+                    \AlgPathNormal[kind=\knd[\psi]]
+                }
+                \and
                 \rrule{\AlgTypeNormal[out=\TypeFun[][\knd[\omega]][\typ[\omega]]]}{
                     \AlgKindNormal[out=\KHole] \\
                     \AlgWHNormal[out=\TypeFun[][\knd[1]][\typ[1]]] \\
@@ -384,23 +391,18 @@
                 }
                 \and
                 \rrule{\AlgTypeNormal}{
-                    \AlgKindNormal[out=\KHole] \\
-                    \AlgWHNormal \\
-                    \typ[\psi]\ne\TypeFun[][\knd[1]][\typ[1]] \\
-                    \AlgPathNormal[kind=\knd[\psi]]
-                }
-                \and
-                \rrule{\AlgTypeNormal}{
                     \AlgKindNormal[out=\SKind[\Type][\typ[s]]] \\
-                    \AlgWHNormal \\
-                    \AlgPathNormal[kind=\knd[\psi]] \\
-                    \AlgConsistentSubKind[left=\knd[\psi], right=\Type] \\
+                    \AlgTypeNormal[kind=\Type] \\
+                    %\AlgWHNormal \\
+                    %\AlgPathNormal[kind=\knd[\psi]] \\
+                    %\AlgConsistentSubKind[left=\knd[\psi], right=\Type] \\
                     \typ[\omega] = \typ[s]
                 }
                 \and
                 \rrule{\AlgTypeNormal}{
                     \AlgKindNormal[out=\SKind[\KHole][\typ[s]]] \\
-                    TODO:
+                    \AlgTypeNormal[kind=\KHole] \\
+                    \typ[\omega] = \typ[s]
                 }
                 \and
                 \rrule{\AlgTypeNormal[out=\TypeFun[1][\knd[\omega_1]][\typ[\omega]]]}{
@@ -896,6 +898,24 @@
     \begin{theorem}[$\redrm{why~is~this~here?}$]
         If $\ConsistentSubKind{\knd[1]}{\SKind[\knd[2]]}$, then $\ConsistentSubKind{\knd[1]}{\knd[2]}$
     \end{theorem}
+    \begin{prop}[APN-1]
+        If $\AlgPathNormal$, then $\IsPath[in=\typ[\psi]]$
+    \end{prop}
+    \begin{proof}
+        By inspection.
+    \end{proof}
+    \begin{prop}[AKN-1]
+        If $\AlgKindNormal[out=\SKind[\knd[\omega]][\typ[\omega]]]$, then $\AlgTypeNormal[in=\typ[\omega]]$
+    \end{prop}
+    \begin{proof}
+        Sim ind with some other simple props probably
+    \end{proof}
+    \begin{prop}[ATN-1]
+        If $\AlgKindNormal$ and $\AlgTypeNormal$, then $\AlgTypeNormal[kind=\knd[\omega]]$
+    \end{prop}
+    \begin{proof}
+        Sim ind with some other simple props probably
+    \end{proof}
 \section*{Elaboration}
     \subsection*{todo}
 \end{document}
