@@ -333,30 +333,19 @@
             } \vphantom{.} \\
             \begin{mathpar}
                 \rrule{\AlgWHReduc[in=\ElimCtx{\TypeAp[(\TypeFun)][\typ[1]]}, out=\ElimCtx{\subst{\typ[1]}{\typvar}{\typ}}]}{
-                    TODO:~check~\typ[1]~against~\knd
                 }
                 \and
                 \rrule{\AlgWHReduc[in=\ElimCtx{\typ}, out=\ElimCtx{\typ[\psi]}]}{
                     \IsPath \\
-                    \AlgNatKind[in=\typ, out=\SKind[\knd][\typ[\psi]]]
+                    \AlgNatKind[in=\typ, out=\knd] \\
+                    \AlgKindNormal[out=\SKind[\knd][\typ[\psi]]] \\
                 }
                 \and
-                \rrule{\AlgWHReduc*[in=\diamond[\bse], out=\diamond[\bse]]}{
-                }
-                \and
-                \rrule{\AlgWHReduc*[in=\diamond[\binop], out=\diamond[\binop]]}{
-                }
-                \and
-                \rrule{\AlgWHReduc*[in=\ElimCtx{\ETypeHole}, out=\ElimCtx{\ETypeHole}]}{
-                }
-                \and
-                \rrule{\AlgWHReduc*[in=\ElimCtx{\NETypeHole}, out=\ElimCtx{\NETypeHole}]}{
-                }
-                \and
-                \rrule{\AlgWHReduc*[in=\ElimCtx{\UnboundTypeVar}, out=\ElimCtx{\UnboundTypeVar}]}{
-                }
-                \and
-                \rrule{\AlgWHReduc*[in=\diamond[\TypeFun], out=\diamond[\TypeFun]]}{
+                \rrule{\AlgWHReduc*[in=\ElimCtx{\typ}]}{
+                    \IsPath \\
+                    \AlgNatKind[in=\typ, out=\knd] \\
+                    \AlgKindNormal[] \\
+                    \knd[\omega] \ne \SKind[\knd][\typ[\psi]]
                 }
             \end{mathpar}
         \end{minipage}

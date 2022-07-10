@@ -154,7 +154,7 @@ nat_type iΓ (TAp δ1 δ2) =
 
 wh_path_reduc :: Ctx -> Term -> Either Term Term
 wh_path_reduc iΓ δ =
-  case nat_type iΓ δ of
+  case type_normal iΓ (nat_type iΓ δ) of
     S _ δ' -> Right $ δ'
     _ -> Left $ δ
 
