@@ -411,8 +411,6 @@
         \end{minipage}
     \subsection*{}
         \begin{minipage}{\textwidth}
-    \subsection*{}
-        \begin{minipage}{\textwidth}
             \judgbox{\AlgPathNormal}{path $\typ[\psi]$ normalizes to $\typ[\omega]$ with kind $\knd$}
             \begin{mathpar}
                 \rrule{\AlgPathNormal[in=\bse, out=\bse, kind=\Type]}{
@@ -443,6 +441,8 @@
                 }
             \end{mathpar}
         \end{minipage}
+    \subsection*{}
+        \begin{minipage}{\textwidth}
             \judgbox{\AlgKindNormal}{$\knd$ normalizes to $\knd[\omega]$}
             \begin{mathpar}
                 \rrule{\AlgKindNormal[in=\Type, out=\Type]}{ }
@@ -563,7 +563,7 @@
     \begin{proof}
         By induction on derivations. \\
         No interesting cases. \\
-        (Only rules with $\TypVarCtx$ extended in the consequent are interesting, which is only CWF-TypVar, but when $\mathcal{J}$ is CWF, Exchange is identity)
+        (Only rules with $\TypVarCtx$ extended in the conclusion are interesting, which is only CWF-TypVar, but when $\mathcal{J}$ is CWF, Exchange is identity)
     \end{proof}
     \begin{corollary}[Marked-Exchange]
         \vphantom{.}\\
