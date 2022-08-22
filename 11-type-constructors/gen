@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-./latex2md 11-type-constructors.tex
+./latex2md .11-type-constructors.tex
 cp 11-type-constructors.md README.md
