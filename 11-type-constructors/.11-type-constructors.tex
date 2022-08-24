@@ -3,20 +3,11 @@
 
 \begin{document}
 \section*{11-type-constructors}
-\today
+\today % pandoc doesn't handle \today. ./latex2md uses `date`
 \subsection*{Introduction}
-see my SURE poster for a motivating example. \\
-(fill in) a slightly misleading title, the ``intended" application is parameterized types
-\subsection*{TODO}
-\begin{itemize}
-    \item clean derivations w/ abbreviations (looking at you A0 page)
-    \item OK* proofs
-    \item Sigma kinds
-    \item KEquiv-Π has a typo: κ1/2/3/4 premisses screwed up
-    \item KEquiv-SKind: premisses order should be flipped (implementing left→right)
-\end{itemize}
-\subsection*{Notes}
-\begin{itemize}
-    \item elaboration rules should be straightforward from bkase's phi
-\end{itemize}
+This proposal extends the type language with the machinery needed for parameterized type definitions.
+\subsubsection*{Example: Parametized Pairs}
+\begin{verbatim}
+type Pair a = (a, a) in
+\end{verbatim}
 \end{document}
