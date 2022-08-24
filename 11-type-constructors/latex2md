@@ -10,4 +10,4 @@ my $i = $ARGV[0];
 $i =~ m/(.+)\.tex/ or die "missing '.tex' extension. $!";
 my $o = $1 . '.md';
 $o = substr $o, 1; # renamed ./11-type-constructors.tex to ./.11-type-constructors.tex
-`cat $i | perl -p -e 's/\\today/$TODAY/' | pandoc --from=latex --to=markdown_strict -s -o $o`; $? >> 8 and die $!;
+`cat $i | perl -p -e 's/\\\\today/$TODAY/' | pandoc --from=latex --to=markdown_strict -s -o $o`; $? >> 8 and die $!;
