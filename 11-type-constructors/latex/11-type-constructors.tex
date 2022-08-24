@@ -1,11 +1,20 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % standard header
-    \documentclass[11pt]{article}
-    %\usepackage[a4paper,margin=2cm]{geometry} % using KOMA-script typearea
-    \usepackage[paper=A4,pagesize,DIV=18]{typearea}
-    \usepackage[utf8x]{inputenc} % for utf8
-    \usepackage{titlesec} % see below
-    \usepackage{xcolor} % \color \textcolor
+    % a saner way to configure the stub
+    \def\documentCaseKOMA{K}
+    \def\documentCaseStandard{V}
+    % ^^ cases
+    \let\documentCase\documentCaseKOMA
+    \ifx\documentCase\documentCaseKOMA
+        \documentclass[paper=A4,pagesize,DIV=10,fontsize=10pt]{scrartcl}
+    \else\ifx\documentCase\documentCaseStandard
+        \documentclass[12pt]{article}
+        \usepackage[margin=2cm]{geometry}
+        \usepackage[paper=A4,pagesize,DIV=calc]{typearea} % KOMA-script typearea
+    \else
+        \undefined
+    \fi
+    \fi
     \usepackage{hyperref} % \href
     \usepackage[normalem]{ulem} % normalem retains \emph as italic
     % \uline \uuline \uwave \sout
@@ -20,35 +29,124 @@
     %\usepackage[doublespacing]{setspace}
     \usepackage{csquotes} % \blockquote
     \usepackage{xparse} % \NewDocumentCommand{\name}{O{#1 default}mO{#3 default}}{def}
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    \renewcommand{\rmdefault}{cmr}
-    \renewcommand{\sfdefault}{cmss}
-    \renewcommand{\ttdefault}{cmtt}
-    \renewcommand{\familydefault}{\rmdefault}
-    \setlength{\titlewidth}{\textwidth}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% title stuff
+    \usepackage{titling} % why is \maketitle so wack?
 
-    \titlespacing{\section}{0pt}{0pt}{0pt}
-    \titlespacing{\subsection}{0pt}{0pt}{0pt}
-    \titlespacing{\subsubsection}{0pt}{0pt}{0pt}
-    \titlespacing{\paragraph}{0pt}{0pt}{0pt}
-    % https://www.overleaf.com/learn/latex/How_to_write_a_LaTeX_class_file_and_design_your_own_CV_(Part_1)
-    % \titleformat{command}[shape]{format}{label}{sep}{before-code}[after-code]
-    \titleformat{\section}         % Customise the \section command
-        [hang]
-        {\Large\scshape\raggedright} % Make the \section headers large (\Large),
-                                   % small capitals (\scshape) and left aligned (\raggedright)
-        {}{0em}                      % Can be used to give a prefix to all sections, like 'Section ...'
-        {}                           % Can be used to insert code before the heading
-        [\titlerule]                 % Inserts a horizontal line after the heading
-    \titleformat{\subsection}
-        [hang]
-        {\large\scshape\raggedright}
-        {}{0em}
-        {}
-        []
+    \ifx\documentCase\documentCaseKOMA
+        % https://tex.stackexchange.com/a/473654
+        \setcounter{secnumdepth}{\partnumdepth} % do not number sections
+        %\addtokomafont{title}{\normalfont\raggedright}
+        %\KOMAoptions{titlepage=false} % in-page titlepage
+        \addtokomafont{author}{\normalfont\large\raggedright}
+        \addtokomafont{date}{\normalfont\large\raggedright}
+        % titlesec emulation (see Standard below)
+        \RedeclareSectionCommand[font=\normalfont\Large]{section}
+        \RedeclareSectionCommand[font=\normalfont\large]{subsection}
+        % TODO: idk what what the code below is doing, but it's for the hrule
+        % https://tex.stackexchange.com/a/267824
+        \makeatletter
+        \renewcommand{\sectionlinesformat}[4]{%
+        \Ifstr{#1}{section}{% ifstr -> Ifstr
+            \parbox[t]{\linewidth}{%
+              \raggedsection\@hangfrom{\hskip #2#3}{#4}\par%
+              \kern-.75\ht\strutbox\rule{\linewidth}{.8pt}%
+            }%
+          }{%
+            \@hangfrom{\hskip #2#3}{#4}}% this is the default \sectionlinesformat
+        }
+        \makeatother
+
+        % this is a huge hack to get KOMA title to look like standard \maketitle
+        \renewcommand{\maketitle}{%
+            \ifx\documentCase\documentCaseKOMA
+            % TODO: hack to get in-title titlepage
+            % https://tex.stackexchange.com/a/103233
+            \hphantom{.} \\
+            \vspace{-1.6\baselineskip} \\
+            \begin{minipage}{\textwidth}
+                \begin{titlepage}
+                    \begin{flushleft}
+                        \LARGE\thetitle
+                    \end{flushleft}
+                    \begin{flushleft}
+                        \large\scshape\hphantom{M}\theauthor
+                    \end{flushleft}
+                    \begin{flushleft}
+                        \large\scshape\hphantom{M}\thedate
+                    \end{flushleft}
+                \end{titlepage}
+            \end{minipage}
+            % https://tex.stackexchange.com/a/17126
+            \noindent\rule{\textwidth}{1pt}
+            \vspace{\baselineskip}
+            \fi%
+        }
+    \else\ifx\documentCase\documentCaseStandard
+        % for titling
+        \setlength{\droptitle}{-2.3cm}
+        \renewcommand*{\maketitlehooka}{}
+        % NOTE: the linter will complain about mismatched begin/end
+        \pretitle{\begin{flushleft}\LARGE}
+        \posttitle{\par\end{flushleft}}
+        \renewcommand*{\maketitlehookb}{\vspace{-0.6cm}}
+        \preauthor{\begin{flushleft}\large\scshape\hphantom{M}}
+        \postauthor{\par\end{flushleft}}
+        \renewcommand*{\maketitlehookc}{}
+        \predate{\begin{flushleft}\large\scshape\hphantom{M}}
+        \postdate{\par\end{flushleft}}
+        \renewcommand*{\maketitlehookd}{\hrule\vspace{-0.0cm}}
+
+        \usepackage{titlesec} % see below
+        \setlength{\titlewidth}{\textwidth}
+
+        % \titlespacing{command}{left spacing}{before spacing}{after spacing}[right]
+        \titlespacing{\section}{0pt}{0pt}{6pt plus 2pt minus 2pt}
+        \titlespacing{\subsection}{0pt}{0pt}{0pt}
+        \titlespacing{\subsubsection}{0pt}{0pt}{0pt}
+        \titlespacing{\paragraph}{0pt}{0pt}{0pt}
+        % https://www.overleaf.com/learn/latex/How_to_write_a_LaTeX_class_file_and_design_your_own_CV_(Part_1)
+        % \titleformat{command}[shape]{format}{label}{sep}{before-code}[after-code]
+        \titleformat{\section}         % Customise the \section command
+            [hang]
+            {\vspace{4pt}\Large\raggedright} % Make the \section headers large (\Large),
+                                       % small capitals (\scshape) and left aligned (\raggedright)
+            {}{0em}                      % Can be used to give a prefix to all sections, like 'Section ...'
+            {}                           % Can be used to insert code before the heading
+            [\titlerule]                 % Inserts a horizontal line after the heading
+        \titleformat{\subsection}
+            [hang]
+            {\large\raggedright}
+            {}{0em}
+            {}
+            []
+    \fi
+    \fi
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % packages
     \usepackage{hejohns-hazel}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% font stuff
+    %\usepackage{unicode-math} % \setmathfont
+    % sets text and math fonts
+    %\usepackage{mathpazo} % palatino derived PS fonts?
+    %\usepackage{fontspec}
+    % palatino: used by MIT Press for A Logical Journey
+    % lots of free derivatives
+    %
+%    \setmainfont{Domitian} % a palatino derivative
+%    %\setmainfont{TeX Gyre Pagella} % a palatino derivative
+%    \setmonofont{TeX Gyre Cursor} % a courier derivative
+%    %\setmonofont{TeX Gyre Cursor} % a courier derivative
+%    \setmathfont{Asana Math} % a palatino derivative, for math
+%    %\setmathfont{TeX Gyre Pagella Math} % a palatino derivative, for math
+    %
+    % sabon: used by penguin classics
+    % using EB Garamond as a replacement
+    %\setmainfont{EB Garamond}
+    %\setmonofont{Tex Gyre Cursor}
+    %\setmathfont{Garamond Math}
+
 % commands
     \newcommand*{\vt}{~\vert~}
 % automatically label rules
@@ -56,7 +154,7 @@
     \newcounter{counter}
     \refstepcounter{counter}
     \newcommand*{\hyph}{\text{-}}
-    \renewcommand*{\rule}[1][(\thecounter)\refstepcounter{counter}]{\inferrule*[vcenter,rightstyle=\texttt,right=$\mathtt{#1}$]}
+    \newcommand*{\irule}[1][(\thecounter)\refstepcounter{counter}]{\inferrule*[vcenter,rightstyle=\texttt,right=$\mathtt{#1}$]}
     \NewDocumentCommand{\rrule}{O{(\thecounter)\refstepcounter{counter}}mm}{\inferrule*[vcenter,rightstyle=\texttt,right=$\mathtt{#1}$]{#3}{#2}}
 % get rid of 10-modules stuff
     \RenewDocumentCommand{\TypVarCtx}{oO{}}{\Phi_{#2}}
@@ -74,13 +172,8 @@
 \author{}
 \date{\today}
 \maketitle
-\section{notes}
-    \subsection*{}
-    \noindent
-    \begin{itemize}
-        \item
-            proofs are dilapidated
-    \end{itemize}
+
+An intro
 \section{syntax}
     \begin{longtable}{RCRL}
         \textrm{Kind} & \knd & ::=
@@ -93,173 +186,173 @@
                             & \Int \vt \Float \vt \Bool \\
         \textrm{BinOp} & \binop[][] & ::=
                   & \ProdType \vt \SumType \vt \FunType \\
-        \textrm{Type Pattern} & \\
-        \textrm{User Expression} & \\
-        \textrm{Internal Expression} & \\
+        %\textrm{Type Pattern} & \\
+        %\textrm{User Expression} & \\
+        %\textrm{Internal Expression} & \\
     \end{longtable}
 \section{Declaratives}
     \subsection*{}
         \begin{minipage}{\textwidth}
             \judgbox{\PrincipalKind{\typ}}{$\typ$ has principal (well formed) kind $\knd$}
             \begin{mathpar}
-                \rule[PK\hyph Base]{\ContextWellFormed}{\PrincipalKind{\bse}[\SKind[\Type][\bse]]}
+                \irule[PK\hyph Base]{\ContextWellFormed}{\PrincipalKind{\bse}[\SKind[\Type][\bse]]}
                 \and
-                \rule[PK\hyph Var]{\ContextWellFormed[\HoleCtx\InTypVarCtx]}{\PrincipalKind{\typvar}[\SKind[\knd][\typvar]]}
+                \irule[PK\hyph Var]{\ContextWellFormed[\HoleCtx\InTypVarCtx]}{\PrincipalKind{\typvar}[\SKind[\knd][\typvar]]}
                 \and
-                \rule[PK\hyph \oplus]{\WellFormedAtKind{\typ[1]}[\Type] \\ \WellFormedAtKind{\typ[2]}[\Type]}{\PrincipalKind{\binop}[\SKind[\Type][\binop]]}
+                \irule[PK\hyph \oplus]{\WellFormedAtKind{\typ[1]}[\Type] \\ \WellFormedAtKind{\typ[2]}[\Type]}{\PrincipalKind{\binop}[\SKind[\Type][\binop]]}
                 \and
-                \rule[PK\hyph EHole]{\ContextWellFormed[\InTypHoleCtx\TypVarCtx]}{\PrincipalKind{\ETypeHole}[\SKind[\knd][\ETypeHole]]}
+                \irule[PK\hyph EHole]{\ContextWellFormed[\InTypHoleCtx\TypVarCtx]}{\PrincipalKind{\ETypeHole}[\SKind[\knd][\ETypeHole]]}
                 \and
-                \rule[PK\hyph NEHole]{\ContextWellFormed[\InTypHoleCtx\TypVarCtx] \\ \WellFormedAtKind{\typ}[\knd[1]]}{\PrincipalKind{\NETypeHole}[\SKind[\knd][\NETypeHole]]}
+                \irule[PK\hyph NEHole]{\ContextWellFormed[\InTypHoleCtx\TypVarCtx] \\ \WellFormedAtKind{\typ}[\knd[1]]}{\PrincipalKind{\NETypeHole}[\SKind[\knd][\NETypeHole]]}
                 \and
-                \rule[PK\hyph Unbound]{\ContextWellFormed[\InTypHoleCtx\TypVarCtx] \\ \typvar\notin\dom{\TypVarCtx[]}}{\PrincipalKind{\UnboundTypeVar}[\SKind[\knd][\UnboundTypeVar]]}
+                \irule[PK\hyph Unbound]{\ContextWellFormed[\InTypHoleCtx\TypVarCtx] \\ \typvar\notin\dom{\TypVarCtx[]}}{\PrincipalKind{\UnboundTypeVar}[\SKind[\knd][\UnboundTypeVar]]}
                 \and
-                \rule[PK\hyph \lambda]{\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][][{\knd[1]}]]{\typ}[\knd[2]]}{\PrincipalKind{\TypeFun[][\knd[1]]}[\SKind[\DepFunKind][\TypeFun[][\knd[1]]]]}
+                \irule[PK\hyph \lambda]{\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][][{\knd[1]}]]{\typ}[\knd[2]]}{\PrincipalKind{\TypeFun[][\knd[1]]}[\SKind[\DepFunKind][\TypeFun[][\knd[1]]]]}
                 \and
-                \rule[PK\hyph Ap]{\PrincipalKind{\typ[1]} \\ \MatchedPiKind{\knd} \\ \WellFormedAtKind{\typ[2]}[\knd[1]]}{\PrincipalKind{\TypeAp}[\subst{\typ[2]}{\typvar}{\knd[2]}]}
+                \irule[PK\hyph Ap]{\PrincipalKind{\typ[1]} \\ \MatchedPiKind{\knd} \\ \WellFormedAtKind{\typ[2]}[\knd[1]]}{\PrincipalKind{\TypeAp}[\subst{\typ[2]}{\typvar}{\knd[2]}]}
             \end{mathpar}
         \end{minipage}
     \subsection*{}
         \begin{minipage}{\textwidth}
             \judgbox{\WellFormedAtKind{\typ}}{$\typ$ is well formed at kind $\knd$}
             \begin{mathpar}
-                \rule[WFaK\hyph 1]{\PrincipalKind{\typ}[\SKind[\knd][\typ]]}{\WellFormedAtKind{\typ}}
+                \irule[WFaK\hyph 1]{\PrincipalKind{\typ}[\SKind[\knd][\typ]]}{\WellFormedAtKind{\typ}}
                 \and
-                \rule[WFaK\hyph Subsump]{\PrincipalKind{\typ}[\knd[1]] \\ \ConsistentSubKind{\knd[1]}{\knd}}{\WellFormedAtKind{\typ}}
+                \irule[WFaK\hyph Subsump]{\PrincipalKind{\typ}[\knd[1]] \\ \ConsistentSubKind{\knd[1]}{\knd}}{\WellFormedAtKind{\typ}}
                 \\
                 \mprset{myfraction=\inferruledotfrac}
-                \rule[WFaK\hyph Reit]{\PrincipalKind{\typ}}{\WellFormedAtKind{\typ}}
+                \irule[WFaK\hyph Reit]{\PrincipalKind{\typ}}{\WellFormedAtKind{\typ}}
                 \and
-                \rule[WFaK\hyph Self]{\WellFormedAtKind{\typ}}{\WellFormedAtKind{\typ}[\SKind[\knd][\typ]]}
+                \irule[WFaK\hyph Self]{\WellFormedAtKind{\typ}}{\WellFormedAtKind{\typ}[\SKind[\knd][\typ]]}
                 \and
-                \rule[WFaK\hyph \Pi CSKTrans]{\WellFormedAtKind{\typ}[\DepFunKind[][\knd[3]][\knd[4]]] \\ \ConsistentSubKind{\DepFunKind[][\knd[3]][\knd[4]]}{\DepFunKind}}{\WellFormedAtKind{\typ}[\DepFunKind]}
+                \irule[WFaK\hyph \Pi CSKTrans]{\WellFormedAtKind{\typ}[\DepFunKind[][\knd[3]][\knd[4]]] \\ \ConsistentSubKind{\DepFunKind[][\knd[3]][\knd[4]]}{\DepFunKind}}{\WellFormedAtKind{\typ}[\DepFunKind]}
                 \and
-                \rule[WFaK\hyph Flatten]{\WellFormedAtKind{\typ}[\SKind[\knd][\typ[1]]] \\ \WellFormedAtKind{\typ[1]}}{\WellFormedAtKind{\typ}}
+                \irule[WFaK\hyph Flatten]{\WellFormedAtKind{\typ}[\SKind[\knd][\typ[1]]] \\ \WellFormedAtKind{\typ[1]}}{\WellFormedAtKind{\typ}}
             \end{mathpar}
         \end{minipage}
     \subsection*{}
         \begin{minipage}{\textwidth}
             \judgbox{\MatchedPiKind{\knd}}{$\knd$ has matched $\Pi$-kind $\DepFunKind$}
             \begin{mathpar}
-                \rule[\MatchedPiKindOp\hyph KHole]{\ContextWellFormed}{\MatchedPiKind{\KHole}[\DepFunKind[][\KHole][\KHole]]}
+                \irule[\MatchedPiKindOp\hyph KHole]{\ContextWellFormed}{\MatchedPiKind{\KHole}[\DepFunKind[][\KHole][\KHole]]}
                 \and
-                \rule[\MatchedPiKindOp\hyph SKHole]{\SNormal{\knd}{\SKind[\KHole]}}{\MatchedPiKind{\knd}[\DepFunKind[][\SKind[\KHole]][\SKind[\KHole][\TypeAp[\typ][\typvar]]]]}
+                \irule[\MatchedPiKindOp\hyph SKHole]{\SNormal{\knd}{\SKind[\KHole]}}{\MatchedPiKind{\knd}[\DepFunKind[][\SKind[\KHole]][\SKind[\KHole][\TypeAp[\typ][\typvar]]]]}
                 \and
-                \rule[\MatchedPiKindOp\hyph \Pi]{\SNormal{\knd}{\DepFunKind}}{\MatchedPiKind{\knd}}
+                \irule[\MatchedPiKindOp\hyph \Pi]{\SNormal{\knd}{\DepFunKind}}{\MatchedPiKind{\knd}}
             \end{mathpar}
         \end{minipage}
     \subsection*{}
         \begin{minipage}{\textwidth}
             \judgbox{\SReduce{\knd[1]}{\knd[2]}}{$\knd[1]$ singleton reduces to $\knd[2]$}
             \begin{mathpar}
-                \rule[\SReduceOp\hyph 1]{\KindWellFormed[\SKind[\SKind[\knd][\typ[1]]][\typ]]}{\SReduce{\SKind[\SKind[\knd][\typ[1]]][\typ]}{\SKind[\knd][\typ[1]]}}
+                \irule[\SReduceOp\hyph 1]{\KindWellFormed[\SKind[\SKind[\knd][\typ[1]]][\typ]]}{\SReduce{\SKind[\SKind[\knd][\typ[1]]][\typ]}{\SKind[\knd][\typ[1]]}}
                 \and
-                \rule[\SReduceOp\hyph Trans]{\SReduce{\knd[1]}{\knd[2]} \\ \SReduce{\knd[2]}{\knd[3]}}{\SReduce{\knd[1]}{\knd[3]}}
+                \irule[\SReduceOp\hyph Trans]{\SReduce{\knd[1]}{\knd[2]} \\ \SReduce{\knd[2]}{\knd[3]}}{\SReduce{\knd[1]}{\knd[3]}}
             \end{mathpar}
         \end{minipage}
     \subsection*{}
         \begin{minipage}{\textwidth}
             \judgbox{\SNormal{\knd[1]}{\knd[2]}}{$\knd[1]$ has singleton normal form $\knd[2]$}
             \begin{mathpar}
-                \rule[\SNormalOp\hyph Type]{\SReduce{\knd}{\SKind[\Type]}}{\SNormal{\knd}{\SKind[\Type]}}
+                \irule[\SNormalOp\hyph Type]{\SReduce{\knd}{\SKind[\Type]}}{\SNormal{\knd}{\SKind[\Type]}}
                 \and
-                \rule[\SNormalOp\hyph KHole]{\SReduce{\knd}{\SKind[\KHole]}}{\SNormal{\knd}{\SKind[\KHole]}}
+                \irule[\SNormalOp\hyph KHole]{\SReduce{\knd}{\SKind[\KHole]}}{\SNormal{\knd}{\SKind[\KHole]}}
                 \and
-                \rule[\SNormalOp\hyph \Pi]{\SReduce{\knd}{\SKind[\DepFunKind][\typ]}}{\SNormal{\knd}{\DepFunKind[1][\knd[1]][\SKind[\subst{\typvar[1]}{\typvar}{\knd[2]}][\TypeAp[\typ][\typvar[1]]]]}}
+                \irule[\SNormalOp\hyph \Pi]{\SReduce{\knd}{\SKind[\DepFunKind][\typ]}}{\SNormal{\knd}{\DepFunKind[1][\knd[1]][\SKind[\subst{\typvar[1]}{\typvar}{\knd[2]}][\TypeAp[\typ][\typvar[1]]]]}}
             \end{mathpar}
         \end{minipage}
     \subsection*{}
         \begin{minipage}{\textwidth}
             \judgbox{\KindEquiv{\knd[1]}{\knd[2]}}{$\knd[1]$ is equivalent to $\knd[2]$}
             \begin{mathpar}
-                \rule[KEquiv\hyph Refl]{\KindWellFormed}{\KindEquiv{\knd}{\knd}}
+                \irule[KEquiv\hyph Refl]{\KindWellFormed}{\KindEquiv{\knd}{\knd}}
                 \and
-                \rule[KEquiv\hyph Symm]{\KindEquiv{\knd[2]}{\knd[1]}}{\KindEquiv{\knd[1]}{\knd[2]}}
+                \irule[KEquiv\hyph Symm]{\KindEquiv{\knd[2]}{\knd[1]}}{\KindEquiv{\knd[1]}{\knd[2]}}
                 \and
-                \rule[KEquiv\hyph Trans]{\KindEquiv{\knd[1]}{\knd[3]} \\ \KindEquiv{\knd[3]}{\knd[2]}}{\KindEquiv{\knd[1]}{\knd[2]}}
+                \irule[KEquiv\hyph Trans]{\KindEquiv{\knd[1]}{\knd[3]} \\ \KindEquiv{\knd[3]}{\knd[2]}}{\KindEquiv{\knd[1]}{\knd[2]}}
                 \\
-                \rule[KEquiv\hyph SReduc]{\SReduce{\knd[1]}{\knd[2]}}{\KindEquiv{\knd[1]}{\knd[2]}}
+                \irule[KEquiv\hyph SReduc]{\SReduce{\knd[1]}{\knd[2]}}{\KindEquiv{\knd[1]}{\knd[2]}}
                 \and
-                \rule[KEquiv\hyph SNorm]{\SNormal{\knd[1]}{\knd[2]}}{\KindEquiv{\knd[1]}{\knd[2]}}
+                \irule[KEquiv\hyph SNorm]{\SNormal{\knd[1]}{\knd[2]}}{\KindEquiv{\knd[1]}{\knd[2]}}
                 \and
-                \rule[KEquiv\hyph \Pi]{\KindEquiv{\knd[1]}{\knd[2]} \\ \KindEquiv[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\knd[3]}{\knd[4]}}{\KindEquiv{\DepFunKind[][\knd[1]][\knd[2]]}{\DepFunKind[][\knd[3]][\knd[4]]}}
+                \irule[KEquiv\hyph \Pi]{\KindEquiv{\knd[1]}{\knd[2]} \\ \KindEquiv[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\knd[3]}{\knd[4]}}{\KindEquiv{\DepFunKind[][\knd[1]][\knd[2]]}{\DepFunKind[][\knd[3]][\knd[4]]}}
                 \and
-                \rule[KEquiv\hyph SKind]{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\knd[1]] \\ \KindEquiv{\knd[1]}{\knd[2]}}{\KindEquiv{\SKind[\knd[1]][\typ[1]]}{\SKind[\knd[2]][\typ[2]]}}
+                \irule[KEquiv\hyph SKind]{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\knd[1]] \\ \KindEquiv{\knd[1]}{\knd[2]}}{\KindEquiv{\SKind[\knd[1]][\typ[1]]}{\SKind[\knd[2]][\typ[2]]}}
             \end{mathpar}
         \end{minipage}
     \subsection*{}
         \begin{minipage}{\textwidth}
             \judgbox{\ConsistentSubKind{\knd[1]}{\knd[2]}}{$\knd[1]$ is a consistent subkind of $\knd[2]$}
             \begin{mathpar}
-                \rule[CSK\hyph KHoleL]{\KindWellFormed}{\ConsistentSubKind{\KHole}{\knd}}
+                \irule[CSK\hyph KHoleL]{\KindWellFormed}{\ConsistentSubKind{\KHole}{\knd}}
                 \and
-                \rule[CSK\hyph KHoleR]{\KindWellFormed}{\ConsistentSubKind{\knd}{\KHole}}
+                \irule[CSK\hyph KHoleR]{\KindWellFormed}{\ConsistentSubKind{\knd}{\KHole}}
                 \and
-                \rule[CSK\hyph SKind_{KHole}L]{\KindWellFormed[{\SKind[\KHole]}] \\ \KindWellFormed}{\ConsistentSubKind{\SKind[\KHole]}{\knd}}
+                \irule[CSK\hyph SKind_{KHole}L]{\KindWellFormed[{\SKind[\KHole]}] \\ \KindWellFormed}{\ConsistentSubKind{\SKind[\KHole]}{\knd}}
                 \and
-                \rule[CSK\hyph SKind_{KHole}R]{\KindWellFormed \\ \KindWellFormed[{\SKind[\KHole]}]}{\ConsistentSubKind{\knd}{\SKind[\KHole]}}
+                \irule[CSK\hyph SKind_{KHole}R]{\KindWellFormed \\ \KindWellFormed[{\SKind[\KHole]}]}{\ConsistentSubKind{\knd}{\SKind[\KHole]}}
                 \\
-                \rule[CSK\hyph KEquiv]{\KindEquiv{\knd[1]}{\knd[2]}}{\ConsistentSubKind{\knd[1]}{\knd[2]}}
+                \irule[CSK\hyph KEquiv]{\KindEquiv{\knd[1]}{\knd[2]}}{\ConsistentSubKind{\knd[1]}{\knd[2]}}
                 \and
-                \rule[CSK\hyph Normal]{\KindEquiv{\knd[1]}{\knd[3]} \\ \ConsistentSubKind{\knd[3]}{\knd[4]} \\ \KindEquiv{\knd[4]}{\knd[2]}}{\ConsistentSubKind{\knd[1]}{\knd[2]}}
+                \irule[CSK\hyph Normal]{\KindEquiv{\knd[1]}{\knd[3]} \\ \ConsistentSubKind{\knd[3]}{\knd[4]} \\ \KindEquiv{\knd[4]}{\knd[2]}}{\ConsistentSubKind{\knd[1]}{\knd[2]}}
                 \and
-                \rule[CSK\hyph SKind]{\KindWellFormed[{\SKind}]}{\ConsistentSubKind{\SKind}{\knd}}
+                \irule[CSK\hyph SKind]{\KindWellFormed[{\SKind}]}{\ConsistentSubKind{\SKind}{\knd}}
                 \and
-                \rule[CSK\hyph \Pi]{\ConsistentSubKind{\knd[3]}{\knd[1]} \\ \ConsistentSubKind[\HoleCtx\xExtendTypVarCtx[][][\knd[3]]]{\knd[2]}{\knd[4]}}{\ConsistentSubKind{\DepFunKind}{\DepFunKind[][\knd[3]][\knd[4]]}}
+                \irule[CSK\hyph \Pi]{\ConsistentSubKind{\knd[3]}{\knd[1]} \\ \ConsistentSubKind[\HoleCtx\xExtendTypVarCtx[][][\knd[3]]]{\knd[2]}{\knd[4]}}{\ConsistentSubKind{\DepFunKind}{\DepFunKind[][\knd[3]][\knd[4]]}}
                 \\
                 \mprset{myfraction=\inferruledotfrac}
-                \rule[CSK-?]{\ConsistentSubKind{\knd[1]}{\knd[2]} \\ \TypeEquivAtKind{\typ[1]}{\typ[2]}[\knd[1]]}{\ConsistentSubKind{\SKind[\knd[1]][\typ[1]]}{\SKind[\knd[2]][\typ[2]]}}
+                \irule[CSK-?]{\ConsistentSubKind{\knd[1]}{\knd[2]} \\ \TypeEquivAtKind{\typ[1]}{\typ[2]}[\knd[1]]}{\ConsistentSubKind{\SKind[\knd[1]][\typ[1]]}{\SKind[\knd[2]][\typ[2]]}}
             \end{mathpar}
         \end{minipage}
     \subsection*{}
         \begin{minipage}{\textwidth}
             \judgbox{\TypeEquivAtKind{\typ[1]}{\typ[2]}}{$\typ[1]$ is provably equivalent to $\typ[2]$ at kind $\knd$}
             \begin{mathpar}
-                \rule[EquivAK\hyph Refl]{\WellFormedAtKind{\typ}}{\TypeEquivAtKind{\typ}{\typ}}
+                \irule[EquivAK\hyph Refl]{\WellFormedAtKind{\typ}}{\TypeEquivAtKind{\typ}{\typ}}
                 \and
-                \rule[EquivAK\hyph Symm]{\TypeEquivAtKind{\typ[2]}{\typ[1]}}{\TypeEquivAtKind{\typ[1]}{\typ[2]}}
+                \irule[EquivAK\hyph Symm]{\TypeEquivAtKind{\typ[2]}{\typ[1]}}{\TypeEquivAtKind{\typ[1]}{\typ[2]}}
                 \and
-                \rule[EquivAK\hyph Trans]{\TypeEquivAtKind{\typ[1]}{\typ[3]} \\ \TypeEquivAtKind{\typ[3]}{\typ[1]}}{\TypeEquivAtKind{\typ[1]}{\typ[2]}}
+                \irule[EquivAK\hyph Trans]{\TypeEquivAtKind{\typ[1]}{\typ[3]} \\ \TypeEquivAtKind{\typ[3]}{\typ[1]}}{\TypeEquivAtKind{\typ[1]}{\typ[2]}}
                 \\
-                \rule[EquivAK\hyph SKind]{\PrincipalKind{\typ[1]}[\knd[1]] \\ \KindEquiv{\knd[1]}{\SKind[\knd][\typ[2]]}}{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\knd]}
+                \irule[EquivAK\hyph SKind]{\PrincipalKind{\typ[1]}[\knd[1]] \\ \KindEquiv{\knd[1]}{\SKind[\knd][\typ[2]]}}{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\knd]}
                 \and
-                \rule[EquivAK\hyph\Pi]{\WellFormedAtKind{\typ[1]}[\DepFunKind[][\knd[1]][\knd[3]]] \\ \WellFormedAtKind{\typ[2]}[\DepFunKind[][\knd[1]][\knd[4]]] \\ \TypeEquivAtKind[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\TypeAp[\typ[1]][\typvar]}{\TypeAp[\typ[2]][\typvar]}[\knd[2]]}{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\DepFunKind]}
+                \irule[EquivAK\hyph\Pi]{\WellFormedAtKind{\typ[1]}[\DepFunKind[][\knd[1]][\knd[3]]] \\ \WellFormedAtKind{\typ[2]}[\DepFunKind[][\knd[1]][\knd[4]]] \\ \TypeEquivAtKind[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\TypeAp[\typ[1]][\typvar]}{\TypeAp[\typ[2]][\typvar]}[\knd[2]]}{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\DepFunKind]}
                 \and
-                \rule[EquivAK\hyph Ap]{\TypeEquivAtKind{\typ[1]}{\typ[3]}[\DepFunKind] \\ \TypeEquivAtKind{\typ[2]}{\typ[4]}[\knd[1]]}{\TypeEquivAtKind{\TypeAp}{\TypeAp[\typ[3]][\typ[4]]}[\subst{\typ[2]}{\typvar}{\knd[2]}]}
+                \irule[EquivAK\hyph Ap]{\TypeEquivAtKind{\typ[1]}{\typ[3]}[\DepFunKind] \\ \TypeEquivAtKind{\typ[2]}{\typ[4]}[\knd[1]]}{\TypeEquivAtKind{\TypeAp}{\TypeAp[\typ[3]][\typ[4]]}[\subst{\typ[2]}{\typvar}{\knd[2]}]}
                 \and
-                \rule[EquivAK-\oplus]{\TypeEquivAtKind{\typ[1]}{\typ[3]}[\Type] \\ \TypeEquivAtKind{\typ[2]}{\typ[4]}[\Type]}{\TypeEquivAtKind{\binop}{\binop[\typ[3]][\typ[4]]}[\Type]}
+                \irule[EquivAK-\oplus]{\TypeEquivAtKind{\typ[1]}{\typ[3]}[\Type] \\ \TypeEquivAtKind{\typ[2]}{\typ[4]}[\Type]}{\TypeEquivAtKind{\binop}{\binop[\typ[3]][\typ[4]]}[\Type]}
                 \\
                 \mprset{myfraction=\inferruledotfrac}
                 \and
-                \rule{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\SKind]}{\TypeEquivAtKind{\typ[1]}{\typ[2]}}
+                \irule{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\SKind]}{\TypeEquivAtKind{\typ[1]}{\typ[2]}}
                 \\
-                \rule{\KindEquiv{\knd[1]}{\knd[2]} \\ \TypeEquivAtKind[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\typ[1]}{\typ[2]}}{\TypeEquivAtKind{\TypeFun[][\knd[1]][\typ[1]]}{\TypeFun[][\knd[2]][\typ[2]]}[\DepFunKind[][\knd[1]][\knd]]}
+                \irule{\KindEquiv{\knd[1]}{\knd[2]} \\ \TypeEquivAtKind[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\typ[1]}{\typ[2]}}{\TypeEquivAtKind{\TypeFun[][\knd[1]][\typ[1]]}{\TypeFun[][\knd[2]][\typ[2]]}[\DepFunKind[][\knd[1]][\knd]]}
                 \and
-                \rule{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\knd[1]] \\ \KindEquiv{\knd[1]}{\knd}}{\TypeEquivAtKind{\typ[1]}{\typ[2]}}
+                \irule{\TypeEquivAtKind{\typ[1]}{\typ[2]}[\knd[1]] \\ \KindEquiv{\knd[1]}{\knd}}{\TypeEquivAtKind{\typ[1]}{\typ[2]}}
             \end{mathpar}
         \end{minipage}
     \subsection*{}
         \begin{minipage}{\textwidth}
             \judgbox{\KindWellFormed}{$\knd$ is well formed}
             \begin{mathpar}
-                \rule[KWF\hyph Type]{\ContextWellFormed}{\KindWellFormed[\Type]}
+                \irule[KWF\hyph Type]{\ContextWellFormed}{\KindWellFormed[\Type]}
                 \and
-                \rule[KWF\hyph KHole]{\ContextWellFormed}{\KindWellFormed[\KHole]}
+                \irule[KWF\hyph KHole]{\ContextWellFormed}{\KindWellFormed[\KHole]}
                 \and
-                \rule[KWF\hyph SKind]{\WellFormedAtKind{\typ}}{\KindWellFormed[\SKind]}
+                \irule[KWF\hyph SKind]{\WellFormedAtKind{\typ}}{\KindWellFormed[\SKind]}
                 \and
-                \rule[KWF\hyph\Pi]{\KindWellFormed[{\knd[2]}][\HoleCtx\xExtendTypVarCtx[][][{\knd[1]}]]}{\KindWellFormed[\DepFunKind]}
+                \irule[KWF\hyph\Pi]{\KindWellFormed[{\knd[2]}][\HoleCtx\xExtendTypVarCtx[][][{\knd[1]}]]}{\KindWellFormed[\DepFunKind]}
             \end{mathpar}
         \end{minipage}
     \subsection*{}
         \begin{minipage}{\textwidth}
             \judgbox{\ContextWellFormed}{Context is well formed}
             \begin{mathpar}
-                \rule[CWF\hyph Nil]{ }{\ContextWellFormed[\cdot;\cdot]}
+                \irule[CWF\hyph Nil]{ }{\ContextWellFormed[\cdot;\cdot]}
                 \and
-                \rule[CWF\hyph TypVar]{\typvar\notin\dom{\TypVarCtx[]} \\ \KindWellFormed}{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][]]}
+                \irule[CWF\hyph TypVar]{\typvar\notin\dom{\TypVarCtx[]} \\ \KindWellFormed}{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][]]}
                 \and
-                \rule[CWF\hyph Hole]{\hole\notin\dom{\HoleCtx[]} \\ \KindWellFormed}{\ContextWellFormed[\xExtendTypHoleCtx[;][]\TypVarCtx[]]}
+                \irule[CWF\hyph Hole]{\hole\notin\dom{\HoleCtx[]} \\ \KindWellFormed}{\ContextWellFormed[\xExtendTypHoleCtx[;][]\TypVarCtx[]]}
             \end{mathpar}
         \end{minipage}
 \section{Algorithm}
@@ -550,7 +643,8 @@
         \item PoS (premiss of subderivation)
     \end{itemize}
     \begin{lemma}[COK]
-        If $\J$, then $\ContextWellFormed$ in a subderivation (where $\J\neq\ContextWellFormed$)
+        If $\J$, \\
+        then $\ContextWellFormed$ in a subderivation (where $\J\neq\ContextWellFormed$)
     \end{lemma}
     \begin{proof}
         By induction on derivations. \\
@@ -559,16 +653,19 @@
     \noindent\hrulefill
     \begin{lemma}[Exchange]
         \vphantom{.}\\
-        If $\J[\HoleCtx\TypVarCtx[][1],\typvar[L1]\KndAssump\knd[L1],\typvar[L2]\KndAssump\knd[L2],\TypVarCtx[][2]]$ and $\ContextWellFormed[\HoleCtx\TypVarCtx[][1],\typvar[L2]\KndAssump\knd[L2],\typvar[L1]\KndAssump\knd[L1],\TypVarCtx[][2]]$, then $\J[\HoleCtx\TypVarCtx[][1],\typvar[L2]\KndAssump\knd[L2],\typvar[L1]\KndAssump\knd[L1],\TypVarCtx[][2]]$
+        If $\J[\HoleCtx\TypVarCtx[][1],\typvar[L1]\KndAssump\knd[L1],\typvar[L2]\KndAssump\knd[L2],\TypVarCtx[][2]]$ and $\ContextWellFormed[\HoleCtx\TypVarCtx[][1],\typvar[L2]\KndAssump\knd[L2],\typvar[L1]\KndAssump\knd[L1],\TypVarCtx[][2]]$, \\
+        then $\J[\HoleCtx\TypVarCtx[][1],\typvar[L2]\KndAssump\knd[L2],\typvar[L1]\KndAssump\knd[L1],\TypVarCtx[][2]]$
     \end{lemma}
     \begin{proof}
         By induction on derivations. \\
         No interesting cases. \\
-        (Only rules with $\TypVarCtx$ extended in the conclusion are interesting, which is only CWF-TypVar, but when $\mathcal{J}$ is CWF, Exchange is identity)
+        (Only rules with $\TypVarCtx$ extended in the conclusion are interesting, which is only CWF-TypVar, \\
+        but when $\mathcal{J}$ is CWF, Exchange is identity)
     \end{proof}
     \begin{corollary}[Marked-Exchange]
         \vphantom{.}\\
-        If $\J[\HoleCtx\xxExtendTypVarCtx[][L1]{\knd[L1]}[L2]{\knd[L2]}]$ and $\ContextWellFormed[\HoleCtx\xxExtendTypVarCtx[][L2]{\knd[L2]}[L1]{\knd[L1]}]$, then $\J[\HoleCtx\xxExtendTypVarCtx[][L2]{\knd[L2]}[L1]{\knd[L1]}]$
+        If $\J[\HoleCtx\xxExtendTypVarCtx[][L1]{\knd[L1]}[L2]{\knd[L2]}]$ and $\ContextWellFormed[\HoleCtx\xxExtendTypVarCtx[][L2]{\knd[L2]}[L1]{\knd[L1]}]$, \\
+        then $\J[\HoleCtx\xxExtendTypVarCtx[][L2]{\knd[L2]}[L1]{\knd[L1]}]$
     \end{corollary}
     \begin{proof}
         Exchange when $\TypVarCtx[][2]=\cdot$
@@ -589,7 +686,9 @@
         (induction on $\WellFormedAtKind[\HoleCtx\xExtendTypVarCtx[][L][{\knd[L1]}]]{\typ[L2]}[\knd[L2]]$)
     \end{lemma}
     \begin{lemma}[PK-Substitution]
-        If $\WellFormedAtKind{\typ[L1]}[\knd[L1]]$ and $\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][L][\knd[L1]]]{\typ[L2]}[\knd[L2]]$ and $\PrincipalKind{\subst{\typ[L1]}{\typvar[L]}{\typ[L2]}}[\knd[L3]]$, then $\KindEquiv{\subst{\typ[L2]}{\typvar[L]}{\knd[L2]}}{\knd[L3]}$
+        If $\WellFormedAtKind{\typ[L1]}[\knd[L1]]$ \\
+        and $\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][L][\knd[L1]]]{\typ[L2]}[\knd[L2]]$ and $\PrincipalKind{\subst{\typ[L1]}{\typvar[L]}{\typ[L2]}}[\knd[L3]]$, \\
+        then $\KindEquiv{\subst{\typ[L2]}{\typvar[L]}{\knd[L2]}}{\knd[L3]}$
     \end{lemma}
     \begin{lemma}[OK-Substitution]
         \vphantom{.}\\
@@ -603,7 +702,8 @@
         If $\WellFormedAtKind{\typ}$, then $\KindWellFormed$
     \end{theorem}
     \begin{theorem}[OK-MatchPi]
-        If $\MatchedPiKind{\knd}$, then $\KindWellFormed$ and $\KindWellFormed[\DepFunKind]$
+        If $\MatchedPiKind{\knd}$, \\
+        then $\KindWellFormed$ and $\KindWellFormed[\DepFunKind]$
     \end{theorem}
     \begin{theorem}[OK-KEquiv]
         If $\KindEquiv{\knd[1]}{\knd[2]}$, then $\KindWellFormed[{\knd[1]}]$ and $\KindWellFormed[{\knd[2]}]$
@@ -612,206 +712,12 @@
         If $\ConsistentSubKind{\knd[1]}{\knd[2]}$, then $\KindWellFormed[{\knd[1]}]$ and $\KindWellFormed[{\knd[2]}]$
     \end{theorem}
     \begin{theorem}[OK-EquivAK]
-        If $\TypeEquivAtKind{\typ[1]}{\typ[2]}$, then $\WellFormedAtKind{\typ[1]}$ and $\WellFormedAtKind{\typ[2]}$ and $\KindWellFormed$
+        If $\TypeEquivAtKind{\typ[1]}{\typ[2]}$, \\
+        then $\WellFormedAtKind{\typ[1]}$ and $\WellFormedAtKind{\typ[2]}$ and $\KindWellFormed$
     \end{theorem}
     \begin{proof}
         see addendum
     \end{proof}
-    \noindent\hrulefill
-    \newpage
-    \KOMAoptions{paper=A0,paper=landscape,DIV=40}
-    \recalctypearea
-    \begin{proof}
-        \vphantom{.} \\
-        \subsubsection*{Weakening}
-        By induction on derivations. \\
-        \par Note: When applying Weakening in the induction, check that the left premiss is always a subderivation,
-        and check variable exclusion conditions are satisfied (usually checked elsewhere in the derivation). \\
-        \begin{mathpar}
-            \rinfer[PK-$\lambda$]{\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]{\TypeFun[][\knd[1]]}[\SKind[\DepFunKind][\TypeFun[][\knd[1]]]]}{
-                \rinfer[Marked-Exchange]{\PrincipalKind[\HoleCtx\xxExtendTypVarCtx[][L]{\knd[L]}[]{\knd[1]}]{\typ}[\knd[2]]}{
-                    \rinfer[Weakening]{\PrincipalKind[\HoleCtx\xxExtendTypVarCtx[][]{\knd[1]}[L]{\knd[L]}]{\typ}[\knd[2]]}{
-                        \rinfer[premiss]{\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\typ}[\knd[2]]}{
-                        }
-                        \\\rinfer[CWF-TypVar]{\ContextWellFormed[\HoleCtx\xxExtendTypVarCtx[][]{\knd[1]}[L]{\knd[L]}]}{
-                            \rinfer[]{\typvar[L]\notin\xExtendTypVarCtx[][][\knd[1]]}{
-                                \rinfer[PoS]{\typvar[L]\notin\TypVarCtx}{
-                                    \rinfer[IH]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{
-                                    }
-                                }
-                                \\\rinfer[]{\typvar[L]\neq\typvar}{
-                                    \rinfer[IH]{\typvar[L]\notin\mathcal{J}}{
-                                    }
-                                    \\\rinfer[]{\typvar\in\mathcal{J}}{
-                                    }
-                                }
-                                \\\rinfer[]{\typvar[L]\notin\knd[1]}{
-                                    \rinfer[IH]{\typvar[L]\notin\mathcal{J}}{
-                                    }
-                                }
-                            }
-                            \\\rinfer[Weakening]{\KindWellFormed[\knd[L]][\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}{
-                                \rinfer[PoS]{\KindWellFormed[\knd[L]]}{
-                                    \rinfer[IH]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{
-                                    }
-                                }
-                                \\\rinfer[COK]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}{
-                                    \rinfer[premiss]{\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\typ}[\knd[2]]}{
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    \\\rinfer[CWF-TypVar]{\ContextWellFormed[\HoleCtx\xxExtendTypVarCtx[][L]{\knd[L]}[]{\knd[1]}]}{
-                        \rinfer[]{\typvar\notin\xExtendTypVarCtx[][L][\knd[L]]}{
-                            \rinfer[PoS]{\typvar\notin\TypVarCtx}{
-                                \rinfer[COK]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}{
-                                    \rinfer[premiss]{\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\typ}[\knd[2]]}{
-                                    }
-                                }
-                            }
-                            \\\rinfer[]{\typvar\neq\typvar[L]}{
-                                \rinfer[IH]{\typvar[L]\notin\mathcal{J}}{
-                                }
-                                \\\rinfer[]{\typvar\in\mathcal{J}}{
-                                }
-                            }
-                            \\\rinfer[]{\typvar\notin\knd[L]}{
-                                \rinfer[IH]{\forall\dot{\typvar}\in\knd[L],\dot{\typvar}\notin\mathcal{J}}{
-                                }
-                                \\\rinfer[]{\typvar\in\mathcal{J}}{
-                                }
-                            }
-                        }
-                        \\\rinfer[Weakening]{\KindWellFormed[\knd[1]][\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{
-                            \rinfer[PoS]{\KindWellFormed[\knd[1]]}{
-                                \rinfer[COK]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}{
-                                    \rinfer[premiss]{\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\typ}[\knd[2]]}{
-                                    }
-                                }
-                            }
-                            \\\rinfer[IH]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{
-                            }
-                        }
-                    }
-                }
-            }
-            \and
-            \rinfer[KEquiv-$\Pi$]{\KindEquiv[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]{\DepFunKind}{\DepFunKind[][\knd[3]][\knd[4]]}}{
-                \rinfer[Weakening]{\KindEquiv[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]{\knd[1]}{\knd[2]}}{
-                    \rinfer[premiss]{\KindEquiv{\knd[1]}{\knd[2]}}{
-                    }
-                    \\\rinfer[IH]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{
-                    }
-                }
-                \\\rinfer[Marked-Exchange]{\KindEquiv[\HoleCtx\xxExtendTypVarCtx[][L]{\knd[L]}{\knd[1]}]{\knd[3]}{\knd[4]}}{
-                    \rinfer[Weakening]{\PrincipalKind[\HoleCtx\xxExtendTypVarCtx[][]{\knd[1]}[L]{\knd[L]}]{\typ}[\knd[2]]}{
-                        \rinfer[premiss]{\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\typ}[\knd[2]]}{
-                        }
-                        \\\rinfer[CWF-TypVar]{\ContextWellFormed[\HoleCtx\xxExtendTypVarCtx[][]{\knd[1]}[L]{\knd[L]}]}{
-                            \rinfer[]{\typvar[L]\notin\xExtendTypVarCtx[][][\knd[1]]}{
-                                \rinfer[PoS]{\typvar[L]\notin\TypVarCtx}{
-                                    \rinfer[IH]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{
-                                    }
-                                }
-                                \\\rinfer[]{\typvar[L]\neq\typvar}{
-                                    \rinfer[IH]{\typvar[L]\notin\mathcal{J}}{
-                                    }
-                                    \\\rinfer[]{\typvar\in\mathcal{J}}{
-                                    }
-                                }
-                                \\\rinfer[]{\typvar[L]\notin\knd[1]}{
-                                    \rinfer[IH]{\typvar[L]\notin\mathcal{J}}{
-                                    }
-                                }
-                            }
-                            \\\rinfer[Weakening]{\KindWellFormed[\knd[L]][\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}{
-                                \rinfer[PoS]{\KindWellFormed[\knd[L]]}{
-                                    \rinfer[IH]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{
-                                    }
-                                }
-                                \\\rinfer[COK]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}{
-                                    \rinfer[premiss]{\KindEquiv[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\knd[3]}{\knd[4]}}{
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    \\\rinfer[CWF-TypVar]{\ContextWellFormed[\HoleCtx\xxExtendTypVarCtx[][L]{\knd[L]}{\knd[1]}]}{
-                        \rinfer[]{\typvar\notin\xExtendTypVarCtx[][L][\knd[L]]}{
-                            \rinfer[PoS]{\typvar\notin\TypVarCtx}{
-                                \rinfer[COK]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}{
-                                    \rinfer[premiss]{\KindEquiv[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\knd[3]}{\knd[4]}}{
-                                    }
-                                }
-                            }
-                            \\\rinfer[]{\typvar\neq\typvar[L]}{
-                                \rinfer[IH]{\typvar[L]\notin\mathcal{J}}{
-                                }
-                                \\\rinfer[]{\typvar\in\mathcal{J}}{
-                                }
-                            }
-                            \\\rinfer[]{\typvar\notin\knd[L]}{
-                                \rinfer[IH]{\forall\dot{\typvar}\in\knd[L],\dot{\typvar}\notin\mathcal{J}}{
-                                }
-                                \\\rinfer[]{\typvar\in\mathcal{J}}{
-                                }
-                            }
-                        }
-                        \\\rinfer[Weakening]{\KindWellFormed[\knd[1]][\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{
-                            \rinfer[PoS]{\KindWellFormed[\knd[1]]}{
-                                \rinfer[COK]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}{
-                                    \rinfer[premiss]{\KindEquiv[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\knd[3]}{\knd[4]}}{
-                                    }
-                                }
-                            }
-                            \\\rinfer[IH]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{
-                            }
-                        }
-                    }
-                }
-            }
-            \and
-            \rinfer[CSK-$\Pi$]{sim}{
-            }
-            \and
-            \rinfer[EquivAK-$\Pi$]{sim}{
-            }
-            \and
-            \rinfer[KWF-$\Pi$]{sim}{
-            }
-        \end{mathpar}
-        \subsubsection*{O?K-.*}
-        By simultaneous induction on derivations. \\
-        \par The interesting cases per theorem:\\
-        \subparagraph{K-Substitution}
-        by type size??
-            \begin{mathpar}
-            \end{mathpar}
-        \subparagraph{OK-Substitution}
-            \begin{mathpar}
-                \rinfer[]{}{
-                }
-            \end{mathpar}
-        \subparagraph{OK-PK}
-        \begin{mathpar}
-            \rinfer[KWF-SKind]{\KindWellFormed[\SKind[\Type][\bse]]}{
-                \rinfer[WFaK-1]{\WellFormedAtKind{\bse}[\Type]}{
-                    \rinfer[premiss]{\PrincipalKind{\bse}[\SKind[\Type][\bse]]}{
-                    }
-                }
-            }
-            \and
-            \rinfer[OK-Substitution]{\KindWellFormed[\subst{\typ[2]}{\typvar}{\knd[2]}]}{
-                \rinfer[]{}{
-                }
-            }
-        \end{mathpar}
-        \subparagraph{OK-WFaK}
-    \end{proof}
-    \newpage
-    \KOMAoptions{paper=A4,paper=portrait}
-    \recalctypearea
     \vphantom{.}
     \begin{definition}[Singleton Depth]
         \[
@@ -893,28 +799,226 @@
     \begin{proof}
         From definition of $\WellFormedAtKind{\typ}$ and CSK-SKind
     \end{proof}
-    \noindent\hrulefill
-    \begin{theorem}[$\redrm{why~is~this~here?}$]
-        If $\ConsistentSubKind{\knd[1]}{\SKind[\knd[2]]}$, then $\ConsistentSubKind{\knd[1]}{\knd[2]}$
-    \end{theorem}
-    \begin{prop}[APN-1]
-        If $\AlgPathNormal$, then $\IsPath[in=\typ[\psi]]$
-    \end{prop}
-    \begin{proof}
-        By inspection.
-    \end{proof}
-    \begin{prop}[AKN-1]
-        If $\AlgKindNormal[out=\SKind[\knd[\omega]][\typ[\omega]]]$, then $\AlgTypeNormal[in=\typ[\omega]]$
-    \end{prop}
-    \begin{proof}
-        Sim ind with some other simple props probably
-    \end{proof}
-    \begin{prop}[ATN-1]
-        If $\AlgKindNormal$ and $\AlgTypeNormal$, then $\AlgTypeNormal[kind=\knd[\omega]]$
-    \end{prop}
-    \begin{proof}
-        Sim ind with some other simple props probably
-    \end{proof}
-\section*{Elaboration}
-    \subsection*{todo}
+%    \noindent\hrulefill
+%    \begin{theorem}[$\redrm{why~is~this~here?}$]
+%        If $\ConsistentSubKind{\knd[1]}{\SKind[\knd[2]]}$, then $\ConsistentSubKind{\knd[1]}{\knd[2]}$
+%    \end{theorem}
+%    \begin{prop}[APN-1]
+%        If $\AlgPathNormal$, then $\IsPath[in=\typ[\psi]]$
+%    \end{prop}
+%    \begin{proof}
+%        By inspection.
+%    \end{proof}
+%    \begin{prop}[AKN-1]
+%        If $\AlgKindNormal[out=\SKind[\knd[\omega]][\typ[\omega]]]$, then $\AlgTypeNormal[in=\typ[\omega]]$
+%    \end{prop}
+%    \begin{proof}
+%        Sim ind with some other simple props probably
+%    \end{proof}
+%    \begin{prop}[ATN-1]
+%        If $\AlgKindNormal$ and $\AlgTypeNormal$, then $\AlgTypeNormal[kind=\knd[\omega]]$
+%    \end{prop}
+%    \begin{proof}
+%        Sim ind with some other simple props probably
+%    \end{proof}
+%\section*{Elaboration}
+%    \subsection*{todo}
+%%%%%%%%%%%%%%%%%%%%
+%    \noindent\hrulefill
+%    \newpage
+%    %\KOMAoptions{paper=A0,paper=landscape,DIV=40}
+%    \KOMAoptions{fontsize=6pt,DIV=20}
+%    \recalctypearea
+%    \section*{Appendix}
+%    \begin{proof}
+%        \vphantom{.} \\
+%        \subsubsection*{Weakening}
+%        By induction on derivations. \\
+%        \par Note: When applying Weakening in the induction, check that the left premiss is always a subderivation,
+%        and check variable exclusion conditions are satisfied (usually checked elsewhere in the derivation). \\
+%        \begin{mathpar}
+%            \rinfer[PK-$\lambda$]{\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]{\TypeFun[][\knd[1]]}[\SKind[\DepFunKind][\TypeFun[][\knd[1]]]]}{
+%                \rinfer[Marked-Exchange]{\PrincipalKind[\HoleCtx\xxExtendTypVarCtx[][L]{\knd[L]}[]{\knd[1]}]{\typ}[\knd[2]]}{
+%                    \rinfer[Weakening]{\PrincipalKind[\HoleCtx\xxExtendTypVarCtx[][]{\knd[1]}[L]{\knd[L]}]{\typ}[\knd[2]]}{
+%                        \rinfer[premiss]{\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\typ}[\knd[2]]}{
+%                        }
+%                        \\\rinfer[CWF-TypVar]{\ContextWellFormed[\HoleCtx\xxExtendTypVarCtx[][]{\knd[1]}[L]{\knd[L]}]}{
+%                            \rinfer[]{\typvar[L]\notin\xExtendTypVarCtx[][][\knd[1]]}{
+%                                \rinfer[PoS]{\typvar[L]\notin\TypVarCtx}{
+%                                    \rinfer[IH]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{
+%                                    }
+%                                }
+%                                \\\rinfer[]{\typvar[L]\neq\typvar}{
+%                                    \rinfer[IH]{\typvar[L]\notin\mathcal{J}}{
+%                                    }
+%                                    \\\rinfer[]{\typvar\in\mathcal{J}}{
+%                                    }
+%                                }
+%                                \\\rinfer[]{\typvar[L]\notin\knd[1]}{
+%                                    \rinfer[IH]{\typvar[L]\notin\mathcal{J}}{
+%                                    }
+%                                }
+%                            }
+%                            \\\rinfer[Weakening]{\KindWellFormed[\knd[L]][\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}{
+%                                \rinfer[PoS]{\KindWellFormed[\knd[L]]}{
+%                                    \rinfer[IH]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{
+%                                    }
+%                                }
+%                                \\\rinfer[COK]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}{
+%                                    \rinfer[premiss]{\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\typ}[\knd[2]]}{
+%                                    }
+%                                }
+%                            }
+%                        }
+%                    }
+%                    \\\rinfer[CWF-TypVar]{\ContextWellFormed[\HoleCtx\xxExtendTypVarCtx[][L]{\knd[L]}[]{\knd[1]}]}{
+%                        \rinfer[]{\typvar\notin\xExtendTypVarCtx[][L][\knd[L]]}{
+%                            \rinfer[PoS]{\typvar\notin\TypVarCtx}{
+%                                \rinfer[COK]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}{
+%                                    \rinfer[premiss]{\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\typ}[\knd[2]]}{
+%                                    }
+%                                }
+%                            }
+%                            \\\rinfer[]{\typvar\neq\typvar[L]}{
+%                                \rinfer[IH]{\typvar[L]\notin\mathcal{J}}{
+%                                }
+%                                \\\rinfer[]{\typvar\in\mathcal{J}}{
+%                                }
+%                            }
+%                            \\\rinfer[]{\typvar\notin\knd[L]}{
+%                                \rinfer[IH]{\forall\dot{\typvar}\in\knd[L],\dot{\typvar}\notin\mathcal{J}}{
+%                                }
+%                                \\\rinfer[]{\typvar\in\mathcal{J}}{
+%                                }
+%                            }
+%                        }
+%                        \\\rinfer[Weakening]{\KindWellFormed[\knd[1]][\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{
+%                            \rinfer[PoS]{\KindWellFormed[\knd[1]]}{
+%                                \rinfer[COK]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}{
+%                                    \rinfer[premiss]{\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\typ}[\knd[2]]}{
+%                                    }
+%                                }
+%                            }
+%                            \\\rinfer[IH]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{
+%                            }
+%                        }
+%                    }
+%                }
+%            }
+%            \and
+%            \rinfer[KEquiv-$\Pi$]{\KindEquiv[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]{\DepFunKind}{\DepFunKind[][\knd[3]][\knd[4]]}}{
+%                \rinfer[Weakening]{\KindEquiv[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]{\knd[1]}{\knd[2]}}{
+%                    \rinfer[premiss]{\KindEquiv{\knd[1]}{\knd[2]}}{
+%                    }
+%                    \\\rinfer[IH]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{
+%                    }
+%                }
+%                \\\rinfer[Marked-Exchange]{\KindEquiv[\HoleCtx\xxExtendTypVarCtx[][L]{\knd[L]}{\knd[1]}]{\knd[3]}{\knd[4]}}{
+%                    \rinfer[Weakening]{\PrincipalKind[\HoleCtx\xxExtendTypVarCtx[][]{\knd[1]}[L]{\knd[L]}]{\typ}[\knd[2]]}{
+%                        \rinfer[premiss]{\PrincipalKind[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\typ}[\knd[2]]}{
+%                        }
+%                        \\\rinfer[CWF-TypVar]{\ContextWellFormed[\HoleCtx\xxExtendTypVarCtx[][]{\knd[1]}[L]{\knd[L]}]}{
+%                            \rinfer[]{\typvar[L]\notin\xExtendTypVarCtx[][][\knd[1]]}{
+%                                \rinfer[PoS]{\typvar[L]\notin\TypVarCtx}{
+%                                    \rinfer[IH]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{
+%                                    }
+%                                }
+%                                \\\rinfer[]{\typvar[L]\neq\typvar}{
+%                                    \rinfer[IH]{\typvar[L]\notin\mathcal{J}}{
+%                                    }
+%                                    \\\rinfer[]{\typvar\in\mathcal{J}}{
+%                                    }
+%                                }
+%                                \\\rinfer[]{\typvar[L]\notin\knd[1]}{
+%                                    \rinfer[IH]{\typvar[L]\notin\mathcal{J}}{
+%                                    }
+%                                }
+%                            }
+%                            \\\rinfer[Weakening]{\KindWellFormed[\knd[L]][\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}{
+%                                \rinfer[PoS]{\KindWellFormed[\knd[L]]}{
+%                                    \rinfer[IH]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{
+%                                    }
+%                                }
+%                                \\\rinfer[COK]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}{
+%                                    \rinfer[premiss]{\KindEquiv[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\knd[3]}{\knd[4]}}{
+%                                    }
+%                                }
+%                            }
+%                        }
+%                    }
+%                    \\\rinfer[CWF-TypVar]{\ContextWellFormed[\HoleCtx\xxExtendTypVarCtx[][L]{\knd[L]}{\knd[1]}]}{
+%                        \rinfer[]{\typvar\notin\xExtendTypVarCtx[][L][\knd[L]]}{
+%                            \rinfer[PoS]{\typvar\notin\TypVarCtx}{
+%                                \rinfer[COK]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}{
+%                                    \rinfer[premiss]{\KindEquiv[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\knd[3]}{\knd[4]}}{
+%                                    }
+%                                }
+%                            }
+%                            \\\rinfer[]{\typvar\neq\typvar[L]}{
+%                                \rinfer[IH]{\typvar[L]\notin\mathcal{J}}{
+%                                }
+%                                \\\rinfer[]{\typvar\in\mathcal{J}}{
+%                                }
+%                            }
+%                            \\\rinfer[]{\typvar\notin\knd[L]}{
+%                                \rinfer[IH]{\forall\dot{\typvar}\in\knd[L],\dot{\typvar}\notin\mathcal{J}}{
+%                                }
+%                                \\\rinfer[]{\typvar\in\mathcal{J}}{
+%                                }
+%                            }
+%                        }
+%                        \\\rinfer[Weakening]{\KindWellFormed[\knd[1]][\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{
+%                            \rinfer[PoS]{\KindWellFormed[\knd[1]]}{
+%                                \rinfer[COK]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]}{
+%                                    \rinfer[premiss]{\KindEquiv[\HoleCtx\xExtendTypVarCtx[][][\knd[1]]]{\knd[3]}{\knd[4]}}{
+%                                    }
+%                                }
+%                            }
+%                            \\\rinfer[IH]{\ContextWellFormed[\HoleCtx\xExtendTypVarCtx[][L][\knd[L]]]}{
+%                            }
+%                        }
+%                    }
+%                }
+%            }
+%            \and
+%            \rinfer[CSK-$\Pi$]{sim}{
+%            }
+%            \and
+%            \rinfer[EquivAK-$\Pi$]{sim}{
+%            }
+%            \and
+%            \rinfer[KWF-$\Pi$]{sim}{
+%            }
+%        \end{mathpar}
+%        \subsubsection*{O?K-.*}
+%        By simultaneous induction on derivations. \\
+%        \par The interesting cases per theorem:\\
+%        \subparagraph{K-Substitution}
+%        by type size??
+%            \begin{mathpar}
+%            \end{mathpar}
+%        \subparagraph{OK-Substitution}
+%            \begin{mathpar}
+%                \rinfer[]{}{
+%                }
+%            \end{mathpar}
+%        \subparagraph{OK-PK}
+%        \begin{mathpar}
+%            \rinfer[KWF-SKind]{\KindWellFormed[\SKind[\Type][\bse]]}{
+%                \rinfer[WFaK-1]{\WellFormedAtKind{\bse}[\Type]}{
+%                    \rinfer[premiss]{\PrincipalKind{\bse}[\SKind[\Type][\bse]]}{
+%                    }
+%                }
+%            }
+%            \and
+%            \rinfer[OK-Substitution]{\KindWellFormed[\subst{\typ[2]}{\typvar}{\knd[2]}]}{
+%                \rinfer[]{}{
+%                }
+%            }
+%        \end{mathpar}
+%        \subparagraph{OK-WFaK}
+%    \end{proof}
+%    \newpage
+%    \KOMAoptions{paper=A4,fontsize=10pt,paper=portrait,DIV=10}
+%    \recalctypearea
 \end{document}
