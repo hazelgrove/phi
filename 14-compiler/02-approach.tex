@@ -26,9 +26,10 @@ between values and indeterminate results.
 \label{casting}
 
 \paragraph{Embedding/projection}
-In a first pass, we adopt a type-indexed embedding/projecting pairs approach \cite{new2018}: casting
-$x$ from type $\tau$ to the hole type \emph{embeds} $x$ with type information about $\tau$ into a proxy;
-casting to the type $\tau'$ \emph{projects} the proxy, dynamically checking if $\tau = \tau'$.
+In a first pass, we adopt a type-indexed embedding/projecting pairs approach \cite{benton2005,
+new2018}: casting $x$ from type $\tau$ to the hole type \emph{embeds} $x$ with type information
+about $\tau$ into a proxy; casting to the type $\tau'$ \emph{projects} the proxy, dynamically
+checking if $\tau = \tau'$.
 
 \paragraph{Coercions}
 In the future, a coercion-based approach should be taken, which has some space efficiency guarantees
@@ -72,5 +73,8 @@ A basic function-local analysis which treats function parameters as indeterminat
 incomplete by default may be implemented in a single pass over the expression tree.
 
 \paragraph{CFA-based completeness}
-A more complex analysis may use control-flow analysis techniques on higher-order functions.
+A more complex analysis may use control-flow analysis techniques on higher-order functions
+\cite{shivers1991, nielson1999}. Other papers to consider reading: \textcite{vardoulaskis2011} (but
+apparently $2^{n}$ complexity), \textcite{gilray2016}.
+
 \end{document}

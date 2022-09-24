@@ -10,6 +10,73 @@
   pages = {503–542},
 }
 
+  @inproceedings{10.1145/2837614.2837631,
+  author = {Gilray, Thomas and Lyde, Steven and Adams, Michael D. and Might, Matthew and Van Horn,
+            David},
+  title = {Pushdown Control-Flow Analysis for Free},
+  year = {2016},
+  isbn = {9781450335492},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  url = {https://doi.org/10.1145/2837614.2837631},
+  doi = {10.1145/2837614.2837631},
+  abstract = {Traditional control-flow analysis (CFA) for higher-order languages introduces spurious
+              connections between callers and callees, and different invocations of a function may
+              pollute each other's return flows. Recently, three distinct approaches have been
+              published that provide perfect call-stack precision in a computable manner: CFA2, PDCFA
+              , and AAC. Unfortunately, implementing CFA2 and PDCFA requires significant engineering
+              effort. Furthermore, all three are computationally expensive. For a monovariant
+              analysis, CFA2 is in O(2^n), PDCFA is in O(n^6), and AAC is in O(n^8). In this paper,
+              we describe a new technique that builds on these but is both straightforward to
+              implement and computationally inexpensive. The crucial insight is an unusual
+              state-dependent allocation strategy for the addresses of continuations. Our technique
+              imposes only a constant-factor overhead on the underlying analysis and costs only
+              O(n^3) in the monovariant case. We present the intuitions behind this development,
+              benchmarks demonstrating its efficacy, and a proof of the precision of this analysis.},
+  booktitle = {Proceedings of the 43rd Annual ACM SIGPLAN-SIGACT Symposium on Principles of
+               Programming Languages},
+  pages = {691–704},
+  numpages = {14},
+  keywords = {Static analysis, Control-flow analysis, Abstract interpretation, Pushdown analysis,
+              Store-allocated continuations},
+  location = {St. Petersburg, FL, USA},
+  series = {POPL '16},
+}
+
+@article{gilray2016,
+  author = {Gilray, Thomas and Lyde, Steven and Adams, Michael D. and Might, Matthew and Van Horn,
+            David},
+  title = {Pushdown Control-Flow Analysis for Free},
+  year = {2016},
+  issue_date = {January 2016},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  volume = {51},
+  number = {1},
+  issn = {0362-1340},
+  url = {https://doi.org/10.1145/2914770.2837631},
+  doi = {10.1145/2914770.2837631},
+  abstract = {Traditional control-flow analysis (CFA) for higher-order languages introduces spurious
+              connections between callers and callees, and different invocations of a function may
+              pollute each other's return flows. Recently, three distinct approaches have been
+              published that provide perfect call-stack precision in a computable manner: CFA2, PDCFA
+              , and AAC. Unfortunately, implementing CFA2 and PDCFA requires significant engineering
+              effort. Furthermore, all three are computationally expensive. For a monovariant
+              analysis, CFA2 is in O(2^n), PDCFA is in O(n^6), and AAC is in O(n^8). In this paper,
+              we describe a new technique that builds on these but is both straightforward to
+              implement and computationally inexpensive. The crucial insight is an unusual
+              state-dependent allocation strategy for the addresses of continuations. Our technique
+              imposes only a constant-factor overhead on the underlying analysis and costs only
+              O(n^3) in the monovariant case. We present the intuitions behind this development,
+              benchmarks demonstrating its efficacy, and a proof of the precision of this analysis.},
+  journal = {SIGPLAN Not.},
+  month = {jan},
+  pages = {691–704},
+  numpages = {14},
+  keywords = {Static analysis, Abstract interpretation, Store-allocated continuations, Control-flow
+              analysis, Pushdown analysis},
+}
+
 @misc{grain2022,
   author = {Grain},
   title = {Grain: A strongly-typed functional programming language for the modern web.},
@@ -234,4 +301,44 @@
   year = {1993},
   pages = {288--298},
   publisher = {},
+}
+
+@phdthesis{shivers1991,
+  author = {Shivers, Olin},
+  title = {Control-Flow Analysis of Higher-Order Languages of Taming Lambda},
+  year = {1991},
+  publisher = {Carnegie Mellon University},
+  address = {USA},
+  abstract = {Programs written in powerful, higher-order languages like Scheme, ML, and Common Lisp
+              should run as fast as their FORTRAN and C counterparts. They should, but they don't. A
+              major reason is the level of optimisation applied to these two classes of languages.
+              Many FORTRAN and C compilers employ an arsenal of sophisticated global optimisations
+              that depend upon data-flow analysis: common-subexpression elimination, loop-invariant
+              detection, induction-variable elimination, and many, many more. Compilers for
+              higher-order languages do not provide these optimisations. Without them, Scheme, LISP
+              and ML compilers are doomed to produce code that runs slower than their FORTRAN and C
+              counterparts. The problem is the lack of an explicit control-flow graph at compile time
+              , something which traditional data-flow analysis techniques require. In this
+              dissertation, I present a technique for recovering the control-flow graph of a Scheme
+              program at compile time. I give examples of how this information can be used to perform
+              several data-flow analysis optimisations, including copy propagation,
+              induction-variable elimination, useless-variable elimination, and type recovery.The
+              analysis is defined in terms of a non-standard semantic interpretation. The
+              denotational semantics is carefully developed, and several theorems establishing the
+              correctness of the semantics and the implementing algorithms are proven.},
+  note = {UMI Order No. GAX91-26964},
+}
+
+@article{vardoulaskis2011,
+  author = {Dimitrios Vardoulakis and Olin Shivers},
+  title = {{CFA2:} a Context-Free Approach to Control-Flow Analysis},
+  journal = {Log. Methods Comput. Sci.},
+  volume = {7},
+  number = {2},
+  year = {2011},
+  url = {https://doi.org/10.2168/LMCS-7(2:3)2011},
+  doi = {10.2168/LMCS-7(2:3)2011},
+  timestamp = {Thu, 25 Jun 2020 21:29:07 +0200},
+  biburl = {https://dblp.org/rec/journals/corr/abs-1102-3676.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org},
 }
