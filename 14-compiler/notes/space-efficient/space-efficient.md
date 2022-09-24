@@ -11,12 +11,12 @@ Author: David Herman
 
 ### Takeaways
 
-![Untitled](Space-Effi%2074ca4/Untitled.png)
+![Untitled](assets/untitled-00.png)
 
-![Untitled](Space-Effi%2074ca4/Untitled%201.png)
+![Untitled](assets/untitled-01.png)
 
-![Untitled](Space-Effi%2074ca4/Untitled%202.png)
+![Untitled](assets/untitled-02.png)
 
-![Untitled](Space-Effi%2074ca4/Untitled%203.png)
+![Untitled](assets/untitled-03.png)
 
-![Untitled](Space-Effi%2074ca4/Untitled%204.png)
+![Untitled](assets/untitled-04.png)

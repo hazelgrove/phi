@@ -20,6 +20,6 @@ Author: Nick Benton
 
 ### Embedding/ Projection Pairs
 
-![Untitled](Embedded%20I%2001bd2/Untitled.png)
+![Untitled](assets/untitled.png)
 
 ### To be continued...
