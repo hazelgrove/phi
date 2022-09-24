@@ -1,0 +1,100 @@
+\documentclass[index.tex]{subfiles}
+
+\begin{document}
+\newcommand{\SortNComplete}{\ensuremath{\textsf{Completeness}}}
+\newcommand{\SortNCompleteVar}{\ensuremath{k}}
+\newcommand{\SortComplete}{\ensuremath{\textsf{}}}
+\newcommand{\SortCompleteVar}{\ensuremath{\overline{k}}}
+\newcommand{\SortTypCon}{\ensuremath{\textsf{Type}}}
+\newcommand{\SortTypConVar}{\ensuremath{\tau}}
+\newcommand{\SortTyp}{\ensuremath{\textsf{}}}
+\newcommand{\SortTypVar}{\ensuremath{\overline{\tau}}}
+\newcommand{\SortComp}{\ensuremath{\textsf{Composite}}}
+\newcommand{\SortCompVar}{\ensuremath{c}}
+\newcommand{\SortValue}{\ensuremath{\textsf{Value}}}
+\newcommand{\SortValueVar}{\ensuremath{v}}
+\newcommand{\SortHoleId}{\ensuremath{u}}
+
+\newcommand{\CNC}{\ensuremath{\pie{0.3ex}{360}}}
+\newcommand{\CNI}{\ensuremath{\pie{0.3ex}{0}}}
+\newcommand{\CII}{\ensuremath{\pie{0.3ex}{180}}}
+
+\newcommand{\TCHole}{\ensuremath{\SyEHole{}{}}}
+\newcommand{\TCInt}{\ensuremath{\SyTInt}}
+\newcommand{\TCFloat}{\ensuremath{\SyTFloat}}
+\newcommand{\TCBool}{\ensuremath{\SyTBool}}
+\newcommand{\TCPair}[2]{\ensuremath{(#1, #2)}}
+
+\newcommand{\TIntNC}{\ensuremath{\TMk{\TCInt}{\CNC}}}
+\newcommand{\TIntNI}{\ensuremath{\TMk{\TCInt}{\CNI}}}
+\newcommand{\TFloatNC}{\ensuremath{\TMk{\TCFloat}{\CNC}}}
+\newcommand{\TFloatNI}{\ensuremath{\TMk{\TCFloat}{\CNI}}}
+\newcommand{\TBoolNC}{\ensuremath{\TMk{\TCBool}{\CNC}}}
+\newcommand{\TBoolNI}{\ensuremath{\TMk{\TCBool}{\CNI}}}
+\newcommand{\TPairNC}{\ensuremath{\TMk{\TCPair}{\CNC}}}
+\newcommand{\TPairNI}{\ensuremath{\TMk{\TCPair}{\CNI}}}
+
+\newcommand{\TMk}[2]{\ensuremath{#1[#2]}}
+
+\newcommand{\EIntLit}{\ensuremath{\underline{n}}}
+\newcommand{\EFloatLit}{\ensuremath{\underline{f}}}
+\newcommand{\EBoolLit}{\ensuremath{\underline{b}}}
+\newcommand{\ELet}[2]{\ensuremath{\SyLet~ #1 = #2}}
+\newcommand{\EIn}{\ensuremath{~\SyInn~}}
+\newcommand{\EInn}[1]{\ensuremath{~\SyIn~ #1}}
+\newcommand{\EReturn}[1]{\ensuremath{\SyReturn~ #1}}
+\newcommand{\ECaseCompleteWith}[1]{\ensuremath{\SyCaseComplete~ #1 ~\SyWith~}}
+\newcommand{\ECaseCompleteBranch}[2]{\ensuremath{\SyBar~ #1 \SyArrow #2}}
+
+\newcommand{\EWrapIntoNI}[1]{\ensuremath{\SyWrap^{\CNI}~ #1}}
+\newcommand{\EWrapIntoII}[1]{\ensuremath{\SyWrap^{\CII}~ #1}}
+\newcommand{\EEmbedNC}[1]{\ensuremath{\SyEmbed_{\CNC}~ #1}}
+\newcommand{\EEmbedNI}[1]{\ensuremath{\SyEmbed_{\CNI}~ #1}}
+\newcommand{\EProj}[2]{\ensuremath{\SyProj[#2]~ #1}}
+
+\newcommand{\EPlusNC}[2]{\ensuremath{#1 \SyPlus_{\CNC} #2}}
+\newcommand{\EPlusNI}[2]{\ensuremath{#1 \SyPlus_{\CNI} #2}}
+\newcommand{\ETimesNC}[2]{\ensuremath{#1 \SyTimes_{\CNC} #2}}
+\newcommand{\ETimesNI}[2]{\ensuremath{#1 \SyTimes_{\CNI} #2}}
+\newcommand{\EFPlusNC}[2]{\ensuremath{#1 \SyFPlus_{\CNC} #2}}
+\newcommand{\EFPlusNI}[2]{\ensuremath{#1 \SyFPlus_{\CNI} #2}}
+\newcommand{\EFTimesNC}[2]{\ensuremath{#1 \SyFTimes_{\CNC} #2}}
+\newcommand{\EFTimesNI}[2]{\ensuremath{#1 \SyFTimes_{\CNI} #2}}
+
+\newcommand{\ETrue}{\ensuremath{\SyTrue}}
+\newcommand{\EEHole}[2]{\ensuremath{\SyEHole{#1}{#2}}}
+
+\newcommand{\EVarNamed}[2]{\ensuremath{t_{#1}^{{\color{gray}#2}}}}
+
+\subsubsection{Lower intermediate representation}
+In the lower intermediate representation, whose syntax is partially given in \cref{lower-ir-syntax},
+completeness (\Cref{completeness}) is made explicit in the type system.
+
+\begin{figure}
+  \[\begin{array}{rccl}
+    \SortNComplete & \SortNCompleteVar & \Coloneqq & \CNC \mid \CNI \\
+    \SortComplete  & \SortCompleteVar  & \Coloneqq & \SortNCompleteVar \mid \CII \\
+    \SortTypCon    & \SortTypConVar    & \Coloneqq & \TCHole \mid \TCInt \mid \TCFloat \mid \TCBool 
+                                                   \mid \TCPair{\SortTypConVar}{\SortTypConVar} \\
+    \SortTyp       & \SortTypVar       & \Coloneqq & \SortTypConVar[\SortCompleteVar] \\
+    \SortValue     & \SortValueVar       & \Coloneqq & x \mid \EEHole{\SortHoleId}{\sigma}
+                                                   \mid \EIntLit \mid \EFloatLit \mid \EBoolLit \mid \cdots \\
+    \SortComp      & \SortCompVar      & \Coloneqq & \SortValueVar 
+                                                   \mid \EPlusNC{\SortValueVar}{\SortValueVar} 
+                                                   \mid \EPlusNI{\SortValueVar}{\SortValueVar} \\
+                   &                   & \mid         & \EWrapIntoNI{\SortValueVar}
+                                                   \mid \EWrapIntoII{\SortValueVar} \\
+                   &                   & \mid         & \EEmbedNC{\SortValueVar}
+                                                   \mid \EEmbedNI{\SortValueVar}
+                                                   \mid \EProj{\SortValueVar}{\SortTypConVar} \\
+                   &                   & \mid         & \ECaseCompleteWith{\SortValueVar}
+                                                     \ECaseCompleteBranch{x}{\SortCompVar}
+                                                    ~\ECaseCompleteBranch{x'}{\SortCompVar} \\
+                   &                   & \mid         & \ELet{x}{\SortCompVar} \EInn{\SortCompVar} \\
+                   &                   & \mid         & \cdots
+  \end{array}\]
+  \caption{Syntax of the lower intermediate representation}
+  \label{lower-ir-syntax}
+\end{figure}
+   
+\end{document}
