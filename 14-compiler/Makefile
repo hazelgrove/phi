@@ -1,7 +1,7 @@
 DOT ?= dot
 
 .PHONY: all
-all	: assets/pipeline.svg assets/hole-contexts.svg
+all	: assets/pipeline.svg
 
 assets/%.svg : %.dot
 	$(DOT) $^ -Tsvg -o $@
