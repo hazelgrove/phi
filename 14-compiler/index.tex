@@ -1,0 +1,31 @@
+\documentclass{article}
+\usepackage[margin=3cm]{geometry}
+
+\input{preamble/preamble}
+\begin{document}
+\setcounter{section}{13}
+\section{Compiler}
+The compiler project explores \Hazel{} and typed holes in a compilation context. The current
+implementation can be found under the \textsf{hazelc} branch. 
+
+\subsubsection{See also}
+\label{see-also}
+It may also be worthwhile to reference the following, though they may outdated in various degrees:
+%
+\begin{itemize}
+  \item The \href{https://github.com/hazelgrove/hazelc-icfp22-src}{extended abstract},
+    \href{https://github.com/mirryi/hazelc-icfp22-poster}{poster}, and
+    \href{https://github.com/mirryi/hazelc-icfp22-slides}{talk slides} submitted to and presented at
+    the ICFP 2022 Student Research Competition.
+\end{itemize}
+
+\subsubsection{Further design}
+\label{further-design}
+Further design is likely possible in most areas. Particularly:
+\begin{itemize}
+  \item Runtime representation of indeterminate results (\Cref{runtime-representation})
+  \item Cast handling (\Cref{casting})
+  \item Pattern matching (\Cref{pattern-matching})
+\end{itemize}
+
+\end{document}

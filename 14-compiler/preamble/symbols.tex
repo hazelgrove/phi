@@ -1,0 +1,72 @@
+%
+% Utilities
+%
+
+% Circular pie
+\newcommand{\pie}[2]{%
+  \begin{tikzpicture}
+    \draw (0,0) circle (#1); \fill[rotate=90] (#1,0) arc (0:#2:#1) -- (0,0) -- cycle;
+  \end{tikzpicture}%
+}
+
+% Spacing
+\newcommand{\Indent}{\ensuremath{\hspace{10pt}}}
+
+%
+% Judgments
+%
+\newcommand{\judgment}[3]{\inferrule{#1}{#2}~~{\textsc{(#3)}}}
+\newcommand{\judgbox}[1]{\noindent \fbox{$#1$}}
+
+% Consistency
+\newcommand{\isConsistent}[2]{\ensuremath{#1 \sim #2}}
+\newcommand{\isNotConsistent}[2]{\ensuremath{#1 \nsim #2}}
+
+% Typing contexts
+\newcommand{\CtxVar}{\ensuremath{\Gamma}}
+\newcommand{\extendCtx}[3]{\ensuremath{#1 ; ~\hasType{#2}{#3}}}
+\newcommand{\hasType}[2]{\ensuremath{#1 : #2}}
+\newcommand{\hasTypeCtx}[4]{\ensuremath{#1, ~#2 \vdash \hasType{#3}{#4}}}
+
+% Hole contexts
+\newcommand{\HoleCtxVar}{\ensuremath{\Delta}}
+
+%
+% Symbols
+%
+\newcommand{\Hazel}{\textsf{Hazel}}
+
+% Keywords and punctuation
+\newcommand{\SyDArrow}{\ensuremath{\Rightarrow}}
+\newcommand{\SyDNArrow}{\ensuremath{\nRightarrow}}
+\newcommand{\SyArrow}{\ensuremath{\to}}
+\newcommand{\SyBar}{\ensuremath{\vert}}
+\newcommand{\SyColon}{\ensuremath{\textsf{\textbf{{:}}}}}
+\newcommand{\SyInn}{\ensuremath{\textsf{\textbf{{in}}}}}
+\newcommand{\SyIn}{\ensuremath{\textsf{\textbf{{in}}}}}
+\newcommand{\SyLet}{\ensuremath{\textsf{\textbf{{let}}}}}
+\newcommand{\SyWith}{\ensuremath{\textsf{\textbf{{with}}}}}
+\newcommand{\SyWrap}{\ensuremath{\textsf{\textbf{{wrap}}}}}
+\newcommand{\SyMatch}{\ensuremath{\textsf{\textbf{{match}}}}}
+
+% Holes
+\definecolor{lavender}{RGB}{162,85,162}
+\newcommand{\SyNEHole}[3]{\ensuremath{\textcolor{lavender}{\bm{\llparenthesis}}#1\textcolor{lavender}{\bm{\rrparenthesis}^{#2}_{#3}}}}
+\newcommand{\SyEHole}[2]{\ensuremath{\SyNEHole{}{#1}{#2}}}
+
+% Casting
+\newcommand{\SyCastL}{\ensuremath{\langle}}
+\newcommand{\SyCastR}{\ensuremath{\rangle}}
+
+% Numbers
+\newcommand{\SyTInt}{\ensuremath{\textsf{Int}}}
+\newcommand{\SyTFloat}{\ensuremath{\textsf{Float}}}
+\newcommand{\SyPlus}{\ensuremath{+}}
+\newcommand{\SyFPlus}{\ensuremath{+.}}
+\newcommand{\SyTimes}{\ensuremath{*}}
+\newcommand{\SyFTimes}{\ensuremath{*.}}
+
+% Booleans
+\newcommand{\SyTBool}{\ensuremath{\textsf{Bool}}}
+\newcommand{\SyTrue}{\ensuremath{\textrm{true}}}
+\newcommand{\SyFalse}{\ensuremath{\textrm{false}}}
