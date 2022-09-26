@@ -1,4 +1,4 @@
-cabal-version:      3.8
+cabal-version:      3.6
 name:               algo
 version:            0.1.0.0
 
@@ -31,7 +31,7 @@ library
                       ICtx
                       Normalize
                       BiDirectional
-    build-depends:    base ^>=4.17.0.0
+    build-depends:    base ^>=4.16.0.0
                      --,hs-perl5
                      ,shqq
     default-language: GHC2021
@@ -43,7 +43,7 @@ test-suite test-algo
     hs-source-dirs:   test
     other-modules:    Lexer
                       Parser
-    build-depends:    base ^>=4.17.0.0
+    build-depends:    base ^>=4.16.0.0
                      ,HUnit
                      ,algo
                      ,array
