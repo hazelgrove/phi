@@ -1,0 +1,13 @@
+#!/usr/bin/env perl
+
+use v5.28;
+use utf8;
+use strict;
+use warnings FATAL => qw(uninitialized);
+
+my $TODAY = `date '+%Y-%m-%d'`; $? >> 8 and die $!;
+my $i = $ARGV[0];
+$i =~ m/(.+)\.tex/ or die "missing '.tex' extension. $!";
+my $o = $1 . '.md';
+$o = substr $o, 1; # renamed ./11-type-constructors.tex to ./.11-type-constructors.tex
+`cat $i | perl -p -e 's/\\\\today/$TODAY/' | pandoc --from=latex --to=markdown_strict -s -o $o`; $? >> 8 and die $!;

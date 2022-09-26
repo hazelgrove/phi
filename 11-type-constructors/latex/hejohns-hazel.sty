@@ -1,0 +1,466 @@
+\ProvidesPackage{hejohns-hazel}[2022/05/02 - for phis]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% packages
+    \RequirePackage{hejohns-colors}
+    \RequirePackage{mathpartir} % \inferrule
+    \RequirePackage{latexsym} % ?
+    \RequirePackage{stmaryrd} % ?
+    \RequirePackage{amssymb} % ?
+    \RequirePackage{amsthm} % thmtool backend
+    \RequirePackage{thmtools}
+    \declaretheorem{theorem}
+    \declaretheorem[sibling=theorem]{lemma}
+    \declaretheorem[sibling=theorem]{corollary}
+    \declaretheorem[sibling=theorem]{prop}
+    \declaretheorem{definition}
+    \RequirePackage{tikz}
+    % https://tex.stackexchange.com/questions/12678/squiggly-arrows-in-tikz
+    \usetikzlibrary{decorations.pathmorphing}
+    \usetikzlibrary{arrows.meta}
+    \RequirePackage{pgfkeys} % \pgfkeys
+    \RequirePackage{cancel} % \cancel
+    % https://tex.stackexchange.com/questions/317121/automatically-adding-page-breaks-into-long-array-environments
+    \RequirePackage{array}
+    \RequirePackage{longtable}
+    \newcolumntype{L}{>{\(}l<{\)}}
+    \newcolumntype{C}{>{\(}c<{\)}}
+    \newcolumntype{R}{>{\(}r<{\)}}
+    \setlength\tabcolsep{5pt}
+    % https://tex.stackexchange.com/questions/29973/more-than-one-optional-argument-for-newcommand
+    \RequirePackage{xparse} % \NewDocumentCommand
+
+    %% Joshua Dunfield macros
+    \def\OPTIONConf{1}%
+    \RequirePackage{jdunfield} % ?
+    \RequirePackage{circledsteps}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% syntax
+    \newcommand*{\knd}[1][]{\redit{\kappa_{#1}}}
+    \newcommand*{\utyp}[1][]{\greenit{\hat{\tau_{#1}}}}
+    \newcommand*{\typ}[1][]{\greenit{\tau_{#1}}}
+    \newcommand*{\utypvar}[1][]{\greenit{t_{#1}}}
+    \newcommand*{\typvar}[1][]{\greenit{t_{#1}}}
+    \newcommand*{\uexp}[1][]{\blueit{\hat{\delta_{#1}}}}
+    \renewcommand*{\exp}[1][]{\blueit{\delta_{#1}}}
+    \newcommand*{\uexpvar}[1][]{\blueit{x_{#1}}}
+    \newcommand*{\expvar}[1][]{\blueit{x_{#1}}}
+    \newcommand*{\sigknd}[1][]{\orangeit{\xi_{#1}}}
+    \newcommand*{\usig}[1][]{\purpleit{\hat{\sigma_{#1}}}}
+    \newcommand*{\sig}[1][]{\purpleit{\sigma_{#1}}}
+    \newcommand*{\usigvar}[1][]{\purpleit{s_{#1}}}
+    \newcommand*{\sigvar}[1][]{\purpleit{s_{#1}}}
+    \newcommand*{\umod}[1][]{\tealit{\hat{\mu_{#1}}}}
+    \renewcommand*{\mod}[1][]{\tealit{\mu_{#1}}}
+    \newcommand*{\umodvar}[1][]{\tealit{m_{#1}}}
+    \newcommand*{\modvar}[1][]{\tealit{m_{#1}}}
+    \newcommand*{\lab}[1][]{\mathit{lab_{#1}}}
+
+    \newcommand*{\Type}{\redtt{Type}}
+    \NewDocumentCommand{\SKind}{O{\knd}O{\typ}}{\redtt{S_{#1}(#2)}}
+    \newcommand*{\KHole}{\redtt{KHole}}
+    \NewDocumentCommand{\DepFunKind}{O{}O{\knd[1]}O{\knd[2]}}{\redtt{\Pi_{\typvar[#1]\KndAssump#2}.{#3}}}
+    \NewDocumentCommand{\DepProdKind}{O{}O{\knd[1]}O{\knd[2]}}{\redtt{\Sigma_{\typvar[#1]\KndAssump#2}.{#3}}}
+
+    \NewDocumentCommand{\TypeFun}{O{}O{\knd}O{\typ}}{\greentt{\lambda\typvar[#1]\KndAssump#2.#3}}
+    \NewDocumentCommand{\TypeAp}{O{\typ[1]}O{\typ[2]}}{\greentt{#1~#2}}
+    \newcommand*{\ListType}[1]{\greentt{list~#1}}
+    % use violet instead of green?
+    \NewDocumentCommand{\TypeHole}{O{}O{u}}{\greentt{\llparenthesis#1\rrparenthesis^{#2}}}
+    \newcommand*{\ETypeHole}{\TypeHole}
+    \NewDocumentCommand{\NETypeHole}{O{\typ}}{\TypeHole[#1]}
+    \NewDocumentCommand{\UnboundTypeVar}{O{\typvar}}{\TypeHole[#1]}
+    \newcommand{\ModTypePrj}[2]{\greentt{#1.#2}}
+
+    \newcommand*{\bse}[1][]{\greentt{bse_{#1}}}
+    \newcommand*{\Int}{\greentt{Int}}
+    \newcommand*{\Float}{\greentt{Float}}
+    \newcommand*{\Bool}{\greentt{Bool}}
+
+    \NewDocumentCommand{\ubinop}{O{\utyp[1]}O{\utyp[2]}}{\greentt{#1\oplus#2}}
+    \NewDocumentCommand{\binop}{O{\typ[1]}O{\typ[2]}}{\greentt{#1\oplus#2}}
+    \newcommand*{\ProdType}{\greentt{\times}}
+    \newcommand*{\SumType}{\greentt{+}}
+    \newcommand*{\FunType}{\greentt{\rightarrow}}
+
+    \newcommand{\uLetSig}[2]{\purplett{signature~#1=#2}\bluett{~in~\uexp}}
+    \newcommand{\LetSig}[2]{\purplett{signature~#1=#2}\bluett{~in~\exp}}
+    \newcommand{\uLetMod}[2]{\tealtt{module~#1=#2}\bluett{~in~\uexp}}
+    \newcommand{\LetMod}[2]{\tealtt{module~#1=#2}\bluett{~in~\exp}}
+    \newcommand{\uLetFunctor}[2]{\tealtt{functor~#1=#2}\bluett{~in~\uexp}}
+    \newcommand{\LetFunctor}[2]{\tealtt{functor~#1=#2}\bluett{~in~\exp}}
+    \newcommand{\uModTermPrj}[2]{\bluett{#1.#2}}
+    \newcommand{\ModTermPrj}[2]{\bluett{#1.#2}}
+
+    \newcommand{\SSigKind}[1]{\orangett{SSigKind(#1)}}
+    \newcommand{\SigKHole}{\orangett{SigKHole}}
+
+    \newcommand{\uSig}{\Sig}
+    \newcommand{\Sig}[1]{\purplett{\{#1\}}}
+    \newcommand{\uFunctorSig}{\FunctorSig}
+    \newcommand{\FunctorSig}[2]{\purplett{\Pi_{#1}.{#2}}}
+    \newcommand{\uSigHole}{\SigHole}
+    \NewDocumentCommand{\SigHole}{O{}O{^{\hole}}}{\purplett{\llparenthesis#1\rrparenthesis#2}}
+    \newcommand{\UnboundSigVar}[1][]{\uwave{\hphantom{.}\sigvar\hphantom{.}}}
+
+    \newcommand{\Struct}[1]{\tealtt{\{#1\}}}
+    \newcommand{\Functor}[2]{\tealtt{\lambda #1.#2}}
+    \newcommand{\FunctorAp}[2]{\tealtt{#1~#2}}
+    \newcommand{\SubModulePrj}[2]{\tealtt{#1.#2}}
+    \newcommand{\ModHole}[1][]{\tealtt{\llparenthesis#1\rrparenthesis}}
+
+
+    \newcommand{\usbnd}{\greyit{\hat{sbnd}}}
+    \newcommand{\sbnd}{\greyit{sbnd}}
+    \newcommand{\usbnds}{\greyit{\hat{sbnds}}}
+    \newcommand{\sbnds}{\greyit{sbnds}}
+    \newcommand{\usdec}{\greyit{\hat{sdec}}}
+    \newcommand{\sdec}[1][]{\greyit{sdec#1}}
+    \newcommand{\usdecs}{\greyit{\hat{sdecs}}}
+    \newcommand{\sdecs}[1][]{\greyit{sdecs#1}}
+
+    \newcommand{\uOpaqueTypeSdec}[1]{\greentt{type~#1}}
+    \newcommand{\uTransparentTypeSdec}{\TypeSdec}
+    \newcommand{\uValSdec}{\ValSdec}
+    \newcommand{\TypeSdec}[2]{\greentt{type~#1\KndAnn #2}}
+    \newcommand{\ValSdec}[2]{\bluett{val~#1\TypAnn #2}}
+    \newcommand{\uModSdec}{\ModSdec}
+    \newcommand{\ModSdec}[2]{\tealtt{module~#1\SigAnn #2}}
+    \newcommand{\uFunctorSdec}{\FunctorSdec}
+    \newcommand{\FunctorSdec}[2]{\tealtt{functor~#1\SigAnn #2}}
+
+    \newcommand{\TypeSbnd}[2]{\greentt{type~#1 = #2}}
+    \newcommand{\ValSbnd}[2]{\bluett{let~#1 = #2}}
+    \newcommand{\ModSbnd}[2]{\tealtt{module~#1 = #2}}
+    \newcommand{\FunctorSbnd}[2]{\tealtt{functor~#1 = #2}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% misc
+    \newcommand*{\ExpVarCtx}[1][;]{\Gamma#1}
+    \NewDocumentCommand{\TypVarCtx}{O{;}O{}}{\Phi_{#2}#1}
+    \NewDocumentCommand{\xTypVarCtx}{O{;}O{}}{\underline{\Phi_{#2}}#1}
+    \NewDocumentCommand{\InTypVarCtx}{O{;}O{}O{\knd}}{\TypVarCtx[] = \TypVarCtx[][1],\typvar[#2]\KndAssump{#3},\TypVarCtx[][2]#1}
+    \NewDocumentCommand{\ExtendTypVarCtx}{O{;}O{}O{\knd}}{\TypVarCtx[],\typvar[#2]\KndAssump{#3}#1}
+    \NewDocumentCommand{\xExtendTypVarCtx}{O{;}O{}O{\knd}}{\underline{\TypVarCtx[],\typvar[#2]\KndAssump{#3}}#1}
+    \NewDocumentCommand{\xxExtendTypVarCtx}{O{;}O{}mO{}m}{\underline{\underline{\TypVarCtx[],\typvar[#2]\KndAssump{#3}},\typvar[#4]\KndAssump{#5}}#1}
+    \newcommand*{\ModVarCtx}[1][;]{\Xi#1}
+    \newcommand*{\SigVarCtx}[1][;]{\Psi#1}
+    \NewDocumentCommand{\HoleCtx}{O{;}O{}}{\Delta_{#2}#1}
+    \NewDocumentCommand{\xHoleCtx}{O{;}O{}}{\underline{\Delta_{#2}}#1}
+    \NewDocumentCommand{\InTypHoleCtx}{O{;}O{}O{\knd}}{\HoleCtx[] = \HoleCtx[][1],\hole[#2]\KndAssump{#3},\HoleCtx[][2]#1}
+    \NewDocumentCommand{\ExtendTypHoleCtx}{O{;}O{}O{\knd}}{\HoleCtx[],\hole[#2]\KndAssump{#3}#1}
+    \NewDocumentCommand{\xExtendTypHoleCtx}{O{;}O{}O{\knd}}{\underline{\HoleCtx[],\hole[#2]\KndAssump{#3}}#1}
+    \NewDocumentCommand{\xxExtendTypHoleCtx}{O{;}O{}mO{}m}{\underline{\underline{\TypHoleCtx[],\hole[#2]\KndAssump{#3}},\hole[#4]\KndAssump{#5}}#1}
+    \newcommand*{\dom}[1]{\mathsf{dom(}#1\mathsf{)}}
+    \renewcommand*{\dom}[1]{#1}
+    \newcommand*{\val}[1]{\mathsf{val(}#1\mathsf{)}}
+    \newcommand*{\type}[2]{\mathsf{type(}#1, #2\mathsf{)}}
+    \newcommand*{\submodule}[1]{\mathsf{submodule(}#1\mathsf{)}}
+    \renewcommand*{\hole}[1][]{\blackrm{u_{#1}}}
+    \newcommand*{\subst}[3]{\blacksf{[#1/#2]#3}}
+
+    % https://tex.stackexchange.com/questions/128991/frac-or-inference-rule-with-dotted-line
+    % for mathpartir's inferrule
+    \makeatletter
+    \newcommand*{\dotfrac}[2]{
+    \mathchoice
+    {\ooalign{$\genfrac{}{}{0pt}{0}{#1}{#2}$\cr\leavevmode\cleaders\hb@xt@ .22em{\hss $\displaystyle\cdot$\hss}\hfill\kern\z@\cr}}
+    {\ooalign{$\genfrac{}{}{0pt}{1}{#1}{#2}$\cr\leavevmode\cleaders\hb@xt@ .22em{\hss $\textstyle\cdot$\hss}\hfill\kern\z@\cr}}
+    {\ooalign{$\genfrac{}{}{0pt}{2}{#1}{#2}$\cr\leavevmode\cleaders\hb@xt@ .22em{\hss $\scriptstyle\cdot$\hss}\hfill\kern\z@\cr}}
+    {\ooalign{$\genfrac{}{}{0pt}{3}{#1}{#2}$\cr\leavevmode\cleaders\hb@xt@ .22em{\hss $\scriptscriptstyle\cdot$\hss}\hfill\kern\z@\cr}}
+    }
+    \makeatother
+    \newcommand*{\inferruledotfrac}[2]{
+        \hbox{$\dotfrac{#1}{#2}$}
+    }
+    \RenewDocumentCommand{\infer}{oO{}}{\inferrule*[right=#1#2]}
+    \NewDocumentCommand{\rinfer}{oO{}mm}{\inferrule*[right=#1#2]{#4}{#3}}
+    \newcommand{\hintpagebreak}{\pagebreak[3]} % 0-4; 2 too weak, 4 too strong
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% judgments
+    \NewDocumentCommand{\J}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}}{\mathrm{#1 \vdash \mathcal{J}}}
+    % declarative
+        \newcommand*{\TypAsc}{\black{:}}
+        \newcommand*{\TypAssump}{\TypAsc}
+        \newcommand*{\TypAnn}{\TypAsc}
+        \newcommand*{\KndAsc}{\black{::}}
+        \newcommand*{\KndAssump}{\KndAsc}
+        \newcommand*{\KndAnn}{\KndAsc} % why do we have this?
+        \newcommand*{\SigAsc}{\black{:_{\mod}}}
+        \newcommand*{\SigAssump}{\SigAsc}
+        \newcommand*{\SigAnn}{\SigAsc}
+        \newcommand*{\SigKndAsc}{\black{::_{\sig}}}
+        \newcommand*{\SigKndAssump}{\SigKndAsc}
+
+        \NewDocumentCommand{\WellFormed}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{~}}{\mathrm{#1 \vdash #2#3\textsf{OK}}}
+
+        % kinds
+            \newcommand*{\ConsistentSubKindOp}{\lesssim}
+            \NewDocumentCommand{\ConsistentSubKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mm}{\mathrm{#1 \vdash #2 \ConsistentSubKindOp #3}}
+
+            \newcommand*{\KindEquivOp}{\equiv}
+            \NewDocumentCommand{\KindEquiv}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mm}{\mathrm{#1 \vdash #2 \KindEquivOp #3}}
+
+            \newcommand*{\MatchedPiKindOp}{\stackrel{\blacktriangleright}{{}_{\Pi}}}
+            \NewDocumentCommand{\MatchedPiKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{\DepFunKind}}{\mathrm{#1 \vdash #2 \MatchedPiKindOp #3}}
+            \NewDocumentCommand{\KindWellFormed}{O{\knd}o}{\WellFormed[#2]{#1}}
+            \NewDocumentCommand{\SReduceOp}{}{\stackrel{*}{\equiv >}}
+            \NewDocumentCommand{\SReduce}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mm}{\mathrm{#1 \vdash #2 \SReduceOp #3}}
+            \NewDocumentCommand{\SNormalOp}{}{\stackrel{\text{\tiny norm}}{\equiv >}}
+            \NewDocumentCommand{\SNormal}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mm}{\mathrm{#1 \vdash #2 \SNormalOp #3}}
+        % types
+            \newcommand*{\TypeEquivOp}{\equiv}
+            \newcommand*{\TypeEquivAtKindOp}[1][\knd]{\stackrel{#1}{\TypeEquivOp}}
+            \NewDocumentCommand{\TypeEquivAtKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mmO{\knd}}{\mathrm{#1 \vdash #2 \TypeEquivAtKindOp[{#4}] #3}}
+            \newcommand*{\TypeEquiv}[2]{\TypeEquivAtKind{#1}{#2}[]}
+
+            \newcommand*{\PrincipalKindOp}{::>}
+            \NewDocumentCommand{\PrincipalKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{\knd}}{\mathrm{#1 \vdash #2 \PrincipalKindOp #3}}
+
+            \NewDocumentCommand{\WellFormedAtKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{\knd}}{\mathrm{#1 \vdash #2 \KndAsc #3}}
+        % signature kinds
+            \newcommand{\ConsistentSubSigKindOp}{\lesssim_{\sigknd}}
+            \newcommand{\ConsistentSubSigKind}[3]{\mathrm{#1 \vdash #2 \ConsistentSubSigKindOp #3}}
+
+            \newcommand*{\SigKindEquivOp}{\equiv}
+            \NewDocumentCommand{\SigKindEquiv}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mm}{\mathrm{#1 \vdash #2 \equiv #3}}
+        % signatures
+            \newcommand*{\SigEquivOp}{\equiv}
+            \NewDocumentCommand{\SigEquiv}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mmO{\sigknd}}{\mathrm{#1 \vdash #2 \stackrel{#4}{\SigEquivOp} #3 #4}}
+
+            \NewDocumentCommand{\WellFormedAtSigKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{\sigknd}}{\mathrm{#1 \vdash #2 \SigKndAsc #3}}
+        % modules
+            \NewDocumentCommand{\WellFormedAtSig}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{\sig}}{\mathrm{#1 \vdash #2 \SigAsc #3}}
+        % sdecs
+            \newcommand{\SubSdecOp}{\le_{\sdec}}
+            \newcommand{\SubSdec}[3]{\mathrm{#1 \vdash #2 \SubSdecOp #3}}
+        % contexts
+            \NewDocumentCommand{\ContextWellFormed}{o}{\WellFormed[#1]{}[]}
+        % ???
+            \newcommand*{\WellFormedAtType}[3]{\mathrm{#1 \vdash #2 \TypAsc #3}}
+    % algorithmic
+            \NewDocumentCommand{\kv}{m}{\pgfkeysvalueof{/tmp/#1}}
+        % types
+            \pgfkeys{%
+                /AlgTypeEquivAtKind/.is family,
+                /AlgTypeEquivAtKind,
+                default/.style = {
+                    ctx = \HoleCtx\TypVarCtx,
+                    left = \typ[1],
+                    right = \typ[2],
+                    kind = \knd,
+                },
+                ctx/.initial = undef,
+                left/.initial = undef,
+                right/.initial = undef,
+                kind/.initial = undef,
+            }
+            \NewDocumentCommand{\AlgTypeEquivAtKind}{O{}}{%
+                \pgfkeys{/tmp/c/.link = /AlgTypeEquivAtKind/ctx}%
+                \pgfkeys{/tmp/l/.link = /AlgTypeEquivAtKind/left}%
+                \pgfkeys{/tmp/r/.link = /AlgTypeEquivAtKind/right}%
+                \pgfkeys{/tmp/k/.link = /AlgTypeEquivAtKind/kind}%
+                \pgfkeys{/AlgTypeEquivAtKind, default, #1}%
+                \kv{c} \triangleright \kv{l}\TypeEquivAtKindOp[\kv{k}]\kv{r}%
+            }
+            \NewDocumentCommand{\AlgNatKindOp}{}{%
+                \uparrow%
+            }
+            \pgfkeys{%
+                /AlgNatKind/.is family,
+                /AlgNatKind,
+                default/.style = {
+                    ctx = \HoleCtx\TypVarCtx,
+                    in = \typ,
+                    out = \knd,
+                },
+                ctx/.initial = undef,
+                in/.initial = undef,
+                out/.initial = undef,
+            }
+            \NewDocumentCommand{\AlgNatKind}{O{}}{%
+                \pgfkeys{/tmp/c/.link = /AlgNatKind/ctx}%
+                \pgfkeys{/tmp/i/.link = /AlgNatKind/in}%
+                \pgfkeys{/tmp/o/.link = /AlgNatKind/out}%
+                \pgfkeys{/AlgNatKind, default, #1}%
+                \kv{c} \triangleright \kv{i}\AlgNatKindOp\kv{o}%
+            }
+            \NewDocumentCommand{\AlgWHReducOp}{s}{%
+                \IfBooleanTF{#1}{\cancel{\rightsquigarrow}}{\rightsquigarrow}%
+            }
+            \pgfkeys{%
+                /AlgWHReduc/.is family,
+                /AlgWHReduc,
+                default/.style = {
+                    ctx = \HoleCtx\TypVarCtx,
+                    in = \typ,
+                    out = \typ[\chi],
+                },
+                ctx/.initial = undef,
+                in/.initial = undef,
+                out/.initial = undef,
+            }
+            \newcommand*{\ElimCtxOp}{\greentt{\mathcal{E}}}
+            \NewDocumentCommand{\ElimCtx}{m}{\ElimCtxOp[#1]}
+            \NewDocumentCommand{\AlgWHReduc}{sO{}}{%
+                \pgfkeys{/tmp/c/.link = /AlgWHReduc/ctx}%
+                \pgfkeys{/tmp/i/.link = /AlgWHReduc/in}%
+                \pgfkeys{/tmp/o/.link = /AlgWHReduc/out}%
+                \pgfkeys{/AlgWHReduc, default, #2}%
+                \IfBooleanTF{#1}{
+                    \kv{c} \triangleright \kv{i}\AlgWHReducOp*%
+                }{
+                    \kv{c} \triangleright \kv{i}\AlgWHReducOp\kv{o}%
+                }
+            }
+            \NewDocumentCommand{\AlgWHNormalOp}{}{\Downarrow}
+            \pgfkeys{%
+                /AlgWHNormal/.is family,
+                /AlgWHNormal,
+                default/.style = {
+                    ctx = \HoleCtx\TypVarCtx,
+                    in = \typ,
+                    out = \typ[\psi],
+                },
+                ctx/.initial = undef,
+                in/.initial = undef,
+                out/.initial = undef,
+            }
+            \NewDocumentCommand{\AlgWHNormal}{O{}}{%
+                \pgfkeys{/tmp/c/.link = /AlgWHNormal/ctx}%
+                \pgfkeys{/tmp/i/.link = /AlgWHNormal/in}%
+                \pgfkeys{/tmp/o/.link = /AlgWHNormal/out}%
+                \pgfkeys{/AlgWHNormal, default, #1}%
+                \kv{c} \triangleright \kv{i}\AlgWHNormalOp\kv{o}%
+            }
+            \NewDocumentCommand{\AlgTypeNormalOp}{O{\knd}}{\overset{#1}{\Longrightarrow}}
+            \pgfkeys{%
+                /AlgTypeNormal/.is family,
+                /AlgTypeNormal,
+                default/.style = {
+                    ctx = \HoleCtx\TypVarCtx,
+                    in = \typ,
+                    kind = \knd,
+                    out = \typ[\omega],
+                },
+                ctx/.initial = undef,
+                in/.initial = undef,
+                kind/.initial = undef,
+                out/.initial = undef,
+            }
+            \NewDocumentCommand{\AlgTypeNormal}{O{}}{%
+                \pgfkeys{/tmp/c/.link = /AlgTypeNormal/ctx}%
+                \pgfkeys{/tmp/i/.link = /AlgTypeNormal/in}%
+                \pgfkeys{/tmp/k/.link = /AlgTypeNormal/kind}%
+                \pgfkeys{/tmp/o/.link = /AlgTypeNormal/out}%
+                \pgfkeys{/AlgTypeNormal, default, #1}%
+                \kv{c} \triangleright \kv{i}\AlgTypeNormalOp[\kv{k}]\kv{o}%
+            }
+            \NewDocumentCommand{\AlgPathNormalOp}{O{\knd}}{\longrightarrow^{#1}}
+            \pgfkeys{%
+                /AlgPathNormal/.is family,
+                /AlgPathNormal,
+                default/.style = {
+                    ctx = \HoleCtx\TypVarCtx,
+                    in = \typ[\psi],
+                    out = \typ[\omega],
+                    kind = \knd,
+                },
+                ctx/.initial = undef,
+                in/.initial = undef,
+                out/.initial = undef,
+                kind/.initial = undef,
+            }
+            \NewDocumentCommand{\AlgPathNormal}{O{}}{%
+                \pgfkeys{/tmp/c/.link = /AlgPathNormal/ctx}%
+                \pgfkeys{/tmp/i/.link = /AlgPathNormal/in}%
+                \pgfkeys{/tmp/o/.link = /AlgPathNormal/out}%
+                \pgfkeys{/tmp/k/.link = /AlgPathNormal/kind}%
+                \pgfkeys{/AlgPathNormal, default, #1}%
+                \kv{c} \triangleright \kv{i}\AlgPathNormalOp[\kv{k}]\kv{o}%
+            }
+            \pgfkeys{%
+                /IsPath/.is family,
+                /IsPath,
+                default/.style = {
+                    ctx = \HoleCtx\TypVarCtx,
+                    in = \ElimCtx{\typ},
+                },
+                ctx/.initial = undef,
+                in/.initial = undef,
+            }
+            \NewDocumentCommand{\IsPath}{O{}}{%
+                \pgfkeys{/tmp/c/.link = /IsPath/ctx}%
+                \pgfkeys{/tmp/i/.link = /IsPath/in}%
+                \pgfkeys{/IsPath, default, #1}%
+                \kv{c} \triangleright \Circled{\kv{i}}%
+            }
+            \newcommand*{\AlgKindNormalOp}{\AlgTypeNormalOp}
+            \pgfkeys{%
+                /AlgKindNormal/.is family,
+                /AlgKindNormal,
+                default/.style = {
+                    ctx = \HoleCtx\TypVarCtx,
+                    in = \knd,
+                    out = \knd[\omega],
+                },
+                ctx/.initial = undef,
+                in/.initial = undef,
+                out/.initial = undef,
+            }
+            \NewDocumentCommand{\AlgKindNormal}{O{}}{%
+                \pgfkeys{/tmp/c/.link = /AlgKindNormal/ctx}%
+                \pgfkeys{/tmp/i/.link = /AlgKindNormal/in}%
+                \pgfkeys{/tmp/o/.link = /AlgKindNormal/out}%
+                \pgfkeys{/AlgKindNormal, default, #1}%
+                \kv{c} \triangleright \kv{i}\AlgKindNormalOp[]\kv{o}%
+            }
+            \newcommand*{\AlgConsistentSubKindOp}{\ConsistentSubKindOp}
+            \pgfkeys{%
+                /AlgConsistentSubKind/.is family,
+                /AlgConsistentSubKind,
+                default/.style = {
+                    ctx = \HoleCtx\TypVarCtx,
+                    left = \knd[1],
+                    right  = \knd[2],
+                },
+                ctx/.initial = undef,
+                left/.initial = undef,
+                right/.initial = undef,
+            }
+            \NewDocumentCommand{\AlgConsistentSubKind}{O{}}{%
+                \pgfkeys{/tmp/c/.link = /AlgConsistentSubKind/ctx}%
+                \pgfkeys{/tmp/l/.link = /AlgConsistentSubKind/left}%
+                \pgfkeys{/tmp/r/.link = /AlgConsistentSubKind/right}%
+                \pgfkeys{/AlgConsistentSubKind, default, #1}%
+                \kv{c} \triangleright \kv{l}\AlgConsistentSubKindOp\kv{r}%
+            }
+            \newcommand*{\AlgKindEquivOp}{\KindEquivOp}
+            \pgfkeys{%
+                /AlgKindEquiv/.is family,
+                /AlgKindEquiv,
+                default/.style = {
+                    ctx = \HoleCtx\TypVarCtx,
+                    left = \knd[1],
+                    right  = \knd[2],
+                },
+                ctx/.initial = undef,
+                left/.initial = undef,
+                right/.initial = undef,
+            }
+            \NewDocumentCommand{\AlgKindEquiv}{O{}}{%
+                \pgfkeys{/tmp/c/.link = /AlgKindEquiv/ctx}%
+                \pgfkeys{/tmp/l/.link = /AlgKindEquiv/left}%
+                \pgfkeys{/tmp/r/.link = /AlgKindEquiv/right}%
+                \pgfkeys{/AlgKindEquiv, default, #1}%
+                \kv{c} \triangleright \kv{l}\AlgKindEquivOp\kv{r}%
+            }
+
+        \newcommand{\Syn}[3]{#1 \vdash #2~\Rightarrow~#3}
+        \NewDocumentCommand{\SynKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{\knd}}{\Syn{#1}{#2}{#3}}
+        \newcommand{\Ana}[3]{#1 \vdash #2~\Leftarrow~#3}
+        \NewDocumentCommand{\AnaKind}{O{\HoleCtx\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{\knd}}{\Ana{#1}{#2}{#3}}
+        \newcommand{\SynElab}[5]{#1 \vdash #2~\Rightarrow~#3 \rightsquigarrow #4 \dashv #5}
+        \NewDocumentCommand{\SynKindElab}{O{\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{\knd}mO{\HoleCtx[]}}{\SynElab{#1}{#2}{#3}{#4}{#5}}
+        \newcommand{\AnaElab}[5]{#1 \vdash #2~\Leftarrow~#3 \rightsquigarrow #4 \dashv #5}
+        \NewDocumentCommand{\AnaKindElab}{O{\TypVarCtx\ModVarCtx\SigVarCtx[]}mO{\knd}mO{\HoleCtx[]}}{\AnaElab{#1}{#2}{#3}{#4}{#5}}
+        \newcommand*{\ElabDegenerate}[4]{#1 \vdash #2 \rightsquigarrow #3 \dashv #4}
+\endinput

@@ -1,0 +1,55 @@
+cabal-version:      3.6
+name:               algo
+version:            0.1.0.0
+
+-- A short (one-line) description of the package.
+-- synopsis:
+
+-- A longer description of the package.
+-- description:
+
+-- A URL where users can report bugs.
+-- bug-reports:
+
+-- The license under which the package is released.
+-- license:
+author:             hejohns
+maintainer:         hejohns@umich.edu
+
+-- A copyright notice.
+-- copyright:
+-- category:
+extra-source-files: CHANGELOG.md
+
+library
+    exposed-modules:  Algo
+    hs-source-dirs:   src
+    other-modules:    Common
+                      External
+                      Internal
+                      ECtx
+                      ICtx
+                      Normalize
+                      BiDirectional
+    build-depends:    base ^>=4.16.0.0
+                     --,hs-perl5
+                     ,shqq
+    default-language: GHC2021
+    ghc-options:      -Wall -Wno-unused-matches
+
+test-suite test-algo
+    type:             exitcode-stdio-1.0
+    main-is:          Tests.hs
+    hs-source-dirs:   test
+    other-modules:    Lexer
+                      Parser
+    build-depends:    base ^>=4.16.0.0
+                     ,HUnit
+                     ,algo
+                     ,array
+    default-language: GHC2021
+    -- man perlembed: `perl -MExtUtils::Embed -e ccopts -e ldopts`
+    -- and then pruned for stuff ghc doesn't understand
+    -- NOTE: yes, I know cabal complains about using ghc-options this way
+    -- but this is easier to manage for me, the human
+    ghc-options:      -Wall -L/usr/local/lib  -L/usr/lib/x86_64-linux-gnu/perl/5.34/CORE -lperl -ldl -lm -lpthread -lc -lcrypt -D_REENTRANT -D_GNU_SOURCE -DDEBIAN -I/usr/local/include -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -I/usr/lib/x86_64-linux-gnu/perl/5.34/CORE
