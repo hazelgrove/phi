@@ -6,7 +6,8 @@
 module Common where
 
 import Control.Monad (MonadPlus, mzero)
-import Language.Perl
+
+--import Language.Perl
 import System.IO.Unsafe
 import System.ShQQ
 
