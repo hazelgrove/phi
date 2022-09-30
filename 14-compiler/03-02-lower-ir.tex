@@ -72,6 +72,7 @@
 \newcommand{\EProjR}[1]{\ensuremath{\SyProjR~ #1}}
 
 \newcommand{\EFun}[3]{\ensuremath{\SyFun #1 : #2 \SyDot~ #3}}
+\newcommand{\EAp}[2]{\ensuremath{#1 ~#2}}
 
 \newcommand{\EEHole}[2]{\ensuremath{\SyEHole{#1}{#2}}}
 
@@ -79,6 +80,11 @@
 
 \subsection{Lower intermediate representation (LIR)}
 \label{sec:lir}
+
+\begin{note}
+  The semantics of this representation are not totally thought out; very likely this approach
+  doesn't actually work\ldots
+\end{note}
 
 In the lower intermediate representation (LIR), whose syntax is partially given in
 \cref{fig:lir-syntax}, completeness (see below) is made explicit in the type system
@@ -105,6 +111,7 @@ In the lower intermediate representation (LIR), whose syntax is partially given 
                    &                   & \mid         & \EPair{\SortImmVar}{\SortImmVar}
                                                    \mid \EProjL{\SortImmVar}
                                                    \mid \EProjR{\SortImmVar} \\
+                   &                   & \mid         & \EAp{\SortImmVar}{\SortImmVar} \\
                    &                   & \mid         & \EWrapIntoNI{\SortImmVar}
                                                    \mid \EWrapIntoII{\SortImmVar} \\
                    &                   & \mid         & \EEmbed{\SortImmVar}
@@ -205,6 +212,9 @@ are polymorphic over necessary completeness (e.g. integer addition).
 
       $\EProjL{\SortImmVar}$, $\EProjR{\SortImmVar}$
         & left and right pair projection \\
+
+      $\EAp{\SortImmVar}{\SortImmVar}$
+        & function application \\
 
       $\EWrapIntoNI{\SortImmVar}$
         & wrapping of a value into an indet. result \\
@@ -311,6 +321,16 @@ TACaseComplete}).
     }{
       \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EProjR{\SortImmVar}}{\TMk{\SortTypConVar'}{\SortNCompleteVar}} \\
     }{TASnd}
+  \end{mathpar} \\
+  %
+  Application:
+  \begin{mathpar}
+    % \judgment{
+      % \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar}{\TMk{(\TCFun{\TMk{\SortTypConVar}{\SortNCompleteVar}}{\SortTypVar})}{\SortNCompleteVar'}} \\
+      % \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar'}{\TMk{\SortTypConVar}{\SortNCompleteVar}}
+    % }{
+      % \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EAp{\SortImmVar}{\SortImmVar'}}{\TMk{\TCPair{\SortTypConVar}{\SortTypConVar'}}{\SortNCompleteVar}}
+    % }{TAAp}
   \end{mathpar} \\
   %
   Wrapping:

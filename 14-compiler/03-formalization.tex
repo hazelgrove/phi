@@ -21,6 +21,11 @@ easier to compile.
 the codebase) produces a sequential form resembling monadic normal form \cite{danvy2003}. This form
 is called the \emph{middle intermediate representation} (see \Cref{sec:mir}).
 
+\begin{thought}
+  Maybe in this phase we should compile evaluation logic concerning casts into explicit operations?
+  This would significantly change how casts should be represented.
+\end{thought}
+
 \subsubsection{Explicitization}
 \emph{Explicitization} (see \Cref{sec:explicitization}) performs completeness analysis (see
 \Cref{sec:completeness-analysis}) on the middle intermediate representation and produces a
