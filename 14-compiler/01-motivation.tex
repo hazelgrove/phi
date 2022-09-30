@@ -1,12 +1,12 @@
 \documentclass[index.tex]{subfiles}
 
 \begin{document}
-\subsection{Motivation}
+\section{Motivation}
 \label{motivation}
 Right now, \Hazel{} has a simple tree-walk evaluator based on environments, but not a compiler that
 can output fast, optimized executables. This PHI proposes such a compiler.
 
-\subsubsection{Objectives}
+\subsection{Objectives}
 \label{objectives}
 There are a number of criteria we would like the compiler to satisfy: 
 %
@@ -33,7 +33,7 @@ programming environment:
   \item Incremental execution, via fill-and-resume-like behaviour.
 \end{itemize}
 
-\subsubsection{Challenges}
+\subsection{Challenges}
 \label{challenges}
 The presence of holes poses fundamental challenges for compilers, as \emph{indeterminate results}
 produced by \Hazel's semantics are not values. Hence, we are concerned with

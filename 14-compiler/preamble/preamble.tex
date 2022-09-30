@@ -40,5 +40,14 @@
 \makeatletter
 \renewcommand\tableofcontents{\@starttoc{toc}}
 
+\makeatletter
+\newcommand{\unchapter}[1]{%
+  \begingroup
+  \let\@makechapterhead\@gobble
+  \chapter{#1}
+  \endgroup
+}
+\makeatother
+
 \include{preamble/math}
 \include{preamble/symbols}

@@ -69,7 +69,7 @@
 
 \newcommand{\EVarNamed}[2]{\ensuremath{t_{#1}^{{\color{gray}#2}}}}
 
-\subsubsection{Lower intermediate representation (LIR)}
+\subsection{Lower intermediate representation (LIR)}
 \label{sec:lir}
 
 In the lower intermediate representation (LIR), whose syntax is partially given in
@@ -109,7 +109,8 @@ In the lower intermediate representation (LIR), whose syntax is partially given 
   \label{fig:lir-syntax}
 \end{figure}
 
-\paragraph{Completeness}
+\subsubsection{Completeness}
+\label{sec:lir-completeness}
 Completeness (see \Cref{completeness}) is denoted by $\SortCompleteVar$, with "necessarily" cases given
 by $\SortNCompleteVar$: $\CNC =$ necessary completeness, $\CNI =$ necessary incompleteness, and
 $\CII =$ indeterminate incompleteness. They are encoded in types, which are given by the
@@ -117,7 +118,8 @@ metavariable $\SortTypVar$. A type $\TMk{\SortTypConVar}{\SortCompleteVar}$ is t
 type $\SortTypConVar$ (need a better name for this) parameterized by completeness
 $\SortCompleteVar$.
 
-\paragraph{Immediates}
+\subsubsection{Immediates}
+\label{sec:lir-immediates}
 Similar to the high intermediate representation, a distinction is made between \emph{immediates}
 (given by $\SortImmVar$) and \emph{composites} (computations, given by $\SortCompVar$). Immediates
 are either literals or variables.
@@ -160,7 +162,8 @@ are either literals or variables.
 straightforward. The rule for holes $\EEHole{\SortHoleIdVar}{\SortHoleEnvVar}$ is the same as
 that of the internal \Hazel{} language.
 
-\paragraph{Composites}
+\subsubsection{Composites}
+\label{sec:lir-composites}
 See \cref{fig:lir-syntax-comp} for an brief overview of the composite forms. Note the operations that
 are polymorphic over necessary completeness (e.g. integer addition).
 
@@ -352,6 +355,11 @@ TACaseComplete}).
   \caption{Type assignment for LIR composites}
   \label{fig:lir-ta-comp}
 \end{figure}
+
+\subsubsection{Dynamics}
+\label{sec:lir-dynamics}
+Here we attempt to give a small-step operational semantics for the lower intermediate
+representation.
 
 \subsubsection{Explicitization}
 \label{sec:explicitization}
