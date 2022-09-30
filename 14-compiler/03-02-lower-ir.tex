@@ -1,6 +1,9 @@
 \documentclass[index.tex]{subfiles}
 
 \begin{document}
+\newcommand{\SyWrap}{\ensuremath{\textsf{\textbf{{wrap}}}}}
+\newcommand{\SyCaseComplete}{\ensuremath{\textsf{\textbf{casecomplete}}}}
+
 \newcommand{\SortNComplete}{\ensuremath{\textsf{Completeness}}}
 \newcommand{\SortNCompleteVar}{\ensuremath{k}}
 \newcommand{\SortComplete}{\ensuremath{\textsf{}}}
@@ -25,6 +28,7 @@
 \newcommand{\TCFloat}{\ensuremath{\SyTFloat}}
 \newcommand{\TCBool}{\ensuremath{\SyTBool}}
 \newcommand{\TCPair}[2]{\ensuremath{#1 \SyProd #2}}
+\newcommand{\TCFun}[2]{\ensuremath{#1 \SyArrow #2}}
 
 \newcommand{\TIntNC}{\ensuremath{\TMk{\TCInt}{\CNC}}}
 \newcommand{\TIntNI}{\ensuremath{\TMk{\TCInt}{\CNI}}}
@@ -32,8 +36,10 @@
 \newcommand{\TFloatNI}{\ensuremath{\TMk{\TCFloat}{\CNI}}}
 \newcommand{\TBoolNC}{\ensuremath{\TMk{\TCBool}{\CNC}}}
 \newcommand{\TBoolNI}{\ensuremath{\TMk{\TCBool}{\CNI}}}
-\newcommand{\TPairNC}{\ensuremath{\TMk{\TCPair}{\CNC}}}
-\newcommand{\TPairNI}{\ensuremath{\TMk{\TCPair}{\CNI}}}
+\newcommand{\TPairNC}[2]{\ensuremath{\TMk{\TCPair{#1}{#2}}{\CNC}}}
+\newcommand{\TPairNI}[2]{\ensuremath{\TMk{\TCPair{#1}{#2}}{\CNI}}}
+\newcommand{\TFunNC}[2]{\ensuremath{\TMk{(\TCFun{#1}{#2})}{\CNC}}}
+\newcommand{\TFunNI}[2]{\ensuremath{\TMk{(\TCFun{#1}{#2})}{\CNI}}}
 
 \newcommand{\TMk}[2]{\ensuremath{#1[#2]}}
 
@@ -41,7 +47,7 @@
 \newcommand{\EFloatLit}{\ensuremath{\underline{f}}}
 \newcommand{\EBoolLit}{\ensuremath{\underline{b}}}
 \newcommand{\ELet}[2]{\ensuremath{\SyLet~ #1 = #2}}
-\newcommand{\EIn}{\ensuremath{~\SyInn~}}
+\newcommand{\EIn}{\ensuremath{~\SyIn~}}
 \newcommand{\EInn}[1]{\ensuremath{~\SyIn~ #1}}
 \newcommand{\EReturn}[1]{\ensuremath{\SyReturn~ #1}}
 \newcommand{\ECaseCompleteWith}[1]{\ensuremath{\SyCaseComplete~ #1 ~\SyWith}}
@@ -65,6 +71,8 @@
 \newcommand{\EProjL}[1]{\ensuremath{\SyProjL~ #1}}
 \newcommand{\EProjR}[1]{\ensuremath{\SyProjR~ #1}}
 
+\newcommand{\EFun}[3]{\ensuremath{\SyFun #1 : #2 \SyDot~ #3}}
+
 \newcommand{\EEHole}[2]{\ensuremath{\SyEHole{#1}{#2}}}
 
 \newcommand{\EVarNamed}[2]{\ensuremath{t_{#1}^{{\color{gray}#2}}}}
@@ -81,10 +89,12 @@ In the lower intermediate representation (LIR), whose syntax is partially given 
     \SortNComplete & \SortNCompleteVar & \Coloneqq & \CNC \mid \CNI \\
     \SortComplete  & \SortCompleteVar  & \Coloneqq & \SortNCompleteVar \mid \CII \\
     \SortTypCon    & \SortTypConVar    & \Coloneqq & \TCHole \mid \TCInt \mid \TCFloat \mid \TCBool 
-                                                   \mid \TCPair{\SortTypConVar}{\SortTypConVar} \\
+                                                   \mid \TCPair{\SortTypConVar}{\SortTypConVar} 
+                                                   \mid \TCFun{\TMk{\SortTypConVar}{\SortNCompleteVar}}{\SortTypVar} \\
     \SortTyp       & \SortTypVar       & \Coloneqq & \TMk{\SortTypConVar}{\SortCompleteVar} \\
     \SortImm       & \SortImmVar       & \Coloneqq & x \mid \EEHole{\SortHoleIdVar}{\SortHoleEnvVar}
-                                                   \mid \EIntLit \mid \EFloatLit \mid \EBoolLit \\
+                                                   \mid \EIntLit \mid \EFloatLit \mid \EBoolLit 
+                                                   \mid \EFun{x}{\TMk{\SortTypConVar}{\SortNCompleteVar}}{\SortCompVar} \\
     \SortComp      & \SortCompVar      & \Coloneqq & \SortImmVar \\
                    &                   & \mid         & \EPlus{\SortImmVar}{\SortImmVar} 
                                                    \mid \ETimes{\SortImmVar}{\SortImmVar}
@@ -151,7 +161,13 @@ are either literals or variables.
 
     \judgment{ }{
       \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EBoolLit}{\TBoolNC}
-    }{TABoolLit}
+    }{TABoolLit} \\
+
+    \judgment{
+      \hasTypeCtx{\extendCtx{\CtxVar}{x}{\TMk{\SortTypConVar}{\SortNCompleteVar}}}{\HoleCtxVar}{\SortCompVar}{\SortTypVar}
+    }{
+      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EFun{x}{\TMk{\SortTypConVar}{\SortNCompleteVar}}{\SortCompVar}}{\TFunNC{\TMk{\SortTypConVar}{\SortNCompleteVar}}{\SortTypVar}}
+    }{TALam}
   \end{mathpar}
   %
   \caption{Type assignment for LIR immediates}
@@ -358,8 +374,12 @@ TACaseComplete}).
 
 \subsubsection{Dynamics}
 \label{sec:lir-dynamics}
-Here we attempt to give a small-step operational semantics for the lower intermediate
-representation.
+We attempt to give a small-step operational semantics for the lower intermediate representation.
+
+\begin{figure}
+  \caption{Small-step operational semantics for LIR}
+  \label{fig:lir-ssos}
+\end{figure}
 
 \subsubsection{Explicitization}
 \label{sec:explicitization}
