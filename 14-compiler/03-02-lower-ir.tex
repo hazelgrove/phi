@@ -44,7 +44,7 @@
 \newcommand{\EIn}{\ensuremath{~\SyInn~}}
 \newcommand{\EInn}[1]{\ensuremath{~\SyIn~ #1}}
 \newcommand{\EReturn}[1]{\ensuremath{\SyReturn~ #1}}
-\newcommand{\ECaseCompleteWith}[1]{\ensuremath{\SyCaseComplete~ #1 ~\SyWith~}}
+\newcommand{\ECaseCompleteWith}[1]{\ensuremath{\SyCaseComplete~ #1 ~\SyWith}}
 \newcommand{\ECaseCompleteBranch}[2]{\ensuremath{\SyBar~ #1 \SyArrow #2}}
 
 \newcommand{\EWrapIntoNI}[1]{\ensuremath{\SyWrap^{\CNI}~ #1}}
@@ -69,77 +69,12 @@
 
 \newcommand{\EVarNamed}[2]{\ensuremath{t_{#1}^{{\color{gray}#2}}}}
 
-\subsubsection{Lower intermediate representation}
+\subsubsection{Lower intermediate representation (LIR)}
+\label{sec:lir}
+
 In the lower intermediate representation (LIR), whose syntax is partially given in
-\cref{lir-syntax}, completeness (\Cref{completeness}) is made explicit in the type system
-(\Cref{lir-ta-imm, lir-ta-comp}).
-
-\paragraph{Completeness}
-Completeness (\Cref{completeness}) is denoted by $\SortCompleteVar$, with "necessarily" cases given
-by $\SortNCompleteVar$: $\CNC =$ necessary completeness, $\CNI =$ necessary incompleteness, and
-$\CII =$ indeterminate incompleteness. They are encoded in types.
-%
-\begin{note}
-  The type $\TMk{\TCHole}{\CNC}$ should never arise. This is probably problematic for the semantics
-  of $\SyCaseComplete$, but haven't really figured this out.
-\end{note}
-
-\paragraph{Immediates}
-Similar to the high intermediate representation, a distinction is made between \emph{immediates}
-(given by $\SortImmVar$) and \emph{composites} (computations, given by $\SortCompVar$). Immediates
-are either literals or variables.
-
-\paragraph{Composites}
-See \cref{lir-syntax-comp} for an overview of the composite forms. Note the operations that are
-polymorphic over necessary completeness (e.g. integer addition).
-
-The syntax and type assignment rules enforce serious computations to be on either necessarily
-complete or necessarily incomplete immediates; indeterminately incomplete results may be introduced
-only either by wrapping or by projecting a cast proxy, and eliminated only by $\SyCaseComplete$.
-
-\begin{table}
-  \begin{center}
-    \begin{tabular}{rl}
-      \textbf{Form} & \textbf{Description} \\
-      \midrule
-
-      $\SortImmVar$ 
-        & immediates are also composites \\
-      
-      $\EPlus{\SortImmVar}{\SortImmVar}$, $\ETimes{\SortImmVar}{\SortImmVar}$
-        & addition, multiplication of two $\TCInt$ immediates \\
-
-      $\EFPlus{\SortImmVar}{\SortImmVar}$, $\EFTimes{\SortImmVar}{\SortImmVar}$
-        & same but for $\TCFloat$ \\
-
-      $\EAnd{\SortImmVar}{\SortImmVar}$, $\EOr{\SortImmVar}{\SortImmVar}$
-        & logical and, logical or of two $\TCBool$ immediates \\
-
-      $\EPair{\SortImmVar}{\SortImmVar}$
-        & pair construction \\
-
-      $\EProjL{\SortImmVar}$, $\EProjR{\SortImmVar}$
-        & left and right pair projection \\
-
-      $\EWrapIntoNI{\SortImmVar}$
-        & wrapping of a necessarily complete immediate into an indeterminate result \\
-
-      $\EWrapIntoII{\SortImmVar}$
-        & wrapping of an immediate into a indeterminately incomplete
-        result \\
-
-      $\EEmbed{\SortImmVar}$
-        & embedding of an immediate into a cast proxy \\
-
-      $\EProj{\SortTypConVar}{\SortImmVar}$
-        & projection of a proxy to a target type $\SortTypConVar$; performs a dynamic type check and
-        may fail \\
-    \end{tabular}
-  \end{center}
-  %
-  \caption{Overview of LIR composite forms}
-  \label{lir-syntax-comp}
-\end{table}
+\cref{fig:lir-syntax}, completeness (see below) is made explicit in the type system
+(see \Cref{fig:lir-ta-imm,fig:lir-ta-comp}).
 
 \begin{figure}
   \[\begin{array}{rccl}
@@ -166,13 +101,26 @@ only either by wrapping or by projecting a cast proxy, and eliminated only by $\
                                                    \mid \EProj{\SortImmVar}{\SortTypConVar} \\
                    &                   & \mid         & \ELet{x}{\SortCompVar} \EInn{\SortCompVar} \\
                    &                   & \mid         & \ECaseCompleteWith{\SortImmVar}
-                                                     \ECaseCompleteBranch{x}{\SortCompVar}
+                                                    ~\ECaseCompleteBranch{x}{\SortCompVar}
                                                     ~\ECaseCompleteBranch{x'}{\SortCompVar}
   \end{array}\]
   %
   \caption{LIR syntax}
-  \label{lir-syntax}
+  \label{fig:lir-syntax}
 \end{figure}
+
+\paragraph{Completeness}
+Completeness (see \Cref{completeness}) is denoted by $\SortCompleteVar$, with "necessarily" cases given
+by $\SortNCompleteVar$: $\CNC =$ necessary completeness, $\CNI =$ necessary incompleteness, and
+$\CII =$ indeterminate incompleteness. They are encoded in types, which are given by the
+metavariable $\SortTypVar$. A type $\TMk{\SortTypConVar}{\SortCompleteVar}$ is thus a ``concrete''
+type $\SortTypConVar$ (need a better name for this) parameterized by completeness
+$\SortCompleteVar$.
+
+\paragraph{Immediates}
+Similar to the high intermediate representation, a distinction is made between \emph{immediates}
+(given by $\SortImmVar$) and \emph{composites} (computations, given by $\SortCompVar$). Immediates
+are either literals or variables.
 
 \begin{figure}
   \judgbox{\hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar}{\SortTypVar}}
@@ -205,8 +153,70 @@ only either by wrapping or by projecting a cast proxy, and eliminated only by $\
   \end{mathpar}
   %
   \caption{Type assignment for LIR immediates}
-  \label{lir-ta-imm}
+  \label{fig:lir-ta-imm}
 \end{figure}
+
+\Cref{fig:lir-ta-imm} gives the type assignment rules for immediates, which are quite
+straightforward. The rule for holes $\EEHole{\SortHoleIdVar}{\SortHoleEnvVar}$ is the same as
+that of the internal \Hazel{} language.
+
+\paragraph{Composites}
+See \cref{fig:lir-syntax-comp} for an brief overview of the composite forms. Note the operations that
+are polymorphic over necessary completeness (e.g. integer addition).
+
+\begin{table}
+  \begin{center}
+    \begin{tabular}{rl}
+      \textbf{Form} & \textbf{Description} \\
+
+      $\SortImmVar$ 
+        & immediates are also composites \\
+      
+      $\EPlus{\SortImmVar}{\SortImmVar}$, $\ETimes{\SortImmVar}{\SortImmVar}$
+        & addition, multiplication of two $\TCInt$ immediates \\
+
+      $\EFPlus{\SortImmVar}{\SortImmVar}$, $\EFTimes{\SortImmVar}{\SortImmVar}$
+        & addition, multiplication of two $\TCFloat$ immediates \\
+
+      $\EAnd{\SortImmVar}{\SortImmVar}$, $\EOr{\SortImmVar}{\SortImmVar}$
+        & logical and, logical or of two $\TCBool$ immediates \\
+
+      $\EPair{\SortImmVar}{\SortImmVar}$
+        & pair construction \\
+
+      $\EProjL{\SortImmVar}$, $\EProjR{\SortImmVar}$
+        & left and right pair projection \\
+
+      $\EWrapIntoNI{\SortImmVar}$
+        & wrapping of a value into an indet. result \\
+
+      $\EWrapIntoII{\SortImmVar}$
+        & wrapping of an immediate into a indeterminately incomplete
+        result \\
+
+      $\EEmbed{\SortImmVar}$
+        & embedding of an immediate into a cast proxy \\
+
+      $\EProj{\SortTypConVar}{\SortImmVar}$
+        & projection of a proxy to a target type $\SortTypConVar$; dynamic type check and may fail \\
+
+      $\ELet{x}{\SortCompVar} \EIn \SortCompVar$
+        & variable binding \\
+
+      $\ECaseCompleteWith{\SortImmVar} ~\cdots$
+        & dynamic check; first branch taken if value, second branch if indet. result
+    \end{tabular}
+  \end{center}
+  %
+  \caption{Overview of LIR composite forms}
+  \label{fig:lir-syntax-comp}
+\end{table}
+
+The syntax and type assignment rules (see \Cref{fig:lir-ta-comp}) enforce serious computations to be
+on either necessarily complete or necessarily incomplete immediates; indeterminately incomplete
+results may be introduced only either by wrapping (\textsc{\small TAWrapIntoII}) or by projecting a
+cast proxy (\textsc{\small TAProj}), and eliminated only by $\SyCaseComplete$ (\textsc{\small
+TACaseComplete}).
 
 \begin{figure}
   \judgbox{\hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortCompVar}{\SortTypVar}} \\
@@ -340,7 +350,15 @@ only either by wrapping or by projecting a cast proxy, and eliminated only by $\
   \end{mathpar}
   %
   \caption{Type assignment for LIR composites}
-  \label{lir-ta-comp}
+  \label{fig:lir-ta-comp}
+\end{figure}
+
+\subsubsection{Explicitization}
+\label{sec:explicitization}
+
+\begin{figure}
+  \caption{LIR function-local completeness analysis}
+  \label{fig:lir-completeness-analysis-local}
 \end{figure}
    
 \end{document}

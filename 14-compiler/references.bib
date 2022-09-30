@@ -10,7 +10,14 @@
   pages = {503–542},
 }
 
-  @inproceedings{10.1145/2837614.2837631,
+@inproceedings{danvy2003,
+  title = {A New One-Pass Transformation into Monadic Normal Form},
+  author = {Olivier Danvy},
+  booktitle = {CC},
+  year = {2003},
+}
+
+@inproceedings{gilray2016,
   author = {Gilray, Thomas and Lyde, Steven and Adams, Michael D. and Might, Matthew and Van Horn,
             David},
   title = {Pushdown Control-Flow Analysis for Free},
@@ -41,40 +48,6 @@
               Store-allocated continuations},
   location = {St. Petersburg, FL, USA},
   series = {POPL '16},
-}
-
-@article{gilray2016,
-  author = {Gilray, Thomas and Lyde, Steven and Adams, Michael D. and Might, Matthew and Van Horn,
-            David},
-  title = {Pushdown Control-Flow Analysis for Free},
-  year = {2016},
-  issue_date = {January 2016},
-  publisher = {Association for Computing Machinery},
-  address = {New York, NY, USA},
-  volume = {51},
-  number = {1},
-  issn = {0362-1340},
-  url = {https://doi.org/10.1145/2914770.2837631},
-  doi = {10.1145/2914770.2837631},
-  abstract = {Traditional control-flow analysis (CFA) for higher-order languages introduces spurious
-              connections between callers and callees, and different invocations of a function may
-              pollute each other's return flows. Recently, three distinct approaches have been
-              published that provide perfect call-stack precision in a computable manner: CFA2, PDCFA
-              , and AAC. Unfortunately, implementing CFA2 and PDCFA requires significant engineering
-              effort. Furthermore, all three are computationally expensive. For a monovariant
-              analysis, CFA2 is in O(2^n), PDCFA is in O(n^6), and AAC is in O(n^8). In this paper,
-              we describe a new technique that builds on these but is both straightforward to
-              implement and computationally inexpensive. The crucial insight is an unusual
-              state-dependent allocation strategy for the addresses of continuations. Our technique
-              imposes only a constant-factor overhead on the underlying analysis and costs only
-              O(n^3) in the monovariant case. We present the intuitions behind this development,
-              benchmarks demonstrating its efficacy, and a proof of the precision of this analysis.},
-  journal = {SIGPLAN Not.},
-  month = {jan},
-  pages = {691–704},
-  numpages = {14},
-  keywords = {Static analysis, Abstract interpretation, Store-allocated continuations, Control-flow
-              analysis, Pushdown analysis},
 }
 
 @misc{grain2022,

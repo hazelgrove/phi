@@ -5,10 +5,28 @@
 \label{formalization}
 We try to formulate a calculus for the compilation of functional programs with holes. This
 formalization is very much in-progress and likely does not reflect the current status of the
-implementation.
+implementation. Ideally, once the calculus is stable, we should like to prove that these
+translations preserve the semantics of the source language.
 
-Compilation begins with the Hazel internal language.
+\subsubsection{Overview}
+Compilation begins with the Hazel internal language and passes through a number of stages.
 
+\paragraph{Transformation}
+The implementation inserts a first pass (that is quite unnecessary and whose processes probably
+should be folded into a subsequent pass) which cleans up the internal language structure to be
+easier to compile.
+
+\paragraph{Sequentialization}
+\emph{Sequentialization} (see \Cref{sec:sequentialization}, currently called ``linearization'' in
+the codebase) produces a sequential form resembling monadic normal form \cite{danvy2003}. This form
+is called the \emph{middle intermediate representation} (see \Cref{sec:mir}).
+
+\paragraph{Explicitization}
+\emph{Explicitization} (see \Cref{sec:explicitization}) performs completeness analysis (see \Cref{sec:completeness-analysis}) on the
+middle intermediate representation and produces a \emph{lower intermediate representation}
+(see \Cref{sec:lir}).
+
+\subfile{03-01-middle-ir}
 \subfile{03-02-lower-ir}
 
 \end{document}
