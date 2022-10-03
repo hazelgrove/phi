@@ -255,61 +255,61 @@ TACaseComplete}).
   Integers:
   \begin{mathpar}
     \judgment{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar}{\TMk{\TCInt}{\SortNCompleteVar}} \\
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar'}{\TMk{\TCInt}{\SortNCompleteVar}}
+      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_1}{\TMk{\TCInt}{\SortNCompleteVar}} \\
+      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_2}{\TMk{\TCInt}{\SortNCompleteVar}}
     }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EPlus{\SortImmVar}{\SortImmVar'}}{\TMk{\TCInt}{\SortNCompleteVar}}
+      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EPlus{\SortImmVar_1}{\SortImmVar_2}}{\TMk{\TCInt}{\SortNCompleteVar}}
     }{TAPlus} \and
 
     \judgment{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar}{\TMk{\TCInt}{\SortNCompleteVar}} \\
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar'}{\TMk{\TCInt}{\SortNCompleteVar}}
+      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_1}{\TMk{\TCInt}{\SortNCompleteVar}} \\
+      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_2}{\TMk{\TCInt}{\SortNCompleteVar}}
     }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\ETimes{\SortImmVar}{\SortImmVar'}}{\TMk{\TCInt}{\SortNCompleteVar}}
+      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\ETimes{\SortImmVar_1}{\SortImmVar_2}}{\TMk{\TCInt}{\SortNCompleteVar}}
     }{TATimes}
   \end{mathpar} \\
   %
   Floats:
   \begin{mathpar}
     \judgment{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar}{\TMk{\TCFloat}{\SortNCompleteVar}} \\
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar'}{\TMk{\TCFloat}{\SortNCompleteVar}}
+      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_1}{\TMk{\TCFloat}{\SortNCompleteVar}} \\
+      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_2}{\TMk{\TCFloat}{\SortNCompleteVar}}
     }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EFPlus{\SortImmVar}{\SortImmVar'}}{\TMk{\TCFloat}{\SortNCompleteVar}}
+      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EFPlus{\SortImmVar_1}{\SortImmVar_2}}{\TMk{\TCFloat}{\SortNCompleteVar}}
     }{TAFPlus} \and
 
     \judgment{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar}{\TMk{\TCFloat}{\SortNCompleteVar}} \\
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar'}{\TMk{\TCFloat}{\SortNCompleteVar}}
+      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_1}{\TMk{\TCFloat}{\SortNCompleteVar}} \\
+      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_2}{\TMk{\TCFloat}{\SortNCompleteVar}}
     }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EFTimes{\SortImmVar}{\SortImmVar'}}{\TMk{\TCFloat}{\SortNCompleteVar}}
+      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EFTimes{\SortImmVar_1}{\SortImmVar_2}}{\TMk{\TCFloat}{\SortNCompleteVar}}
     }{TAFTimes}
   \end{mathpar} \\
   %
   Booleans:
   \begin{mathpar}
     \judgment{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar}{\TMk{\TCBool}{\SortNCompleteVar}} \\
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar'}{\TMk{\TCBool}{\SortNCompleteVar}}
+      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_1}{\TMk{\TCBool}{\SortNCompleteVar}} \\
+      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_2}{\TMk{\TCBool}{\SortNCompleteVar}}
     }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EAnd{\SortImmVar}{\SortImmVar'}}{\TMk{\TCBool}{\SortNCompleteVar}}
+      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EAnd{\SortImmVar_1}{\SortImmVar_2}}{\TMk{\TCBool}{\SortNCompleteVar}}
     }{TAAnd} \and
 
     \judgment{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar}{\TMk{\TCBool}{\SortNCompleteVar}} \\
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar'}{\TMk{\TCBool}{\SortNCompleteVar}}
+      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_1}{\TMk{\TCBool}{\SortNCompleteVar}} \\
+      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_2}{\TMk{\TCBool}{\SortNCompleteVar}}
     }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EOr{\SortImmVar}{\SortImmVar'}}{\TMk{\TCBool}{\SortNCompleteVar}}
+      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EOr{\SortImmVar_1}{\SortImmVar_2}}{\TMk{\TCBool}{\SortNCompleteVar}}
     }{TAOr}
   \end{mathpar} \\
   %
   Pairs:
   \begin{mathpar}
     \judgment{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar}{\TMk{\SortTypConVar}{\SortNCompleteVar}} \\
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar'}{\TMk{\SortTypConVar'}{\SortNCompleteVar}}
+      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_1}{\TMk{\SortTypConVar}{\SortNCompleteVar}} \\
+      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_2}{\TMk{\SortTypConVar'}{\SortNCompleteVar}}
     }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EPair{\SortImmVar}{\SortImmVar'}}{\TMk{\TCPair{\SortTypConVar}{\SortTypConVar'}}{\SortNCompleteVar}}
+      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EPair{\SortImmVar_1}{\SortImmVar_2}}{\TMk{\TCPair{\SortTypConVar}{\SortTypConVar'}}{\SortNCompleteVar}}
     }{TAPair} \\
 
     \judgment{
@@ -399,7 +399,7 @@ TACaseComplete}).
     }{
       \hasTypeCtx{\CtxVar}{\HoleCtxVar}{
         \ECaseCompleteWith{\SortImmVar}
-          \ECaseCompleteBranch{x}{\SortCompVar}
+          ~\ECaseCompleteBranch{x}{\SortCompVar}
           ~\ECaseCompleteBranch{x'}{\SortCompVar'}
         }{\SortTypVar}
     }{TACaseComplete}
