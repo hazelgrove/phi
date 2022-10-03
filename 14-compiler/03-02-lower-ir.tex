@@ -143,7 +143,8 @@ are either literals or variables.
 
 \begin{figure}
   \judgbox{\hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar}{\SortTypVar}}
-  %
+    $\SortImmVar$ is assigned type $\SortTypVar$ \\
+  
   \begin{mathpar}
     \judgment{
       \holeHasTypeCtx{\HoleCtxVar}{\SortHoleIdVar}{\SortTypConVar}{\CtxVar'} \\
@@ -248,7 +249,8 @@ cast proxy (\textsc{\small TAProj}), and eliminated only by $\SyCaseComplete$ (\
 TACaseComplete}).
 
 \begin{figure}
-  \judgbox{\hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortCompVar}{\SortTypVar}} \\
+  \judgbox{\hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortCompVar}{\SortTypVar}}
+    $\SortCompVar$ is assigned type $\SortTypVar$ \\
 
   Integers:
   \begin{mathpar}
@@ -325,14 +327,29 @@ TACaseComplete}).
   %
   Application:
   \begin{mathpar}
-    % \judgment{
-      % \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar}{\TMk{(\TCFun{\TMk{\SortTypConVar}{\SortNCompleteVar}}{\SortTypVar})}{\SortNCompleteVar'}} \\
-      % \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar'}{\TMk{\SortTypConVar}{\SortNCompleteVar}}
-    % }{
-      % \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EAp{\SortImmVar}{\SortImmVar'}}{\TMk{\TCPair{\SortTypConVar}{\SortTypConVar'}}{\SortNCompleteVar}}
-    % }{TAAp}
+    \judgment{
+      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_1}{\TMk{(\TCFun{\TMk{\SortTypConVar}{\SortNCompleteVar}}{\SortTypVar})}{\CNC}} \\
+      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_2}{\TMk{\SortTypConVar}{\SortNCompleteVar}}
+    }{
+      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EAp{\SortImmVar_1}{\SortImmVar_2}}{\SortTypVar}
+    }{TAAp1} \and
+
+    \judgment{
+      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_1}{\TMk{(\TCFun{\TMk{\SortTypConVar_1}{\SortNCompleteVar_1}}{\TMk{\SortTypConVar_2}{\SortNCompleteVar_2}})}{\CNI}} \\
+      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_2}{\TMk{\SortTypConVar_1}{\SortNCompleteVar_1}}
+    }{
+      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EAp{\SortImmVar_1}{\SortImmVar_2}}{\TMk{\SortTypConVar_2}{\CNC}}
+    }{TAAp2}
   \end{mathpar} \\
   %
+  \caption{Type assignment for LIR composites}
+  \label{fig:lir-ta-comp}
+\end{figure}
+
+\begin{figure} \ContinuedFloat
+  \judgbox{\hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortCompVar}{\SortTypVar}}
+    $\SortCompVar$ is assigned type $\SortTypVar$ \\
+
   Wrapping:
   \begin{mathpar}
     \judgment{
@@ -388,8 +405,8 @@ TACaseComplete}).
     }{TACaseComplete}
   \end{mathpar}
   %
-  \caption{Type assignment for LIR composites}
-  \label{fig:lir-ta-comp}
+  \caption{Type assignment for LIR composites (cont.)}
+  \label{fig:lir-ta-comp-cont}
 \end{figure}
 
 \subsubsection{Dynamics}
