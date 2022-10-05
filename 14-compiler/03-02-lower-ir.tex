@@ -4,24 +4,24 @@
 \newcommand{\SyWrap}{\ensuremath{\textsf{\textbf{{wrap}}}}}
 \newcommand{\SyCaseComplete}{\ensuremath{\textsf{\textbf{casecomplete}}}}
 
-\newcommand{\SortNComplete}{\ensuremath{\textsf{Completeness}}}
-\newcommand{\SortNCompleteVar}{\ensuremath{k}}
-\newcommand{\SortComplete}{\ensuremath{\textsf{}}}
-\newcommand{\SortCompleteVar}{\ensuremath{\overline{k}}}
-\newcommand{\SortTypCon}{\ensuremath{\textsf{Type}}}
-\newcommand{\SortTypConVar}{\ensuremath{\tau}}
-\newcommand{\SortTyp}{\ensuremath{\textsf{}}}
-\newcommand{\SortTypVar}{\ensuremath{\overline{\tau}}}
-\newcommand{\SortComp}{\ensuremath{\textsf{Composite}}}
-\newcommand{\SortCompVar}{\ensuremath{c}}
-\newcommand{\SortImm}{\ensuremath{\textsf{Immediate}}}
-\newcommand{\SortImmVar}{\ensuremath{i}}
-\newcommand{\SortHoleIdVar}{\ensuremath{u}}
-\newcommand{\SortHoleEnvVar}{\ensuremath{\SyHoleEnv}}
+\newcommand{\NKMName}{\ensuremath{\textsf{Completeness}}}
+\newcommand{\NKMV}{\ensuremath{k}}
+\newcommand{\KMName}{\ensuremath{\textsf{}}}
+\newcommand{\KMV}{\ensuremath{\overline{k}}}
+\newcommand{\TCMName}{\ensuremath{\textsf{Type}}}
+\newcommand{\TCMV}{\ensuremath{\tau}}
+\newcommand{\TMName}{\ensuremath{\textsf{}}}
+\newcommand{\TMV}{\ensuremath{\overline{\tau}}}
+\newcommand{\CMName}{\ensuremath{\textsf{Composite}}}
+\newcommand{\CMV}{\ensuremath{c}}
+\newcommand{\IMName}{\ensuremath{\textsf{Immediate}}}
+\newcommand{\IMV}{\ensuremath{i}}
+\newcommand{\HIMV}{\ensuremath{u}}
+\newcommand{\HEMV}{\ensuremath{\SyHoleEnv}}
 
-\newcommand{\CNC}{\ensuremath{\pie{0.3ex}{360}}}
-\newcommand{\CNI}{\ensuremath{\pie{0.3ex}{0}}}
-\newcommand{\CII}{\ensuremath{\pie{0.3ex}{180}}}
+\newcommand{\KNC}{\ensuremath{\pie{0.3ex}{360}}}
+\newcommand{\KNI}{\ensuremath{\pie{0.3ex}{0}}}
+\newcommand{\KII}{\ensuremath{\pie{0.3ex}{180}}}
 
 \newcommand{\TCHole}{\ensuremath{\SyEHole{}{}}}
 \newcommand{\TCInt}{\ensuremath{\SyTInt}}
@@ -30,53 +30,51 @@
 \newcommand{\TCPair}[2]{\ensuremath{#1 \SyProd #2}}
 \newcommand{\TCFun}[2]{\ensuremath{#1 \SyArrow #2}}
 
-\newcommand{\TIntNC}{\ensuremath{\TMk{\TCInt}{\CNC}}}
-\newcommand{\TIntNI}{\ensuremath{\TMk{\TCInt}{\CNI}}}
-\newcommand{\TFloatNC}{\ensuremath{\TMk{\TCFloat}{\CNC}}}
-\newcommand{\TFloatNI}{\ensuremath{\TMk{\TCFloat}{\CNI}}}
-\newcommand{\TBoolNC}{\ensuremath{\TMk{\TCBool}{\CNC}}}
-\newcommand{\TBoolNI}{\ensuremath{\TMk{\TCBool}{\CNI}}}
-\newcommand{\TPairNC}[2]{\ensuremath{\TMk{\TCPair{#1}{#2}}{\CNC}}}
-\newcommand{\TPairNI}[2]{\ensuremath{\TMk{\TCPair{#1}{#2}}{\CNI}}}
-\newcommand{\TFunNC}[2]{\ensuremath{\TMk{(\TCFun{#1}{#2})}{\CNC}}}
-\newcommand{\TFunNI}[2]{\ensuremath{\TMk{(\TCFun{#1}{#2})}{\CNI}}}
-
+\newcommand{\TIntNC}{\ensuremath{\TMk{\TCInt}{\KNC}}}
+\newcommand{\TIntNI}{\ensuremath{\TMk{\TCInt}{\KNI}}}
+\newcommand{\TFloatNC}{\ensuremath{\TMk{\TCFloat}{\KNC}}}
+\newcommand{\TFloatNI}{\ensuremath{\TMk{\TCFloat}{\KNI}}}
+\newcommand{\TBoolNC}{\ensuremath{\TMk{\TCBool}{\KNC}}}
+\newcommand{\TBoolNI}{\ensuremath{\TMk{\TCBool}{\KNI}}}
+\newcommand{\TPairNC}[2]{\ensuremath{\TMk{\TCPair{#1}{#2}}{\KNC}}}
+\newcommand{\TPairNI}[2]{\ensuremath{\TMk{\TCPair{#1}{#2}}{\KNI}}}
+\newcommand{\TFunNC}[2]{\ensuremath{\TMk{(\TCFun{#1}{#2})}{\KNC}}}
+\newcommand{\TFunNI}[2]{\ensuremath{\TMk{(\TCFun{#1}{#2})}{\KNI}}}
 \newcommand{\TMk}[2]{\ensuremath{#1[#2]}}
 
-\newcommand{\EIntLit}{\ensuremath{\underline{n}}}
-\newcommand{\EFloatLit}{\ensuremath{\underline{f}}}
-\newcommand{\EBoolLit}{\ensuremath{\underline{b}}}
-\newcommand{\ELet}[2]{\ensuremath{\SyLet~ #1 = #2}}
-\newcommand{\EIn}{\ensuremath{~\SyIn~}}
-\newcommand{\EInn}[1]{\ensuremath{~\SyIn~ #1}}
-\newcommand{\EReturn}[1]{\ensuremath{\SyReturn~ #1}}
-\newcommand{\ECaseCompleteWith}[1]{\ensuremath{\SyCaseComplete~ #1 ~\SyWith}}
-\newcommand{\ECaseCompleteBranch}[2]{\ensuremath{\SyBar~ #1 \SyArrow #2}}
+\newcommand{\IIntMV}{\ensuremath{\underline{n}}}
+\newcommand{\IFloatMV}{\ensuremath{\underline{f}}}
+\newcommand{\IBoolMV}{\ensuremath{\underline{b}}}
+\newcommand{\ITrue}{\ensuremath{\SyTrue}}
+\newcommand{\IFalse}{\ensuremath{\SyFalse}}
+\newcommand{\IEHole}[2]{\ensuremath{\SyEHole{#1}{#2}}}
 
-\newcommand{\EWrapIntoNI}[1]{\ensuremath{\SyWrap^{\CNI}~ #1}}
-\newcommand{\EWrapIntoII}[1]{\ensuremath{\SyWrap^{\CII}~ #1}}
-\newcommand{\EEmbed}[1]{\ensuremath{\SyEmbed~ #1}}
-\newcommand{\EProj}[2]{\ensuremath{\SyProj[#2]~ #1}}
+\newcommand{\CPlus}[2]{\ensuremath{#1 \SyPlus #2}}
+\newcommand{\CTimes}[2]{\ensuremath{#1 \SyTimes #2}}
+\newcommand{\CFPlus}[2]{\ensuremath{#1 \SyFPlus #2}}
+\newcommand{\CFTimes}[2]{\ensuremath{#1 \SyFTimes #2}}
 
-\newcommand{\EPlus}[2]{\ensuremath{#1 \SyPlus #2}}
-\newcommand{\ETimes}[2]{\ensuremath{#1 \SyTimes #2}}
-\newcommand{\EFPlus}[2]{\ensuremath{#1 \SyFPlus #2}}
-\newcommand{\EFTimes}[2]{\ensuremath{#1 \SyFTimes #2}}
+\newcommand{\CAnd}[2]{\ensuremath{#1 \SyAnd #2}}
+\newcommand{\COr}[2]{\ensuremath{#1 \SyOr #2}}
 
-\newcommand{\ETrue}{\ensuremath{\SyTrue}}
-\newcommand{\EAnd}[2]{\ensuremath{#1 \SyAnd #2}}
-\newcommand{\EOr}[2]{\ensuremath{#1 \SyOr #2}}
+\newcommand{\CLam}[3]{\ensuremath{\SyFun #1 : #2 \SyDot~ #3}}
+\newcommand{\CAp}[2]{\ensuremath{#1 ~#2}}
 
-\newcommand{\EPair}[2]{\ensuremath{(#1, #2)}}
-\newcommand{\EProjL}[1]{\ensuremath{\SyProjL~ #1}}
-\newcommand{\EProjR}[1]{\ensuremath{\SyProjR~ #1}}
+\newcommand{\CLet}[2]{\ensuremath{\SyLet~ #1 = #2}}
+\newcommand{\CIn}{\ensuremath{~\SyIn~}}
+\newcommand{\CInWith}[1]{\ensuremath{~\SyIn~ #1}}
+\newcommand{\CReturn}[1]{\ensuremath{\SyReturn~ #1}}
 
-\newcommand{\EFun}[3]{\ensuremath{\SyFun #1 : #2 \SyDot~ #3}}
-\newcommand{\EAp}[2]{\ensuremath{#1 ~#2}}
+\newcommand{\CPair}[2]{\ensuremath{(#1, #2)}}
+\newcommand{\CProjL}[1]{\ensuremath{\SyProjL~ #1}}
+\newcommand{\CProjR}[1]{\ensuremath{\SyProjR~ #1}}
 
-\newcommand{\EEHole}[2]{\ensuremath{\SyEHole{#1}{#2}}}
-
-\newcommand{\EVarNamed}[2]{\ensuremath{t_{#1}^{{\color{gray}#2}}}}
+\newcommand{\CWrapIntoNI}[1]{\ensuremath{\SyWrap^{\KNI}~ #1}}
+\newcommand{\CWrapIntoII}[1]{\ensuremath{\SyWrap^{\KII}~ #1}}
+\newcommand{\CEmbed}[1]{\ensuremath{\SyEmbed~ #1}}
+\newcommand{\CProj}[2]{\ensuremath{\SyProj[#2]~ #1}}
+\newcommand{\CCaseCompleteWith}[1]{\ensuremath{\SyCaseComplete~ #1 ~\SyWith}}
+\newcommand{\CCaseCompleteBr}[2]{\ensuremath{\SyBar~ #1 \SyArrow #2}}
 
 \subsection{Lower intermediate representation (LIR)}
 \label{sec:lir}
@@ -92,34 +90,34 @@ system (see \Cref{fig:lir-ta-imm,fig:lir-ta-comp}).
 
 \begin{figure}[htb!]
   \[\begin{array}{rccl}
-    \SortNComplete & \SortNCompleteVar & \Coloneqq & \CNC \mid \CNI \\
-    \SortComplete  & \SortCompleteVar  & \Coloneqq & \SortNCompleteVar \mid \CII \\
-    \SortTypCon    & \SortTypConVar    & \Coloneqq & \TCHole \mid \TCInt \mid \TCFloat \mid \TCBool 
-                                                   \mid \TCPair{\SortTypConVar}{\SortTypConVar} 
-                                                   \mid \TCFun{\TMk{\SortTypConVar}{\SortNCompleteVar}}{\SortTypVar} \\
-    \SortTyp       & \SortTypVar       & \Coloneqq & \TMk{\SortTypConVar}{\SortCompleteVar} \\
-    \SortImm       & \SortImmVar       & \Coloneqq & x \mid \EEHole{\SortHoleIdVar}{\SortHoleEnvVar}
-                                                   \mid \EIntLit \mid \EFloatLit \mid \EBoolLit 
-                                                   \mid \EFun{x}{\TMk{\SortTypConVar}{\SortNCompleteVar}}{\SortCompVar} \\
-    \SortComp      & \SortCompVar      & \Coloneqq & \SortImmVar \\
-                   &                   & \mid         & \EPlus{\SortImmVar}{\SortImmVar} 
-                                                   \mid \ETimes{\SortImmVar}{\SortImmVar}
-                                                   \mid \EFPlus{\SortImmVar}{\SortImmVar} 
-                                                   \mid \EFTimes{\SortImmVar}{\SortImmVar}
-                                                   \mid \EAnd{\SortImmVar}{\SortImmVar}
-                                                   \mid \EOr{\SortImmVar}{\SortImmVar} \\
-                   &                   & \mid         & \EPair{\SortImmVar}{\SortImmVar}
-                                                   \mid \EProjL{\SortImmVar}
-                                                   \mid \EProjR{\SortImmVar} \\
-                   &                   & \mid         & \EAp{\SortImmVar}{\SortImmVar} \\
-                   &                   & \mid         & \EWrapIntoNI{\SortImmVar}
-                                                   \mid \EWrapIntoII{\SortImmVar} \\
-                   &                   & \mid         & \EEmbed{\SortImmVar}
-                                                   \mid \EProj{\SortImmVar}{\SortTypConVar} \\
-                   &                   & \mid         & \ELet{x}{\SortCompVar} \EInn{\SortCompVar} \\
-                   &                   & \mid         & \ECaseCompleteWith{\SortImmVar}
-                                                    ~\ECaseCompleteBranch{x}{\SortCompVar}
-                                                    ~\ECaseCompleteBranch{x'}{\SortCompVar}
+    \NKMName & \NKMV & \Coloneqq & \KNC \mid \KNI \\
+    \KMName  & \KMV  & \Coloneqq & \NKMV \mid \KII \\
+    \TCMName    & \TCMV    & \Coloneqq & \TCHole \mid \TCInt \mid \TCFloat \mid \TCBool 
+                                                   \mid \TCPair{\TCMV}{\TCMV} 
+                                                   \mid \TCFun{\TMk{\TCMV}{\NKMV}}{\TMV} \\
+    \TMName       & \TMV       & \Coloneqq & \TMk{\TCMV}{\KMV} \\
+    \IMName       & \IMV       & \Coloneqq & x \mid \IEHole{\HIMV}{\HEMV}
+                                                   \mid \IIntMV \mid \IFloatMV \mid \IBoolMV 
+                                                   \mid \CLam{x}{\TMk{\TCMV}{\NKMV}}{\CMV} \\
+    \CMName      & \CMV      & \Coloneqq & \IMV \\
+                   &                   & \mid         & \CPlus{\IMV}{\IMV} 
+                                                   \mid \CTimes{\IMV}{\IMV}
+                                                   \mid \CFPlus{\IMV}{\IMV} 
+                                                   \mid \CFTimes{\IMV}{\IMV}
+                                                   \mid \CAnd{\IMV}{\IMV}
+                                                   \mid \COr{\IMV}{\IMV} \\
+                   &                   & \mid         & \CAp{\IMV}{\IMV} \\
+                   &                   & \mid         & \CPair{\IMV}{\IMV}
+                                                   \mid \CProjL{\IMV}
+                                                   \mid \CProjR{\IMV} \\
+                   &                   & \mid         & \CLet{x}{\CMV} \CInWith{\CMV} \\
+                   &                   & \mid         & \CWrapIntoNI{\IMV}
+                                                   \mid \CWrapIntoII{\IMV} \\
+                   &                   & \mid         & \CEmbed{\IMV}
+                                                   \mid \CProj{\IMV}{\TCMV} \\
+                   &                   & \mid         & \CCaseCompleteWith{\IMV}
+                                                    ~\CCaseCompleteBr{x}{\CMV}
+                                                    ~\CCaseCompleteBr{x'}{\CMV}
   \end{array}\]
   %
   \caption{LIR syntax}
@@ -128,54 +126,54 @@ system (see \Cref{fig:lir-ta-imm,fig:lir-ta-comp}).
 
 \subsubsection{Completeness}
 \label{sec:lir-completeness}
-Completeness (see \Cref{completeness}) is denoted by the metavariable $\SortCompleteVar$, with
-``necessarily'' cases given by $\SortNCompleteVar$: $\CNC =$ necessary completeness, $\CNI =$
-necessary incompleteness, and $\CII =$ indeterminate incompleteness. They are encoded in types,
-which are given by the metavariable $\SortTypVar$. 
+Completeness (see \Cref{completeness}) is denoted by the metavariable $\KMV$, with
+``necessarily'' cases given by $\NKMV$: $\KNC =$ necessary completeness, $\KNI =$
+necessary incompleteness, and $\KII =$ indeterminate incompleteness. They are encoded in types,
+which are given by the metavariable $\TMV$. 
 %
-A type $\TMk{\SortTypConVar}{\SortCompleteVar}$ is thus a ``concrete'' type $\SortTypConVar$ (need a
-better name for this) parameterized by completeness $\SortCompleteVar$.
+A type $\TMk{\TCMV}{\KMV}$ is thus a ``concrete'' type $\TCMV$ (need a
+better name for this) parameterized by completeness $\KMV$.
 
 \subsubsection{Immediates}
 \label{sec:lir-immediates}
 Similar to the high intermediate representation, a distinction is made between \emph{immediates}
-(given by $\SortImmVar$) and \emph{composites} (computations, given by $\SortCompVar$). Immediates
+(given by $\IMV$) and \emph{composites} (computations, given by $\CMV$). Immediates
 are either literals or variables.
 
 \begin{figure}[htb!]
-  \judgbox{\hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar}{\SortTypVar}}
-    $\SortImmVar$ is assigned type $\SortTypVar$ \\
+  \judgbox{\ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV}{\TMV}}
+    $\IMV$ is assigned type $\TMV$ \\
   
   \begin{mathpar}
     \judgment{
-      \holeHasTypeCtx{\HoleCtxVar}{\SortHoleIdVar}{\SortTypConVar}{\CtxVar'} \\
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\sigma}{\CtxVar'}
+      \holeHasTypeCtx{\holeCtx}{\HIMV}{\TCMV}{\ctx'} \\
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\sigma}{\ctx'}
     }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EEHole{\SortHoleIdVar}{\sigma}}{\TMk{\SortTypConVar}{\CNI}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IEHole{\HIMV}{\sigma}}{\TMk{\TCMV}{\KNI}}
     }{TAEHole} \and
 
     \judgment{
-      \hasType{x}{\SortTypVar} \in \CtxVar
+      \inCtx{\ctx}{x}{\TMV}
     }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{x}{\SortTypVar}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{x}{\TMV}
     }{TAVar} \\
 
     \judgment{ }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EIntLit}{\TIntNC}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IIntMV}{\TIntNC}
     }{TAIntLit} \and
 
     \judgment{ }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EIntLit}{\TFloatNC}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IIntMV}{\TFloatNC}
     }{TAFloatLit} \and
 
     \judgment{ }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EBoolLit}{\TBoolNC}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IBoolMV}{\TBoolNC}
     }{TABoolLit} \\
 
     \judgment{
-      \hasTypeCtx{\extendCtx{\CtxVar}{x}{\TMk{\SortTypConVar}{\SortNCompleteVar}}}{\HoleCtxVar}{\SortCompVar}{\SortTypVar}
+      \ctxAssignType{\andCtx{\extendCtx{\ctx}{x}{\TMk{\TCMV}{\NKMV}}}{\holeCtx}}{\CMV}{\TMV}
     }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EFun{x}{\TMk{\SortTypConVar}{\SortNCompleteVar}}{\SortCompVar}}{\TFunNC{\TMk{\SortTypConVar}{\SortNCompleteVar}}{\SortTypVar}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CLam{x}{\TMk{\TCMV}{\NKMV}}{\CMV}}{\TFunNC{\TMk{\TCMV}{\NKMV}}{\TMV}}
     }{TALam}
   \end{mathpar}
   %
@@ -184,7 +182,7 @@ are either literals or variables.
 \end{figure}
 
 \Cref{fig:lir-ta-imm} gives the type assignment rules for immediates, which are quite
-straightforward. The rule for holes $\EEHole{\SortHoleIdVar}{\SortHoleEnvVar}$ is the same as
+straightforward. The rule for holes $\IEHole{\HIMV}{\HEMV}$ is the same as
 that of the internal \Hazel{} language.
 
 \subsubsection{Composites}
@@ -197,44 +195,44 @@ are polymorphic over necessary completeness (e.g. integer addition).
     \begin{tabular}{rl}
       \textbf{Form} & \textbf{Description} \\
 
-      $\SortImmVar$ 
+      $\IMV$ 
         & immediates are also composites \\
       
-      $\EPlus{\SortImmVar}{\SortImmVar}$, $\ETimes{\SortImmVar}{\SortImmVar}$
+      $\CPlus{\IMV}{\IMV}$, $\CTimes{\IMV}{\IMV}$
         & addition, multiplication of two $\TCInt$ immediates \\
 
-      $\EFPlus{\SortImmVar}{\SortImmVar}$, $\EFTimes{\SortImmVar}{\SortImmVar}$
+      $\CFPlus{\IMV}{\IMV}$, $\CFTimes{\IMV}{\IMV}$
         & addition, multiplication of two $\TCFloat$ immediates \\
 
-      $\EAnd{\SortImmVar}{\SortImmVar}$, $\EOr{\SortImmVar}{\SortImmVar}$
+      $\CAnd{\IMV}{\IMV}$, $\COr{\IMV}{\IMV}$
         & logical and, logical or of two $\TCBool$ immediates \\
 
-      $\EPair{\SortImmVar}{\SortImmVar}$
+      $\CPair{\IMV}{\IMV}$
         & pair construction \\
 
-      $\EProjL{\SortImmVar}$, $\EProjR{\SortImmVar}$
+      $\CProjL{\IMV}$, $\CProjR{\IMV}$
         & left and right pair projection \\
 
-      $\EAp{\SortImmVar}{\SortImmVar}$
+      $\CAp{\IMV}{\IMV}$
         & function application \\
 
-      $\EWrapIntoNI{\SortImmVar}$
+      $\CWrapIntoNI{\IMV}$
         & wrapping of a value into an indet. result \\
 
-      $\EWrapIntoII{\SortImmVar}$
+      $\CWrapIntoII{\IMV}$
         & wrapping of an immediate into a indeterminately incomplete
         result \\
 
-      $\EEmbed{\SortImmVar}$
+      $\CEmbed{\IMV}$
         & embedding of an immediate into a cast proxy \\
 
-      $\EProj{\SortTypConVar}{\SortImmVar}$
-        & projection of a proxy to a target type $\SortTypConVar$; dynamic type check and may fail \\
+      $\CProj{\TCMV}{\IMV}$
+        & projection of a proxy to a target type $\TCMV$; dynamic type check and may fail \\
 
-      $\ELet{x}{\SortCompVar} \EIn \SortCompVar$
+      $\CLet{x}{\CMV} \CIn \CMV$
         & variable binding \\
 
-      $\ECaseCompleteWith{\SortImmVar} ~\cdots$
+      $\CCaseCompleteWith{\IMV} ~\cdots$
         & dynamic check; first branch taken if value, second branch if indet. result
     \end{tabular}
   \end{center}
@@ -250,96 +248,96 @@ cast proxy (\textsc{\small TAProj}), and eliminated only by $\SyCaseComplete$ (\
 TACaseComplete}).
 
 \begin{figure}[htb!]
-  \judgbox{\hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortCompVar}{\SortTypVar}}
-    $\SortCompVar$ is assigned type $\SortTypVar$ \\
+  \judgbox{\ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CMV}{\TMV}}
+    $\CMV$ is assigned type $\TMV$ \\
 
   Integers:
   \begin{mathpar}
     \judgment{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_1}{\TMk{\TCInt}{\SortNCompleteVar}} \\
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_2}{\TMk{\TCInt}{\SortNCompleteVar}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_1}{\TMk{\TCInt}{\NKMV}} \\
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_2}{\TMk{\TCInt}{\NKMV}}
     }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EPlus{\SortImmVar_1}{\SortImmVar_2}}{\TMk{\TCInt}{\SortNCompleteVar}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CPlus{\IMV_1}{\IMV_2}}{\TMk{\TCInt}{\NKMV}}
     }{TAPlus} \and
 
     \judgment{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_1}{\TMk{\TCInt}{\SortNCompleteVar}} \\
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_2}{\TMk{\TCInt}{\SortNCompleteVar}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_1}{\TMk{\TCInt}{\NKMV}} \\
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_2}{\TMk{\TCInt}{\NKMV}}
     }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\ETimes{\SortImmVar_1}{\SortImmVar_2}}{\TMk{\TCInt}{\SortNCompleteVar}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CTimes{\IMV_1}{\IMV_2}}{\TMk{\TCInt}{\NKMV}}
     }{TATimes}
   \end{mathpar} \\
   %
   Floats:
   \begin{mathpar}
     \judgment{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_1}{\TMk{\TCFloat}{\SortNCompleteVar}} \\
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_2}{\TMk{\TCFloat}{\SortNCompleteVar}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_1}{\TMk{\TCFloat}{\NKMV}} \\
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_2}{\TMk{\TCFloat}{\NKMV}}
     }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EFPlus{\SortImmVar_1}{\SortImmVar_2}}{\TMk{\TCFloat}{\SortNCompleteVar}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CFPlus{\IMV_1}{\IMV_2}}{\TMk{\TCFloat}{\NKMV}}
     }{TAFPlus} \and
 
     \judgment{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_1}{\TMk{\TCFloat}{\SortNCompleteVar}} \\
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_2}{\TMk{\TCFloat}{\SortNCompleteVar}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_1}{\TMk{\TCFloat}{\NKMV}} \\
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_2}{\TMk{\TCFloat}{\NKMV}}
     }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EFTimes{\SortImmVar_1}{\SortImmVar_2}}{\TMk{\TCFloat}{\SortNCompleteVar}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CFTimes{\IMV_1}{\IMV_2}}{\TMk{\TCFloat}{\NKMV}}
     }{TAFTimes}
   \end{mathpar} \\
   %
   Booleans:
   \begin{mathpar}
     \judgment{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_1}{\TMk{\TCBool}{\SortNCompleteVar}} \\
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_2}{\TMk{\TCBool}{\SortNCompleteVar}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_1}{\TMk{\TCBool}{\NKMV}} \\
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_2}{\TMk{\TCBool}{\NKMV}}
     }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EAnd{\SortImmVar_1}{\SortImmVar_2}}{\TMk{\TCBool}{\SortNCompleteVar}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CAnd{\IMV_1}{\IMV_2}}{\TMk{\TCBool}{\NKMV}}
     }{TAAnd} \and
 
     \judgment{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_1}{\TMk{\TCBool}{\SortNCompleteVar}} \\
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_2}{\TMk{\TCBool}{\SortNCompleteVar}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_1}{\TMk{\TCBool}{\NKMV}} \\
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_2}{\TMk{\TCBool}{\NKMV}}
     }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EOr{\SortImmVar_1}{\SortImmVar_2}}{\TMk{\TCBool}{\SortNCompleteVar}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\COr{\IMV_1}{\IMV_2}}{\TMk{\TCBool}{\NKMV}}
     }{TAOr}
   \end{mathpar} \\
   %
   Pairs:
   \begin{mathpar}
     \judgment{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_1}{\TMk{\SortTypConVar}{\SortNCompleteVar}} \\
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_2}{\TMk{\SortTypConVar'}{\SortNCompleteVar}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_1}{\TMk{\TCMV}{\NKMV}} \\
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_2}{\TMk{\TCMV'}{\NKMV}}
     }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EPair{\SortImmVar_1}{\SortImmVar_2}}{\TMk{\TCPair{\SortTypConVar}{\SortTypConVar'}}{\SortNCompleteVar}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CPair{\IMV_1}{\IMV_2}}{\TMk{\TCPair{\TCMV}{\TCMV'}}{\NKMV}}
     }{TAPair} \\
 
     \judgment{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar}{\TMk{\TCPair{\SortTypConVar}{\SortTypConVar'}}{\SortNCompleteVar}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV}{\TMk{\TCPair{\TCMV}{\TCMV'}}{\NKMV}}
     }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EProjL{\SortImmVar}}{\TMk{\SortTypConVar}{\SortNCompleteVar}} \\
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CProjL{\IMV}}{\TMk{\TCMV}{\NKMV}} \\
     }{TAFst} \and
 
     \judgment{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar}{\TMk{\TCPair{\SortTypConVar}{\SortTypConVar'}}{\SortNCompleteVar}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV}{\TMk{\TCPair{\TCMV}{\TCMV'}}{\NKMV}}
     }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EProjR{\SortImmVar}}{\TMk{\SortTypConVar'}{\SortNCompleteVar}} \\
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CProjR{\IMV}}{\TMk{\TCMV'}{\NKMV}} \\
     }{TASnd}
   \end{mathpar} \\
   %
   Application:
   \begin{mathpar}
     \judgment{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_1}{\TMk{(\TCFun{\TMk{\SortTypConVar}{\SortNCompleteVar}}{\SortTypVar})}{\CNC}} \\
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_2}{\TMk{\SortTypConVar}{\SortNCompleteVar}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_1}{\TMk{(\TCFun{\TMk{\TCMV}{\NKMV}}{\TMV})}{\KNC}} \\
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_2}{\TMk{\TCMV}{\NKMV}}
     }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EAp{\SortImmVar_1}{\SortImmVar_2}}{\SortTypVar}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CAp{\IMV_1}{\IMV_2}}{\TMV}
     }{TAAp1} \and
 
     \judgment{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_1}{\TMk{(\TCFun{\TMk{\SortTypConVar_1}{\SortNCompleteVar_1}}{\TMk{\SortTypConVar_2}{\SortNCompleteVar_2}})}{\CNI}} \\
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar_2}{\TMk{\SortTypConVar_1}{\SortNCompleteVar_1}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_1}{\TMk{(\TCFun{\TMk{\TCMV_1}{\NKMV_1}}{\TMk{\TCMV_2}{\NKMV_2}})}{\KNI}} \\
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_2}{\TMk{\TCMV_1}{\NKMV_1}}
     }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EAp{\SortImmVar_1}{\SortImmVar_2}}{\TMk{\SortTypConVar_2}{\CNC}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CAp{\IMV_1}{\IMV_2}}{\TMk{\TCMV_2}{\KNC}}
     }{TAAp2}
   \end{mathpar} \\
   %
@@ -348,61 +346,61 @@ TACaseComplete}).
 \end{figure}
 
 \begin{figure} \ContinuedFloat
-  \judgbox{\hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortCompVar}{\SortTypVar}}
-    $\SortCompVar$ is assigned type $\SortTypVar$ \\
+  \judgbox{\ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CMV}{\TMV}}
+    $\CMV$ is assigned type $\TMV$ \\
 
   Wrapping:
   \begin{mathpar}
     \judgment{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar}{\TMk{\SortTypConVar}{\CNC}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV}{\TMk{\TCMV}{\KNC}}
     }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EWrapIntoNI{\SortImmVar}}{\TMk{\SortTypConVar}{\CNI}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CWrapIntoNI{\IMV}}{\TMk{\TCMV}{\KNI}}
     }{TAWrapIntoNI} \and
 
     \judgment{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar}{\TMk{\SortTypConVar}{\SortNCompleteVar}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV}{\TMk{\TCMV}{\NKMV}}
     }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EWrapIntoII{\SortImmVar}}{\TMk{\SortTypConVar}{\CII}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CWrapIntoII{\IMV}}{\TMk{\TCMV}{\KII}}
     }{TAWrapIntoII}
   \end{mathpar} \\
   %
   Casting:
   \begin{mathpar}
     \judgment{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar}{\TMk{\SortTypConVar}{\SortNCompleteVar}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV}{\TMk{\TCMV}{\NKMV}}
     }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EEmbed{\SortImmVar}}{\TMk{\TCHole}{\CNI}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CEmbed{\IMV}}{\TMk{\TCHole}{\KNI}}
     }{TAEmbed} \and
 
     \judgment{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar}{\TMk{\SortTypConVar}{\CNI}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV}{\TMk{\TCMV}{\KNI}}
     }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\EProj{\SortImmVar}{\SortTypConVar'}}{\TMk{\SortTypConVar'}{\CII}}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CProj{\IMV}{\TCMV'}}{\TMk{\TCMV'}{\KII}}
     }{TAProj}
   \end{mathpar} \\
   %
   Binding:
   \begin{mathpar}
     \judgment{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortCompVar}{\SortTypVar} \\
-      \hasTypeCtx{\extendCtx{\CtxVar}{x}{\SortTypVar}}{\HoleCtxVar}{\SortCompVar'}{\SortTypVar'}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CMV}{\TMV} \\
+      \ctxAssignType{\andCtx{\extendCtx{\ctx}{x}{\TMV}}{\holeCtx}}{\CMV'}{\TMV'}
     }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\ELet{x}{\SortCompVar} \EIn \SortCompVar'}{\SortTypVar'}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CLet{x}{\CMV} \CIn \CMV'}{\TMV'}
     }{TALet}
   \end{mathpar} \\
   %
-  $\CII$ elimination:
+  $\KII$ elimination:
   \begin{mathpar}
     \judgment{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar}{\TMk{\SortTypConVar}{\CII}} \\\\
-      \hasTypeCtx{\extendCtx{\CtxVar}{x}{\TMk{\SortTypConVar}{\CNC}}}{\HoleCtxVar}{\SortCompVar}{\SortTypVar} \\
-      \hasTypeCtx{\extendCtx{\CtxVar}{x'}{\TMk{\SortTypConVar}{\CNI}}}{\HoleCtxVar}{\SortCompVar'}{\SortTypVar}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV}{\TMk{\TCMV}{\KII}} \\\\
+      \ctxAssignType{\andCtx{\extendCtx{\ctx}{x}{\TMk{\TCMV}{\KNC}}}{\holeCtx}}{\CMV}{\TMV} \\
+      \ctxAssignType{\andCtx{\extendCtx{\ctx}{x'}{\TMk{\TCMV}{\KNI}}}{\holeCtx}}{\CMV'}{\TMV}
     }{
-      \hasTypeCtx{\CtxVar}{\HoleCtxVar}{
-        \ECaseCompleteWith{\SortImmVar}
-          ~\ECaseCompleteBranch{x}{\SortCompVar}
-          ~\ECaseCompleteBranch{x'}{\SortCompVar'}
-        }{\SortTypVar}
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{
+        \CCaseCompleteWith{\IMV}
+          ~\CCaseCompleteBr{x}{\CMV}
+          ~\CCaseCompleteBr{x'}{\CMV'}
+        }{\TMV}
     }{TACaseComplete}
   \end{mathpar}
   %
