@@ -1,8 +1,54 @@
 \documentclass[index.tex]{subfiles}
 
 \begin{document}
+\newcommand{\CMName}{\textsf{Coercion}}
+\newcommand{\CMV}{\ensuremath{c}}
+
+\newcommand{\CId}{\ensuremath{\textsf{id}}}
+\newcommand{\CFail}{\ensuremath{\textsf{fail}}}
+\newcommand{\CEmb}[1]{\ensuremath{#1!}}
+\newcommand{\CProj}[1]{\ensuremath{#1?}}
+\newcommand{\CFun}[2]{\ensuremath{\textsf{fun} ~#1 ~#2}}
+\newcommand{\CSeq}[2]{\ensuremath{#1; #2}}
+
+\newcommand{\DTMName}{\textsf{Dynamic Tag}}
+\newcommand{\DTMV}{\ensuremath{g}}
+\newcommand{\DTBase}{\ensuremath{b}}
+\newcommand{\DTFun}{\ensuremath{\textsf{fun}}}
+
+\newcommand{\IEMName}{\textsf{Internal Expression}}
+\newcommand{\IEMV}{\ensuremath{d}}
+\newcommand{\IECast}[2]{\ensuremath{#1 \langle #2 \rangle}}
+
 \subsection{Coercion calculus for holes}
 \label{sec:coercion}
-This section contains experiments with a coercion calculus for \Hazelnut{}.
+This section contains experiments with a coercion calculus for \Hazelnut{}. Specifically, we give an
+augmented internal language where casts are given by coercions and a conversion to it from the original
+internal language. Refer to the \HazelnutLive{} paper \cite{omar2019} for definitions of types and
+expressions, which we do not reproduce here.
+
+\Cref{fig:coercion-syntax} gives the syntax of coercions and shows how they fit into expressions,
+eliding most of the expression forms.
+
+\begin{figure}[htb!]
+  \[\begin{array}{rrcl}
+    \CMName  & \CMV  & \Coloneqq & \CId \mid \CFail
+                                 \mid \CEmb{\DTMV} \mid \CProj{\DTMV} 
+                                 \mid \CFun{\CMV}{\CMV} \mid \CSeq{\CMV}{\CMV} \\
+    \DTMName & \DTMV & \Coloneqq & \DTBase \mid \DTFun \\
+    \IEMName & \IEMV & \Coloneqq & \cdots \mid \IECast{\IEMV}{\CMV}
+  \end{array}\]
+  %
+  \caption{Coercion language}
+  \label{fig:coercion-syntax}
+\end{figure}
+
+\begin{figure}[htb!]
+  \begin{mathpar}
+  \end{mathpar}
+  %
+  \caption{Coercion type assignment}
+  \label{fig:coercion-types}
+\end{figure}
  
 \end{document}

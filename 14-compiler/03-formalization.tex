@@ -1,12 +1,15 @@
 \documentclass[index.tex]{subfiles}
 
 \begin{document}
-\section{Formalization}
+\section{Formalizations}
 \label{formalization}
 We try to formulate a calculus for the compilation of functional programs with holes. This
 formalization is very much in-progress and likely does not reflect the current status of the
 implementation. Ideally, once the calculus is stable, we should like to prove that these
 translations preserve the semantics of the source language.
+
+We also experiment with designing a coercion calculus for \Hazelnut{}. For this, see
+\Cref{sec:coercion}.
 
 \subsection{Overview}
 Compilation begins with the Hazel internal language and passes through a number of stages.

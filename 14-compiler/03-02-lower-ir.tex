@@ -90,7 +90,7 @@ In the lower intermediate representation (LIR), whose syntax is partially given 
 \cref{fig:lir-syntax}, completeness (see \Cref{sec:lir-completeness}) is made explicit in the type
 system (see \Cref{fig:lir-ta-imm,fig:lir-ta-comp}).
 
-\begin{figure}
+\begin{figure}[htb!]
   \[\begin{array}{rccl}
     \SortNComplete & \SortNCompleteVar & \Coloneqq & \CNC \mid \CNI \\
     \SortComplete  & \SortCompleteVar  & \Coloneqq & \SortNCompleteVar \mid \CII \\
@@ -142,7 +142,7 @@ Similar to the high intermediate representation, a distinction is made between \
 (given by $\SortImmVar$) and \emph{composites} (computations, given by $\SortCompVar$). Immediates
 are either literals or variables.
 
-\begin{figure}
+\begin{figure}[htb!]
   \judgbox{\hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortImmVar}{\SortTypVar}}
     $\SortImmVar$ is assigned type $\SortTypVar$ \\
   
@@ -249,7 +249,7 @@ results may be introduced only either by wrapping (\textsc{\small TAWrapIntoII})
 cast proxy (\textsc{\small TAProj}), and eliminated only by $\SyCaseComplete$ (\textsc{\small
 TACaseComplete}).
 
-\begin{figure}
+\begin{figure}[htb!]
   \judgbox{\hasTypeCtx{\CtxVar}{\HoleCtxVar}{\SortCompVar}{\SortTypVar}}
     $\SortCompVar$ is assigned type $\SortTypVar$ \\
 
@@ -414,15 +414,15 @@ TACaseComplete}).
 \label{sec:lir-operational-semantics}
 We attempt to give a small-step operational semantics for the lower intermediate representation.
 
-\begin{figure}
+\begin{figure}[htb!]
   \caption{Small-step operational semantics for LIR}
   \label{fig:lir-ssos}
 \end{figure}
 
-\subsubsection{Explicitization}
+\subsection{Explicitization}
 \label{sec:explicitization}
 
-\begin{figure}
+\begin{figure}[htb!]
   \caption{LIR function-local completeness analysis}
   \label{fig:lir-completeness-analysis-local}
 \end{figure}
