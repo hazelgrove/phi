@@ -1,6 +1,16 @@
 \documentclass[index.tex]{subfiles}
 
 \begin{document}
+\newcommand{\coerce}{\ensuremath{\textsf{coerce}}}
+\newcommand{\coerces}[2]{#1 \rightsquigarrow #2}
+\newcommand{\ctxCoercesType}[4]{\ensuremath{\ctxAssignType{#1}{#2}{\coerces{#3}{#4}}}}
+
+\newcommand{\TMName}{\textsf{Type}}
+\newcommand{\TMV}{\ensuremath{\tau}}
+\newcommand{\TBase}{\ensuremath{b}}
+\newcommand{\THole}{\ensuremath{\SyEHole{}{}}}
+\newcommand{\TArrow}[2]{\ensuremath{#1 \to #2}}
+
 \newcommand{\CMName}{\textsf{Coercion}}
 \newcommand{\CMV}{\ensuremath{c}}
 
@@ -9,11 +19,11 @@
 \newcommand{\CEmb}[1]{\ensuremath{#1!}}
 \newcommand{\CProj}[1]{\ensuremath{#1?}}
 \newcommand{\CFun}[2]{\ensuremath{\textsf{fun} ~#1 ~#2}}
-\newcommand{\CSeq}[2]{\ensuremath{#1; #2}}
+\newcommand{\CCompose}[2]{\ensuremath{#1; #2}}
 
 \newcommand{\DTMName}{\textsf{Dynamic Tag}}
 \newcommand{\DTMV}{\ensuremath{g}}
-\newcommand{\DTBase}{\ensuremath{b}}
+\newcommand{\DTBase}{\ensuremath{\TBase}}
 \newcommand{\DTFun}{\ensuremath{\textsf{fun}}}
 
 \newcommand{\IEMName}{\textsf{Internal Expression}}
@@ -22,19 +32,37 @@
 
 \subsection{Coercion calculus for holes}
 \label{sec:coercion}
-This section contains experiments with a coercion calculus for \Hazelnut{}. Specifically, we give an
-augmented internal language where casts are given by coercions and a conversion to it from the original
-internal language. Refer to the \HazelnutLive{} paper \cite{omar2019} for definitions of types and
-expressions, which we do not reproduce here.
+This section contains experiments with a coercion calculus \cite{herman2010} for \Hazelnut{}.
+Specifically, we give an augmented internal language where casts are given by coercions and a
+conversion to it from the original internal language. Refer to the \HazelnutLive{} paper
+\cite{omar2019} for definitions of types and expressions, which we do not reproduce here.
+
+Following \textcite{herman2010}, we define the partial function $\coerce : \TMName \times \TMName
+\to \CMName$ which gives coercions between two consistent types:
+%
+\newcommand{\coerceRowIs}[3]{\ensuremath{\coerce(#1, #2) &=& #3}}
+\[\begin{array}{rcl}
+  \coerceRowIs{\TMV}{\TMV}{\CId} \\
+  \coerceRowIs{\TBase}{\THole}{\CEmb{\DTBase}} \\
+  \coerceRowIs{\THole}{\TBase}{\CProj{\DTBase}} \\
+  \coerceRowIs{\TArrow{\TMV_1}{\TMV_2}}{\TArrow{\TMV_1'}{\TMV_2'}}{\CFun{\coerce(\TMV_1', \TMV_1)}{\coerce(\TMV_2, \TMV_2')}} \\
+\end{array}\]
 
 \Cref{fig:coercion-syntax} gives the syntax of coercions and shows how they fit into expressions,
-eliding most of the expression forms.
+eliding most of the expression forms, and \Cref{fig:coercion-types} gives rules for type
+assignment. Note that the forms and typing, as well as most other constructs and lemmas, are
+borrowed from \textcite{herman2010}. However, there are a few key differences:
+%
+\begin{itemize}
+  \item In agreement with \HazelnutLive's semantics, $\CFail$ coercions (which replace the explicit
+    failed cast form) must coerce two \emph{inconsistent ground} types.
+\end{itemize}
 
 \begin{figure}[htb!]
   \[\begin{array}{rrcl}
     \CMName  & \CMV  & \Coloneqq & \CId \mid \CFail
                                  \mid \CEmb{\DTMV} \mid \CProj{\DTMV} 
-                                 \mid \CFun{\CMV}{\CMV} \mid \CSeq{\CMV}{\CMV} \\
+                                 \mid \CFun{\CMV}{\CMV} \mid \CCompose{\CMV}{\CMV} \\
     \DTMName & \DTMV & \Coloneqq & \DTBase \mid \DTFun \\
     \IEMName & \IEMV & \Coloneqq & \cdots \mid \IECast{\IEMV}{\CMV}
   \end{array}\]
@@ -45,10 +73,67 @@ eliding most of the expression forms.
 
 \begin{figure}[htb!]
   \begin{mathpar}
+    \judgment{ }{
+      \ctxCoercesType{}{\CId}{\TMV}{\TMV}
+    }{CId}
+
+    \judgment{
+      \isGround{\TMV} \\
+      \isGround{\TMV'} \\
+      \isNotConsistent{\TMV}{\TMV'}
+    }{
+      \ctxCoercesType{}{\CFail}{\TMV}{\TMV'}
+    }{CFail}
+
+    \judgment{ }{
+      \ctxCoercesType{}{\CEmb{\DTBase}}{\TBase}{\THole}
+    }{CB!}
+
+    \judgment{ }{
+      \ctxCoercesType{}{\CProj{\DTBase}}{\THole}{\TBase}
+    }{CB?}
+
+    \judgment{ }{
+      \ctxCoercesType{}{\CEmb{\DTFun}}{(\TArrow{\THole}{\THole})}{\THole}
+    }{CFun!}
+
+    \judgment{ }{
+      \ctxCoercesType{}{\CProj{\DTFun}}{\THole}{(\TArrow{\THole}{\THole})}
+    }{CFun?}
+
+    \judgment{
+      \ctxCoercesType{}{\CMV_1}{\TMV_1}{\TMV_1'} \\
+      \ctxCoercesType{}{\CMV_2}{\TMV_2}{\TMV_2'}
+    }{
+      \ctxCoercesType{}{\CFun{\CMV_1}{\CMV_2}}{\TArrow{\TMV_1}{\TMV_2}}{\TArrow{\TMV_1'}{\TMV_2'}}
+    }{CFun}
+
+    \judgment{
+      \ctxCoercesType{}{\CMV_1}{\TMV}{\TMV_1} \\
+      \ctxCoercesType{}{\CMV_2}{\TMV_1}{\TMV_2}
+    }{
+      \ctxCoercesType{}{\CCompose{\CMV_1}{\CMV_2}}{\TMV}{\TMV_2}
+    }{CCompose}
+
+    \judgment{
+      \ctxCoercesType{}{\CMV}{\TMV}{\TMV'} \\
+      \ctxAssignType{\ctx}{\IEMV}{\TMV}
+    }{
+      \ctxAssignType{\ctx}{\IECast{\IEMV}{\CMV}}{\TMV'}
+    }{TACast}
   \end{mathpar}
   %
   \caption{Coercion type assignment}
   \label{fig:coercion-types}
 \end{figure}
+
+\begin{lemmat}[name=Well-typed coercions] \
+  \begin{enumerate}
+    \item $\isConsistent{\TMV}{\TMV'}$ if and only if $\coerce(\TMV, \TMV')$ is defined.
+    \item If $\CMV = \coerce(\TMV, \TMV')$, then $\ctxCoercesType{}{\CMV}{\TMV}{\TMV'}$.
+  \end{enumerate}
+\end{lemmat}
+
+The original [TACast] rule is replaced by a new one for coercion-based casts.
  
 \end{document}
