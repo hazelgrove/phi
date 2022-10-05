@@ -82,13 +82,13 @@
 \label{sec:lir}
 
 \begin{note}
-  The semantics of this representation are not totally thought out; very likely this approach
-  doesn't actually work\ldots
+  The semantics of this representation are not totally thought out; wouldn't be surprised if there's
+  some big inconsistency in this approach\ldots
 \end{note}
 
 In the lower intermediate representation (LIR), whose syntax is partially given in
-\cref{fig:lir-syntax}, completeness (see below) is made explicit in the type system
-(see \Cref{fig:lir-ta-imm,fig:lir-ta-comp}).
+\cref{fig:lir-syntax}, completeness (see \Cref{sec:lir-completeness}) is made explicit in the type
+system (see \Cref{fig:lir-ta-imm,fig:lir-ta-comp}).
 
 \begin{figure}
   \[\begin{array}{rccl}
@@ -128,12 +128,13 @@ In the lower intermediate representation (LIR), whose syntax is partially given 
 
 \subsubsection{Completeness}
 \label{sec:lir-completeness}
-Completeness (see \Cref{completeness}) is denoted by $\SortCompleteVar$, with "necessarily" cases given
-by $\SortNCompleteVar$: $\CNC =$ necessary completeness, $\CNI =$ necessary incompleteness, and
-$\CII =$ indeterminate incompleteness. They are encoded in types, which are given by the
-metavariable $\SortTypVar$. A type $\TMk{\SortTypConVar}{\SortCompleteVar}$ is thus a ``concrete''
-type $\SortTypConVar$ (need a better name for this) parameterized by completeness
-$\SortCompleteVar$.
+Completeness (see \Cref{completeness}) is denoted by the metavariable $\SortCompleteVar$, with
+``necessarily'' cases given by $\SortNCompleteVar$: $\CNC =$ necessary completeness, $\CNI =$
+necessary incompleteness, and $\CII =$ indeterminate incompleteness. They are encoded in types,
+which are given by the metavariable $\SortTypVar$. 
+%
+A type $\TMk{\SortTypConVar}{\SortCompleteVar}$ is thus a ``concrete'' type $\SortTypConVar$ (need a
+better name for this) parameterized by completeness $\SortCompleteVar$.
 
 \subsubsection{Immediates}
 \label{sec:lir-immediates}
@@ -409,8 +410,8 @@ TACaseComplete}).
   \label{fig:lir-ta-comp-cont}
 \end{figure}
 
-\subsubsection{Dynamics}
-\label{sec:lir-dynamics}
+\subsubsection{Operational semantics}
+\label{sec:lir-operational-semantics}
 We attempt to give a small-step operational semantics for the lower intermediate representation.
 
 \begin{figure}
