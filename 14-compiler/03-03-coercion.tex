@@ -5,6 +5,9 @@
 \newcommand{\coerces}[2]{#1 \rightsquigarrow #2}
 \newcommand{\ctxCoercesType}[4]{\ensuremath{\ctxAssignType{#1}{#2}{\coerces{#3}{#4}}}}
 
+\newcommand{\convertsInto}[2]{\ensuremath{#1 \hookrightarrow #2}}
+\newcommand{\ctxConvertsInto}[3]{\ensuremath{\withCtx{#1}{\convertsInto{#2}{#3}}}}
+
 \newcommand{\TMName}{\textsf{Type}}
 \newcommand{\TMV}{\ensuremath{\tau}}
 \newcommand{\TBase}{\ensuremath{b}}
@@ -27,8 +30,10 @@
 \newcommand{\DTFun}{\ensuremath{\textsf{fun}}}
 
 \newcommand{\IEMName}{\textsf{Internal Expression}}
-\newcommand{\IEMV}{\ensuremath{d}}
+\newcommand{\IEMVO}{\ensuremath{d}}
+\newcommand{\IEMV}{\ensuremath{\prescript{c}{}{d}}}
 \newcommand{\IECast}[2]{\ensuremath{#1 \langle #2 \rangle}}
+\newcommand{\IECastO}[3]{\ensuremath{\IECast{#1}{#2 \Rightarrow #3}}}
 
 \subsection{Coercion calculus for holes}
 \label{sec:coercion}
@@ -37,6 +42,7 @@ Specifically, we give an augmented internal language where casts are given by co
 conversion to it from the original internal language. Refer to the \HazelnutLive{} paper
 \cite{omar2019} for definitions of types and expressions, which we do not reproduce here.
 
+\subsubsection{Coercion language}
 Following \textcite{herman2010}, we define the partial function $\coerce : \TMName \times \TMName
 \to \CMName$ which gives coercions between two consistent types:
 %
@@ -55,7 +61,8 @@ borrowed from \textcite{herman2010}. However, there are a few key differences:
 %
 \begin{itemize}
   \item In agreement with \HazelnutLive's semantics, $\CFail$ coercions (which replace the explicit
-    failed cast form) must coerce two \emph{inconsistent ground} types.
+    failed cast form) must coerce two \emph{inconsistent ground} types. (Maybe this is already the
+    case for those fail coercions?)
 \end{itemize}
 
 \begin{figure}[htb!]
@@ -72,6 +79,8 @@ borrowed from \textcite{herman2010}. However, there are a few key differences:
 \end{figure}
 
 \begin{figure}[htb!]
+  $\judgbox{\ctxCoercesType{}{\CMV}{\TMV}{\TMV'}}$ $\CMV$ coerces expressions of type $\TMV$ to $\TMV'$
+
   \begin{mathpar}
     \judgment{ }{
       \ctxCoercesType{}{\CId}{\TMV}{\TMV}
@@ -102,7 +111,7 @@ borrowed from \textcite{herman2010}. However, there are a few key differences:
     }{CFun?}
 
     \judgment{
-      \ctxCoercesType{}{\CMV_1}{\TMV_1}{\TMV_1'} \\
+      \ctxCoercesType{}{\CMV_1}{\TMV_1'}{\TMV_1} \\
       \ctxCoercesType{}{\CMV_2}{\TMV_2}{\TMV_2'}
     }{
       \ctxCoercesType{}{\CFun{\CMV_1}{\CMV_2}}{\TArrow{\TMV_1}{\TMV_2}}{\TArrow{\TMV_1'}{\TMV_2'}}
@@ -120,7 +129,7 @@ borrowed from \textcite{herman2010}. However, there are a few key differences:
       \ctxAssignType{\ctx}{\IEMV}{\TMV}
     }{
       \ctxAssignType{\ctx}{\IECast{\IEMV}{\CMV}}{\TMV'}
-    }{TACast}
+    }{TACoercion}
   \end{mathpar}
   %
   \caption{Coercion type assignment}
@@ -134,6 +143,31 @@ borrowed from \textcite{herman2010}. However, there are a few key differences:
   \end{enumerate}
 \end{lemmat}
 
-The original [TACast] rule is replaced by a new one for coercion-based casts.
+\subsubsection{Cast conversion}
+Given the $\coerce$ function, conversion from the casts of $\HazelnutLive$ to coercions is
+straightforward. See \Cref{fig:coercion-conversion}, which gives rules for conversion from the
+original internal language (of which we have elided all rules except those for handling casts).
+
+\begin{figure}[htb!]
+  $\judgbox{\ctxConvertsInto{\andCtx{\ctx}{\holeCtx}}{\IEMVO}{\IEMV}}$ $\IEMVO$ is converted into $\IEMV$
+  
+  \begin{mathpar}
+    \judgment{
+      \ctxConvertsInto{\andCtx{\ctx}{\holeCtx}}{\IEMVO}{\IEMV} \\
+      \CMV = \coerce(\TMV, \TMV')
+    }{
+      \ctxConvertsInto{\andCtx{\ctx}{\holeCtx}}{\IECastO{\IEMVO}{\TMV}{\TMV'}}{\IECast{\IEMV}{\CMV}}
+    }{CoCast}
+  \end{mathpar}
+  %
+  \caption{Cast conversion rules}
+  \label{fig:coercion-conversion}
+\end{figure}
+
+\begin{theorem}[name=Cast conversion]
+  If $\ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IEMV}{\TMV}$ and
+  $\ctxConvertsInto{\andCtx{\ctx}{\holeCtx}}{\IEMV}{\IEMV'}$, then
+  $\ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IEMV'}{\TMV}$.
+\end{theorem}
  
 \end{document}
