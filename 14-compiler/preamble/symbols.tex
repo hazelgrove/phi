@@ -50,6 +50,9 @@
 \newcommand{\holeCtx}{\ensuremath{\Delta}}
 \newcommand{\holeHasTypeCtx}[4]{\ensuremath{#2 :: #3[#4] \in #1}}
 
+% Substitution
+\newcommand{\subst}[3]{\ensuremath{[#1 / #2] #3}}
+
 %
 % Symbols
 %
@@ -72,6 +75,7 @@
 \definecolor{lavender}{RGB}{162,85,162}
 \newcommand{\SyNEHole}[3]{\ensuremath{\textcolor{lavender}{\bm{\llparenthesis}}#1\textcolor{lavender}{\bm{\rrparenthesis}^{#2}_{#3}}}}
 \newcommand{\SyEHole}[2]{\ensuremath{\SyNEHole{}{#1}{#2}}}
+\newcommand{\SyHoleNum}{\ensuremath{u}}
 \newcommand{\SyHoleEnv}{\ensuremath{\sigma}}
 
 % Casting

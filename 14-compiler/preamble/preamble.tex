@@ -28,6 +28,14 @@
 \usepackage{enumitem}
 \setlist{itemsep=1pt}
 
+\usepackage{placeins}
+\let\Oldsection\section
+\renewcommand{\section}{\FloatBarrier\Oldsection}
+\let\Oldsubsection\subsection
+\renewcommand{\subsection}{\FloatBarrier\Oldsubsection}
+\let\Oldsubsubsection\subsubsection
+\renewcommand{\subsubsection}{\FloatBarrier\Oldsubsubsection}
+
 \usepackage{biblatex}
 
 \usepackage[colorlinks=true, linkcolor=purple]{hyperref}

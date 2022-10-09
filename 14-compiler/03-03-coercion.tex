@@ -8,6 +8,26 @@
 \newcommand{\convertsInto}[2]{\ensuremath{#1 \hookrightarrow #2}}
 \newcommand{\ctxConvertsInto}[3]{\ensuremath{\withCtx{#1}{\convertsInto{#2}{#3}}}}
 
+\newcommand{\normalizes}[3]{\ensuremath{\CCompose{#1}{#2} \rightarrowtail #3}}
+
+\newcommand{\isFinal}[1]{\ensuremath{#1 ~\textsf{final}}}
+\newcommand{\isVal}[1]{\ensuremath{#1 ~\textsf{val}}}
+\newcommand{\isBoxedVal}[1]{\ensuremath{#1 ~\textsf{boxedval}}}
+\newcommand{\isIndet}[1]{\ensuremath{#1 ~\textsf{indet}}}
+
+\newcommand{\optPremise}[1]{\ensuremath{\textcolor{red}{[}#1\textcolor{red}{]}}}
+\newcommand{\transition}[2]{\ensuremath{#1 \longrightarrow #2}}
+\newcommand{\markAt}[3]{\ensuremath{#1 = #2\{#3\}}}
+\newcommand{\stepsTo}[2]{\ensuremath{#1 \mapsto #2}}
+
+\newcommand{\EVMName}{\textsf{EvalCtx}}
+\newcommand{\EVMV}{\ensuremath{\mathcal{E}}}
+\newcommand{\EVEmpty}{\ensuremath{\circ}}
+\newcommand{\EVApL}[2]{\ensuremath{#1(#2)}}
+\newcommand{\EVApR}[2]{\ensuremath{#1(#2)}}
+\newcommand{\EVHole}[3]{\ensuremath{\SyNEHole{#1}{#2}{#3}}}
+\newcommand{\EVCast}[2]{\ensuremath{\IECast{#1}{#2}}}
+
 \newcommand{\TMName}{\textsf{Type}}
 \newcommand{\TMV}{\ensuremath{\tau}}
 \newcommand{\TBase}{\ensuremath{b}}
@@ -30,39 +50,67 @@
 \newcommand{\DTFun}{\ensuremath{\textsf{fun}}}
 
 \newcommand{\IEMName}{\textsf{Internal Expression}}
-\newcommand{\IEMVO}{\ensuremath{d}}
 \newcommand{\IEMV}{\ensuremath{\prescript{c}{}{d}}}
+\newcommand{\IEConst}{\ensuremath{c}}
+\newcommand{\IELam}[3]{\ensuremath{\lambda #1 : #2. #3}}
+\newcommand{\IEAp}[2]{\ensuremath{#1(#2)}}
 \newcommand{\IECast}[2]{\ensuremath{#1 \langle #2 \rangle}}
+\newcommand{\IEEHole}[2]{\ensuremath{\SyNEHole{}{#1}{#2}}}
+\newcommand{\IENEHole}[3]{\ensuremath{\SyNEHole{#1}{#2}{#3}}}
+
+\newcommand{\IEHoleNum}{\ensuremath{\SyHoleNum}}
+\newcommand{\IEHoleEnv}{\ensuremath{\SyHoleEnv}}
+
+\newcommand{\IEMVO}{\ensuremath{d}}
 \newcommand{\IECastO}[3]{\ensuremath{\IECast{#1}{#2 \Rightarrow #3}}}
 
 \subsection{Coercion calculus for holes}
 \label{sec:coercion}
-This section contains experiments with a coercion calculus \cite{herman2010} for \Hazelnut{}.
-Specifically, we give an augmented internal language where casts are given by coercions and a
-conversion to it from the original internal language. Refer to the \HazelnutLive{} paper
-\cite{omar2019} for definitions of types and expressions, which we do not reproduce here.
+\begin{warning}
+  This is a first draft and, as such, the definitions here probably don't actually work out.
+\end{warning}
+%
+This section contains experiments with a coercion calculus for \Hazelnut{}. Specifically, we give an
+augmented internal expression language where casts are given by coercions and a conversion to it
+from the original internal language. Refer to the \HazelnutLive{} paper \cite{omar2019} for
+definitions (notably of expressions and types) not reproduced here.
 
 \subsubsection{Coercion language}
-Following \textcite{herman2010}, we define the partial function $\coerce : \TMName \times \TMName
-\to \CMName$ which gives coercions between two consistent types:
-%
-\newcommand{\coerceRowIs}[3]{\ensuremath{\coerce(#1, #2) &=& #3}}
-\[\begin{array}{rcl}
-  \coerceRowIs{\TMV}{\TMV}{\CId} \\
-  \coerceRowIs{\TBase}{\THole}{\CEmb{\DTBase}} \\
-  \coerceRowIs{\THole}{\TBase}{\CProj{\DTBase}} \\
-  \coerceRowIs{\TArrow{\TMV_1}{\TMV_2}}{\TArrow{\TMV_1'}{\TMV_2'}}{\CFun{\coerce(\TMV_1', \TMV_1)}{\coerce(\TMV_2, \TMV_2')}} \\
-\end{array}\]
+\label{sec:coercion-language}
+Following \textcite{herman2010}, \cref{fig:coercion-coerce} defines the partial function $\coerce :
+\TMName \times \TMName \to \CMName$, which gives coercions between two consistent types.
+
+\begin{figure}[htb!]
+  \newcommand{\coerceRowIs}[3]{\ensuremath{\coerce(#1, #2) &=& #3}}
+  \[\begin{array}{rcl}
+    \coerceRowIs{\TMV}{\TMV}{\CId} \\
+    \coerceRowIs{\TBase}{\THole}{\CEmb{\DTBase}} \\
+    \coerceRowIs{\THole}{\TBase}{\CProj{\DTBase}} \\
+    \coerceRowIs{\TArrow{\TMV_1}{\TMV_2}}{\TArrow{\TMV_1'}{\TMV_2'}}{\CFun{\coerce(\TMV_1', \TMV_1)}{\coerce(\TMV_2, \TMV_2')}} \\
+    \coerceRowIs{\THole}{\TArrow{\TMV_1}{\TMV_2}}{\CCompose{\CProj{\DTFun}}{\coerce(\TArrow{\THole}{\THole}, \TArrow{\TMV_1}{\TMV_2})}} \\
+    \coerceRowIs{\TArrow{\TMV_1}{\TMV_2}}{\THole}{\CCompose{\coerce(\TArrow{\TMV_1}{\TMV_2}, \TArrow{\THole}{\THole})}{\CEmb{\DTFun}}}
+  \end{array}\]
+  %
+  \caption{Definition of $\coerce$}
+  \label{fig:coercion-coerce}
+\end{figure}
 
 \Cref{fig:coercion-syntax} gives the syntax of coercions and shows how they fit into expressions,
-eliding most of the expression forms, and \Cref{fig:coercion-types} gives rules for type
+eliding most of the expression forms, and \cref{fig:coercion-types} gives rules for type
 assignment. Note that the forms and typing, as well as most other constructs and lemmas, are
-borrowed from \textcite{herman2010}. However, there are a few key differences:
+borrowed from \textcite{herman2010}. There are a few key things to note:
 %
 \begin{itemize}
   \item In agreement with \HazelnutLive's semantics, $\CFail$ coercions (which replace the explicit
     failed cast form) must coerce two \emph{inconsistent ground} types. (Maybe this is already the
     case for those fail coercions?)
+
+  \item The ``dynamic tags'' given by metavariable $\DTMV$ correspond to \emph{ground} types, and
+    $\TBase$ refers to base types.
+
+  \item $\coerce$ produces compositions of casts that individually cast between type holes and
+    \emph{ground} types. (This was also true for the coercions of \textcite{herman2010} under our
+    definition of ground, I believe?).
 \end{itemize}
 
 \begin{figure}[htb!]
@@ -136,7 +184,9 @@ borrowed from \textcite{herman2010}. However, there are a few key differences:
   \label{fig:coercion-types}
 \end{figure}
 
-\begin{lemmat}[name=Well-typed coercions] \
+We then have \cref{lem:coercion-well-typed}, which corresponds to Lemma 1 \cite{herman2010}.
+%
+\begin{lemmat}[name=Well-typed coercions, label=lem:coercion-well-typed] \
   \begin{enumerate}
     \item $\isConsistent{\TMV}{\TMV'}$ if and only if $\coerce(\TMV, \TMV')$ is defined.
     \item If $\CMV = \coerce(\TMV, \TMV')$, then $\ctxCoercesType{}{\CMV}{\TMV}{\TMV'}$.
@@ -144,9 +194,11 @@ borrowed from \textcite{herman2010}. However, there are a few key differences:
 \end{lemmat}
 
 \subsubsection{Cast conversion}
-Given the $\coerce$ function, conversion from the casts of $\HazelnutLive$ to coercions is
-straightforward. See \Cref{fig:coercion-conversion}, which gives rules for conversion from the
-original internal language (of which we have elided all rules except those for handling casts).
+\label{sec:coercion-conversion}
+Given the $\coerce$ function (\Cref{fig:coercion-coerce}), conversion from the casts of
+$\HazelnutLive$ to coercions is straightforward. \Cref{fig:coercion-conversion} gives rules for
+conversion from the original internal language (of which we have elided all rules except those for
+handling casts).
 
 \begin{figure}[htb!]
   $\judgbox{\ctxConvertsInto{\andCtx{\ctx}{\holeCtx}}{\IEMVO}{\IEMV}}$ $\IEMVO$ is converted into $\IEMV$
@@ -164,10 +216,273 @@ original internal language (of which we have elided all rules except those for h
   \label{fig:coercion-conversion}
 \end{figure}
 
-\begin{theorem}[name=Cast conversion]
+\begin{theorem}[name=Cast conversion type preservation, label=thm:coercion-type-preservation]
   If $\ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IEMV}{\TMV}$ and
   $\ctxConvertsInto{\andCtx{\ctx}{\holeCtx}}{\IEMV}{\IEMV'}$, then
   $\ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IEMV'}{\TMV}$.
 \end{theorem}
+%
+Importantly, this conversion is type-preserving (\Cref{thm:coercion-type-preservation}). As we will
+see in the following section, the usage of $\coerce$ also removes the need for the original ITGround
+and ITExpand instruction transition rules.
+
+\subsubsection{Dynamic semantics}
+\label{sec:coercion-dynamics}
+Following $\HazelnutLive$, we give a complete dynamic semantics, first defining the judgments
+$\isFinal{\IEMV}$, $\isBoxedVal{\IEMV}$, and $\isIndet{\IEMV}$ in \cref{fig:coercion-final-forms}.
+
+\begin{figure}[htb!]
+  \begin{multicols}{2}
+    $\judgbox{\isFinal{\IEMV}}$ $\IEMV$ is final
+    
+    \begin{mathpar}
+      \judgment{
+        \isBoxedVal{\IEMV}
+      }{
+        \isFinal{\IEMV}
+      }{FBoxedVal}
+    
+      \judgment{
+        \isIndet{\IEMV}
+      }{
+        \isFinal{\IEMV}
+      }{FIndet}
+    \end{mathpar} \\
+    
+    $\judgbox{\isVal{\IEMV}}$ $\IEMV$ is a value
+    
+    \begin{mathpar}
+      \judgment{ }{
+        \isVal{\IEConst}
+      }{VConst}
+    
+      \judgment{ }{
+        \isVal{\IELam{x}{\TMV}{\IEMV}}
+      }{VLam}
+    \end{mathpar} \\
+  \end{multicols}
+
+  $\judgbox{\isBoxedVal{\IEMV}}$ $\IEMV$ is a boxed value
+
+  \begin{mathpar}
+    \judgment{
+      \isVal{\IEMV}
+    }{
+      \isBoxedVal{\IEMV}
+    }{BVVal}
+
+    \judgment{
+      \isBoxedVal{\IEMV}
+    }{
+      \isBoxedVal{\IECast{\IEMV}{\CFun{\CMV_1}{\CMV_2}}}
+    }{BVArrCast}
+
+    \judgment{
+      \isBoxedVal{\IEMV}
+    }{
+      \isBoxedVal{\IECast{\IEMV}{\CEmb{\DTMV}}}
+    }{BVHoleCast}
+  \end{mathpar} \\
+
+  $\judgbox{\isIndet{\IEMV}}$ $\IEMV$ is indeterminate
+
+  \begin{mathpar}
+    \judgment{
+    }{
+      \isIndet{\IEEHole{\IEHoleNum}{\IEHoleEnv}}
+    }{IEHole}
+
+    \judgment{
+      \isFinal{\IEMV}
+    }{
+      \isIndet{\IENEHole{\IEMV}{\IEHoleNum}{\IEHoleEnv}}
+    }{INEHole}
+
+    \judgment{
+      \IEMV_1 \neq \IECast{\IEMV_1'}{\CFun{\CMV_1}{\CMV_2}} \\
+      \isIndet{\IEMV} \\
+      \isFinal{\IEMV_2}
+    }{
+      \isIndet{\IEAp{\IEMV_1}{\IEMV_2}}
+    }{IAp}
+
+    \judgment{
+      \isIndet{\IEMV} \\
+      % \isGround{\TMV}
+    }{
+      \isIndet{\IECast{\IEMV}{\CEmb{\DTMV}}}
+    }{ICastGroundHole}
+
+    \judgment{
+      \IEMV \neq \IECast{\IEMV'}{\CEmb{\DTMV}} \\
+      \isIndet{\IEMV} \\
+      % \isGround{\TMV}
+    }{
+      \isIndet{\IECast{\IEMV}{\CProj{\DTMV}}}
+    }{ICastHoleGround}
+
+    \judgment{
+      % \TArrow{\TMV_1}{\TMV_2} \neq \TArrow{\TMV_1'}{\TMV_2'} \\
+      \isIndet{\IEMV} \\
+    }{
+      \isIndet{\IECast{\IEMV}{\CFun{\CMV_1}{\CMV_2}}}
+    }{ICastArr}
+  \end{mathpar}
+  %
+  \caption{Final forms} 
+  \label{fig:coercion-final-forms}
+\end{figure}
+
+\Cref{fig:coercion-normalization} the rules for \emph{coercion normalization}, which is given by the
+judgment $\normalizes{\CMV_1}{\CMV_2}{\CMV}$.
+
+\begin{figure}[htb!]
+  $\judgbox{\normalizes{\CMV_1}{\CMV_2}{\CMV}}$ $\CCompose{\CMV_1}{\CMV_2}$ normalizes to $\CMV$
+  %
+  \newcommand{\normalizesRow}[3]{\ensuremath{\CCompose{#1}{#2} &\rightarrowtail& #3}}
+  \begin{mathpar}
+    \judgment{ }{
+      \normalizes{\CId}{\CMV}{\CMV}
+    }{NId1}
+
+    \judgment{ }{
+      \normalizes{\CMV}{\CId}{\CMV}
+    }{NId2}
+
+    \judgment{ }{
+      \normalizes{\CFail}{\CMV}{\CFail}
+    }{NFail1}
+
+    \judgment{ }{
+      \normalizes{\CMV}{\CFail}{\CFail}
+    }{NFail2}
+
+    \judgment{ }{
+      \normalizes{\CEmb{\DTMV}}{\CProj{\DTMV}}{\CId}
+    }{NEmbProj1}
+
+    \judgment{
+      \DTMV \neq \DTMV'
+    }{
+      \normalizes{\CEmb{\DTMV}}{\CProj{\DTMV'}}{\CFail}
+    }{NEmbProj2}
+
+    \judgment{
+      \normalizes{\CMV_1'}{\CMV_1}{\CMV_1''} \\
+      \normalizes{\CMV_2}{\CMV_2'}{\CMV_2''}
+    }{
+      \normalizes{\CFun{\CMV_1}{\CMV_2}}{\CFun{\CMV_1'}{\CMV_2'}}{\CFun{\CMV_1''}{\CMV_2''}}
+    }{NFun}
+
+    \judgment{
+      \normalizes{\CMV_2}{\CMV_3}{\CMV}
+    }{
+      \normalizes{(\CCompose{\CMV_1}{\CMV_2})}{\CMV_3}{\CCompose{\CMV_1}{\CMV}}
+    }{NAssoc}
+  \end{mathpar}
+  %
+  \caption{Coercion normalization} 
+  \label{fig:coercion-normalization}
+\end{figure}
+
+\Cref{fig:coercion-instruction-transitions,fig:coercion-contextual-dynamics} define the transition
+rules. The rules are analogous to the original \HazelnutLive{} ones, but ITCastSucceed and
+ITCastFail are subsumed by ITCastCompose.
+
+\begin{figure}[htb!]
+  $\judgbox{\transition{\IEMV}{\IEMV'}}$ $\IEMV$ takes an instruction transition to $\IEMV'$
+
+  \begin{mathpar}
+    \judgment{
+      \optPremise{\isFinal{\IEMV_2}}
+    }{
+      \transition{\IEAp{(\IELam{x}{\TMV}{\IEMV_1})}{\IEMV_2}}{\subst{\IEMV_2}{x}{\IEMV_1}}
+    }{ITLam}
+
+    \judgment{
+      \optPremise{\isFinal{\IEMV_1}} \\
+      \optPremise{\isFinal{\IEMV_2}} \\
+      % \TArrow{\TMV_1}{\TMV_2} \neq \TArrow{\TMV_1'}{\TMV_2'}
+    }{
+      \transition{\IEAp{\IECast{\IEMV_1}{\CFun{\CMV_1}{\CMV_2}}}{\IEMV_2}}{\IECast{(\IEAp{\IEMV_1}{\IECast{\IEMV_2}{\CMV_1}})}{\CMV_2}}
+    }{ITApCast}
+
+    \judgment{
+      \optPremise{\isFinal{\IEMV}}
+    }{
+      \transition{\IECast{\IEMV}{\CId}}{\IEMV}
+    }{ITCastId}
+
+    \judgment{
+      \optPremise{\isFinal{\IEMV}} \\
+      % \isGround{\TMV} \\
+      \normalizes{\CMV_1}{\CMV_2}{\CMV}
+    }{
+      \transition{\IECast{\IEMV}{\CCompose{\CMV_1}{\CMV_2}}}{\IECast{\IEMV}{\CMV}}
+    }{ITCastCompose}
+  \end{mathpar}
+  %
+  \caption{Instruction transitions}
+  \label{fig:coercion-instruction-transitions}
+\end{figure}
+
+\begin{figure}[htb!]
+  \[\begin{array}{rrcl}
+    \EVMName & \EVMV & \Coloneqq & \EVEmpty \mid \EVApL{\EVMV}{\IEMV} \mid \EVApR{\IEMV}{\EVMV} 
+                                 \mid \EVHole{\EVMV}{\IEHoleNum}{\IEHoleEnv} \mid \EVCast{\EVMV}{\CMV}
+  \end{array}\]
+
+  $\judgbox{\markAt{\IEMV}{\EVMV}{\IEMV'}}$ $\IEMV$ is obtained by placing $\IEMV'$ at the mark
+  in $\EVMV$
+
+  \begin{mathpar}
+    \judgment{ }{
+      \markAt{\IEMV}{\EVEmpty}{\IEMV}
+    }{FHOuter}
+
+    \judgment{
+      \markAt{\IEMV_1}{\EVMV}{\IEMV_1'}
+    }{
+      \markAt{\IEAp{\IEMV_1}{\IEMV_2}}{\EVApL{\EVMV}{\IEMV_2}}{\IEMV_1'}
+    }{FHAp1}
+
+    \judgment{
+      \optPremise{\isFinal{\IEMV_1}} \\
+      \markAt{\IEMV_2}{\EVMV}{\IEMV_2'}
+    }{
+      \markAt{\IEAp{\IEMV_1}{\IEMV_2}}{\EVApR{\IEMV_1}{\EVMV}{\IEMV_2'}}
+    }{FHAp2}
+
+    \judgment{
+      \markAt{\IEMV}{\EVMV}{\IEMV'}
+    }{
+      \markAt{\IENEHole{\IEMV}{\IEHoleNum}{\IEHoleEnv}}{\EVHole{\EVMV}{\IEHoleNum}{\IEHoleEnv}}{\IEMV'}
+    }{FHNEHoleInside}
+
+    \judgment{
+      \markAt{\IEMV}{\EVMV}{\IEMV'}
+    }{
+      \markAt{\IECast{\IEMV}{\CMV}}{\EVCast{\EVMV}{\CMV}}{\IEMV'}
+    }{FHCastInside}
+  \end{mathpar} \\
+
+  $\judgbox{\stepsTo{\IEMV}{\IEMV'}}$ $\IEMV$ steps to $\IEMV'$
+  
+  \begin{mathpar}
+    \judgment{
+      \markAt{\IEMV}{\EVMV}{\IEMV_0} \\
+      \transition{\IEMV_0}{\IEMV_0'} \\
+      \markAt{\IEMV'}{\EVMV}{\IEMV_0'}
+    }{
+      \stepsTo{\IEMV}{\IEMV'}
+    }{Step}
+  \end{mathpar}
+  %
+  \caption{Evaluation contexts and steps}
+  \label{fig:coercion-contextual-dynamics}
+\end{figure}
+
+Of course, metatheorems governing the evaluation of internal expressions in \HazelnutLive{} ought to
+also hold for the coercion-based internal expressions.
  
 \end{document}
