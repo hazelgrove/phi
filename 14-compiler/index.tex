@@ -1,0 +1,48 @@
+\documentclass{report}
+\setcounter{secnumdepth}{3}
+
+\usepackage[margin=1in]{geometry}
+
+\input{preamble/preamble}
+\addbibresource{references.bib}
+
+\begin{document}
+\setcounter{chapter}{13}
+\unchapter{Compiler}
+
+\section{Contents}
+The compiler project explores \Hazel{} and typed holes in a compilation context. The
+current implementation can be found under the
+\href{https://github.com/hazelgrove/hazel/tree/hazelc}{\texttt{hazelc}} branch. 
+
+\tableofcontents
+
+\subsection{See also}
+\label{sec:see-also}
+It may also be worthwhile to reference the following, though they may outdated in various degrees:
+%
+\begin{itemize}
+  \item The \href{https://github.com/hazelgrove/hazelc-icfp22-src}{extended abstract},
+    \href{https://github.com/mirryi/hazelc-icfp22-poster}{poster}, and
+    \href{https://github.com/mirryi/hazelc-icfp22-slides}{talk slides} submitted to and presented at
+    the ICFP 2022 Student Research Competition.
+\end{itemize}
+
+\subsection{Further design}
+\label{sec:further-design}
+Further design is likely possible in most areas. Particularly:
+\begin{itemize}
+  \item Runtime representation of indeterminate results (see \Cref{sec:runtime-representation})
+  \item Cast handling (see \Cref{sec:casting})
+  \item Pattern matching (see \Cref{sec:pattern-matching})
+\end{itemize}
+
+\subfile{01-motivation}
+\subfile{02-approach}
+\subfile{03-formalization}
+\subfile{04-implementation}
+
+\section{References}
+\printbibliography[heading=none]
+
+\end{document}

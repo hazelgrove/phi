@@ -1,0 +1,88 @@
+digraph pipeline {
+  label = "hazelc pipeline"
+  newrank = true;
+
+  graph [ fontname = "Fira Code", fontsize = 10.0                                   ];
+  node  [ fontname = "Fira Code", fontsize = 10.0,                                  ];
+  edge  [ fontname = "Fira Code", fontsize = 9.0 , arrowhead="vee", arrowsize = 0.5 ];
+
+  subgraph cluster_hazelcore {
+    label = "hazelcore";
+    rank = same;
+
+    graph [ colorscheme = ylgnbu9, fontcolor = 8 ];
+    node  [ colorscheme = ylgnbu9, fontcolor = 8 ];
+    edge  [ colorscheme = ylgnbu9, color = 7 ];
+
+    style = rounded;
+    bgcolor = 1;
+    color = 1;
+
+    node        [ shape = plaintext,  ];
+    elaborate   [ label = "elaborate" ];
+
+    node        [ shape = box, style = filled, color = 2, fillcolor = 2 ];
+    uhexp       [ label = "uhexp" ];
+    dhexp       [ label = "dhexp" ];
+
+    uhexp -> elaborate -> dhexp;
+  }
+
+  subgraph cluster_compiler {
+    label = "compiler";
+    labelloc = b;
+
+    graph [ colorscheme = ylorbr9, fontcolor = 9 ];
+    node  [ colorscheme = ylorbr9, fontcolor = 9 ];
+    edge  [ colorscheme = ylorbr9, color = 7 ];
+
+    style = rounded;
+    bgcolor = 2;
+    color = 2;
+
+    subgraph cluster_middle_end {
+      label = "middle-end"
+      rank = same;
+
+      style = rounded;
+      bgcolor = 3;
+
+      node        [ shape = plaintext   ];
+      transform   [ label = "transform" ];
+      linearize   [ label = "linearize" ];
+
+      node        [ shape = box, style = filled, color = 4, fillcolor = 4 ];
+      hir         [ label = "hir" ];
+      anf         [ label = "anf" ];
+
+      transform -> hir -> linearize -> anf -> anf;
+    }
+
+    subgraph cluster_codegen {
+      label = "codegen"
+      rank = same;
+
+      style = rounded;
+      bgcolor = 3;
+
+      node        [ shape = plaintext   ];
+      codegen     [ label = "codegen"   ];
+      print       [ label = "print"     ];
+      grainc      [ label = "grainc"    ];
+
+      node        [ shape = box, style = filled, color = 4, fillcolor = 4 ];
+      gir         [ label = "gir"   ];
+      grain       [ label = "grain" ];
+
+      codegen -> gir -> print -> grain -> grainc
+    }
+
+    anf -> codegen;
+  }
+
+  node  [ shape = box, style = filled, colorscheme = bupu9, color = 3, fillcolor = 3  ];
+  wasm  [ label = "wasm"  ];
+
+  dhexp -> transform;
+  grainc -> wasm;
+}

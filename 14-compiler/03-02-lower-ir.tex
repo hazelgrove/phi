@@ -1,0 +1,428 @@
+\documentclass[index.tex]{subfiles}
+
+\begin{document}
+\newcommand{\SyWrap}{\ensuremath{\textsf{\textbf{{wrap}}}}}
+\newcommand{\SyCaseComplete}{\ensuremath{\textsf{\textbf{casecomplete}}}}
+
+\newcommand{\NKMName}{\ensuremath{\textsf{Completeness}}}
+\newcommand{\NKMV}{\ensuremath{k}}
+\newcommand{\KMName}{\ensuremath{\textsf{}}}
+\newcommand{\KMV}{\ensuremath{\overline{k}}}
+\newcommand{\TCMName}{\ensuremath{\textsf{Type}}}
+\newcommand{\TCMV}{\ensuremath{\tau}}
+\newcommand{\TMName}{\ensuremath{\textsf{}}}
+\newcommand{\TMV}{\ensuremath{\overline{\tau}}}
+\newcommand{\CMName}{\ensuremath{\textsf{Composite}}}
+\newcommand{\CMV}{\ensuremath{c}}
+\newcommand{\IMName}{\ensuremath{\textsf{Immediate}}}
+\newcommand{\IMV}{\ensuremath{i}}
+\newcommand{\HIMV}{\ensuremath{u}}
+\newcommand{\HEMV}{\ensuremath{\SyHoleEnv}}
+
+\newcommand{\KNC}{\ensuremath{\pie{0.3ex}{360}}}
+\newcommand{\KNI}{\ensuremath{\pie{0.3ex}{0}}}
+\newcommand{\KII}{\ensuremath{\pie{0.3ex}{180}}}
+
+\newcommand{\TCHole}{\ensuremath{\SyEHole{}{}}}
+\newcommand{\TCInt}{\ensuremath{\SyTInt}}
+\newcommand{\TCFloat}{\ensuremath{\SyTFloat}}
+\newcommand{\TCBool}{\ensuremath{\SyTBool}}
+\newcommand{\TCPair}[2]{\ensuremath{#1 \SyProd #2}}
+\newcommand{\TCFun}[2]{\ensuremath{#1 \SyArrow #2}}
+
+\newcommand{\TIntNC}{\ensuremath{\TMk{\TCInt}{\KNC}}}
+\newcommand{\TIntNI}{\ensuremath{\TMk{\TCInt}{\KNI}}}
+\newcommand{\TFloatNC}{\ensuremath{\TMk{\TCFloat}{\KNC}}}
+\newcommand{\TFloatNI}{\ensuremath{\TMk{\TCFloat}{\KNI}}}
+\newcommand{\TBoolNC}{\ensuremath{\TMk{\TCBool}{\KNC}}}
+\newcommand{\TBoolNI}{\ensuremath{\TMk{\TCBool}{\KNI}}}
+\newcommand{\TPairNC}[2]{\ensuremath{\TMk{\TCPair{#1}{#2}}{\KNC}}}
+\newcommand{\TPairNI}[2]{\ensuremath{\TMk{\TCPair{#1}{#2}}{\KNI}}}
+\newcommand{\TFunNC}[2]{\ensuremath{\TMk{(\TCFun{#1}{#2})}{\KNC}}}
+\newcommand{\TFunNI}[2]{\ensuremath{\TMk{(\TCFun{#1}{#2})}{\KNI}}}
+\newcommand{\TMk}[2]{\ensuremath{#1[#2]}}
+
+\newcommand{\IIntMV}{\ensuremath{\underline{n}}}
+\newcommand{\IFloatMV}{\ensuremath{\underline{f}}}
+\newcommand{\IBoolMV}{\ensuremath{\underline{b}}}
+\newcommand{\ITrue}{\ensuremath{\SyTrue}}
+\newcommand{\IFalse}{\ensuremath{\SyFalse}}
+\newcommand{\IEHole}[2]{\ensuremath{\SyEHole{#1}{#2}}}
+
+\newcommand{\CPlus}[2]{\ensuremath{#1 \SyPlus #2}}
+\newcommand{\CTimes}[2]{\ensuremath{#1 \SyTimes #2}}
+\newcommand{\CFPlus}[2]{\ensuremath{#1 \SyFPlus #2}}
+\newcommand{\CFTimes}[2]{\ensuremath{#1 \SyFTimes #2}}
+
+\newcommand{\CAnd}[2]{\ensuremath{#1 \SyAnd #2}}
+\newcommand{\COr}[2]{\ensuremath{#1 \SyOr #2}}
+
+\newcommand{\CLam}[3]{\ensuremath{\SyFun #1 : #2 \SyDot~ #3}}
+\newcommand{\CAp}[2]{\ensuremath{#1 ~#2}}
+
+\newcommand{\CLet}[2]{\ensuremath{\SyLet~ #1 = #2}}
+\newcommand{\CIn}{\ensuremath{~\SyIn~}}
+\newcommand{\CInWith}[1]{\ensuremath{~\SyIn~ #1}}
+\newcommand{\CReturn}[1]{\ensuremath{\SyReturn~ #1}}
+
+\newcommand{\CPair}[2]{\ensuremath{(#1, #2)}}
+\newcommand{\CProjL}[1]{\ensuremath{\SyProjL~ #1}}
+\newcommand{\CProjR}[1]{\ensuremath{\SyProjR~ #1}}
+
+\newcommand{\CWrapIntoNI}[1]{\ensuremath{\SyWrap^{\KNI}~ #1}}
+\newcommand{\CWrapIntoII}[1]{\ensuremath{\SyWrap^{\KII}~ #1}}
+\newcommand{\CEmbed}[1]{\ensuremath{\SyEmbed~ #1}}
+\newcommand{\CProj}[2]{\ensuremath{\SyProj[#2]~ #1}}
+\newcommand{\CCaseCompleteWith}[1]{\ensuremath{\SyCaseComplete~ #1 ~\SyWith}}
+\newcommand{\CCaseCompleteBr}[2]{\ensuremath{\SyBar~ #1 \SyArrow #2}}
+
+\subsection{Lower intermediate representation (LIR)}
+\label{sec:lir}
+
+\begin{note}
+  The semantics of this representation are not totally thought out; wouldn't be surprised if there's
+  some big inconsistency in this approach\ldots
+\end{note}
+
+In the lower intermediate representation (LIR), whose syntax is partially given in
+\cref{fig:lir-syntax}, completeness (see \Cref{sec:lir-completeness}) is made explicit in the type
+system (see \Cref{fig:lir-ta-imm,fig:lir-ta-comp}).
+
+\begin{figure}[htb!]
+  \[\begin{array}{rccl}
+    \NKMName & \NKMV & \Coloneqq & \KNC \mid \KNI \\
+    \KMName  & \KMV  & \Coloneqq & \NKMV \mid \KII \\
+    \TCMName    & \TCMV    & \Coloneqq & \TCHole \mid \TCInt \mid \TCFloat \mid \TCBool 
+                                                   \mid \TCPair{\TCMV}{\TCMV} 
+                                                   \mid \TCFun{\TMk{\TCMV}{\NKMV}}{\TMV} \\
+    \TMName       & \TMV       & \Coloneqq & \TMk{\TCMV}{\KMV} \\
+    \IMName       & \IMV       & \Coloneqq & x \mid \IEHole{\HIMV}{\HEMV}
+                                                   \mid \IIntMV \mid \IFloatMV \mid \IBoolMV 
+                                                   \mid \CLam{x}{\TMk{\TCMV}{\NKMV}}{\CMV} \\
+    \CMName      & \CMV      & \Coloneqq & \IMV \\
+                   &                   & \mid         & \CPlus{\IMV}{\IMV} 
+                                                   \mid \CTimes{\IMV}{\IMV}
+                                                   \mid \CFPlus{\IMV}{\IMV} 
+                                                   \mid \CFTimes{\IMV}{\IMV}
+                                                   \mid \CAnd{\IMV}{\IMV}
+                                                   \mid \COr{\IMV}{\IMV} \\
+                   &                   & \mid         & \CAp{\IMV}{\IMV} \\
+                   &                   & \mid         & \CPair{\IMV}{\IMV}
+                                                   \mid \CProjL{\IMV}
+                                                   \mid \CProjR{\IMV} \\
+                   &                   & \mid         & \CLet{x}{\CMV} \CInWith{\CMV} \\
+                   &                   & \mid         & \CWrapIntoNI{\IMV}
+                                                   \mid \CWrapIntoII{\IMV} \\
+                   &                   & \mid         & \CEmbed{\IMV}
+                                                   \mid \CProj{\IMV}{\TCMV} \\
+                   &                   & \mid         & \CCaseCompleteWith{\IMV}
+                                                    ~\CCaseCompleteBr{x}{\CMV}
+                                                    ~\CCaseCompleteBr{x'}{\CMV}
+  \end{array}\]
+  %
+  \caption{LIR syntax}
+  \label{fig:lir-syntax}
+\end{figure}
+
+\subsubsection{Completeness}
+\label{sec:lir-completeness}
+Completeness (see \Cref{completeness}) is denoted by the metavariable $\KMV$, with
+``necessarily'' cases given by $\NKMV$: $\KNC =$ necessary completeness, $\KNI =$
+necessary incompleteness, and $\KII =$ indeterminate incompleteness. They are encoded in types,
+which are given by the metavariable $\TMV$. 
+%
+A type $\TMk{\TCMV}{\KMV}$ is thus a ``concrete'' type $\TCMV$ (need a
+better name for this) parameterized by completeness $\KMV$.
+
+\subsubsection{Immediates}
+\label{sec:lir-immediates}
+Similar to the high intermediate representation, a distinction is made between \emph{immediates}
+(given by $\IMV$) and \emph{composites} (computations, given by $\CMV$). Immediates
+are either literals or variables.
+
+\begin{figure}[htb!]
+  \judgbox{\ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV}{\TMV}}
+    $\IMV$ is assigned type $\TMV$ \\
+  
+  \begin{mathpar}
+    \judgment{
+      \holeHasTypeCtx{\holeCtx}{\HIMV}{\TCMV}{\ctx'} \\
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\sigma}{\ctx'}
+    }{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IEHole{\HIMV}{\sigma}}{\TMk{\TCMV}{\KNI}}
+    }{TAEHole} \and
+
+    \judgment{
+      \inCtx{\ctx}{x}{\TMV}
+    }{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{x}{\TMV}
+    }{TAVar} \\
+
+    \judgment{ }{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IIntMV}{\TIntNC}
+    }{TAIntLit} \and
+
+    \judgment{ }{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IIntMV}{\TFloatNC}
+    }{TAFloatLit} \and
+
+    \judgment{ }{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IBoolMV}{\TBoolNC}
+    }{TABoolLit} \\
+
+    \judgment{
+      \ctxAssignType{\andCtx{\extendCtx{\ctx}{x}{\TMk{\TCMV}{\NKMV}}}{\holeCtx}}{\CMV}{\TMV}
+    }{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CLam{x}{\TMk{\TCMV}{\NKMV}}{\CMV}}{\TFunNC{\TMk{\TCMV}{\NKMV}}{\TMV}}
+    }{TALam}
+  \end{mathpar}
+  %
+  \caption{Type assignment for LIR immediates}
+  \label{fig:lir-ta-imm}
+\end{figure}
+
+\Cref{fig:lir-ta-imm} gives the type assignment rules for immediates, which are quite
+straightforward. The rule for holes $\IEHole{\HIMV}{\HEMV}$ is the same as
+that of the internal \Hazel{} language.
+
+\subsubsection{Composites}
+\label{sec:lir-composites}
+See \cref{fig:lir-syntax-comp} for an brief overview of the composite forms. Note the operations that
+are polymorphic over necessary completeness (e.g. integer addition).
+
+\begin{table}
+  \begin{center}
+    \begin{tabular}{rl}
+      \textbf{Form} & \textbf{Description} \\
+
+      $\IMV$ 
+        & immediates are also composites \\
+      
+      $\CPlus{\IMV}{\IMV}$, $\CTimes{\IMV}{\IMV}$
+        & addition, multiplication of two $\TCInt$ immediates \\
+
+      $\CFPlus{\IMV}{\IMV}$, $\CFTimes{\IMV}{\IMV}$
+        & addition, multiplication of two $\TCFloat$ immediates \\
+
+      $\CAnd{\IMV}{\IMV}$, $\COr{\IMV}{\IMV}$
+        & logical and, logical or of two $\TCBool$ immediates \\
+
+      $\CPair{\IMV}{\IMV}$
+        & pair construction \\
+
+      $\CProjL{\IMV}$, $\CProjR{\IMV}$
+        & left and right pair projection \\
+
+      $\CAp{\IMV}{\IMV}$
+        & function application \\
+
+      $\CWrapIntoNI{\IMV}$
+        & wrapping of a value into an indet. result \\
+
+      $\CWrapIntoII{\IMV}$
+        & wrapping of an immediate into a indeterminately incomplete
+        result \\
+
+      $\CEmbed{\IMV}$
+        & embedding of an immediate into a cast proxy \\
+
+      $\CProj{\TCMV}{\IMV}$
+        & projection of a proxy to a target type $\TCMV$; dynamic type check and may fail \\
+
+      $\CLet{x}{\CMV} \CIn \CMV$
+        & variable binding \\
+
+      $\CCaseCompleteWith{\IMV} ~\cdots$
+        & dynamic check; first branch taken if value, second branch if indet. result
+    \end{tabular}
+  \end{center}
+  %
+  \caption{Overview of LIR composite forms}
+  \label{fig:lir-syntax-comp}
+\end{table}
+
+The syntax and type assignment rules (see \Cref{fig:lir-ta-comp}) enforce serious computations to be
+on either necessarily complete or necessarily incomplete immediates; indeterminately incomplete
+results may be introduced only either by wrapping (\textsc{\small TAWrapIntoII}) or by projecting a
+cast proxy (\textsc{\small TAProj}), and eliminated only by $\SyCaseComplete$ (\textsc{\small
+TACaseComplete}).
+
+\begin{figure}[htb!]
+  \judgbox{\ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CMV}{\TMV}}
+    $\CMV$ is assigned type $\TMV$ \\
+
+  Integers:
+  \begin{mathpar}
+    \judgment{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_1}{\TMk{\TCInt}{\NKMV}} \\
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_2}{\TMk{\TCInt}{\NKMV}}
+    }{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CPlus{\IMV_1}{\IMV_2}}{\TMk{\TCInt}{\NKMV}}
+    }{TAPlus} \and
+
+    \judgment{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_1}{\TMk{\TCInt}{\NKMV}} \\
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_2}{\TMk{\TCInt}{\NKMV}}
+    }{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CTimes{\IMV_1}{\IMV_2}}{\TMk{\TCInt}{\NKMV}}
+    }{TATimes}
+  \end{mathpar} \\
+  %
+  Floats:
+  \begin{mathpar}
+    \judgment{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_1}{\TMk{\TCFloat}{\NKMV}} \\
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_2}{\TMk{\TCFloat}{\NKMV}}
+    }{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CFPlus{\IMV_1}{\IMV_2}}{\TMk{\TCFloat}{\NKMV}}
+    }{TAFPlus} \and
+
+    \judgment{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_1}{\TMk{\TCFloat}{\NKMV}} \\
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_2}{\TMk{\TCFloat}{\NKMV}}
+    }{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CFTimes{\IMV_1}{\IMV_2}}{\TMk{\TCFloat}{\NKMV}}
+    }{TAFTimes}
+  \end{mathpar} \\
+  %
+  Booleans:
+  \begin{mathpar}
+    \judgment{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_1}{\TMk{\TCBool}{\NKMV}} \\
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_2}{\TMk{\TCBool}{\NKMV}}
+    }{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CAnd{\IMV_1}{\IMV_2}}{\TMk{\TCBool}{\NKMV}}
+    }{TAAnd} \and
+
+    \judgment{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_1}{\TMk{\TCBool}{\NKMV}} \\
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_2}{\TMk{\TCBool}{\NKMV}}
+    }{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\COr{\IMV_1}{\IMV_2}}{\TMk{\TCBool}{\NKMV}}
+    }{TAOr}
+  \end{mathpar} \\
+  %
+  Pairs:
+  \begin{mathpar}
+    \judgment{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_1}{\TMk{\TCMV}{\NKMV}} \\
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_2}{\TMk{\TCMV'}{\NKMV}}
+    }{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CPair{\IMV_1}{\IMV_2}}{\TMk{\TCPair{\TCMV}{\TCMV'}}{\NKMV}}
+    }{TAPair} \\
+
+    \judgment{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV}{\TMk{\TCPair{\TCMV}{\TCMV'}}{\NKMV}}
+    }{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CProjL{\IMV}}{\TMk{\TCMV}{\NKMV}} \\
+    }{TAFst} \and
+
+    \judgment{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV}{\TMk{\TCPair{\TCMV}{\TCMV'}}{\NKMV}}
+    }{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CProjR{\IMV}}{\TMk{\TCMV'}{\NKMV}} \\
+    }{TASnd}
+  \end{mathpar} \\
+  %
+  Application:
+  \begin{mathpar}
+    \judgment{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_1}{\TMk{(\TCFun{\TMk{\TCMV}{\NKMV}}{\TMV})}{\KNC}} \\
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_2}{\TMk{\TCMV}{\NKMV}}
+    }{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CAp{\IMV_1}{\IMV_2}}{\TMV}
+    }{TAAp1} \and
+
+    \judgment{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_1}{\TMk{(\TCFun{\TMk{\TCMV_1}{\NKMV_1}}{\TMk{\TCMV_2}{\NKMV_2}})}{\KNI}} \\
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV_2}{\TMk{\TCMV_1}{\NKMV_1}}
+    }{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CAp{\IMV_1}{\IMV_2}}{\TMk{\TCMV_2}{\KNC}}
+    }{TAAp2}
+  \end{mathpar} \\
+  %
+  \caption{Type assignment for LIR composites}
+  \label{fig:lir-ta-comp}
+\end{figure}
+
+\begin{figure} \ContinuedFloat
+  \judgbox{\ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CMV}{\TMV}}
+    $\CMV$ is assigned type $\TMV$ \\
+
+  Wrapping:
+  \begin{mathpar}
+    \judgment{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV}{\TMk{\TCMV}{\KNC}}
+    }{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CWrapIntoNI{\IMV}}{\TMk{\TCMV}{\KNI}}
+    }{TAWrapIntoNI} \and
+
+    \judgment{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV}{\TMk{\TCMV}{\NKMV}}
+    }{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CWrapIntoII{\IMV}}{\TMk{\TCMV}{\KII}}
+    }{TAWrapIntoII}
+  \end{mathpar} \\
+  %
+  Casting:
+  \begin{mathpar}
+    \judgment{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV}{\TMk{\TCMV}{\NKMV}}
+    }{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CEmbed{\IMV}}{\TMk{\TCHole}{\KNI}}
+    }{TAEmbed} \and
+
+    \judgment{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV}{\TMk{\TCMV}{\KNI}}
+    }{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CProj{\IMV}{\TCMV'}}{\TMk{\TCMV'}{\KII}}
+    }{TAProj}
+  \end{mathpar} \\
+  %
+  Binding:
+  \begin{mathpar}
+    \judgment{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CMV}{\TMV} \\
+      \ctxAssignType{\andCtx{\extendCtx{\ctx}{x}{\TMV}}{\holeCtx}}{\CMV'}{\TMV'}
+    }{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\CLet{x}{\CMV} \CIn \CMV'}{\TMV'}
+    }{TALet}
+  \end{mathpar} \\
+  %
+  $\KII$ elimination:
+  \begin{mathpar}
+    \judgment{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{\IMV}{\TMk{\TCMV}{\KII}} \\\\
+      \ctxAssignType{\andCtx{\extendCtx{\ctx}{x}{\TMk{\TCMV}{\KNC}}}{\holeCtx}}{\CMV}{\TMV} \\
+      \ctxAssignType{\andCtx{\extendCtx{\ctx}{x'}{\TMk{\TCMV}{\KNI}}}{\holeCtx}}{\CMV'}{\TMV}
+    }{
+      \ctxAssignType{\andCtx{\ctx}{\holeCtx}}{
+        \CCaseCompleteWith{\IMV}
+          ~\CCaseCompleteBr{x}{\CMV}
+          ~\CCaseCompleteBr{x'}{\CMV'}
+        }{\TMV}
+    }{TACaseComplete}
+  \end{mathpar}
+  %
+  \caption{Type assignment for LIR composites (cont.)}
+  \label{fig:lir-ta-comp-cont}
+\end{figure}
+
+\subsubsection{Operational semantics}
+\label{sec:lir-operational-semantics}
+We attempt to give a small-step operational semantics for the lower intermediate representation.
+
+\begin{figure}[htb!]
+  \caption{Small-step operational semantics for LIR}
+  \label{fig:lir-ssos}
+\end{figure}
+
+\subsection{Explicitization}
+\label{sec:explicitization}
+
+\begin{figure}[htb!]
+  \caption{LIR function-local completeness analysis}
+  \label{fig:lir-completeness-analysis-local}
+\end{figure}
+   
+\end{document}

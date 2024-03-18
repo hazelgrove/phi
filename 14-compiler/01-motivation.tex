@@ -1,0 +1,47 @@
+\documentclass[index.tex]{subfiles}
+
+\begin{document}
+\section{Motivation}
+\label{motivation}
+Right now, \Hazel{} has a simple tree-walk evaluator based on environments, but not a compiler that
+can output fast, optimized executables. This PHI proposes such a compiler.
+
+\subsection{Objectives}
+\label{objectives}
+There are a number of criteria we would like the compiler to satisfy: 
+%
+\begin{itemize}
+  \item Compiled programs should match the semantics and output of the existing evaluator. This
+    means the compiler should
+    %
+    \begin{itemize}
+      \item support the incomplete programs, i.e. programs with holes.
+      \item produce programs that have the same final result as an evaluated program.
+    \end{itemize}
+
+  \item Compiled programs should have faster execution speed than evaluated ones.
+  \item Complete \Hazel{} programs should execute as normal functional programs; they should require
+    no extra machinery related to holes.
+\end{itemize}
+%
+In addition, it may be interesting to explore interoperability with the evaluator and live
+programming environment:
+%
+\begin{itemize}
+  \item Dynamic compilation with hand-off between evaluator and compiler.
+  \item Incremental compilation, to reduce overhead of compilation in a live environment.
+  \item Incremental execution, via fill-and-resume-like behaviour.
+\end{itemize}
+
+\subsection{Challenges}
+\label{challenges}
+The presence of holes poses fundamental challenges for compilers, as \emph{indeterminate results}
+produced by \Hazel's semantics are not values. Hence, we are concerned with
+%
+\begin{itemize}
+  \item Speed- and space-efficient representations for holes and indeterminate results, as well as
+    performant operations on them.
+  \item Static analyses for optimizing incomplete programs.
+  \item Incrementality and liveness; see above \cref{objectives}.
+\end{itemize}
+\end{document}
